@@ -911,9 +911,36 @@ clGetPlatformIDs( cl_uint         num_entries,
 
     printf( "  num_entries: %u\n", num_entries );
 
-	//TODO: Print other parameters
-
 	ret = g_clLib_clGetPlatformIDs( num_entries, platforms, num_platforms );
+
+	if( ret == CL_SUCCESS )
+	{
+		if( platforms == NULL )
+		{
+			printf( "  platforms: NULL\n" );
+		}
+		else
+		{
+			printf( "  platforms:" );
+			if( num_platforms != NULL )
+			{
+				for( cl_uint i = 0; i < *num_platforms; i++ )
+				{
+					printf( " %p", platforms[i] );
+				}
+			}
+			printf( "\n" );
+		}
+		
+		if( num_platforms == NULL )
+		{
+			printf( "  num_platforms: NULL\n" );
+		}
+		else
+		{
+			printf( "  num_platforms: %u\n", *num_platforms );
+		}
+	}
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -991,7 +1018,7 @@ clGetDeviceIDs( cl_platform_id platform,
 	    {
 			if( num_devices != NULL )
 	        {
-	            for( int i = 0; i < *num_devices; i++ )
+	            for( cl_uint i = 0; i < *num_devices; i++ )
 	            {
 	                printf( "    [%d]: %p\n", i, devices[i] );
 	            }
@@ -1126,6 +1153,9 @@ clGetDeviceInfo( cl_device_id   device,
             case CL_DEVICE_EXTENSIONS:
                 printf( "  param_value: %s\n", static_cast<char*>( param_value ) );
                 break;
+                
+            case CL_DEVICE_PLATFORM:
+            	printf( "  param_value: %p\n", *(static_cast<cl_platform_id*>( param_value )) );
 
             default:
                 printf( "  param_name: Unknow device info\n" );
@@ -1377,6 +1407,10 @@ clGetContextInfo(cl_context         context,
 
                 printf( "\n" );
                 break;
+
+            case CL_CONTEXT_PLATFORM:
+            	printf( "  param_value: %p\n", *(static_cast<cl_platform_id*>( param_value )) );
+            	break;
 
             case CL_CONTEXT_PROPERTIES:
             default:
@@ -4177,7 +4211,7 @@ clEnqueueMarker( cl_command_queue    command_queue,
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    g_clLib_clEnqueueMarker( command_queue, event );
+    ret = g_clLib_clEnqueueMarker( command_queue, event );
 
     if( event == NULL )
         printf( "  event: NULL\n" );
