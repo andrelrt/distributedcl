@@ -24,389 +24,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dlfcn.h>
-
 #include <CL/opencl.h>
+
+#include "../opencl_library.h"
+#include "../library_exception.h"
 //-----------------------------------------------------------------------------
 #define HEADER "=========================================================================================\n%s\n"
 #define FOOTER "\n"
-
-#define DECLARE_LIBRARY_CALL(x) static x##_t g_clLib_##x=NULL
-#define LOAD_FUNCTION(x) g_clLib_##x=(x##_t)load_function(#x)
 //-----------------------------------------------------------------------------
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef void (*logging_fn)(const char *, const void *, size_t, void *);
+static ocg::opencl_library* g_clLib = NULL;
 
-typedef struct
-{
-    logging_fn user_callback;
-    void* user_data;
-
-} context_userdata;
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetPlatformIDs_t)( cl_uint, cl_platform_id*, cl_uint* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetPlatformInfo_t)( cl_platform_id, cl_platform_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetDeviceIDs_t)( cl_platform_id, cl_device_type, cl_uint, cl_device_id*, cl_uint* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetDeviceInfo_t)( cl_device_id, cl_device_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_context CL_API_CALL
-(*clCreateContext_t)( cl_context_properties*, cl_uint, const cl_device_id*, logging_fn, void*, cl_int* );
-
-typedef CL_API_ENTRY cl_context CL_API_CALL
-(*clCreateContextFromType_t)( cl_context_properties*, cl_device_type, logging_fn, void*, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainContext_t)( cl_context );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseContext_t)( cl_context );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetContextInfo_t)( cl_context, cl_context_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_command_queue CL_API_CALL
-(*clCreateCommandQueue_t)( cl_context, cl_device_id, cl_command_queue_properties, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainCommandQueue_t)( cl_command_queue );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseCommandQueue_t)( cl_command_queue );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetCommandQueueInfo_t)( cl_command_queue, cl_command_queue_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clSetCommandQueueProperty_t)( cl_command_queue, cl_command_queue_properties, cl_bool, cl_command_queue_properties* );
-
-typedef CL_API_ENTRY cl_mem CL_API_CALL
-(*clCreateBuffer_t)( cl_context, cl_mem_flags, size_t, void*, cl_int* );
-
-typedef CL_API_ENTRY cl_mem CL_API_CALL
-(*clCreateImage2D_t)( cl_context, cl_mem_flags, const cl_image_format*, size_t, size_t, size_t, void*, cl_int* );
-
-typedef CL_API_ENTRY cl_mem CL_API_CALL
-(*clCreateImage3D_t)( cl_context, cl_mem_flags, const cl_image_format*, size_t, size_t, size_t, size_t, size_t, void*, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainMemObject_t)( cl_mem );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseMemObject_t)( cl_mem );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetSupportedImageFormats_t)( cl_context, cl_mem_flags, cl_mem_object_type, cl_uint, cl_image_format*, cl_uint* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetMemObjectInfo_t)( cl_mem, cl_mem_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetImageInfo_t)( cl_mem, cl_image_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_sampler CL_API_CALL
-(*clCreateSampler_t)( cl_context, cl_bool, cl_addressing_mode, cl_filter_mode, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainSampler_t)( cl_sampler );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseSampler_t)( cl_sampler );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetSamplerInfo_t)( cl_sampler, cl_sampler_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_program CL_API_CALL
-(*clCreateProgramWithSource_t)( cl_context, cl_uint, const char**, const size_t*, cl_int* );
-
-typedef CL_API_ENTRY cl_program CL_API_CALL
-(*clCreateProgramWithBinary_t)( cl_context, cl_uint, const cl_device_id*, const size_t*, const unsigned char**, cl_int*, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainProgram_t)( cl_program );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseProgram_t)( cl_program );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clBuildProgram_t)( cl_program, cl_uint, const cl_device_id*, const char*, void (*pfn_notify)( cl_program, void* ), void* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clUnloadCompiler_t)( void );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetProgramInfo_t)( cl_program, cl_program_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetProgramBuildInfo_t)( cl_program, cl_device_id, cl_program_build_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_kernel CL_API_CALL
-(*clCreateKernel_t)( cl_program, const char*, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clCreateKernelsInProgram_t)( cl_program, cl_uint, cl_kernel*, cl_uint* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainKernel_t)( cl_kernel );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseKernel_t)( cl_kernel );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clSetKernelArg_t)( cl_kernel, cl_uint, size_t, const void* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetKernelInfo_t)( cl_kernel, cl_kernel_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetKernelWorkGroupInfo_t)( cl_kernel, cl_device_id, cl_kernel_work_group_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clWaitForEvents_t)( cl_uint, const cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetEventInfo_t)( cl_event, cl_event_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clRetainEvent_t)( cl_event );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clReleaseEvent_t)( cl_event );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clGetEventProfilingInfo_t)( cl_event, cl_profiling_info, size_t, void*, size_t* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clFlush_t)( cl_command_queue );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clFinish_t)( cl_command_queue );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueReadBuffer_t)( cl_command_queue, cl_mem, cl_bool, size_t, size_t, void*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueWriteBuffer_t)( cl_command_queue, cl_mem, cl_bool, size_t, size_t, const void*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueCopyBuffer_t)( cl_command_queue, cl_mem, cl_mem, size_t, size_t, size_t, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueReadImage_t)( cl_command_queue, cl_mem, cl_bool, const size_t*, const size_t*, size_t, size_t, void*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueWriteImage_t)( cl_command_queue, cl_mem, cl_bool, const size_t*, const size_t*, size_t, size_t, const void*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueCopyImage_t)( cl_command_queue, cl_mem, cl_mem, const size_t*, const size_t*, const size_t*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueCopyImageToBuffer_t)( cl_command_queue, cl_mem, cl_mem, const size_t*, const size_t*, size_t, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueCopyBufferToImage_t)( cl_command_queue, cl_mem, cl_mem, size_t, const size_t*, const size_t*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY void * CL_API_CALL
-(*clEnqueueMapBuffer_t)( cl_command_queue, cl_mem, cl_bool, cl_map_flags, size_t, size_t, cl_uint, const cl_event*, cl_event*, cl_int* );
-
-typedef CL_API_ENTRY void * CL_API_CALL
-(*clEnqueueMapImage_t)( cl_command_queue, cl_mem, cl_bool, cl_map_flags, const size_t*, const size_t*,
-                        size_t*, size_t*, cl_uint, const cl_event*, cl_event*, cl_int* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueUnmapMemObject_t)( cl_command_queue, cl_mem, void*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueNDRangeKernel_t)( cl_command_queue, cl_kernel, cl_uint, const size_t*, const size_t*, const size_t*, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueTask_t)( cl_command_queue, cl_kernel, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueNativeKernel_t)( cl_command_queue, void (*user_func)(void *), void*, size_t, cl_uint, const cl_mem*, const void**, cl_uint, const cl_event*, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueMarker_t)( cl_command_queue, cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueWaitForEvents_t)( cl_command_queue, cl_uint, const cl_event* );
-
-typedef CL_API_ENTRY cl_int CL_API_CALL
-(*clEnqueueBarrier_t)( cl_command_queue );
-
-//-----------------------------------------------------------------------------
-static void *g_clLib = NULL;
-
-DECLARE_LIBRARY_CALL(clGetPlatformIDs);
-DECLARE_LIBRARY_CALL(clGetPlatformInfo);
-DECLARE_LIBRARY_CALL(clGetDeviceIDs);
-DECLARE_LIBRARY_CALL(clGetDeviceInfo);
-DECLARE_LIBRARY_CALL(clCreateContext);
-DECLARE_LIBRARY_CALL(clCreateContextFromType);
-DECLARE_LIBRARY_CALL(clRetainContext);
-DECLARE_LIBRARY_CALL(clReleaseContext);
-DECLARE_LIBRARY_CALL(clGetContextInfo);
-DECLARE_LIBRARY_CALL(clCreateCommandQueue);
-DECLARE_LIBRARY_CALL(clRetainCommandQueue);
-DECLARE_LIBRARY_CALL(clReleaseCommandQueue);
-DECLARE_LIBRARY_CALL(clGetCommandQueueInfo);
-DECLARE_LIBRARY_CALL(clSetCommandQueueProperty);
-DECLARE_LIBRARY_CALL(clCreateBuffer);
-DECLARE_LIBRARY_CALL(clCreateImage2D);
-DECLARE_LIBRARY_CALL(clCreateImage3D);
-DECLARE_LIBRARY_CALL(clRetainMemObject);
-DECLARE_LIBRARY_CALL(clReleaseMemObject);
-DECLARE_LIBRARY_CALL(clGetSupportedImageFormats);
-DECLARE_LIBRARY_CALL(clGetMemObjectInfo);
-DECLARE_LIBRARY_CALL(clGetImageInfo);
-DECLARE_LIBRARY_CALL(clCreateSampler);
-DECLARE_LIBRARY_CALL(clRetainSampler);
-DECLARE_LIBRARY_CALL(clReleaseSampler);
-DECLARE_LIBRARY_CALL(clGetSamplerInfo);
-DECLARE_LIBRARY_CALL(clCreateProgramWithSource);
-DECLARE_LIBRARY_CALL(clCreateProgramWithBinary);
-DECLARE_LIBRARY_CALL(clRetainProgram);
-DECLARE_LIBRARY_CALL(clReleaseProgram);
-DECLARE_LIBRARY_CALL(clBuildProgram);
-DECLARE_LIBRARY_CALL(clUnloadCompiler);
-DECLARE_LIBRARY_CALL(clGetProgramInfo);
-DECLARE_LIBRARY_CALL(clGetProgramBuildInfo);
-DECLARE_LIBRARY_CALL(clCreateKernel);
-DECLARE_LIBRARY_CALL(clCreateKernelsInProgram);
-DECLARE_LIBRARY_CALL(clRetainKernel);
-DECLARE_LIBRARY_CALL(clReleaseKernel);
-DECLARE_LIBRARY_CALL(clSetKernelArg);
-DECLARE_LIBRARY_CALL(clGetKernelInfo);
-DECLARE_LIBRARY_CALL(clGetKernelWorkGroupInfo);
-DECLARE_LIBRARY_CALL(clWaitForEvents);
-DECLARE_LIBRARY_CALL(clGetEventInfo);
-DECLARE_LIBRARY_CALL(clRetainEvent);
-DECLARE_LIBRARY_CALL(clReleaseEvent);
-DECLARE_LIBRARY_CALL(clGetEventProfilingInfo);
-DECLARE_LIBRARY_CALL(clFlush);
-DECLARE_LIBRARY_CALL(clFinish);
-DECLARE_LIBRARY_CALL(clEnqueueReadBuffer);
-DECLARE_LIBRARY_CALL(clEnqueueWriteBuffer);
-DECLARE_LIBRARY_CALL(clEnqueueCopyBuffer);
-DECLARE_LIBRARY_CALL(clEnqueueReadImage);
-DECLARE_LIBRARY_CALL(clEnqueueWriteImage);
-DECLARE_LIBRARY_CALL(clEnqueueCopyImage);
-DECLARE_LIBRARY_CALL(clEnqueueCopyImageToBuffer);
-DECLARE_LIBRARY_CALL(clEnqueueCopyBufferToImage);
-DECLARE_LIBRARY_CALL(clEnqueueMapBuffer);
-DECLARE_LIBRARY_CALL(clEnqueueMapImage);
-DECLARE_LIBRARY_CALL(clEnqueueUnmapMemObject);
-DECLARE_LIBRARY_CALL(clEnqueueNDRangeKernel);
-DECLARE_LIBRARY_CALL(clEnqueueTask);
-DECLARE_LIBRARY_CALL(clEnqueueNativeKernel);
-DECLARE_LIBRARY_CALL(clEnqueueMarker);
-DECLARE_LIBRARY_CALL(clEnqueueWaitForEvents);
-DECLARE_LIBRARY_CALL(clEnqueueBarrier);
-
-//-----------------------------------------------------------------------------
-static void *
-load_function( const char* function )
-{
-    void *ret = dlsym( g_clLib, function );
-
-    const char *error;
-
-    if( (error = dlerror()) != NULL )
-    {
-        fputs( error, stderr );
-        exit( 1 );
-    }
-
-    return( ret );
-}
-//-----------------------------------------------------------------------------
 static void
 init_logger()
 {
-    g_clLib = dlopen( "/usr/local/lib/libOpenCL.nvidia.so.1.1", RTLD_LAZY );
+    g_clLib = new ocg::opencl_library( "/usr/local/lib/libOpenCL.nvidia.so.1.1" );
 
-    if( g_clLib == NULL )
-    {
-        fputs( dlerror(), stderr );
+	try
+	{
+		g_clLib->load();	
+	}
+	catch( ocg::library_exception& ex )
+	{
+        fputs( ex.what(), stderr );
         exit( 1 );
-    }
-
-    LOAD_FUNCTION(clGetPlatformIDs);
-    LOAD_FUNCTION(clGetPlatformInfo);
-
-    LOAD_FUNCTION(clGetDeviceIDs);
-    LOAD_FUNCTION(clGetDeviceInfo);
-
-    LOAD_FUNCTION(clCreateContext);
-    LOAD_FUNCTION(clCreateContextFromType);
-    LOAD_FUNCTION(clRetainContext);
-    LOAD_FUNCTION(clReleaseContext);
-    LOAD_FUNCTION(clGetContextInfo);
-
-    LOAD_FUNCTION(clCreateCommandQueue);
-    LOAD_FUNCTION(clRetainCommandQueue);
-    LOAD_FUNCTION(clReleaseCommandQueue);
-    LOAD_FUNCTION(clGetCommandQueueInfo);
-    LOAD_FUNCTION(clSetCommandQueueProperty);
-    LOAD_FUNCTION(clCreateBuffer);
-    LOAD_FUNCTION(clCreateImage2D);
-    LOAD_FUNCTION(clCreateImage3D);
-    LOAD_FUNCTION(clRetainMemObject);
-    LOAD_FUNCTION(clReleaseMemObject);
-    LOAD_FUNCTION(clGetSupportedImageFormats);
-    LOAD_FUNCTION(clGetMemObjectInfo);
-    LOAD_FUNCTION(clGetImageInfo);
-    LOAD_FUNCTION(clCreateSampler);
-    LOAD_FUNCTION(clRetainSampler);
-    LOAD_FUNCTION(clReleaseSampler);
-    LOAD_FUNCTION(clGetSamplerInfo);
-    LOAD_FUNCTION(clCreateProgramWithSource);
-    LOAD_FUNCTION(clCreateProgramWithBinary);
-    LOAD_FUNCTION(clRetainProgram);
-    LOAD_FUNCTION(clReleaseProgram);
-    LOAD_FUNCTION(clBuildProgram);
-    LOAD_FUNCTION(clUnloadCompiler);
-    LOAD_FUNCTION(clGetProgramInfo);
-    LOAD_FUNCTION(clGetProgramBuildInfo);
-    LOAD_FUNCTION(clCreateKernel);
-    LOAD_FUNCTION(clCreateKernelsInProgram);
-    LOAD_FUNCTION(clRetainKernel);
-    LOAD_FUNCTION(clReleaseKernel);
-    LOAD_FUNCTION(clSetKernelArg);
-    LOAD_FUNCTION(clGetKernelInfo);
-    LOAD_FUNCTION(clGetKernelWorkGroupInfo);
-    LOAD_FUNCTION(clWaitForEvents);
-    LOAD_FUNCTION(clGetEventInfo);
-    LOAD_FUNCTION(clRetainEvent);
-    LOAD_FUNCTION(clReleaseEvent);
-    LOAD_FUNCTION(clGetEventProfilingInfo);
-    LOAD_FUNCTION(clFlush);
-    LOAD_FUNCTION(clFinish);
-    LOAD_FUNCTION(clEnqueueReadBuffer);
-    LOAD_FUNCTION(clEnqueueWriteBuffer);
-    LOAD_FUNCTION(clEnqueueCopyBuffer);
-    LOAD_FUNCTION(clEnqueueReadImage);
-    LOAD_FUNCTION(clEnqueueWriteImage);
-    LOAD_FUNCTION(clEnqueueCopyImage);
-    LOAD_FUNCTION(clEnqueueCopyImageToBuffer);
-    LOAD_FUNCTION(clEnqueueCopyBufferToImage);
-    LOAD_FUNCTION(clEnqueueMapBuffer);
-    LOAD_FUNCTION(clEnqueueMapImage);
-    LOAD_FUNCTION(clEnqueueUnmapMemObject);
-    LOAD_FUNCTION(clEnqueueNDRangeKernel);
-    LOAD_FUNCTION(clEnqueueTask);
-    LOAD_FUNCTION(clEnqueueNativeKernel);
-    LOAD_FUNCTION(clEnqueueMarker);
-    LOAD_FUNCTION(clEnqueueWaitForEvents);
-    LOAD_FUNCTION(clEnqueueBarrier);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -468,6 +113,15 @@ dump( FILE* fd, cl_uint ident, const unsigned char* data, cl_uint size )
 }
 
 //-----------------------------------------------------------------------------
+typedef void (*logging_fn)(const char *, const void *, size_t, void *);
+
+typedef struct
+{
+    logging_fn user_callback;
+    void* user_data;
+
+} context_userdata;
+
 typedef struct
 {
     cl_int code;
@@ -911,7 +565,7 @@ clGetPlatformIDs( cl_uint         num_entries,
 
     printf( "  num_entries: %u\n", num_entries );
 
-	ret = g_clLib_clGetPlatformIDs( num_entries, platforms, num_platforms );
+	ret = g_clLib->clGetPlatformIDs( num_entries, platforms, num_platforms );
 
 	if( ret == CL_SUCCESS )
 	{
@@ -967,7 +621,7 @@ clGetPlatformInfo( cl_platform_id   platform,
     printf( "  param_name: %s\n", platform_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetPlatformInfo( platform, param_name, param_value_size,
+    ret = g_clLib->clGetPlatformInfo( platform, param_name, param_value_size,
                                      param_value, param_value_size_ret );
 
     printf( "  param_value: %s\n", (param_value == NULL) ? "NULL"
@@ -1006,7 +660,7 @@ clGetDeviceIDs( cl_platform_id platform,
     printf( "  device_type: %s\n", device_type_to_string( device_type ) );
     printf( "  num_entries: %u\n", num_entries );
 
-    ret = g_clLib_clGetDeviceIDs( platform, device_type, num_entries, devices, num_devices );
+    ret = g_clLib->clGetDeviceIDs( platform, device_type, num_entries, devices, num_devices );
 
     if( devices == NULL )
         printf( "  devices: NULL\n" );
@@ -1057,7 +711,7 @@ clGetDeviceInfo( cl_device_id   device,
     else
         printf( "  device: %p\n", device );
 
-    ret = g_clLib_clGetDeviceInfo( device, param_name, param_value_size,
+    ret = g_clLib->clGetDeviceInfo( device, param_name, param_value_size,
                                    param_value, param_value_size_ret );
 
 
@@ -1245,7 +899,7 @@ clCreateContext( cl_context_properties * properties,
     ctx_data.user_callback = pfn_notify;
     ctx_data.user_data = user_data;
 
-    ret = g_clLib_clCreateContext( properties, num_devices, devices,
+    ret = g_clLib->clCreateContext( properties, num_devices, devices,
                                    context_callback, &ctx_data, errcode_ret );
 
     printf( "  context: %p\n", ret );
@@ -1295,7 +949,7 @@ clCreateContextFromType( cl_context_properties * properties,
     ctx_data.user_callback = pfn_notify;
     ctx_data.user_data = user_data;
 
-    ret = g_clLib_clCreateContextFromType( properties, device_type,
+    ret = g_clLib->clCreateContextFromType( properties, device_type,
                                            context_callback, &ctx_data, errcode_ret );
 
     printf( "  context: %p\n", ret );
@@ -1324,7 +978,7 @@ clRetainContext(cl_context context)
     else
         printf( "  context: %p\n", context );
 
-    ret = g_clLib_clRetainContext( context );
+    ret = g_clLib->clRetainContext( context );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -1349,7 +1003,7 @@ clReleaseContext(cl_context context)
     else
         printf( "  context: %p\n", context );
 
-    ret = g_clLib_clReleaseContext( context );
+    ret = g_clLib->clReleaseContext( context );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -1381,7 +1035,7 @@ clGetContextInfo(cl_context         context,
     printf( "  param_name: %s\n", context_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetContextInfo( context, param_name, param_value_size,
+    ret = g_clLib->clGetContextInfo( context, param_name, param_value_size,
                                     param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -1458,7 +1112,7 @@ clCreateCommandQueue( cl_context                  context,
 
     printf( "  properties: %s\n", command_queue_properties_to_string( properties ) );
 
-    ret = g_clLib_clCreateCommandQueue( context, device, properties, errcode_ret );
+    ret = g_clLib->clCreateCommandQueue( context, device, properties, errcode_ret );
 
     printf( "  command_queue: %p\n", ret );
 
@@ -1486,7 +1140,7 @@ clRetainCommandQueue(cl_command_queue command_queue)
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    ret = g_clLib_clRetainCommandQueue( command_queue );
+    ret = g_clLib->clRetainCommandQueue( command_queue );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -1511,7 +1165,7 @@ clReleaseCommandQueue(cl_command_queue command_queue)
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    ret = g_clLib_clReleaseCommandQueue( command_queue );
+    ret = g_clLib->clReleaseCommandQueue( command_queue );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -1542,7 +1196,7 @@ clGetCommandQueueInfo(cl_command_queue      command_queue,
     printf( "  param_name: %s\n", command_queue_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetCommandQueueInfo( command_queue, param_name,
+    ret = g_clLib->clGetCommandQueueInfo( command_queue, param_name,
                                          param_value_size, param_value,
                                          param_value_size_ret );
 
@@ -1607,7 +1261,7 @@ clSetCommandQueueProperty(cl_command_queue              command_queue,
     printf( "  properties: %s\n", command_queue_properties_to_string( properties ) );
     printf( "  enable: %s\n", bool_to_string( enable ) );
 
-    ret = g_clLib_clSetCommandQueueProperty( command_queue, properties,
+    ret = g_clLib->clSetCommandQueueProperty( command_queue, properties,
                                              enable, old_properties );
 
     if( old_properties == NULL )
@@ -1651,7 +1305,7 @@ clCreateBuffer( cl_context   context,
     else
         printf( "  host_ptr: %p\n", host_ptr );
 
-    ret = g_clLib_clCreateBuffer( context, flags, size, host_ptr, errcode_ret );
+    ret = g_clLib->clCreateBuffer( context, flags, size, host_ptr, errcode_ret );
 
     if( ret == NULL )
         printf( "  Returned buffer object: NULL\n" );
@@ -1709,7 +1363,7 @@ clCreateImage2D( cl_context              context,
     else
         printf( "  host_ptr: %p\n", host_ptr );
 
-    ret = g_clLib_clCreateImage2D( context, flags, image_format, image_width,
+    ret = g_clLib->clCreateImage2D( context, flags, image_format, image_width,
                                    image_height, image_row_pitch, host_ptr, errcode_ret );
 
     if( ret == NULL )
@@ -1772,7 +1426,7 @@ clCreateImage3D( cl_context              context,
     else
         printf( "  host_ptr: %p\n", host_ptr );
 
-    ret = g_clLib_clCreateImage3D( context, flags, image_format, image_width,
+    ret = g_clLib->clCreateImage3D( context, flags, image_format, image_width,
                                    image_height, image_depth, image_row_pitch,
                                    image_slice_pitch, host_ptr, errcode_ret );
 
@@ -1805,7 +1459,7 @@ clRetainMemObject( cl_mem memobj )
     else
         printf( "  memobj: %p\n", memobj );
 
-    ret = g_clLib_clRetainMemObject( memobj );
+    ret = g_clLib->clRetainMemObject( memobj );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -1830,7 +1484,7 @@ clReleaseMemObject( cl_mem memobj )
     else
         printf( "  memobj: %p\n", memobj );
 
-    ret = g_clLib_clReleaseMemObject( memobj );
+    ret = g_clLib->clReleaseMemObject( memobj );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -1864,7 +1518,7 @@ clGetSupportedImageFormats(cl_context           context,
     printf( "  image_type: %s\n", mem_object_type_to_string( image_type ) );
     printf( "  num_entries: %u\n", num_entries );
 
-    ret = g_clLib_clGetSupportedImageFormats( context, flags, image_type, num_entries,
+    ret = g_clLib->clGetSupportedImageFormats( context, flags, image_type, num_entries,
                                               image_formats, num_image_formats );
 
     if( image_formats == NULL )
@@ -1917,7 +1571,7 @@ clGetMemObjectInfo(cl_mem           memobj,
     printf( "  param_name: %s\n", mem_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetMemObjectInfo( memobj, param_name, param_value_size,
+    ret = g_clLib->clGetMemObjectInfo( memobj, param_name, param_value_size,
                                       param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -1990,7 +1644,7 @@ clGetImageInfo(cl_mem           image,
     printf( "  param_name: %s\n", image_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetImageInfo( image, param_name, param_value_size,
+    ret = g_clLib->clGetImageInfo( image, param_name, param_value_size,
                                   param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -2054,7 +1708,7 @@ clCreateSampler( cl_context          context,
     printf( "  addressing_mode: %s\n", addressing_mode_to_string( addressing_mode ) );
     printf( "  filter_mode: %s\n", filter_mode_to_string( filter_mode ) );
 
-    ret = g_clLib_clCreateSampler( context, normalized_coords, addressing_mode,
+    ret = g_clLib->clCreateSampler( context, normalized_coords, addressing_mode,
                                    filter_mode, errcode_ret );
 
     if( ret == NULL )
@@ -2086,7 +1740,7 @@ clRetainSampler( cl_sampler sampler )
     else
         printf( "  sampler: %p\n", sampler );
 
-    ret = g_clLib_clRetainSampler( sampler );
+    ret = g_clLib->clRetainSampler( sampler );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -2111,7 +1765,7 @@ clReleaseSampler( cl_sampler sampler )
     else
         printf( "  sampler: %p\n", sampler );
 
-    ret = g_clLib_clReleaseSampler( sampler );
+    ret = g_clLib->clReleaseSampler( sampler );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -2143,7 +1797,7 @@ clGetSamplerInfo( cl_sampler         sampler,
     printf( "  param_name: %s\n", sampler_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetSamplerInfo( sampler, param_name, param_value_size,
+    ret = g_clLib->clGetSamplerInfo( sampler, param_name, param_value_size,
                                     param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -2247,7 +1901,7 @@ clCreateProgramWithSource( cl_context        context,
         }
     }
 
-    ret = g_clLib_clCreateProgramWithSource( context, count, strings,
+    ret = g_clLib->clCreateProgramWithSource( context, count, strings,
                                              lengths, errcode_ret );
 
     if( ret == NULL )
@@ -2325,7 +1979,7 @@ clCreateProgramWithBinary( cl_context            context,
         }
     }
 
-    ret = g_clLib_clCreateProgramWithBinary( context, num_devices, device_list,
+    ret = g_clLib->clCreateProgramWithBinary( context, num_devices, device_list,
                                              lengths, binaries, binary_status,
                                              errcode_ret );
 
@@ -2369,7 +2023,7 @@ clRetainProgram( cl_program program )
     else
         printf( "  program: %p\n", program );
 
-    ret = g_clLib_clRetainProgram( program );
+    ret = g_clLib->clRetainProgram( program );
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
     printf( FOOTER );
@@ -2393,7 +2047,7 @@ clReleaseProgram( cl_program program )
     else
         printf( "  program: %p\n", program );
 
-    ret = g_clLib_clReleaseProgram( program );
+    ret = g_clLib->clReleaseProgram( program );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -2452,8 +2106,8 @@ clBuildProgram( cl_program           program,
     else
         printf( "  user_data: %p\n", user_data );
 
-    ret = g_clLib_clBuildProgram( program, num_devices, device_list,
-                                  options, pfn_notify, user_data );
+    ret = g_clLib->clBuildProgram( program, num_devices, device_list,
+                                   options, pfn_notify, user_data );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -2473,7 +2127,7 @@ clUnloadCompiler( void )
 
     cl_int ret;
 
-    ret = g_clLib_clUnloadCompiler();
+    ret = g_clLib->clUnloadCompiler();
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
 
@@ -2505,7 +2159,7 @@ clGetProgramInfo( cl_program         program,
     printf( "  param_name: %s\n", program_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetProgramInfo( program, param_name, param_value_size,
+    ret = g_clLib->clGetProgramInfo( program, param_name, param_value_size,
                                     param_value, param_value_size_ret );
     if( param_value == NULL )
         printf( "  param_value: NULL\n" );
@@ -2611,7 +2265,7 @@ clGetProgramBuildInfo(cl_program            program,
     printf( "  param_name: %s\n", program_build_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetProgramBuildInfo( program, device, param_name,
+    ret = g_clLib->clGetProgramBuildInfo( program, device, param_name,
                                          param_value_size, param_value,
                                          param_value_size_ret );
     if( param_value == NULL )
@@ -2667,7 +2321,7 @@ clCreateKernel( cl_program      program,
     else
         printf( "  kernel_name: %s\n", kernel_name );
 
-    ret = g_clLib_clCreateKernel( program, kernel_name, errcode_ret );
+    ret = g_clLib->clCreateKernel( program, kernel_name, errcode_ret );
 
     if( ret == NULL )
         printf( "  Returned kernel: NULL\n" );
@@ -2703,7 +2357,7 @@ clCreateKernelsInProgram( cl_program     program,
 
     printf( "  num_kernels: %u\n", num_kernels );
 
-    ret = g_clLib_clCreateKernelsInProgram( program, num_kernels, kernels, num_kernels_ret );
+    ret = g_clLib->clCreateKernelsInProgram( program, num_kernels, kernels, num_kernels_ret );
 
     if( kernels == NULL )
         printf( "  kernels: NULL\n" );
@@ -2749,7 +2403,7 @@ clRetainKernel( cl_kernel kernel )
     else
         printf( "  kernel: %p\n", kernel );
 
-    ret = g_clLib_clRetainKernel( kernel );
+    ret = g_clLib->clRetainKernel( kernel );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -2773,7 +2427,7 @@ clReleaseKernel( cl_kernel kernel )
     else
         printf( "  kernel: %p\n", kernel );
 
-    ret = g_clLib_clReleaseKernel( kernel );
+    ret = g_clLib->clReleaseKernel( kernel );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -2811,7 +2465,7 @@ clSetKernelArg( cl_kernel    kernel,
         dump( stdout, 4, static_cast<const unsigned char*>( arg_value ), arg_size );
     }
 
-    ret = g_clLib_clSetKernelArg( kernel, arg_index, arg_size, arg_value );
+    ret = g_clLib->clSetKernelArg( kernel, arg_index, arg_size, arg_value );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -2842,7 +2496,7 @@ clGetKernelInfo(cl_kernel       kernel,
     printf( "  param_name: %s\n", kernel_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetKernelInfo( kernel, param_name, param_value_size,
+    ret = g_clLib->clGetKernelInfo( kernel, param_name, param_value_size,
                                    param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -2909,7 +2563,7 @@ clGetKernelWorkGroupInfo(cl_kernel                  kernel,
     printf( "  param_name: %s\n", kernel_work_group_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetKernelWorkGroupInfo( kernel, device, param_name,
+    ret = g_clLib->clGetKernelWorkGroupInfo( kernel, device, param_name,
                                             param_value_size, param_value,
                                             param_value_size_ret );
 
@@ -2976,7 +2630,7 @@ clWaitForEvents( cl_uint           num_events,
         printf( "\n" );
     }
 
-    ret = g_clLib_clWaitForEvents( num_events, event_list );
+    ret = g_clLib->clWaitForEvents( num_events, event_list );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -3008,7 +2662,7 @@ clGetEventInfo( cl_event         event,
     printf( "  param_name: %s\n", event_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetEventInfo( event, param_name, param_value_size,
+    ret = g_clLib->clGetEventInfo( event, param_name, param_value_size,
                                   param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -3066,7 +2720,7 @@ clRetainEvent( cl_event event )
     else
         printf( "  event: %p\n", event );
 
-    ret = g_clLib_clRetainEvent( event );
+    ret = g_clLib->clRetainEvent( event );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -3091,7 +2745,7 @@ clReleaseEvent( cl_event event )
     else
         printf( "  event: %p\n", event );
 
-    ret = g_clLib_clReleaseEvent( event );
+    ret = g_clLib->clReleaseEvent( event );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -3125,7 +2779,7 @@ clGetEventProfilingInfo( cl_event            event,
     printf( "  param_name: %s\n", profiling_info_to_string( param_name ) );
     printf( "  param_value_size: %lu\n", param_value_size );
 
-    ret = g_clLib_clGetEventProfilingInfo( event, param_name, param_value_size,
+    ret = g_clLib->clGetEventProfilingInfo( event, param_name, param_value_size,
                                            param_value, param_value_size_ret );
 
     if( param_value == NULL )
@@ -3180,7 +2834,7 @@ clFlush( cl_command_queue command_queue )
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    ret = g_clLib_clFlush( command_queue );
+    ret = g_clLib->clFlush( command_queue );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -3205,7 +2859,7 @@ clFinish( cl_command_queue command_queue )
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    ret = g_clLib_clFinish( command_queue );
+    ret = g_clLib->clFinish( command_queue );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -3265,7 +2919,7 @@ clEnqueueReadBuffer( cl_command_queue    command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueReadBuffer( command_queue, buffer, blocking_read,
+    ret = g_clLib->clEnqueueReadBuffer( command_queue, buffer, blocking_read,
                                        offset, cb, ptr, num_events_in_wait_list,
                                        event_wait_list, event );
 
@@ -3330,7 +2984,7 @@ clEnqueueWriteBuffer( cl_command_queue   command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueWriteBuffer( command_queue, buffer, blocking_write,
+    ret = g_clLib->clEnqueueWriteBuffer( command_queue, buffer, blocking_write,
                                         offset, cb, ptr, num_events_in_wait_list,
                                         event_wait_list, event );
 
@@ -3392,7 +3046,7 @@ clEnqueueCopyBuffer(cl_command_queue    command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueCopyBuffer( command_queue, src_buffer, dst_buffer,
+    ret = g_clLib->clEnqueueCopyBuffer( command_queue, src_buffer, dst_buffer,
                                        src_offset, dst_offset, cb, num_events_in_wait_list,
                                        event_wait_list, event );
 
@@ -3467,7 +3121,7 @@ clEnqueueReadImage( cl_command_queue     command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueReadImage( command_queue, image, blocking_read,
+    ret = g_clLib->clEnqueueReadImage( command_queue, image, blocking_read,
                                       origin, region, row_pitch, slice_pitch, ptr,
                                       num_events_in_wait_list, event_wait_list, event );
 
@@ -3542,7 +3196,7 @@ clEnqueueWriteImage( cl_command_queue    command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueWriteImage( command_queue, image, blocking_write, origin,
+    ret = g_clLib->clEnqueueWriteImage( command_queue, image, blocking_write, origin,
                                        region, input_row_pitch, input_slice_pitch, ptr,
                                        num_events_in_wait_list, event_wait_list, event );
 
@@ -3616,7 +3270,7 @@ clEnqueueCopyImage( cl_command_queue     command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueCopyImage( command_queue, src_image, dst_image, src_origin,
+    ret = g_clLib->clEnqueueCopyImage( command_queue, src_image, dst_image, src_origin,
                                       dst_origin, region, num_events_in_wait_list,
                                       event_wait_list, event );
 
@@ -3687,7 +3341,7 @@ clEnqueueCopyImageToBuffer( cl_command_queue command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueCopyImageToBuffer( command_queue, src_image, dst_buffer, src_origin, region,
+    ret = g_clLib->clEnqueueCopyImageToBuffer( command_queue, src_image, dst_buffer, src_origin, region,
                                               dst_offset, num_events_in_wait_list, event_wait_list, event );
 
     if( event == NULL )
@@ -3756,7 +3410,7 @@ clEnqueueCopyBufferToImage( cl_command_queue command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueCopyBufferToImage( command_queue, src_buffer, dst_image, src_offset, dst_origin,
+    ret = g_clLib->clEnqueueCopyBufferToImage( command_queue, src_buffer, dst_image, src_offset, dst_origin,
                                               region, num_events_in_wait_list, event_wait_list, event );
 
     if( event == NULL )
@@ -3818,7 +3472,7 @@ clEnqueueMapBuffer( cl_command_queue command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueMapBuffer( command_queue, buffer, blocking_map, map_flags, 
+    ret = g_clLib->clEnqueueMapBuffer( command_queue, buffer, blocking_map, map_flags, 
                                       offset, cb, num_events_in_wait_list, 
                                       event_wait_list, event, errcode_ret );
 
@@ -3908,7 +3562,7 @@ clEnqueueMapImage( cl_command_queue  command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueMapImage( command_queue, image, blocking_map,
+    ret = g_clLib->clEnqueueMapImage( command_queue, image, blocking_map,
                                      map_flags, origin, region, image_row_pitch, 
                                      image_slice_pitch, num_events_in_wait_list, 
                                      event_wait_list, event, errcode_ret );
@@ -3972,7 +3626,7 @@ clEnqueueUnmapMemObject( cl_command_queue  command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueUnmapMemObject( command_queue, memobj, mapped_ptr, 
+    ret = g_clLib->clEnqueueUnmapMemObject( command_queue, memobj, mapped_ptr, 
                                            num_events_in_wait_list, event_wait_list, 
                                            event );
 
@@ -4046,7 +3700,7 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueNDRangeKernel( command_queue, kernel, work_dim, 
+    ret = g_clLib->clEnqueueNDRangeKernel( command_queue, kernel, work_dim, 
                                           global_work_offset, global_work_size, 
                                           local_work_size, num_events_in_wait_list, 
                                           event_wait_list, event );
@@ -4101,7 +3755,7 @@ clEnqueueTask( cl_command_queue  command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueTask( command_queue, kernel, num_events_in_wait_list, 
+    ret = g_clLib->clEnqueueTask( command_queue, kernel, num_events_in_wait_list, 
                                  event_wait_list, event );
 
     if( event == NULL )
@@ -4178,7 +3832,7 @@ clEnqueueNativeKernel( cl_command_queue  command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueNativeKernel( command_queue, user_func, args, cb_args, 
+    ret = g_clLib->clEnqueueNativeKernel( command_queue, user_func, args, cb_args, 
                                          num_mem_objects, mem_list, args_mem_loc, 
                                          num_events_in_wait_list, event_wait_list, event );
 
@@ -4211,7 +3865,7 @@ clEnqueueMarker( cl_command_queue    command_queue,
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    ret = g_clLib_clEnqueueMarker( command_queue, event );
+    ret = g_clLib->clEnqueueMarker( command_queue, event );
 
     if( event == NULL )
         printf( "  event: NULL\n" );
@@ -4259,7 +3913,7 @@ clEnqueueWaitForEvents( cl_command_queue command_queue,
         printf( "\n" );
     }
 
-    ret = g_clLib_clEnqueueWaitForEvents( command_queue, num_events, event_list );
+    ret = g_clLib->clEnqueueWaitForEvents( command_queue, num_events, event_list );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );
@@ -4284,7 +3938,7 @@ clEnqueueBarrier( cl_command_queue command_queue )
     else
         printf( "  command_queue: %p\n", command_queue );
 
-    ret = g_clLib_clEnqueueBarrier( command_queue );
+    ret = g_clLib->clEnqueueBarrier( command_queue );
 
     printf( "  Return Code: %s\n", error_to_string( ret ) );
     printf( FOOTER );

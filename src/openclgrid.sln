@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{2857B73E-F847-4B02-9238-064979017E93}") = "ocg_log", "ocg_log\ocg_log.cproj", "{DF0CDA48-BDB9-477E-8E46-1D119BE3E482}"
 EndProject
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "ocgComposite", "ocgComposite\ocgComposite.cproj", "{F6D5C893-B2DC-46C6-B2E4-5C45694E6447}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,31 +15,35 @@ Global
 		{DF0CDA48-BDB9-477E-8E46-1D119BE3E482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF0CDA48-BDB9-477E-8E46-1D119BE3E482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF0CDA48-BDB9-477E-8E46-1D119BE3E482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6D5C893-B2DC-46C6-B2E4-5C45694E6447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6D5C893-B2DC-46C6-B2E4-5C45694E6447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6D5C893-B2DC-46C6-B2E4-5C45694E6447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6D5C893-B2DC-46C6-B2E4-5C45694E6447}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		description = OpenCL Grid
 		version = 0.1
 		StartupItem = ocg_log\ocg_log.cproj
 		Policies = $0
-		$0.DotNetNamingPolicy = $1
-		$1.DirectoryNamespaceAssociation = None
-		$1.ResourceNamePolicy = FileFormatDefault
-		$0.ChangeLogPolicy = $2
-		$2.UpdateMode = None
-		$2.MessageStyle = $3
-		$3.LineAlign = 0
-		$2.inheritsSet = Mono
-		$0.StandardHeader = $4
-		$4.Text = 
-		$4.inheritsSet = MITX11License
-		$0.TextStylePolicy = $5
-		$5.FileWidth = 120
-		$5.TabWidth = 4
-		$5.TabsToSpaces = False
-		$5.NoTabsAfterNonTabs = False
-		$5.RemoveTrailingWhitespace = False
-		$5.EolMarker = Native
-		$0.VersionControlPolicy = $6
-		$6.inheritsSet = Mono
+		$0.ChangeLogPolicy = $1
+		$1.UpdateMode = None
+		$1.MessageStyle = $2
+		$2.LineAlign = 0
+		$1.inheritsSet = Mono
+		$0.VersionControlPolicy = $3
+		$3.inheritsSet = Mono
+		$0.TextStylePolicy = $4
+		$4.FileWidth = 120
+		$4.TabWidth = 4
+		$4.TabsToSpaces = False
+		$4.NoTabsAfterNonTabs = False
+		$4.RemoveTrailingWhitespace = False
+		$4.EolMarker = Native
+		$0.DotNetNamingPolicy = $5
+		$5.DirectoryNamespaceAssociation = None
+		$5.ResourceNamePolicy = FileFormatDefault
+		$0.StandardHeader = $6
+		$6.Text = 
+		$6.inheritsSet = MITX11License
 	EndGlobalSection
 EndGlobal

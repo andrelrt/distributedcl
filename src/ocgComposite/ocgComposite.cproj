@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DF0CDA48-BDB9-477E-8E46-1D119BE3E482}</ProjectGuid>
+    <ProjectGuid>{F6D5C893-B2DC-46C6-B2E4-5C45694E6447}</ProjectGuid>
     <Compiler>
-      <Compiler ctype="GppCompiler" />
+      <Compiler ctype="GppCompiler" xmlns="" />
     </Compiler>
     <Language>CPP</Language>
     <Target>Bin</Target>
@@ -17,27 +17,15 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OutputName>ocg_log</OutputName>
+    <OutputName>ocgComposite</OutputName>
     <CompileTarget>SharedLibrary</CompileTarget>
-    <ExtraLinkerArguments>-ldl</ExtraLinkerArguments>
-    <WarningLevel>All</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
     <DefineSymbols>MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <OptimizationLevel>3</OptimizationLevel>
-    <OutputName>ocg_log</OutputName>
+    <OutputName>ocgComposite</OutputName>
     <CompileTarget>SharedLibrary</CompileTarget>
-    <WarningLevel>All</WarningLevel>
-    <ExtraLinkerArguments>-ldl</ExtraLinkerArguments>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="ocg_main.cpp" />
-    <Compile Include="..\opencl_library.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\library_exception.h" />
-    <None Include="..\opencl_library.h" />
-  </ItemGroup>
 </Project>
