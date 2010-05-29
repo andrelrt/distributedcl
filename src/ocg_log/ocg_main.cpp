@@ -23,11 +23,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dlfcn.h>
-#include <CL/opencl.h>
 
-#include "../opencl_library.h"
-#include "../library_exception.h"
+#if defined(__APPLE__)
+
+    #include <dlfcn.h>
+    #include <OpenCL/opencl.h>
+
+#else // __APPLE__
+
+    #if defined(WIN32)
+
+        #define WINDOWS_MEAN_AND_LEAN
+        #include <windows.h>
+
+    #else // WIN32
+
+        #include <dlfcn.h>
+
+    #endif // WIN32
+
+    #include <CL/opencl.h>
+
+#endif // __APPLE__
+
+#include "opencl_library.h"
+#include "library_exception.h"
 //-----------------------------------------------------------------------------
 #define HEADER "=========================================================================================\n%s\n"
 #define FOOTER "\n"
@@ -133,7 +153,7 @@ code_to_string_t error_codes[] = {
     { CL_SUCCESS, "CL_SUCCESS" },
     { CL_DEVICE_NOT_FOUND, "CL_DEVICE_NOT_FOUND" },
     { CL_DEVICE_NOT_AVAILABLE, "CL_DEVICE_NOT_AVAILABLE" },
-    { CL_DEVICE_COMPILER_NOT_AVAILABLE, "CL_DEVICE_COMPILER_NOT_AVAILABLE" },
+    { CL_COMPILER_NOT_AVAILABLE, "CL_COMPILER_NOT_AVAILABLE" },
     { CL_MEM_OBJECT_ALLOCATION_FAILURE, "CL_MEM_OBJECT_ALLOCATION_FAILURE" },
     { CL_OUT_OF_RESOURCES, "CL_OUT_OF_RESOURCES" },
     { CL_OUT_OF_HOST_MEMORY, "CL_OUT_OF_HOST_MEMORY" },
@@ -248,8 +268,8 @@ code_to_string_t device_info_codes[] = {
     { 0, NULL } };
 
 code_to_string_t device_address_info_codes[] = {
-    { CL_DEVICE_ADDRESS_32_BITS, "CL_DEVICE_ADDRESS_32_BITS" },
-    { CL_DEVICE_ADDRESS_64_BITS, "CL_DEVICE_ADDRESS_64_BITS" },
+    //{ CL_DEVICE_ADDRESS_32_BITS, "CL_DEVICE_ADDRESS_32_BITS" },
+    //{ CL_DEVICE_ADDRESS_64_BITS, "CL_DEVICE_ADDRESS_64_BITS" },
     { 0, NULL } };
 
 code_to_string_t device_fp_config_codes[] = {
@@ -291,7 +311,7 @@ code_to_string_t command_queue_info_codes[] = {
 
 code_to_string_t context_info_codes[] = {
     { CL_CONTEXT_REFERENCE_COUNT, "CL_CONTEXT_REFERENCE_COUNT" },
-    { CL_CONTEXT_NUM_DEVICES, "CL_CONTEXT_NUM_DEVICES" },
+    //{ CL_CONTEXT_NUM_DEVICES, "CL_CONTEXT_NUM_DEVICES" },
     { CL_CONTEXT_DEVICES, "CL_CONTEXT_DEVICES" },
     { CL_CONTEXT_PROPERTIES, "CL_CONTEXT_PROPERTIES" },
     { CL_CONTEXT_PLATFORM, "CL_CONTEXT_PLATFORM" },
@@ -448,8 +468,8 @@ code_to_string_t command_type_codes[] = {
     { CL_COMMAND_MAP_IMAGE, "CL_COMMAND_MAP_IMAGE" },
     { CL_COMMAND_UNMAP_MEM_OBJECT, "CL_COMMAND_UNMAP_MEM_OBJECT" },
     { CL_COMMAND_MARKER, "CL_COMMAND_MARKER" },
-    { CL_COMMAND_WAIT_FOR_EVENTS, "CL_COMMAND_WAIT_FOR_EVENTS" },
-    { CL_COMMAND_BARRIER, "CL_COMMAND_BARRIER" },
+    //{ CL_COMMAND_WAIT_FOR_EVENTS, "CL_COMMAND_WAIT_FOR_EVENTS" },
+    //{ CL_COMMAND_BARRIER, "CL_COMMAND_BARRIER" },
     { CL_COMMAND_ACQUIRE_GL_OBJECTS, "CL_COMMAND_ACQUIRE_GL_OBJECTS" },
     { CL_COMMAND_RELEASE_GL_OBJECTS, "CL_COMMAND_RELEASE_GL_OBJECTS" },
     { 0, NULL } };

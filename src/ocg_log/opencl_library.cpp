@@ -20,7 +20,16 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <dlfcn.h>
+#if defined(WIN32)
+
+    #define WINDOWS_MEAN_AND_LEAN
+    #include <windows.h>
+
+#else // WIN32
+
+    #include <dlfcn.h>
+
+#endif // WIN32
 
 #include "opencl_library.h"
 #include "library_exception.h"
@@ -112,11 +121,11 @@ opencl_library::~opencl_library()
 //-----------------------------------------------------------------------------
 void opencl_library::load()
 {
-    clLib_ = dlopen( libpath_.c_str(), RTLD_LAZY );
+//    clLib_ = dlopen( libpath_.c_str(), RTLD_LAZY );
 
     if( clLib_ == NULL )
     {
-	    throw library_exception( dlerror() );
+	    //throw library_exception( dlerror() );
     }
 
     LOAD_FUNCTION(clGetPlatformIDs);
@@ -195,7 +204,7 @@ opencl_library::free()
 {
 	if( clLib_ != NULL )
 	{
-		dlclose( clLib_ );
+		//dlclose( clLib_ );
 		clLib_ = NULL;
 	}
 }
@@ -204,14 +213,14 @@ opencl_library::free()
 void *
 opencl_library::load_function( const char* function )
 {
-    void *ret = dlsym( clLib_, function );
+    void *ret = NULL; //dlsym( clLib_, function );
 
     const char *error;
 
-    if( (error = dlerror()) != NULL )
-    {
-	    throw library_exception( error );
-    }
+    //if( (error = dlerror()) != NULL )
+    //{
+	//    throw library_exception( error );
+    //}
 
     return( ret );
 }

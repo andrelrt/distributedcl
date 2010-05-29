@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="interface">
+      <UniqueIdentifier>{4698a11f-050f-4568-95f2-ca37092c1b42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="interface\cl_platform.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

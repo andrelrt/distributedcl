@@ -1,0 +1,108 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ocg_log", "ocg_log\ocg_log.vcxproj", "{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}"
+EndProject
+Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "DCLModel", "DCLModel\DCLModel.modelproj", "{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdistributedcl", "libdistributedcl\libdistributedcl.vcxproj", "{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "distributedcld", "distributedcld\distributedcld.vcxproj", "{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8} = {5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libopencl", "libopencl\libopencl.vcxproj", "{FA62F5E7-E301-4202-BC5D-D817FC32A823}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8} = {5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}.Release|Any CPU.ActiveCfg = Release|Win32
+		{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5DF51B5F-99B0-49E3-8B2A-27E9E68D0327}.Release|Win32.ActiveCfg = Release|Win32
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A2EE5DE9-F0DC-4FAD-8EA5-62EE3F0DEFBE}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Debug|Win32.Build.0 = Debug|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Release|Any CPU.ActiveCfg = Release|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Release|Win32.ActiveCfg = Release|Win32
+		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}.Release|Win32.Build.0 = Release|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Debug|Win32.Build.0 = Debug|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Release|Win32.ActiveCfg = Release|Win32
+		{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}.Release|Win32.Build.0 = Release|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Debug|Win32.Build.0 = Debug|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Release|Any CPU.ActiveCfg = Release|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Release|Win32.ActiveCfg = Release|Win32
+		{FA62F5E7-E301-4202-BC5D-D817FC32A823}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		description = OpenCL Grid
+		version = 0.1
+		StartupItem = ocg_log\ocg_log.cproj
+		Policies = $0
+		$0.ChangeLogPolicy = $1
+		$1.UpdateMode = None
+		$1.MessageStyle = $2
+		$2.LineAlign = 0
+		$1.inheritsSet = Mono
+		$0.VersionControlPolicy = $3
+		$3.inheritsSet = Mono
+		$0.TextStylePolicy = $4
+		$4.FileWidth = 120
+		$4.TabWidth = 4
+		$4.TabsToSpaces = False
+		$4.NoTabsAfterNonTabs = False
+		$4.RemoveTrailingWhitespace = False
+		$4.EolMarker = Native
+		$0.DotNetNamingPolicy = $5
+		$5.DirectoryNamespaceAssociation = None
+		$5.ResourceNamePolicy = FileFormatDefault
+		$0.StandardHeader = $6
+		$6.Text = 
+		$6.inheritsSet = MITX11License
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="03c840ec-691e-4df1-86d1-db1d3cbc12bb" name="Packages" linkedPackageId="e7679ecb-9f55-48e7-a822-b86ff767d856" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <packagedElements>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="7dfa02b5-158c-46e7-aaff-f820b03aa376" name="single">
+        <elementDefinition Id="1c7f0521-4c09-4e5c-9c08-224cee315a6e" />
+      </package>
+    </logicalClassDesignerModelHasPackages>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="e494c88a-408d-4959-bad7-1832f6a00748" name="composite">
+        <elementDefinition Id="4c3ac22c-64ae-4c16-8275-83a560888266" />
+        <suppliersInternal>
+          <dependency Id="3e2cec11-0b64-4b82-ba3a-f57d1cb61f6d">
+            <packageMoniker Id="7dfa02b5-158c-46e7-aaff-f820b03aa376" LastKnownName="single" />
+            <elementDefinition Id="bcbd1f5b-6d42-4d66-9eb6-2ba2e6cfd3ae" />
+          </dependency>
+          <dependency Id="228c58d3-ae36-4175-9382-6b6eef472a62">
+            <packageMoniker Id="edfd02dc-3223-4761-9f84-eee46a0e5067" LastKnownName="remote" />
+            <elementDefinition Id="c2dd9e18-367e-4231-b5d2-d1bbb373c276" />
+          </dependency>
+        </suppliersInternal>
+      </package>
+    </logicalClassDesignerModelHasPackages>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="5dd4b61c-e5c8-4e79-a7f4-5d7150e3e202" name="interface">
+        <elementDefinition Id="93273135-d94a-49ce-aff8-72bf58e1dbf7" />
+        <suppliersInternal>
+          <dependency Id="a0207a43-43d4-4915-b94e-17c234fa3558">
+            <packageMoniker Id="edfd02dc-3223-4761-9f84-eee46a0e5067" LastKnownName="remote" />
+            <elementDefinition Id="e877f675-76a2-46dd-ab5f-4c88560784e2" />
+          </dependency>
+        </suppliersInternal>
+      </package>
+    </logicalClassDesignerModelHasPackages>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="cca26c7e-5b58-43ee-a6b5-6803141763a4" name="client">
+        <elementDefinition Id="43caaf8b-7cc2-4163-9821-a0d50f4c7599" />
+        <suppliersInternal>
+          <dependency Id="4bf8ae75-e626-47ce-a387-a8c784712bf2">
+            <packageMoniker Id="ccbf0cce-d7bf-4c63-91a7-274ad7855779" LastKnownName="message" />
+            <elementDefinition Id="4bfc5e74-fab7-41ba-a2e1-24dbc4011a5a" />
+          </dependency>
+        </suppliersInternal>
+      </package>
+    </logicalClassDesignerModelHasPackages>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="9f20bfe2-bf68-4c8a-9126-3ef97f9762e7" name="server">
+        <elementDefinition Id="1affccb3-86f3-45c6-a2a0-2052480102c3" />
+        <suppliersInternal>
+          <dependency Id="e1e44a1a-65e8-49fd-bf24-e5fa90ecc51d">
+            <packageMoniker Id="ccbf0cce-d7bf-4c63-91a7-274ad7855779" LastKnownName="message" />
+            <elementDefinition Id="aee871f5-f211-4ad1-b381-9bf88e9ae433" />
+          </dependency>
+          <dependency Id="8f307579-c370-4db6-9d68-2a30003da157">
+            <packageMoniker Id="e494c88a-408d-4959-bad7-1832f6a00748" LastKnownName="composite" />
+            <elementDefinition Id="3ef763d4-7ea4-46db-921b-1cc4751cbd12" />
+          </dependency>
+        </suppliersInternal>
+      </package>
+    </logicalClassDesignerModelHasPackages>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="ccbf0cce-d7bf-4c63-91a7-274ad7855779" name="message">
+        <elementDefinition Id="cf44d295-6ed0-44c8-ac3e-42c246a585b2" />
+      </package>
+    </logicalClassDesignerModelHasPackages>
+    <logicalClassDesignerModelHasPackages>
+      <package Id="edfd02dc-3223-4761-9f84-eee46a0e5067" name="remote">
+        <elementDefinition Id="3f62a4c1-bffa-4a89-8d6d-3e0566d36727" />
+        <suppliersInternal>
+          <dependency Id="acdc1a41-0a12-48be-8001-3498f796ff8e">
+            <packageMoniker Id="cca26c7e-5b58-43ee-a6b5-6803141763a4" LastKnownName="client" />
+            <elementDefinition Id="c7aa9e60-85ce-49fb-8ebe-095467c4c9cc" />
+          </dependency>
+        </suppliersInternal>
+      </package>
+    </logicalClassDesignerModelHasPackages>
+  </packagedElements>
+  <package Id="e7679ecb-9f55-48e7-a822-b86ff767d856" name="DCLModel">
+    <elementDefinition Id="ea9e9b3c-a57e-4868-99f8-749b39f76aa5" />
+    <profileInstances>
+      <packageHasProfileInstances Id="1dd67399-bbb2-4af5-adb9-d3b0851565a0">
+        <profileInstance Id="fc0adb11-a69e-4751-80b3-ef516ab812ce" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="fe9d528f-f024-4c46-b5e8-717f1ce73b4b">
+        <profileInstance Id="515f78cb-d817-4cf1-a96c-1308391d59da" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</logicalClassDesignerModel>

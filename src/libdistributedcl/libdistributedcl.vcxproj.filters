@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="single">
+      <UniqueIdentifier>{cffd3518-92ea-4bb0-aa99-0e55db513fa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="composite">
+      <UniqueIdentifier>{6e4fe565-c639-4945-bc85-a64ecfc16ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{199f7f8c-86a8-4f3b-b3d6-325910fb51b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="message">
+      <UniqueIdentifier>{b3a2455e-4d8d-4792-8bd6-0bac112e6dd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{c9bebe80-6886-41ea-9321-c483cb9fc626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="remote">
+      <UniqueIdentifier>{fe7fa406-74ed-4fa7-a66e-4923b87590d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="info">
+      <UniqueIdentifier>{e99aae06-aeed-4071-b784-46015b3a9fe0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="distributedcl_internal.h" />
+    <ClInclude Include="info\platform_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="library_exception.h" />
+    <ClInclude Include="remote\remote_platform.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="remote\remote_platform.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

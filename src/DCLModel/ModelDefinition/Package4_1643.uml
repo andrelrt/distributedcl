@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
+  dslVersion="1.0.0.0"
+  Id="1affccb3-86f3-45c6-a2a0-2052480102c3"
+  name="server" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <suppliersInternal>
+    <dependency
+      Id="aee871f5-f211-4ad1-b381-9bf88e9ae433">
+      <packageMoniker
+        Id="cf44d295-6ed0-44c8-ac3e-42c246a585b2"
+        LastKnownName="message"
+        LastKnownLocation="Package_1644.uml" />
+    </dependency>
+    <dependency
+      Id="3ef763d4-7ea4-46db-921b-1cc4751cbd12">
+      <packageMoniker
+        Id="4c3ac22c-64ae-4c16-8275-83a560888266"
+        LastKnownName="composite"
+        LastKnownLocation="Package1_1643.uml" />
+    </dependency>
+  </suppliersInternal>
+</package>
