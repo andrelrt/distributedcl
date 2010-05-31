@@ -18,5 +18,12 @@
         LastKnownName="remote"
         LastKnownLocation="Package_1800.uml" />
     </dependency>
+    <dependency
+      Id="d5180736-c0b9-42d4-8834-a90b67ef4cc2">
+      <packageMoniker
+        Id="fcd71db1-466b-49a8-9416-cf92f6ada8ca"
+        LastKnownName="info"
+        LastKnownLocation="Package_1231.uml" />
+    </dependency>
   </suppliersInternal>
 </package>

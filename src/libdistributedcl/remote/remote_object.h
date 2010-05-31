@@ -20,25 +20,36 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INTERNAL_H_
-#define _DCL_INTERNAL_H_
+#ifndef _DCL_REMOTE_OBJECT_H_
+#define _DCL_REMOTE_OBJECT_H_
 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/opencl.h>
-#endif
-
-#if !defined(WIN32)
-#define memcpy_s(pd,sd,ps,ss) memcpy(pd,ps,ss)
-#endif
-
-#include <boost/cstdint.hpp>
+#include "distributedcl_internal.h"
+//-----------------------------------------------------------------------------
+namespace dcl { namespace network { namespace client { class session; }}}
 //-----------------------------------------------------------------------------
 namespace dcl {
+namespace remote {
 //-----------------------------------------------------------------------------
-typedef boost::uint8_t remote_id_t;
+template< typename CL_TYPE_T, typename CL_TYPE_INFO, int CL_TYPE_INVALID_VALUE, typename DCL_TYPE_INFO >
+class remote_object
+{
+public:
+    typedef CL_TYPE_T cl_type_t;
+    typedef CL_TYPE_INFO cl_type_info_t;
+    static const cl_int invalid_value_error = CL_TYPE_INVALID_VALUE;
+    typedef DCL_TYPE_INFO dcl_info_t;
+
+    remote_object( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) :
+        session_ref_( session_ref ), remote_id_( remote_id ) {}
+
+    ~remote_object(){}
+
+protected:
+    dcl_info_t local_info_;
+    dcl::remote_id_t remote_id_;
+    dcl::network::client::session& session_ref_;
+};
 //-----------------------------------------------------------------------------
-} // namespace dcl
+}} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif // _DCL_INTERNAL_H_
+#endif // _DCL_REMOTE_OBJECT_H_

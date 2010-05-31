@@ -22,38 +22,36 @@
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
-#include "client/client.h"
-#include "client/session.h"
+#include "remote/remote_device.h"
 #include "remote/remote_platform.h"
+using dcl::remote::remote_device;
 using dcl::remote::remote_platform;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
-                  cl_uint* num_platforms ) CL_API_SUFFIX__VERSION_1_0
+clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num_entries,
+                cl_device_id *devices, cl_uint *num_devices ) CL_API_SUFFIX__VERSION_1_0
 {
-    if( ( (num_entries == 0) && (platforms != NULL) ) ||
-        ( (platforms == NULL) && (num_platforms == NULL) ) )
+    RETURN_IF_NULL( platform, CL_INVALID_PLATFORM );
+
+    if( ( (num_entries == 0) && (devices != NULL) ) ||
+        ( (devices == NULL) && (num_devices == NULL) ) )
     {
         return CL_INVALID_VALUE;
     }
 
     try
     {
-        //FIXME: Establish the network session to localhost
-        dcl::network::client::client network_client;
-        dcl::network::client::session client_session( network_client );
-        dcl::remote::remote_platforms_t remote_platforms;
+        remote_platform* remote_platform_ptr = reinterpret_cast< remote_platform* >( platform );
+        const dcl::remote::remote_devices_t& remote_devices_ref = remote_platform_ptr->get_devices();
 
-        remote_platform::get_platforms( client_session, remote_platforms );
+        cl_uint count = static_cast< cl_uint >( remote_devices_ref.size() );
 
-        cl_uint count = static_cast< cl_uint >( remote_platforms.size() );
-        
-        if( num_platforms != NULL )
+        if( num_devices != NULL )
         {
-            *num_platforms = count;
+            *num_devices = count;
         }
 
-        if( platforms != NULL )
+        if( devices != NULL )
         {
             if( count > num_entries )
             {
@@ -62,7 +60,7 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
 
             for( cl_uint i = 0; i < count; i++ )
             {
-                platforms[ i ] = reinterpret_cast< cl_platform_id >( remote_platforms[ i ] );
+                devices[ i ] = reinterpret_cast< cl_device_id >( remote_devices_ref[ i ] );
             }
         }
     }
@@ -79,14 +77,12 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clGetPlatformInfo( cl_platform_id platform, cl_platform_info param_name,
-                   size_t param_value_size, void *param_value,
-                   size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+clGetDeviceInfo( cl_device_id device, cl_device_info param_name, size_t param_value_size,
+                 void *param_value, size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {
-        get_info< remote_platform >( platform, param_name, param_value_size, 
-                                     param_value, param_value_size_ret );
+        get_info< remote_device >( device, param_name, param_value_size, param_value, param_value_size_ret );
     }
     catch( dcl::library_exception& ex )
     {

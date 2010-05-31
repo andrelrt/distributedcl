@@ -20,25 +20,22 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INTERNAL_H_
-#define _DCL_INTERNAL_H_
+#ifndef _DCL_NETWORK_CLIENT_H_
+#define _DCL_NETWORK_CLIENT_H_
 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/opencl.h>
-#endif
-
-#if !defined(WIN32)
-#define memcpy_s(pd,sd,ps,ss) memcpy(pd,ps,ss)
-#endif
-
-#include <boost/cstdint.hpp>
+#include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
+namespace network {
+namespace client {
 //-----------------------------------------------------------------------------
-typedef boost::uint8_t remote_id_t;
+class client
+{
+public:
+    client();
+    ~client();
+};
 //-----------------------------------------------------------------------------
-} // namespace dcl
+}}} // namespace dcl::network::client
 //-----------------------------------------------------------------------------
-#endif // _DCL_INTERNAL_H_
+#endif // _DCL_NETWORK_CLIENT_H_

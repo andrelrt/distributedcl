@@ -9,5 +9,17 @@
     <ClCompile Include="interface\cl_platform.cpp">
       <Filter>interface</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="interface\cl_device.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libopencl.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="interface\cl_utils.h">
+      <Filter>interface</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -20,25 +20,73 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INTERNAL_H_
-#define _DCL_INTERNAL_H_
+#include "distributedcl_internal.h"
+//-----------------------------------------------------------------------------
+void setup_library()
+{
+}
+//-----------------------------------------------------------------------------
+void free_library()
+{
+}
+//-----------------------------------------------------------------------------
+#if defined(__GNUC__)
 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/opencl.h>
-#endif
+void __attribute__ ((constructor)) so_load()
+{
+    try
+    {
+        setup_library();
+    }
+    catch( ... )
+    {
+    }
+}
 
-#if !defined(WIN32)
-#define memcpy_s(pd,sd,ps,ss) memcpy(pd,ps,ss)
-#endif
+void __attribute__ ((destructor)) so_unload()
+{
+    try
+    {
+        free_library();
+    }
+    catch( ... )
+    {
+    }
+}
 
-#include <boost/cstdint.hpp>
+#elif defined(WIN32) // __GNUC__ -> WIN32
+
+#define WINDOWS_MEAN_AND_LEAN
+#include <windows.h>
 //-----------------------------------------------------------------------------
-namespace dcl {
+BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved )
+{
+    switch( fdwReason ) 
+    { 
+        case DLL_PROCESS_ATTACH:
+            try
+            {
+                setup_library();
+            }
+            catch( ... )
+            {
+                return FALSE;
+            }
+            break;
+
+        case DLL_PROCESS_DETACH:
+            try
+            {
+                free_library();
+            }
+            catch( ... )
+            {
+                return FALSE;
+            }
+            break;
+    }
+    return TRUE;
+}
 //-----------------------------------------------------------------------------
-typedef boost::uint8_t remote_id_t;
-//-----------------------------------------------------------------------------
-} // namespace dcl
-//-----------------------------------------------------------------------------
-#endif // _DCL_INTERNAL_H_
+#endif // WIN32
+

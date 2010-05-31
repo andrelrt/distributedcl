@@ -65,7 +65,7 @@ public:
         return *this;
     }
 
-    inline size_t get_info_size( cl_device_info info )
+    inline size_t get_info_size( cl_platform_info info ) const
     {
         switch( info )
         {
@@ -80,7 +80,7 @@ public:
         }
     }
 
-    inline const void* get_info_pointer( cl_device_info info )
+    inline const void* get_info_pointer( cl_platform_info info ) const
     {
         switch( info )
         {

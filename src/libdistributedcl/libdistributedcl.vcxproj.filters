@@ -32,9 +32,39 @@
     <ClInclude Include="remote\remote_platform.h">
       <Filter>remote</Filter>
     </ClInclude>
+    <ClInclude Include="client\client.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="client\session.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="message\message.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\remote_object.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\remote_device.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="info\device_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="client\client.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\session.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="message\message.cpp">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_device.cpp">
       <Filter>remote</Filter>
     </ClCompile>
   </ItemGroup>

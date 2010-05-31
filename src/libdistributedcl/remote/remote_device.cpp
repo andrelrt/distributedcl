@@ -20,25 +20,29 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INTERNAL_H_
-#define _DCL_INTERNAL_H_
-
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/opencl.h>
-#endif
-
-#if !defined(WIN32)
-#define memcpy_s(pd,sd,ps,ss) memcpy(pd,ps,ss)
-#endif
-
-#include <boost/cstdint.hpp>
+#include "remote_device.h"
+#include "client/session.h"
+#include "message/message.h"
+using dcl::network::message::msg_device;
 //-----------------------------------------------------------------------------
 namespace dcl {
+namespace remote {
 //-----------------------------------------------------------------------------
-typedef boost::uint8_t remote_id_t;
+const remote_device::dcl_info_t& remote_device::get_info()
+{
+    if( !data_loaded_ )
+    {
+        msg_device msg( remote_id_ );
+        session_ref_.send_message( msg );
+
+        //TODO: Fill the device_info structure
+
+        data_loaded_ = true;
+    }
+
+    return local_info_;
+}
 //-----------------------------------------------------------------------------
-} // namespace dcl
+}} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif // _DCL_INTERNAL_H_
+ 

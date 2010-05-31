@@ -23,22 +23,47 @@
 #ifndef _DCL_REMOTE_PLATFORM_H_
 #define _DCL_REMOTE_PLATFORM_H_
 
+#include <vector>
 #include "distributedcl_internal.h"
+#include "library_exception.h"
+#include "remote_object.h"
 #include "info/platform_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-class remote_platform
+class remote_device;
+class remote_platform;
+typedef std::vector< remote_device* > remote_devices_t;
+typedef std::vector< remote_platform* > remote_platforms_t;
+//-----------------------------------------------------------------------------
+class remote_platform :
+    public remote_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM, dcl::info::platform_info >
 {
 public:
-    remote_platform( dcl::client::client& client_ref ) : client_ref_( client_ref ) {}
+    remote_platform( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) : 
+        remote_object( session_ref, remote_id ), data_loaded_( false ) {}
+
     ~remote_platform(){}
 
+    static void get_platforms( dcl::network::client::session& session_ref, remote_platforms_t& platforms );
+
+    const dcl_info_t& get_info();
+    const remote_devices_t& get_devices();
+
+    inline const dcl_info_t& get_info() const
+    {
+        return local_info_;
+    }
+
+    const remote_devices_t& get_devices() const
+    {
+        return remote_devices_;
+    }
+
 private:
-    boost::uint8_t remote_id;
-    dcl::client::client& client_ref_;
-    dcl::info::platform_info platform_info_;
+    bool data_loaded_;
+    remote_devices_t remote_devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

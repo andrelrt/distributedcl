@@ -1,22 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
   dslVersion="1.0.0.0"
-  Id="3f62a4c1-bffa-4a89-8d6d-3e0566d36727"
-  name="remote" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
-  <suppliersInternal>
-    <dependency
-      Id="c7aa9e60-85ce-49fb-8ebe-095467c4c9cc">
+  Id="8cfa2d3a-93ad-444e-b5f0-65b7531efb90"
+  name="network" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <packagedElements>
+    <packageHasNamedElement>
+      <packageMoniker
+        Id="cf44d295-6ed0-44c8-ac3e-42c246a585b2"
+        LastKnownName="message"
+        LastKnownLocation="Package_1644.uml" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
       <packageMoniker
         Id="43caaf8b-7cc2-4163-9821-a0d50f4c7599"
         LastKnownName="client"
         LastKnownLocation="Package3_1643.uml" />
-    </dependency>
-    <dependency
-      Id="2f0103f4-07ad-4896-ad47-05eb7030f32f">
+    </packageHasNamedElement>
+    <packageHasNamedElement>
       <packageMoniker
-        Id="fcd71db1-466b-49a8-9416-cf92f6ada8ca"
-        LastKnownName="info"
-        LastKnownLocation="Package_1231.uml" />
-    </dependency>
-  </suppliersInternal>
+        Id="1affccb3-86f3-45c6-a2a0-2052480102c3"
+        LastKnownName="server"
+        LastKnownLocation="Package4_1643.uml" />
+    </packageHasNamedElement>
+  </packagedElements>
 </package>

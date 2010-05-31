@@ -11,13 +11,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="client\client.h" />
+    <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
     <ClInclude Include="info\platform_info.h" />
     <ClInclude Include="library_exception.h" />
+    <ClInclude Include="message\message.h" />
+    <ClInclude Include="remote\remote_device.h" />
     <ClInclude Include="remote\remote_platform.h" />
+    <ClInclude Include="client\session.h" />
+    <ClInclude Include="remote\remote_object.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="client\client.cpp" />
+    <ClCompile Include="message\message.cpp" />
+    <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
+    <ClCompile Include="client\session.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}</ProjectGuid>
