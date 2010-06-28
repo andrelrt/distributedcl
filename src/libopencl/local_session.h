@@ -20,32 +20,55 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_NETWORK_SESSION_H_
-#define _DCL_NETWORK_SESSION_H_
+#ifndef _DCL_LOCALHOST_SESSION_H_
+#define _DCL_LOCALHOST_SESSION_H_
 
 #include "distributedcl_internal.h"
-//-----------------------------------------------------------------------------
-namespace dcl { namespace network { namespace message { class message; }}}
+#include "client/client.h"
+#include "client/session.h"
+using dcl::network::client::session;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace client {
+namespace opencl {
 //-----------------------------------------------------------------------------
 class client;
 //-----------------------------------------------------------------------------
-class session
+class local_session
 {
 public:
-    session( client& client_ref );
-    ~session();
+    static local_session& get_instance()
+    {
+        if( local_session_ptr_ == NULL )
+        {
+            local_session_ptr_ = new local_session();
+        }
+        return *local_session_ptr_;
+    }
 
-    void send_message( dcl::network::message::message& message_ref );
-    void enqueue_message( dcl::network::message::message& message_ref );
+    session& get_session()
+    {
+        return *session_ptr_;
+    }
 
 private:
-    client& client_ref_;
+    static local_session* local_session_ptr_;
+    session* session_ptr_;
+
+    local_session()
+    {
+        //FIXME: Change the follow lines to establish the network session to localhost
+        dcl::network::client::client network_client;
+        session client_session( network_client );
+    }
+
+    ~local_session()
+    {
+    }
+
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::client
+local_session* local_session::session_ptr_ = NULL;
 //-----------------------------------------------------------------------------
-#endif // _DCL_NETWORK_SESSION_H_
+}} // namespace dcl::opencl
+//-----------------------------------------------------------------------------
+#endif // _DCL_LOCALHOST_SESSION_H_

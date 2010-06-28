@@ -41,7 +41,7 @@ void remote_platform::get_platforms( session& session_ref, remote_platforms_t& p
     std::vector< remote_id_t >::const_iterator it;
 
     platforms.clear();
-    for( it = msg.get_ids().begin(); it !=msg.get_ids().end(); it++ )
+    for( it = msg.get_ids().begin(); it != msg.get_ids().end(); it++ )
     {
         platforms.push_back( new remote_platform( session_ref, *it ) );
     }

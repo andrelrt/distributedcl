@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="interface\cl_utils.h" />
+    <ClInclude Include="local_session.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libopencl.def" />

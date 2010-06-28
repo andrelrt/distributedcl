@@ -21,5 +21,6 @@
     <ClInclude Include="interface\cl_utils.h">
       <Filter>interface</Filter>
     </ClInclude>
+    <ClInclude Include="local_session.h" />
   </ItemGroup>
 </Project>

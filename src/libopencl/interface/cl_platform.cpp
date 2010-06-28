@@ -22,8 +22,7 @@
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
-#include "client/client.h"
-#include "client/session.h"
+#include "local_session.h"
 #include "remote/remote_platform.h"
 using dcl::remote::remote_platform;
 //-----------------------------------------------------------------------------
@@ -39,9 +38,7 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
 
     try
     {
-        //FIXME: Establish the network session to localhost
-        dcl::network::client::client network_client;
-        dcl::network::client::session client_session( network_client );
+        dcl::opencl::local_session&  
         dcl::remote::remote_platforms_t remote_platforms;
 
         remote_platform::get_platforms( client_session, remote_platforms );
