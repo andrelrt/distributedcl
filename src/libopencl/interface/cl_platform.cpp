@@ -22,13 +22,12 @@
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
-#include "local_session.h"
 #include "remote/remote_platform.h"
 using dcl::remote::remote_platform;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
-                  cl_uint* num_platforms ) CL_API_SUFFIX__VERSION_1_0
+                  cl_uint* num_platforms ) CL_API_SUFFIX__VERSION_1_1
 {
     if( ( (num_entries == 0) && (platforms != NULL) ) ||
         ( (platforms == NULL) && (num_platforms == NULL) ) )
@@ -38,30 +37,17 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
 
     try
     {
-        dcl::opencl::local_session&  
-        dcl::remote::remote_platforms_t remote_platforms;
-
-        remote_platform::get_platforms( client_session, remote_platforms );
-
-        cl_uint count = static_cast< cl_uint >( remote_platforms.size() );
-        
         if( num_platforms != NULL )
         {
-            *num_platforms = count;
+            *num_platforms = 1;
         }
 
         if( platforms != NULL )
         {
-            if( count > num_entries )
-            {
-                count = num_entries;
-            }
-
-            for( cl_uint i = 0; i < count; i++ )
-            {
-                platforms[ i ] = reinterpret_cast< cl_platform_id >( remote_platforms[ i ] );
-            }
+            *platforms = dcl::remote::remote_platform::get_instance().get_icd_obj();
         }
+
+        return CL_SUCCESS;
     }
     catch( dcl::library_exception& ex )
     {
@@ -78,7 +64,7 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetPlatformInfo( cl_platform_id platform, cl_platform_info param_name,
                    size_t param_value_size, void *param_value,
-                   size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+                   size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
 {
     try
     {

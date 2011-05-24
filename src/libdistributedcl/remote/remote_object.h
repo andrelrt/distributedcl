@@ -24,30 +24,73 @@
 #define _DCL_REMOTE_OBJECT_H_
 
 #include "distributedcl_internal.h"
+#include "icd_object_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace network { namespace client { class session; }}}
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, typename CL_TYPE_INFO, int CL_TYPE_INVALID_VALUE, typename DCL_TYPE_INFO >
-class remote_object
+template< typename CL_TYPE_T, typename CL_TYPE_INFO, int CL_TYPE_INVALID_VALUE >
+class cl_object
 {
 public:
     typedef CL_TYPE_T cl_type_t;
     typedef CL_TYPE_INFO cl_type_info_t;
     static const cl_int invalid_value_error = CL_TYPE_INVALID_VALUE;
+};
+//-----------------------------------------------------------------------------
+enum dcl_object_types
+{
+    dcl_platform_id = 0,
+    dcl_device_id = 1,
+};
+//-----------------------------------------------------------------------------
+template< typename CL_TYPE_T, typename DCL_TYPE_T, uint32_t DCL_TYPE_ID >
+class icd_object
+{
+public:
+    static const uint32_t type_id = DCL_TYPE_ID;
+
+    inline CL_TYPE_T get_icd_obj() const
+    {
+        return icd_obj_;
+    }
+
+protected:
+    CL_TYPE_T icd_obj_;
+
+    icd_object(){}
+
+    inline void create_icd_obj( DCL_TYPE_T* ptr )
+    {
+        icd_obj_ = icd_object_manager::get_instance().get_cl_id< DCL_TYPE_T >( ptr );
+    }
+};
+//-----------------------------------------------------------------------------
+template< typename DCL_TYPE_INFO >
+class dcl_object
+{
+public:
     typedef DCL_TYPE_INFO dcl_info_t;
 
-    remote_object( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) :
-        session_ref_( session_ref ), remote_id_( remote_id ) {}
-
-    ~remote_object(){}
+    inline const dcl_info_t& get_info() const
+    {
+        return local_info_;
+    }
 
 protected:
     dcl_info_t local_info_;
+};
+//-----------------------------------------------------------------------------
+class remote_object
+{
+protected:
     dcl::remote_id_t remote_id_;
     dcl::network::client::session& session_ref_;
+
+    remote_object( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) :
+        session_ref_( session_ref ), remote_id_( remote_id ) {}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

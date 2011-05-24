@@ -121,10 +121,10 @@ enum message_type
 class message
 {
 public:
-    static const message* parse_message( const boost::uint8_t* msg_buffer_ptr,
+    static const message* parse_message( const uint8_t* msg_buffer_ptr,
                                          std::size_t length );
 
-    inline boost::uint16_t length() const
+    inline uint16_t length() const
     {
         return length_;
     }
@@ -145,9 +145,9 @@ protected:
     // Better when aligned in 32 bits boundary
     struct message_header
     {
-        boost::uint8_t version;
-        boost::uint8_t type;
-        boost::uint16_t length;
+        uint8_t version;
+        uint8_t type;
+        uint16_t length;
     };
     #pragma pack( pop )
 
@@ -156,7 +156,7 @@ protected:
         length_ = length;
     }
 
-    inline void set_message_buffer( const boost::uint8_t* msg_buffer_ptr )
+    inline void set_message_buffer( const uint8_t* msg_buffer_ptr )
     {
         header_ptr_ = reinterpret_cast< const message_header* >( msg_buffer_ptr );
         payload_ptr_ = msg_buffer_ptr + sizeof( message_header );
@@ -166,7 +166,7 @@ private:
     message_type type_;
     std::size_t length_;
     const message_header* header_ptr_;
-    const boost::uint8_t* payload_ptr_;
+    const uint8_t* payload_ptr_;
 };
 //-----------------------------------------------------------------------------
 class msg_platform : 

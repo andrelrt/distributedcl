@@ -22,7 +22,7 @@
     <packageShape Id="0ae77867-1b94-42f8-886d-a94d81222270" absoluteBounds="3.5, 4.25, 1.5, 1" customColor="255, 249, 230" hideQualifiedName="false">
       <packageMoniker Id="edfd02dc-3223-4761-9f84-eee46a0e5067" LastKnownName="remote" />
     </packageShape>
-    <dependencyConnector edgePoints="[(4.17391304347826 : 3.375); (4.17391304347826 : 4.25)]" manuallyRouted="true" fixedFrom="Caller" fixedTo="Algorithm" customColor="Black">
+    <dependencyConnector edgePoints="[(4.17391304347826 : 3.375); (4.17391304347826 : 4.25)]" manuallyRouted="true" fixedFrom="Algorithm" fixedTo="Algorithm" customColor="Black">
       <dependencyMoniker Id="228c58d3-ae36-4175-9382-6b6eef472a62" />
       <relativeChildShapes />
       <nodes>
@@ -77,25 +77,9 @@
         <packageShape Id="758609b9-910e-4802-b7f3-c84f6a56153b" absoluteBounds="9, 2.875, 1.5, 1" customColor="255, 249, 230" hideQualifiedName="false">
           <packageMoniker Id="ccbf0cce-d7bf-4c63-91a7-274ad7855779" LastKnownName="message" />
         </packageShape>
-        <dependencyConnector edgePoints="[(8.25 : 4.6820652173913); (9.75 : 4.6820652173913); (9.75 : 3.875)]" fixedFrom="Caller" fixedTo="Algorithm" customColor="Black">
-          <dependencyMoniker Id="4bf8ae75-e626-47ce-a387-a8c784712bf2" />
-          <relativeChildShapes />
-          <nodes>
-            <packageShapeMoniker Id="9e645a23-b12c-4f41-aac6-8c09885bf05f" />
-            <packageShapeMoniker Id="758609b9-910e-4802-b7f3-c84f6a56153b" />
-          </nodes>
-        </dependencyConnector>
-        <dependencyConnector edgePoints="[(8.25 : 3.25); (9 : 3.25)]" fixedFrom="Algorithm" fixedTo="Algorithm" customColor="Black">
-          <dependencyMoniker Id="e1e44a1a-65e8-49fd-bf24-e5fa90ecc51d" />
-          <relativeChildShapes />
-          <nodes>
-            <packageShapeMoniker Id="399ffc2e-22ef-476e-a902-e2800d4ddf23" />
-            <packageShapeMoniker Id="758609b9-910e-4802-b7f3-c84f6a56153b" />
-          </nodes>
-        </dependencyConnector>
       </nestedChildShapes>
     </packageShape>
-    <dependencyConnector edgePoints="[(6.75 : 3.00150602409639); (5 : 3.00150602409639)]" fixedFrom="Algorithm" fixedTo="Caller" customColor="Black">
+    <dependencyConnector edgePoints="[(6.75 : 3.00150602409639); (5 : 3.00150602409639)]" fixedFrom="Algorithm" fixedTo="Algorithm" customColor="Black">
       <dependencyMoniker Id="8f307579-c370-4db6-9d68-2a30003da157" />
       <relativeChildShapes />
       <nodes>
@@ -103,12 +87,28 @@
         <packageShapeMoniker Id="02f59a5a-08be-4670-ab31-f5900a32265d" />
       </nodes>
     </dependencyConnector>
-    <dependencyConnector edgePoints="[(5 : 4.78947368421053); (6.75 : 4.7972972972973)]" manuallyRouted="true" fixedFrom="Caller" fixedTo="Caller" customColor="Black">
+    <dependencyConnector edgePoints="[(5 : 4.78947368421053); (6.75 : 4.7972972972973)]" manuallyRouted="true" fixedFrom="Algorithm" fixedTo="Algorithm" customColor="Black">
       <dependencyMoniker Id="acdc1a41-0a12-48be-8001-3498f796ff8e" />
       <relativeChildShapes />
       <nodes>
         <packageShapeMoniker Id="0ae77867-1b94-42f8-886d-a94d81222270" />
         <packageShapeMoniker Id="9e645a23-b12c-4f41-aac6-8c09885bf05f" />
+      </nodes>
+    </dependencyConnector>
+    <dependencyConnector edgePoints="[(8.25 : 4.625); (9.75 : 4.625); (9.75 : 3.875)]" fixedFrom="Algorithm" fixedTo="Algorithm" customColor="Black">
+      <dependencyMoniker Id="4bf8ae75-e626-47ce-a387-a8c784712bf2" />
+      <relativeChildShapes />
+      <nodes>
+        <packageShapeMoniker Id="9e645a23-b12c-4f41-aac6-8c09885bf05f" />
+        <packageShapeMoniker Id="758609b9-910e-4802-b7f3-c84f6a56153b" />
+      </nodes>
+    </dependencyConnector>
+    <dependencyConnector edgePoints="[(8.25 : 3.25); (9 : 3.25)]" fixedFrom="Algorithm" fixedTo="Algorithm" customColor="Black">
+      <dependencyMoniker Id="e1e44a1a-65e8-49fd-bf24-e5fa90ecc51d" />
+      <relativeChildShapes />
+      <nodes>
+        <packageShapeMoniker Id="399ffc2e-22ef-476e-a902-e2800d4ddf23" />
+        <packageShapeMoniker Id="758609b9-910e-4802-b7f3-c84f6a56153b" />
       </nodes>
     </dependencyConnector>
   </nestedChildShapes>

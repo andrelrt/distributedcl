@@ -32,7 +32,10 @@ namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 class remote_device : 
-    public remote_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE, dcl::info::device_info >
+    public cl_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE >,
+    public icd_object< cl_device_id, remote_device, dcl_device_id >,
+    public dcl_object< dcl::info::device_info >,
+    public remote_object
 {
 public:
     remote_device( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) : 

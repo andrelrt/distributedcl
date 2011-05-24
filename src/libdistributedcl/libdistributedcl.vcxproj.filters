@@ -50,6 +50,12 @@
     <ClInclude Include="info\device_info.h">
       <Filter>info</Filter>
     </ClInclude>
+    <ClInclude Include="info\opencl_functions.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\icd_object_manager.h">
+      <Filter>remote</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -65,6 +71,9 @@
       <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="remote\remote_device.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\icd_object_manager.cpp">
       <Filter>remote</Filter>
     </ClCompile>
   </ItemGroup>

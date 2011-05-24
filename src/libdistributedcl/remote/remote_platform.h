@@ -33,37 +33,50 @@ namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 class remote_device;
-class remote_platform;
 typedef std::vector< remote_device* > remote_devices_t;
-typedef std::vector< remote_platform* > remote_platforms_t;
 //-----------------------------------------------------------------------------
 class remote_platform :
-    public remote_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM, dcl::info::platform_info >
+    public cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public icd_object< cl_platform_id, remote_platform, dcl_platform_id >,
+    public dcl_object< dcl::info::platform_info >
 {
 public:
-    remote_platform( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) : 
-        remote_object( session_ref, remote_id ), data_loaded_( false ) {}
-
-    ~remote_platform(){}
-
-    static void get_platforms( dcl::network::client::session& session_ref, remote_platforms_t& platforms );
-
-    const dcl_info_t& get_info();
-    const remote_devices_t& get_devices();
-
-    inline const dcl_info_t& get_info() const
+    static const remote_platform& get_instance()
     {
-        return local_info_;
+        if( instance_ptr_ == NULL )
+        {
+            instance_ptr_ = new remote_platform();
+        }
+        return( *instance_ptr_ );
     }
 
-    const remote_devices_t& get_devices() const
+    inline const remote_devices_t& get_devices() const
     {
+        if( remote_devices_.empty() )
+        {
+            const_cast< remote_platform* >( this )->load_devices();
+        }
         return remote_devices_;
     }
 
 private:
-    bool data_loaded_;
+    static remote_platform* instance_ptr_;
     remote_devices_t remote_devices_;
+
+    remote_platform()
+    {
+        create_icd_obj( this );
+
+        local_info_.profile_.assign( "FULL_PROFILE" );
+        local_info_.version_.assign( "OpenCL 1.1 DistributedCL 0.1" );
+	    local_info_.name_.assign( "DistributedCL" );
+        local_info_.vendor_.assign( "DistributedCL Project" );
+        local_info_.extensions_.assign( "cl_khr_icd" );
+    }
+
+    ~remote_platform(){}
+
+    void load_devices();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

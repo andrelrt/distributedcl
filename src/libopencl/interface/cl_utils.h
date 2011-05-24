@@ -23,6 +23,7 @@
 #include <string.h>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
+#include "remote/icd_object_manager.h"
 //-----------------------------------------------------------------------------
 #define TO_BOOL(x) (((x)==CL_TRUE)?true:false)
 #define RETURN_IF_NULL(id,err) if((id)==NULL)return(err)
@@ -111,27 +112,4 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
         memcpy_s( param_value, info_size, info_ptr.get_info_pointer( info ), info_size );
     }
 }
-//-----------------------------------------------------------------------------
-//template< const std::string&, typename INFO_TYPE_T >
-//void get_info( INFO_TYPE_T info, size_t param_value_size, void *param_value, size_t *param_value_size_ret )
-//{
-//    if( ( (param_value_size == 0) && (param_value != NULL) ) ||
-//        ( (param_value == NULL) && (param_value_size_ret == NULL) ) )
-//    {
-//        throw dcl::library_exception( CL_INVALID_VALUE );
-//    }
-//
-//    if( param_value_size_ret != NULL )
-//    {
-//        *param_value_size_ret = sizeof( RET_TYPE_T );
-//    }
-//
-//    if( param_value != NULL )
-//    {
-//        if( param_value_size < sizeof( RET_TYPE_T ) )
-//        {
-//            throw dcl::library_exception( CL_INVALID_VALUE );
-//        }
-//    }
-//}
 //-----------------------------------------------------------------------------

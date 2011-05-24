@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,12 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "remote_platform.h"
-#include "remote_device.h"
-#include "client/session.h"
-#include "message/message.h"
-using dcl::info::platform_info;
-using dcl::network::client::session;
-using dcl::network::message::msg_platform;
-using dcl::network::message::msg_get_devices;
-using dcl::network::message::msg_get_platform_ids;
+#include "icd_object_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-remote_platform* remote_platform::instance_ptr_ = NULL;
-//-----------------------------------------------------------------------------
-void remote_platform::load_devices()
-{
-    //msg_get_devices msg( 0 );
-    //session_ref_.send_message( msg );
-
-    //std::vector< remote_id_t >::const_iterator it;
-
-    //for( it = msg.get_ids().begin(); it !=msg.get_ids().end(); it++ )
-    //{
-    //    remote_devices_.push_back( new remote_device( session_ref_, *it ) );
-    //}
-}
+icd_object_manager icd_object_manager::instance_;
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
