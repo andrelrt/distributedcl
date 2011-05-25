@@ -32,8 +32,8 @@ namespace client {
 class client
 {
 public:
-    client();
-    ~client();
+    client(){}
+    ~client(){}
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::client

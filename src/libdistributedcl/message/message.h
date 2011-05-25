@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -121,110 +121,105 @@ enum message_type
 class message
 {
 public:
-    static const message* parse_message( const uint8_t* msg_buffer_ptr,
-                                         std::size_t length );
+    virtual ~message(){}
 
-    inline uint16_t length() const
-    {
-        return length_;
-    }
+    static message* parse_message( uint8_t* msg_buffer_ptr, std::size_t length );
 
-    inline message_type type() const
+    inline message_type get_type() const
     {
         return type_;
     }
 
+    virtual void execute(){}
+    virtual void set_response( const message* ){}
+
+    inline void get_buffer( uint8_t* buffer_ptr )
+    {
+        buffer_ptr_ = buffer_ptr;
+
+        message_header* header = reinterpret_cast< message_header* >( buffer_ptr_ );
+        header->version = message_v1_0;
+        header->type = type_;
+        header->request = 1;
+        header->id = 0;
+        header->length = static_cast< uint32_t >( htonl( static_cast< u_long >( size_ ) ) );
+
+        create_buffer();
+    }
+
+    inline std::size_t get_size() const
+    {
+        return size_;
+    }
+
+    inline bool waiting_response()
+    {
+        return wait_response_;
+    }
+
 protected:
-    message( message_type type ) : type_( type ), length_( 0 ) {}
-    ~message();
+    message( message_type type, bool wait_response = false, std::size_t size = 0 ) : 
+        wait_response_( wait_response ), buffer_ptr_( NULL ),
+        size_( size + sizeof( message_header ) ), type_( type )
+    {}
+
+    virtual void parse(){}
+    virtual void create_buffer(){}
+
+    inline void set_size( std::size_t size )
+    {
+        size_ = size + sizeof( message_header );
+    }
+
+    inline uint8_t* get_payload()
+    {
+        return buffer_ptr_ + sizeof( message_header );
+    }
+
+    inline bool is_request()
+    {
+        return (reinterpret_cast< message_header* >( buffer_ptr_ )->request == 1);
+    }
+
+    inline uint32_t get_payload_size()
+    {
+        return static_cast< uint32_t >( size_ - sizeof( message_header ) );
+    }
+
+    inline void set_wait_response()
+    {
+        wait_response_ = true;
+    }
+
+private:
+    bool wait_response_;
+    uint8_t* buffer_ptr_;
+    std::size_t size_;
+    message_type type_;
 
     enum{ message_v1_0 = 0x10 };
 
     #pragma pack( push, 1 )
-
     // Better when aligned in 32 bits boundary
     struct message_header
     {
         uint8_t version;
         uint8_t type;
-        uint16_t length;
+        uint16_t request : 1;
+        uint16_t id : 15;
+        uint32_t length;
     };
     #pragma pack( pop )
 
-    inline void set_length( std::size_t length )
+    inline void set_buffer( uint8_t* msg_buffer_ptr, std::size_t size )
     {
-        length_ = length;
+        buffer_ptr_ = msg_buffer_ptr;
+        size_ = size;
     }
-
-    inline void set_message_buffer( const uint8_t* msg_buffer_ptr )
-    {
-        header_ptr_ = reinterpret_cast< const message_header* >( msg_buffer_ptr );
-        payload_ptr_ = msg_buffer_ptr + sizeof( message_header );
-    }
-
-private:
-    message_type type_;
-    std::size_t length_;
-    const message_header* header_ptr_;
-    const uint8_t* payload_ptr_;
 };
 //-----------------------------------------------------------------------------
-class msg_platform : 
-    public message
-{
-public:
-    msg_platform( remote_id_t remote_id ) : 
-        remote_id_( remote_id ), message( msgGetPlatformInfo ) {}
-
-    const char* get_name() const { return ""; }
-    const char* get_vendor() const { return ""; }
-    const char* get_profile() const { return ""; }
-    const char* get_version() const { return ""; }
-    const char* get_extensions() const { return ""; }
-
-private:
-    remote_id_t remote_id_;
-};
-//-----------------------------------------------------------------------------
-class msg_get_platform_ids : public message
-{
-public:
-    msg_get_platform_ids() : message( msgGetPlatformIDs ) {}
-
-    inline const std::vector< remote_id_t >& get_ids()
-    {
-        return remote_ids_;
-    }
-
-private:
-    std::vector< remote_id_t > remote_ids_;
-};
-//-----------------------------------------------------------------------------
-class msg_get_devices : public message
-{
-public:
-    msg_get_devices( remote_id_t remote_id ) : 
-        remote_id_( remote_id ), message( msgGetDeviceIDs ) {}
-
-    inline const std::vector< remote_id_t >& get_ids()
-    {
-        return remote_ids_;
-    }
-
-private:
-    remote_id_t remote_id_;
-    std::vector< remote_id_t > remote_ids_;
-};
-//-----------------------------------------------------------------------------
-class msg_device : public message
-{
-public:
-    msg_device( remote_id_t remote_id ) : 
-        remote_id_( remote_id ), message( msgGetDeviceInfo ) {}
-
-private:
-    remote_id_t remote_id_;
-};
+template< message_type type > 
+class dcl_message : public message {};
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

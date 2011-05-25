@@ -56,6 +56,12 @@
     <ClInclude Include="remote\icd_object_manager.h">
       <Filter>remote</Filter>
     </ClInclude>
+    <ClInclude Include="client\session_manager.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="message\msg_device.h">
+      <Filter>message</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -75,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="remote\icd_object_manager.cpp">
       <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="client\session_manager.cpp">
+      <Filter>client</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

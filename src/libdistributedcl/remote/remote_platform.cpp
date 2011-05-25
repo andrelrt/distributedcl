@@ -23,12 +23,9 @@
 #include "remote_platform.h"
 #include "remote_device.h"
 #include "client/session.h"
-#include "message/message.h"
-using dcl::info::platform_info;
+#include "client/session_manager.h"
+#include "message/msg_device.h"
 using dcl::network::client::session;
-using dcl::network::message::msg_platform;
-using dcl::network::message::msg_get_devices;
-using dcl::network::message::msg_get_platform_ids;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -37,6 +34,22 @@ remote_platform* remote_platform::instance_ptr_ = NULL;
 //-----------------------------------------------------------------------------
 void remote_platform::load_devices()
 {
+    session& client_session = dcl::network::client::session_manager::get_instance().get_session();
+
+    dcl_message< msgGetDeviceIDs > message;
+
+    session.send_message( &message );
+
+    const transport_ids_t& device_ids = message.get_device_ids();
+
+    for( transport_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); it++ )
+    {
+        remote_device* device_ptr = new remote_device( *it );
+
+        devices_.push_back( device_ptr );
+    }
+
+
     //msg_get_devices msg( 0 );
     //session_ref_.send_message( msg );
 

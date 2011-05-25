@@ -174,16 +174,21 @@ private:
     template< typename DCL_TYPE_T >
     cl_object_set_t::iterator get_internal_object( typename DCL_TYPE_T::cl_type_t cl_ptr )
     {
+        if( cl_ptr == NULL )
+        {
+            throw dcl::library_exception( "Invalid object", DCL_TYPE_T::invalid_value_error );
+        }
+
         cl_object_set_t::iterator it = object_set_.find( reinterpret_cast< cl_object* >( cl_ptr ) );
 
         if( it == object_set_.end() )
         {
-            throw server_exception( "Invalid object", DCL_TYPE_T::invalid_value_error );
+            throw dcl::library_exception( "Unknow object", DCL_TYPE_T::invalid_value_error );
         }
 
         if( (*it)->dcl_type != DCL_TYPE_T::type_id )
         {
-            throw server_exception( "Invalid object", DCL_TYPE_T::invalid_value_error );
+            throw dcl::library_exception( "Invalid object type", DCL_TYPE_T::invalid_value_error );
         }
 
         return it;
@@ -207,9 +212,7 @@ public:
     template< typename DCL_TYPE_T >
     DCL_TYPE_T* get_object_ptr( typename DCL_TYPE_T::cl_type_t cl_ptr )
     {
-        get_internal_object< DCL_TYPE_T >( cl_ptr );
-
-        cl_object* cl_object_ptr = reinterpret_cast< cl_object* >( cl_ptr );
+        cl_object* cl_object_ptr = *get_internal_object< DCL_TYPE_T >( cl_ptr );
 
         return reinterpret_cast< DCL_TYPE_T* >( cl_object_ptr->dcl_object );
     }

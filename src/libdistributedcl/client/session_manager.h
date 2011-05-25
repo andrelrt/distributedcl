@@ -20,37 +20,41 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_LIBRARY_EXCEPTION_H_
-#define _DCL_LIBRARY_EXCEPTION_H_
+#ifndef _DCL_CLIENT_SESSION_MANAGER_H_
+#define _DCL_CLIENT_SESSION_MANAGER_H_
 
-#include <string>
-#include <exception>
+#include "distributedcl_internal.h"
+#include "client.h"
+#include "session.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
+namespace network {
+namespace client {
 //-----------------------------------------------------------------------------
-class library_exception :  public std::exception
+class session_manager
 {
 public:
-    library_exception( int error ) throw() : error_( error ) {}
-    library_exception( char* szText, int error ) throw() : text_( szText ), error_( error ) {}
-
-	~library_exception() throw(){};
-
-    inline int get_error() const
+    static session_manager& get_instance()
     {
-        return error_;
+        if( instance_ == NULL )
+        {
+            instance_ = new session_manager();
+        }
+        return *instance_;
     }
 
-    inline const std::string& text() const
+    session& get_session()
     {
-        return text_;
+        return single_connection_;
     }
 
 private:
-    int error_;
-    std::string text_;
+    static session_manager* instance_;
+    session single_connection_;
+
+    session_manager() : single_connection_( *(new client()) ) {}
 };
 //-----------------------------------------------------------------------------
-} // namespace dcl
+}}} // namespace dcl::network::client
 //-----------------------------------------------------------------------------
-#endif //_DCL_LIBRARY_EXCEPTION_H_
+#endif // _DCL_CLIENT_SESSION_MANAGER_H_

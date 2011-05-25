@@ -12,12 +12,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\client.h" />
+    <ClInclude Include="client\session_manager.h" />
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
     <ClInclude Include="info\opencl_functions.h" />
     <ClInclude Include="info\platform_info.h" />
     <ClInclude Include="library_exception.h" />
     <ClInclude Include="message\message.h" />
+    <ClInclude Include="message\msg_device.h" />
     <ClInclude Include="remote\icd_object_manager.h" />
     <ClInclude Include="remote\remote_device.h" />
     <ClInclude Include="remote\remote_platform.h" />
@@ -26,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="client\client.cpp" />
+    <ClCompile Include="client\session_manager.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="remote\icd_object_manager.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,37 +20,20 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_LIBRARY_EXCEPTION_H_
-#define _DCL_LIBRARY_EXCEPTION_H_
+#ifndef _DCL_DEVICE_MESSAGES_H_
+#define _DCL_DEVICE_MESSAGES_H_
 
-#include <string>
-#include <exception>
+#include "message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
+namespace network {
+namespace message {
 //-----------------------------------------------------------------------------
-class library_exception :  public std::exception
+template <>
+class dcl_message< msgGetDeviceIDs >() : public message
 {
-public:
-    library_exception( int error ) throw() : error_( error ) {}
-    library_exception( char* szText, int error ) throw() : text_( szText ), error_( error ) {}
-
-	~library_exception() throw(){};
-
-    inline int get_error() const
-    {
-        return error_;
-    }
-
-    inline const std::string& text() const
-    {
-        return text_;
-    }
-
-private:
-    int error_;
-    std::string text_;
-};
+}
 //-----------------------------------------------------------------------------
-} // namespace dcl
+}}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
-#endif //_DCL_LIBRARY_EXCEPTION_H_
+#endif // _DCL_DEVICE_MESSAGES_H_

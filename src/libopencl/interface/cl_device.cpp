@@ -24,15 +24,16 @@
 #include "cl_utils.h"
 #include "remote/remote_device.h"
 #include "remote/remote_platform.h"
+#include "remote/icd_object_manager.h"
 using dcl::remote::remote_device;
 using dcl::remote::remote_platform;
+using dcl::remote::remote_devices_t;
+using dcl::remote::icd_object_manager;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num_entries,
-                cl_device_id *devices, cl_uint *num_devices ) CL_API_SUFFIX__VERSION_1_0
+                cl_device_id *devices, cl_uint *num_devices ) CL_API_SUFFIX__VERSION_1_1
 {
-    RETURN_IF_NULL( platform, CL_INVALID_PLATFORM );
-
     if( ( (num_entries == 0) && (devices != NULL) ) ||
         ( (devices == NULL) && (num_devices == NULL) ) )
     {
@@ -41,8 +42,9 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 
     try
     {
-        remote_platform* remote_platform_ptr = reinterpret_cast< remote_platform* >( platform );
-        const dcl::remote::remote_devices_t& remote_devices_ref = remote_platform_ptr->get_devices();
+        remote_platform* remote_platform_ptr = icd_object_manager::get_instance().get_object_ptr< remote_platform >( platform );
+
+        const remote_devices_t& remote_devices_ref = remote_platform_ptr->get_devices();
 
         cl_uint count = static_cast< cl_uint >( remote_devices_ref.size() );
 
