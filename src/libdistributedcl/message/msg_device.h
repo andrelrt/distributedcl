@@ -32,6 +32,21 @@ namespace message {
 template <>
 class dcl_message< msgGetDeviceIDs >() : public message
 {
+public:
+    virtual void execute();
+    virtual void set_response( const message* );
+
+    std::size_t get_device_count()
+    {
+        return device_count_;
+    }
+
+protected:
+    virtual void parse();
+    virtual void create_buffer();
+
+private:
+    std::size_t device_count_;
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

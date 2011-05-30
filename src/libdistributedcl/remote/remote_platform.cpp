@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,9 @@
 #include "client/session_manager.h"
 #include "message/msg_device.h"
 using dcl::network::client::session;
+using dcl::network::client::session_manager;
+using dcl::network::message::dcl_message;
+using dcl::network::message::msgGetDeviceIDs;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -34,31 +37,18 @@ remote_platform* remote_platform::instance_ptr_ = NULL;
 //-----------------------------------------------------------------------------
 void remote_platform::load_devices()
 {
-    session& client_session = dcl::network::client::session_manager::get_instance().get_session();
+    session& client_session = session_manager::get_instance().get_session();
 
     dcl_message< msgGetDeviceIDs > message;
 
-    session.send_message( &message );
+    client_session.send_message( message );
 
-    const transport_ids_t& device_ids = message.get_device_ids();
+    std::size_t device_count = message.get_device_count();
 
-    for( transport_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); it++ )
+    for( std::size_t i = 0; i < device_count; i++ )
     {
-        remote_device* device_ptr = new remote_device( *it );
-
-        devices_.push_back( device_ptr );
+        remote_devices_.push_back( new remote_device() );
     }
-
-
-    //msg_get_devices msg( 0 );
-    //session_ref_.send_message( msg );
-
-    //std::vector< remote_id_t >::const_iterator it;
-
-    //for( it = msg.get_ids().begin(); it !=msg.get_ids().end(); it++ )
-    //{
-    //    remote_devices_.push_back( new remote_device( session_ref_, *it ) );
-    //}
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
