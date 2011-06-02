@@ -22,11 +22,11 @@
 //-----------------------------------------------------------------------------
 #include "remote_platform.h"
 #include "remote_device.h"
-#include "client/session.h"
 #include "client/session_manager.h"
+#include "message/message.h"
 #include "message/msg_device.h"
-using dcl::network::client::session;
 using dcl::network::client::session_manager;
+using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
 //-----------------------------------------------------------------------------
@@ -37,17 +37,17 @@ remote_platform* remote_platform::instance_ptr_ = NULL;
 //-----------------------------------------------------------------------------
 void remote_platform::load_devices()
 {
-    session& client_session = session_manager::get_instance().get_session();
+    session_manager::session_t& client_session = session_manager::get_session();
 
-    dcl_message< msgGetDeviceIDs > message;
+    dcl_message< msgGetDeviceIDs > msg;
 
-    client_session.send_message( message );
+    client_session.send_message( reinterpret_cast< base_message* >( &msg ) );
 
-    std::size_t device_count = message.get_device_count();
+    std::size_t device_count = msg.get_device_count();
 
     for( std::size_t i = 0; i < device_count; i++ )
     {
-        remote_devices_.push_back( new remote_device() );
+        remote_devices_.push_back( new remote_device( client_session, i ) );
     }
 }
 //-----------------------------------------------------------------------------

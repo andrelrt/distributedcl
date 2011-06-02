@@ -29,17 +29,20 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-template <>
-class dcl_message< msgGetDeviceIDs >() : public message
+template<>
+class dcl_message< msgGetDeviceIDs > : public base_message
 {
 public:
     virtual void execute();
-    virtual void set_response( const message* );
+    virtual void set_response( const base_message* );
 
     std::size_t get_device_count()
     {
         return device_count_;
     }
+
+    dcl_message< msgGetDeviceIDs >() : 
+        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
 
 protected:
     virtual void parse();
@@ -47,7 +50,7 @@ protected:
 
 private:
     std::size_t device_count_;
-}
+};
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

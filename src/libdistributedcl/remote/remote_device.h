@@ -24,7 +24,6 @@
 #define _DCL_REMOTE_DEVICE_H_
 
 #include "distributedcl_internal.h"
-#include "library_exception.h"
 #include "remote_object.h"
 #include "info/device_info.h"
 //-----------------------------------------------------------------------------
@@ -38,7 +37,8 @@ class remote_device :
     public remote_object
 {
 public:
-    remote_device( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) : 
+    remote_device( dcl::network::client::session_manager::session_t& session_ref, 
+                   dcl::remote_id_t remote_id ) : 
         remote_object( session_ref, remote_id ), data_loaded_( false ) {}
 
     ~remote_device();

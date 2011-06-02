@@ -25,8 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include "icd_object_manager.h"
-//-----------------------------------------------------------------------------
-namespace dcl { namespace network { namespace client { class session; }}}
+#include "client/session_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -87,9 +86,9 @@ class remote_object
 {
 protected:
     dcl::remote_id_t remote_id_;
-    dcl::network::client::session& session_ref_;
+    dcl::network::client::session_manager::session_t& session_ref_;
 
-    remote_object( dcl::network::client::session& session_ref, dcl::remote_id_t remote_id ) :
+    remote_object( dcl::network::client::session_manager::session_t& session_ref, dcl::remote_id_t remote_id ) :
         session_ref_( session_ref ), remote_id_( remote_id ) {}
 };
 //-----------------------------------------------------------------------------

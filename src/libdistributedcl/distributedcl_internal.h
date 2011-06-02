@@ -29,11 +29,16 @@
 #include <CL/opencl.h>
 #endif
 
-#if !defined(WIN32)
+#if defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <WinSock.h>
+#else
 #define memcpy_s(pd,sd,ps,ss) memcpy(pd,ps,ss)
 #endif
 
 #include <stdint.h>
+#include "library_exception.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------

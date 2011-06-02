@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\client.h" />
+    <ClInclude Include="client\client_session.h" />
     <ClInclude Include="client\session_manager.h" />
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
@@ -20,20 +20,24 @@
     <ClInclude Include="library_exception.h" />
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_device.h" />
+    <ClInclude Include="message\packet.h" />
+    <ClInclude Include="network\platform.h" />
+    <ClInclude Include="network\session.h" />
+    <ClInclude Include="network\tcp_transport.h" />
     <ClInclude Include="remote\icd_object_manager.h" />
     <ClInclude Include="remote\remote_device.h" />
     <ClInclude Include="remote\remote_platform.h" />
-    <ClInclude Include="client\session.h" />
     <ClInclude Include="remote\remote_object.h" />
+    <ClInclude Include="server\server.h" />
+    <ClInclude Include="server\server_session.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client\client.cpp" />
     <ClCompile Include="client\session_manager.cpp" />
     <ClCompile Include="message\message.cpp" />
+    <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="remote\icd_object_manager.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
-    <ClCompile Include="client\session.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}</ProjectGuid>
@@ -57,9 +61,11 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\vs2010.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\vs2010.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -20,16 +20,56 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "session.h"
-#include "message/message.h"
+#ifndef _DCL_NETWORK_SERVER_H_
+#define _DCL_NETWORK_SERVER_H_
+
+#include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
-namespace client {
+namespace server {
 //-----------------------------------------------------------------------------
-void session::send_message( dcl::network::message::message& message_ref )
+template< template< class > class COMM >
+class server
 {
-}
+public:
+    typedef COMM< server > communication_t;
+    typedef typename COMM< server >::config_info_t config_info_t;
+
+    server( const config_info_t& config ) : communication_( config )
+    {
+        communication_.startup( this );
+    }
+
+    ~server()
+    {
+        communication_.shutdown();
+    }
+
+    inline void start_accept_thread()
+    {
+        communication_.start_accept_thread();
+    }
+
+    inline void on_accept( typename communication_t::connection_t& connection,
+                           typename communication_t::endpoint_t& client )
+    {
+        typename server_session< COMM >::config_info_t config( connection, client );
+
+        server_session< COMM >* new_session = new server_session< COMM >( config );
+
+        new_session->startup();
+    }
+
+    inline void wait()
+    {
+        communication_.wait();
+    }
+
+private:
+    communication_t communication_;
+};
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::client
+}}} // namespace dcl::network::server
 //-----------------------------------------------------------------------------
+#endif // _DCL_NETWORK_SERVER_H_

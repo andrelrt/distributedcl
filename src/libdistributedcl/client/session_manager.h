@@ -24,8 +24,8 @@
 #define _DCL_CLIENT_SESSION_MANAGER_H_
 
 #include "distributedcl_internal.h"
-#include "client.h"
-#include "session.h"
+#include "client_session.h"
+#include "network/tcp_transport.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -34,25 +34,36 @@ namespace client {
 class session_manager
 {
 public:
-    static session_manager& get_instance()
-    {
-        if( instance_ == NULL )
-        {
-            instance_ = new session_manager();
-        }
-        return *instance_;
-    }
+    typedef client_session< dcl::network::platform::tcp_transport > session_t;
 
-    session& get_session()
+    inline static session_t& get_session()
     {
-        return single_connection_;
+        if( instance_.session_ptr_ == NULL )
+        {
+            session_t::config_info_t config_info;
+
+            sockaddr_in* sin = reinterpret_cast< sockaddr_in* >( &(config_info.bind_addr) );
+            sin->sin_addr.s_addr = inet_addr( "127.0.0.1" );
+
+            instance_.session_ptr_ = new session_t( config_info );
+
+            instance_.session_ptr_->connect();
+        }
+
+        return *(instance_.session_ptr_);
     }
 
 private:
-    static session_manager* instance_;
-    session single_connection_;
+    static session_manager instance_;
+    session_t* session_ptr_;
 
-    session_manager() : single_connection_( *(new client()) ) {}
+    session_manager() : session_ptr_( NULL ){}
+
+    ~session_manager()
+    {
+        delete session_ptr_;
+        session_ptr_ = NULL;
+    }
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::client

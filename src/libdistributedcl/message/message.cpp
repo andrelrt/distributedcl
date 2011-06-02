@@ -28,43 +28,42 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-#define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex,-1)
+#define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
     
-message* message::parse_message( uint8_t* msg_buffer_ptr, 
-                                 std::size_t length )
+base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t length )
 {
     const message_header* header_ptr = reinterpret_cast< const message_header* >( msg_buffer_ptr );
 
     uint32_t message_len = ntohl( header_ptr->length );
 
-    THROW_IF( (length < sizeof( message_header )), "Invalid message size" );
+    THROW_IF( (length < sizeof( message_header )), "Invalid base_message size" );
     THROW_IF( (length < message_len), "Message size mismatch" );
-    THROW_IF( (header_ptr->version != message_v1_0), "Invalid message version" );
+    THROW_IF( (header_ptr->version != message_v1_0), "Invalid base_message version" );
 
-    message* ret_ptr = NULL;
+    base_message* ret_ptr = NULL;
 
     switch( header_ptr->type )
     {
-        // TODO: Create the message objects
+        // TODO: Create the base_message objects
 
-        // Internal Messages [1-20)
+        // Internal base_messages [1-20)
         case msg_invalid_message:
         case msg_error_message:
-            throw dcl::library_exception( "Not implemented", -1 );
+            throw dcl::library_exception( "Not implemented" );
             break;
 
-        // OpenCL Messages [20-128)
+        // OpenCL base_messages [20-128)
         case msgGetPlatformIDs:
         case msgGetPlatformInfo:
-            throw dcl::library_exception( "Not implemented", -1 );
+            throw dcl::library_exception( "Not implemented" );
             break;
 
         case msgGetDeviceIDs:
-            ret_ptr = reinterpret_cast< message* >( new dcl_message< msgGetPlatformIDs >() );
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetDeviceIDs >() );
             break;
 
         case msgGetDeviceInfo:
-            throw dcl::library_exception( "Not implemented", -1 );
+            throw dcl::library_exception( "Not implemented" );
             break;
 
         case msgCreateContext:
@@ -137,14 +136,14 @@ message* message::parse_message( uint8_t* msg_buffer_ptr,
         case msgEnqueueWaitForEvents:
         case msgEnqueueBarrier:
 
-        // OpenCL Extension Messages [128-255]
+        // OpenCL Extension base_messages [128-255]
         case msgExtension0:
         case msgExtension1:
-            throw dcl::library_exception( "Not implemented", -1 );
+            throw dcl::library_exception( "Not implemented" );
             break;
 
         default: 
-            throw dcl::library_exception( "Not implemented", -1 );
+            throw dcl::library_exception( "Not implemented" );
     }
 
     ret_ptr->set_buffer( msg_buffer_ptr, length );

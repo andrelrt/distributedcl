@@ -23,7 +23,6 @@
 #ifndef _DCL_MESSAGE_H_
 #define _DCL_MESSAGE_H_
 
-#include <vector>
 #include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -32,11 +31,11 @@ namespace message {
 //-----------------------------------------------------------------------------
 enum message_type
 {
-    // Internal Messages [1-20)
-    invalid_message = 0,
-    error_message   = 1,    
+    // Internal messages [1-20)
+    msg_invalid_message = 0,
+    msg_error_message   = 1,    
 
-    // OpenCL Messages [20-128)
+    // OpenCL messages [20-128)
     msgGetPlatformIDs           = 20,
     msgGetPlatformInfo          = 21,
 
@@ -113,17 +112,17 @@ enum message_type
     msgEnqueueWaitForEvents     = 84,
     msgEnqueueBarrier           = 85,
 
-    // OpenCL Extension Messages [128-256)
+    // OpenCL Extension messages [128-256)
     msgExtension0 = 128,
     msgExtension1 = 129,
 };
 //-----------------------------------------------------------------------------
-class message
+class base_message
 {
 public:
-    virtual ~message(){}
+    virtual ~base_message(){}
 
-    static message* parse_message( uint8_t* msg_buffer_ptr, std::size_t length );
+    static base_message* parse_message( uint8_t* msg_buffer_ptr, std::size_t length );
 
     inline message_type get_type() const
     {
@@ -131,7 +130,7 @@ public:
     }
 
     virtual void execute(){}
-    virtual void set_response( const message* ){}
+    virtual void set_response( const base_message* ){}
 
     inline void get_buffer( uint8_t* buffer_ptr )
     {
@@ -158,7 +157,7 @@ public:
     }
 
 protected:
-    message( message_type type, bool wait_response = false, std::size_t size = 0 ) : 
+    base_message( message_type type, bool wait_response = false, std::size_t size = 0 ) : 
         wait_response_( wait_response ), buffer_ptr_( NULL ),
         size_( size + sizeof( message_header ) ), type_( type )
     {}
@@ -218,8 +217,8 @@ private:
     }
 };
 //-----------------------------------------------------------------------------
-template< message_type type > 
-class dcl_message : public message {};
+template< message_type MESSAGE_NUMBER > 
+class dcl_message : public base_message {};
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
