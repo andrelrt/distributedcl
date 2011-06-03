@@ -129,7 +129,6 @@ public:
         return type_;
     }
 
-    virtual void execute(){}
     virtual void set_response( const base_message* ){}
 
     inline void get_buffer( uint8_t* buffer_ptr )

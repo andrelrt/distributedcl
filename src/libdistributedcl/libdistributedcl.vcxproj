@@ -34,6 +34,7 @@
   <ItemGroup>
     <ClCompile Include="client\session_manager.cpp" />
     <ClCompile Include="message\message.cpp" />
+    <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="remote\icd_object_manager.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />

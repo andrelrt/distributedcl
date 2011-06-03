@@ -103,5 +103,8 @@
     <ClCompile Include="message\packet.cpp">
       <Filter>network\message</Filter>
     </ClCompile>
+    <ClCompile Include="message\msg_device.cpp">
+      <Filter>network\message</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -20,41 +20,21 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
-
-#include "message.h"
+#include "msg_device.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_ptr )
 {
-public:
-    virtual void set_response( const base_message* );
-
-    std::size_t get_device_count()
-    {
-        return device_count_;
-    }
-
-    void set_device_count( std::size_t device_count )
-    {
-        device_count_ = device_count;
-    }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response();
-
-private:
-    std::size_t device_count_;
-};
+    device_count_ = *( reinterpret_cast< std::size_t* >( response_ptr->get_payload() ));
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetDeviceIDs >::create_response()
+{
+    *( reinterpret_cast< std::size_t* >( get_payload() )) = device_count_;
+}
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
