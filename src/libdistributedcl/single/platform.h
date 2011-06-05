@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,41 +20,48 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
+#ifndef _DCL_PLATFORM_H_
+#define _DCL_PLATFORM_H_
 
-#include "message.h"
+#include <string>
+#include <vector>
+#include "distributedcl_internal.h"
+#include "info/dcl_objects.h"
+#include "info/platform_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace message {
+namespace single {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+class device;
+class opencl_library;
+typedef std::vector< device* > devices_t;
+//-----------------------------------------------------------------------------
+class platform :
+    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public dcl::info::dcl_object< dcl::info::platform_info >
 {
 public:
-    virtual void set_response( const base_message* response_ptr );
+    platform(){}
+	platform( const opencl_library& opencl, cl_platform_id platform_id = NULL );
+    ~platform(){}
 
-    std::size_t get_device_count()
+    inline void add_device( device* device_ptr )
     {
-        return device_count_;
+        devices_.push_back( device_ptr );
     }
 
-    void set_device_count( std::size_t device_count )
+    inline const devices_t& get_devices() const
     {
-        device_count_ = device_count;
+        return devices_;
     }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
 
 private:
-    std::size_t device_count_;
+    devices_t devices_;
+
+	void load();
+    void load_string( cl_platform_info info, std::string& out );
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+}} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
+#endif // _DCL_PLATFORM_H_

@@ -13,6 +13,9 @@
   <ItemGroup>
     <ClInclude Include="client\client_session.h" />
     <ClInclude Include="client\session_manager.h" />
+    <ClInclude Include="composite\composite_platform.h" />
+    <ClInclude Include="composite\opencl_composite.h" />
+    <ClInclude Include="info\dcl_objects.h" />
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
     <ClInclude Include="info\opencl_functions.h" />
@@ -28,17 +31,29 @@
     <ClInclude Include="remote\remote_device.h" />
     <ClInclude Include="remote\remote_platform.h" />
     <ClInclude Include="remote\remote_object.h" />
+    <ClInclude Include="server\message_dispatcher.h" />
     <ClInclude Include="server\server.h" />
+    <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_session.h" />
+    <ClInclude Include="single\opencl_library.h" />
+    <ClInclude Include="single\opencl_single.h" />
+    <ClInclude Include="single\platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="client\session_manager.cpp" />
+    <ClCompile Include="composite\composite_platform.cpp" />
+    <ClCompile Include="composite\opencl_composite.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="remote\icd_object_manager.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
+    <ClCompile Include="server\message_dispatcher.cpp" />
+    <ClCompile Include="server\server_platform.cpp" />
+    <ClCompile Include="single\opencl_library.cpp" />
+    <ClCompile Include="single\opencl_single.cpp" />
+    <ClCompile Include="single\platform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}</ProjectGuid>

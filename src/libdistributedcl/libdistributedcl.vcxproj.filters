@@ -83,6 +83,30 @@
     <ClInclude Include="network\platform.h">
       <Filter>network\platform</Filter>
     </ClInclude>
+    <ClInclude Include="server\message_dispatcher.h">
+      <Filter>network\server</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_platform.h">
+      <Filter>network\server</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\composite_platform.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\opencl_composite.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="single\opencl_library.h">
+      <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="single\platform.h">
+      <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="info\dcl_objects.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="single\opencl_single.h">
+      <Filter>single</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -105,6 +129,27 @@
     </ClCompile>
     <ClCompile Include="message\msg_device.cpp">
       <Filter>network\message</Filter>
+    </ClCompile>
+    <ClCompile Include="server\message_dispatcher.cpp">
+      <Filter>network\server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_platform.cpp">
+      <Filter>network\server</Filter>
+    </ClCompile>
+    <ClCompile Include="composite\composite_platform.cpp">
+      <Filter>composite</Filter>
+    </ClCompile>
+    <ClCompile Include="composite\opencl_composite.cpp">
+      <Filter>composite</Filter>
+    </ClCompile>
+    <ClCompile Include="single\opencl_library.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="single\platform.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="single\opencl_single.cpp">
+      <Filter>single</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

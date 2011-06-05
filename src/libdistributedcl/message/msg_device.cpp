@@ -28,12 +28,13 @@ namespace message {
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_ptr )
 {
-    device_count_ = *( reinterpret_cast< std::size_t* >( response_ptr->get_payload() ));
+    const dcl_message< msgGetDeviceIDs >* msg_response_ptr = reinterpret_cast< const dcl_message< msgGetDeviceIDs >* >( response_ptr );
+    device_count_ = *( reinterpret_cast< const std::size_t* >( msg_response_ptr ->get_payload() ));
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetDeviceIDs >::create_response()
+void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
 {
-    *( reinterpret_cast< std::size_t* >( get_payload() )) = device_count_;
+    *( reinterpret_cast< std::size_t* >( payload_ptr )) = device_count_;
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

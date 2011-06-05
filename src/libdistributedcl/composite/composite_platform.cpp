@@ -20,41 +20,27 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
-
-#include "message.h"
+#include "composite_platform.h"
+using dcl::single::devices_t;
+using dcl::single::platforms_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace message {
+namespace composite {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+composite_platform::~composite_platform()
 {
-public:
-    virtual void set_response( const base_message* response_ptr );
-
-    std::size_t get_device_count()
+    for( devices_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
     {
-        return device_count_;
+        delete( *it );
     }
+    devices_.clear();
 
-    void set_device_count( std::size_t device_count )
+    for( platforms_t::iterator it = platforms_.begin(); it != platforms_.end(); it++ )
     {
-        device_count_ = device_count;
+        delete( it->second );
     }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
-
-private:
-    std::size_t device_count_;
-};
+    platforms_.clear();
+}
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_

@@ -30,15 +30,6 @@
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, typename CL_TYPE_INFO, int CL_TYPE_INVALID_VALUE >
-class cl_object
-{
-public:
-    typedef CL_TYPE_T cl_type_t;
-    typedef CL_TYPE_INFO cl_type_info_t;
-    static const cl_int invalid_value_error = CL_TYPE_INVALID_VALUE;
-};
-//-----------------------------------------------------------------------------
 enum dcl_object_types
 {
     dcl_platform_id = 0,
@@ -65,21 +56,6 @@ protected:
     {
         icd_obj_ = icd_object_manager::get_instance().get_cl_id< DCL_TYPE_T >( ptr );
     }
-};
-//-----------------------------------------------------------------------------
-template< typename DCL_TYPE_INFO >
-class dcl_object
-{
-public:
-    typedef DCL_TYPE_INFO dcl_info_t;
-
-    inline const dcl_info_t& get_info() const
-    {
-        return local_info_;
-    }
-
-protected:
-    dcl_info_t local_info_;
 };
 //-----------------------------------------------------------------------------
 class remote_object

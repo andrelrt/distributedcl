@@ -26,14 +26,15 @@
 #include "distributedcl_internal.h"
 #include "remote_object.h"
 #include "info/device_info.h"
+#include "info/dcl_objects.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 class remote_device : 
-    public cl_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE >,
+    public dcl::info::cl_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE >,
     public icd_object< cl_device_id, remote_device, dcl_device_id >,
-    public dcl_object< dcl::info::device_info >,
+    public dcl::info::dcl_object< dcl::info::device_info >,
     public remote_object
 {
 public:

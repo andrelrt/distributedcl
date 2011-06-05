@@ -27,6 +27,7 @@
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "remote_object.h"
+#include "info/dcl_objects.h"
 #include "info/platform_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -36,9 +37,9 @@ class remote_device;
 typedef std::vector< remote_device* > remote_devices_t;
 //-----------------------------------------------------------------------------
 class remote_platform :
-    public cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
     public icd_object< cl_platform_id, remote_platform, dcl_platform_id >,
-    public dcl_object< dcl::info::platform_info >
+    public dcl::info::dcl_object< dcl::info::platform_info >
 {
 public:
     static const remote_platform& get_instance()
@@ -66,12 +67,6 @@ private:
     remote_platform()
     {
         create_icd_obj( this );
-
-        local_info_.profile_.assign( "FULL_PROFILE" );
-        local_info_.version_.assign( "OpenCL 1.1 DistributedCL 0.1" );
-	    local_info_.name_.assign( "DistributedCL" );
-        local_info_.vendor_.assign( "DistributedCL Project" );
-        local_info_.extensions_.assign( "cl_khr_icd" );
     }
 
     ~remote_platform(){}

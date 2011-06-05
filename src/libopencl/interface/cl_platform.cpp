@@ -35,27 +35,25 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
         return CL_INVALID_VALUE;
     }
 
-    try
+    if( num_platforms != NULL )
     {
-        if( num_platforms != NULL )
-        {
-            *num_platforms = 1;
-        }
-
-        if( platforms != NULL )
-        {
-            *platforms = dcl::remote::remote_platform::get_instance().get_icd_obj();
-        }
-
-        return CL_SUCCESS;
+        *num_platforms = 1;
     }
-    catch( dcl::library_exception& ex )
+
+    if( platforms != NULL )
     {
-        return ex.get_error();
-    }
-    catch( ... )
-    {
-        return CL_INVALID_VALUE;
+        try
+        {
+            *platforms = remote_platform::get_instance().get_icd_obj();
+        }
+        catch( dcl::library_exception& ex )
+        {
+            return ex.get_error();
+        }
+        catch( ... )
+        {
+            return CL_INVALID_VALUE;
+        }
     }
 
     return CL_SUCCESS;

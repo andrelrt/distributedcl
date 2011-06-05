@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,41 +20,52 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
+#ifndef _DCL_COMPOSITE_PLATFORM_H_
+#define _DCL_COMPOSITE_PLATFORM_H_
 
-#include "message.h"
+#include <set>
+#include "distributedcl_internal.h"
+#include "info/dcl_objects.h"
+#include "info/platform_info.h"
+#include "single/platform.h"
+#include "single/opencl_single.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace message {
+namespace composite {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+class composite_platform :
+    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public dcl::info::dcl_object< dcl::info::platform_info >
 {
 public:
-    virtual void set_response( const base_message* response_ptr );
+    composite_platform(){}
+    ~composite_platform();
 
-    std::size_t get_device_count()
+    void add_platform( dcl::single::platform* platform_ptr )
     {
-        return device_count_;
+        //platforms_.insert( dcl::single::platforms_t::value_type( platform_ptr->get_id(), platform_ptr ) );
     }
 
-    void set_device_count( std::size_t device_count )
+    inline void add_devices( const dcl::single::devices_t& devices_ref )
     {
-        device_count_ = device_count;
+        devices_.insert( devices_.end(), devices_ref.begin(), devices_ref.end() );
     }
 
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
+    inline const dcl::single::platforms_t& get_platforms() const
+    {
+        return platforms_;
+    }
 
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
+    inline const dcl::single::devices_t& get_devices() const
+    {
+        return devices_;
+    }
 
 private:
-    std::size_t device_count_;
+    dcl::single::devices_t devices_;
+    dcl::single::platforms_t platforms_;
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
+#endif //_DCL_COMPOSITE_PLATFORM_H_

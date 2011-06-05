@@ -20,41 +20,69 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
+#ifndef _DCL_OPENCL_COMPOSITE_H_
+#define _DCL_OPENCL_COMPOSITE_H_
 
-#include "message.h"
+#include <string>
+#include <set>
+#include "distributedcl_internal.h"
+#include "composite_platform.h"
+//-----------------------------------------------------------------------------
+namespace dcl { namespace single { 
+class opencl_single;
+class opencl_library;
+}}
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace message {
+namespace composite {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+class composite_context;
+//-----------------------------------------------------------------------------
+class opencl_composite
 {
 public:
-    virtual void set_response( const base_message* response_ptr );
-
-    std::size_t get_device_count()
+    static opencl_composite& instance()
     {
-        return device_count_;
+        return instance_;
     }
 
-    void set_device_count( std::size_t device_count )
+	~opencl_composite()
     {
-        device_count_ = device_count;
+        free_all();
     }
 
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
+    void add_library( const std::string& libpath );
 
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
+    const composite_platform& get_platform() const
+    { 
+        return comp_platform_;
+    }
+
+    const dcl::single::devices_t& get_devices() const
+    { 
+        return devices_;
+    }
+
+    void get_devices( dcl::single::devices_t& devices, cl_device_type device_type );
+
+    composite_context* create_context( const dcl::single::devices_t& devices );
+	composite_context* create_context( cl_device_type device_type );
+
+    void unload_compiler();
+    void free_all();
 
 private:
-    std::size_t device_count_;
+    opencl_composite(){}
+    typedef std::set< dcl::single::opencl_single* > opencl_set_t;
+    typedef std::set< dcl::single::opencl_library* > library_set_t;
+
+    opencl_set_t opencl_set_;
+    library_set_t library_set_;
+    dcl::single::devices_t devices_;
+    composite_platform comp_platform_;
+    static opencl_composite instance_;
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
+#endif // _DCL_OPENCL_COMPOSITE_H_

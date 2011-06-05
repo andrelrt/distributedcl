@@ -32,6 +32,7 @@
 #endif
 
 #ifdef WIN32
+#define WINDOWS_MEAN_AND_LEAN
 #include <Windows.h>
 #endif
 

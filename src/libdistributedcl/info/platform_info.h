@@ -39,7 +39,14 @@ public:
     std::string vendor_;
     std::string extensions_;
 
-    platform_info(){}
+    platform_info()
+    {
+        profile_.assign( "FULL_PROFILE" );
+        version_.assign( "OpenCL 1.1 DistributedCL 0.1" );
+	    name_.assign( "DistributedCL" );
+        vendor_.assign( "DistributedCL Project" );
+        extensions_.assign( "cl_khr_icd" );
+    }
 
     platform_info( const platform_info& other ) :
         profile_( other.profile_ ),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,41 +20,46 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
-
-#include "message.h"
+#include "platform.h"
+#include <boost/scoped_array.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace message {
+namespace single {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+platform::platform( const opencl_library& opencl, cl_platform_id platform_id )
 {
-public:
-    virtual void set_response( const base_message* response_ptr );
-
-    std::size_t get_device_count()
-    {
-        return device_count_;
-    }
-
-    void set_device_count( std::size_t device_count )
-    {
-        device_count_ = device_count;
-    }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
-
-private:
-    std::size_t device_count_;
-};
+	load();
+}
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+void platform::load()
+{
+    load_string( CL_PLATFORM_PROFILE, local_info_.profile_ );
+	load_string( CL_PLATFORM_VERSION, local_info_.version_ );
+	load_string( CL_PLATFORM_NAME, local_info_.name_ );
+	load_string( CL_PLATFORM_VENDOR, local_info_.vendor_ );
+	load_string( CL_PLATFORM_EXTENSIONS, local_info_.extensions_ );
+}
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
+void platform::load_string( cl_platform_info info, std::string& out )
+{
+    //size_t value_size;
+
+    //out.clear();
+
+    //cl_int cl_error = get_opencl().clGetPlatformInfo( get_id(), info, 0, NULL, &value_size );
+
+    //if( cl_error == CL_SUCCESS )
+    //{
+    //    boost::scoped_array<char> param_value( new char[ value_size +1 ] );
+
+    //    cl_error = get_opencl().clGetPlatformInfo( get_id(), info, value_size, param_value.get(), &value_size );
+
+    //    if( cl_error == CL_SUCCESS )
+    //    {
+    //        out.assign( param_value.get() );
+    //    }
+    //}
+}
+//-----------------------------------------------------------------------------
+}} // namespace dcl::single
+//-----------------------------------------------------------------------------

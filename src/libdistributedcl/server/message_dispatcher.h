@@ -20,41 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
+#ifndef _DCL_NETWORK_MESSAGE_DISPATCHER_H_
+#define _DCL_NETWORK_MESSAGE_DISPATCHER_H_
 
-#include "message.h"
+#include "distributedcl_internal.h"
+#include "message/packet.h"
+#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
-namespace message {
+namespace server {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+class message_dipatcher
 {
 public:
-    virtual void set_response( const base_message* response_ptr );
-
-    std::size_t get_device_count()
-    {
-        return device_count_;
-    }
-
-    void set_device_count( std::size_t device_count )
-    {
-        device_count_ = device_count;
-    }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
-
-private:
-    std::size_t device_count_;
+    void dispatch_messages( dcl::network::message::message_vector_t& messages );
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+template< dcl::network::message::message_type TYPE >
+class server_execute{};
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
+}}} // namespace dcl::network::server
+//-----------------------------------------------------------------------------
+#endif // _DCL_NETWORK_MESSAGE_DISPATCHER_H_

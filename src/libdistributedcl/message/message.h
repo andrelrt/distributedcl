@@ -142,7 +142,7 @@ public:
         header->id = 0;
         header->length = static_cast< uint32_t >( htonl( static_cast< u_long >( size_ ) ) );
 
-        create_buffer();
+        create_request( buffer_ptr_ + sizeof( message_header ) );
     }
 
     inline std::size_t get_size() const
@@ -162,14 +162,15 @@ protected:
     {}
 
     virtual void parse(){}
-    virtual void create_buffer(){}
+    virtual void create_request( uint8_t* payload_ptr ){}
+    virtual void create_response( uint8_t* payload_ptr ){}
 
     inline void set_size( std::size_t size )
     {
         size_ = size + sizeof( message_header );
     }
 
-    inline uint8_t* get_payload()
+    inline const uint8_t* get_payload() const
     {
         return buffer_ptr_ + sizeof( message_header );
     }

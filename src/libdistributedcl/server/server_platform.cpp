@@ -20,41 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
-
-#include "message.h"
+#include "server_platform.h"
+#include "message/message.h"
+#include "message/msg_device.h"
+#include "composite/opencl_composite.h"
+using dcl::network::message::dcl_message;
+using dcl::network::message::msgGetDeviceIDs;
+using dcl::composite::opencl_composite;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
-namespace message {
+namespace server {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+void server_execute< msgGetDeviceIDs >::execute( dcl_message< msgGetDeviceIDs >& message )
 {
-public:
-    virtual void set_response( const base_message* response_ptr );
+    //ocg::devices_t devs;
+    //opencl_composite::instance().get_devices( devs, device_type );
 
-    std::size_t get_device_count()
-    {
-        return device_count_;
-    }
-
-    void set_device_count( std::size_t device_count )
-    {
-        device_count_ = device_count;
-    }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
-
-private:
-    std::size_t device_count_;
-};
+    //message.set_device_count( devs.size() );
+    message.set_device_count( 1 );
+}
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+}}} // namespace dcl::network::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_

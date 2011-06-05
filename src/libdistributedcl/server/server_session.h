@@ -26,6 +26,8 @@
 #include <boost/thread.hpp>
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
+#include "message_dispatcher.h"
+#include "message/packet.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -75,7 +77,7 @@ public:
 
 private:
     boost::thread* receive_thread_ptr_;
-    base_message_dispatcher dispatcher_;
+    message_dispatcher dispatcher_;
 
     void receive_thread()
     {

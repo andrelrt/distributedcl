@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,41 +20,60 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_MESSAGES_H_
-#define _DCL_DEVICE_MESSAGES_H_
+#ifndef _DCL_OPENCL_SINGLE_H_
+#define _DCL_OPENCL_SINGLE_H_
 
-#include "message.h"
+#include <map>
+#include <vector>
+#include "distributedcl_internal.h"
+#include "opencl_library.h"
+#include "platform.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace message {
+namespace single {
 //-----------------------------------------------------------------------------
-template<>
-class dcl_message< msgGetDeviceIDs > : public base_message
+class context;
+class platform;
+typedef std::map< cl_platform_id, platform* > platforms_t;
+//-----------------------------------------------------------------------------
+class opencl_single
 {
 public:
-    virtual void set_response( const base_message* response_ptr );
+    opencl_single( const opencl_library& opencl ) : opencl_( opencl ){}
+    ~opencl_single(){}
 
-    std::size_t get_device_count()
+	const devices_t& get_devices();
+	const platforms_t& get_platforms();
+
+    void get_devices( devices_t& devices, const platform& platform_ref,
+                      cl_device_type device_type = CL_DEVICE_TYPE_ALL );
+
+	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL );
+
+    context* create_context( const devices_t& devices, const platform& platform_ref = platform() );
+	context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL, 
+                             const platform& platform_ref = platform() );
+
+    inline const opencl_library& get_opencl() const
     {
-        return device_count_;
+        return( opencl_ );
     }
 
-    void set_device_count( std::size_t device_count )
+    inline void unload_compiler()
     {
-        device_count_ = device_count;
+        if( opencl_.loaded() )
+        {
+            opencl_.clUnloadCompiler();
+        }
     }
-
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
-
-protected:
-    virtual void create_response( uint8_t* payload_ptr );
 
 private:
-    std::size_t device_count_;
+	const opencl_library& opencl_;
+
+	devices_t devices_;
+	platforms_t platforms_;
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::message
+}} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_MESSAGES_H_
+#endif // _DCL_OPENCL_SINGLE_H_
