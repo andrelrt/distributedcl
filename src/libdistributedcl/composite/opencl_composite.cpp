@@ -23,10 +23,11 @@
 #include "opencl_composite.h"
 #include "single/opencl_single.h"
 #include "single/opencl_library.h"
-using dcl::single::devices_t;
+#include "remote/remote_opencl.h"
 using dcl::single::platforms_t;
 using dcl::single::opencl_single;
 using dcl::single::opencl_library;
+using dcl::remote::remote_opencl;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -56,15 +57,16 @@ void opencl_composite::add_library( const std::string& libpath )
     library_set_.insert( library_ptr );
     opencl_set_.insert( opencl_ptr );
 
-    const platforms_t& platforms_ref = opencl_ptr->get_platforms();
-
-    for( platforms_t::const_iterator it = platforms_ref.begin(); it != platforms_ref.end(); it++ )
-    {
-        comp_platform_.add_platform( it->second );
-    }
-
     const devices_t& single_devices = opencl_ptr->get_devices();
     devices_.insert( devices_.end(), single_devices.begin(), single_devices.end() );
+}
+//-----------------------------------------------------------------------------
+void opencl_composite::add_remote( const remote_opencl& remote )
+{
+    //remote_set_.insert( &remote );
+
+    //const devices_t& single_devices = remote.get_devices();
+    //devices_.insert( devices_.end(), single_devices.begin(), single_devices.end() );
 }
 //-----------------------------------------------------------------------------
 void opencl_composite::get_devices( devices_t& devices, cl_device_type device_type )

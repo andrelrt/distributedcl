@@ -53,9 +53,6 @@
     <ClInclude Include="info\opencl_functions.h">
       <Filter>info</Filter>
     </ClInclude>
-    <ClInclude Include="remote\icd_object_manager.h">
-      <Filter>remote</Filter>
-    </ClInclude>
     <ClInclude Include="client\session_manager.h">
       <Filter>network\client</Filter>
     </ClInclude>
@@ -107,6 +104,18 @@
     <ClInclude Include="single\opencl_single.h">
       <Filter>single</Filter>
     </ClInclude>
+    <ClInclude Include="remote\remote_opencl.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\composite_device.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\icd_object.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\object_manager.h">
+      <Filter>remote</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -116,9 +125,6 @@
       <Filter>network\message</Filter>
     </ClCompile>
     <ClCompile Include="remote\remote_device.cpp">
-      <Filter>remote</Filter>
-    </ClCompile>
-    <ClCompile Include="remote\icd_object_manager.cpp">
       <Filter>remote</Filter>
     </ClCompile>
     <ClCompile Include="client\session_manager.cpp">
@@ -150,6 +156,12 @@
     </ClCompile>
     <ClCompile Include="single\opencl_single.cpp">
       <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_opencl.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="composite\icd_object.cpp">
+      <Filter>composite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

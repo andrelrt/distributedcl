@@ -27,19 +27,16 @@
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-const remote_device::dcl_info_t& remote_device::get_info()
+bool remote_device::load_device_info()
 {
-    if( !data_loaded_ )
-    {
-        //dcl_message< msgGetPlatformIDs >() msg( remote_id_ );
-        //session_ref_.send_message( msg );
+    //dcl_message< msgGetPlatformIDs >() msg( remote_id_ );
+    //session_ref_.send_message( msg );
 
-        ////TODO: Fill the device_info structure
+    ////TODO: Fill the device_info structure
 
-        //data_loaded_ = true;
-    }
+    //data_loaded_ = true;
 
-    return local_info_;
+    return true;
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

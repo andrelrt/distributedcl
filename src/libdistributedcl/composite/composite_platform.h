@@ -25,7 +25,9 @@
 
 #include <set>
 #include "distributedcl_internal.h"
+#include "icd_object.h"
 #include "info/dcl_objects.h"
+#include "info/device_info.h"
 #include "info/platform_info.h"
 #include "single/platform.h"
 #include "single/opencl_single.h"
@@ -35,35 +37,39 @@ namespace composite {
 //-----------------------------------------------------------------------------
 class composite_platform :
     public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public icd_object< cl_platform_id, composite_platform, dcl_platform_id >,
     public dcl::info::dcl_object< dcl::info::platform_info >
 {
 public:
-    composite_platform(){}
-    ~composite_platform();
-
-    void add_platform( dcl::single::platform* platform_ptr )
+    composite_platform()
     {
-        //platforms_.insert( dcl::single::platforms_t::value_type( platform_ptr->get_id(), platform_ptr ) );
+        create_icd_obj( this );
     }
+    ~composite_platform(){}
 
-    inline void add_devices( const dcl::single::devices_t& devices_ref )
-    {
-        devices_.insert( devices_.end(), devices_ref.begin(), devices_ref.end() );
-    }
+    //void add_platform( dcl::single::platform* platform_ptr )
+    //{
+    //    platforms_.insert( dcl::single::platforms_t::value_type( platform_ptr->get_id(), platform_ptr ) );
+    //}
 
-    inline const dcl::single::platforms_t& get_platforms() const
-    {
-        return platforms_;
-    }
+    //inline void add_devices( const dcl::single::devices_t& devices_ref )
+    //{
+    //    devices_.insert( devices_.end(), devices_ref.begin(), devices_ref.end() );
+    //}
 
-    inline const dcl::single::devices_t& get_devices() const
-    {
-        return devices_;
-    }
+    //inline const dcl::single::platforms_t& get_platforms() const
+    //{
+    //    return platforms_;
+    //}
+
+    //inline const dcl::single::devices_t& get_devices() const
+    //{
+    //    return devices_;
+    //}
 
 private:
-    dcl::single::devices_t devices_;
-    dcl::single::platforms_t platforms_;
+    //dcl::single::devices_t devices_;
+    //dcl::single::platforms_t platforms_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

@@ -26,6 +26,7 @@
 #include <string>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
+#include "dcl_objects.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -96,7 +97,7 @@ public:
             case CL_DEVICE_VENDOR_ID                    : return sizeof( cl_uint );
             case CL_DEVICE_MAX_COMPUTE_UNITS            : return sizeof( cl_uint );
             case CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS     : return sizeof( cl_uint );
-            case CL_DEVICE_MAX_WORK_GROUP_SIZE          : return sizeof( size_t );
+            case CL_DEVICE_MAX_WORK_GROUP_SIZE          : return sizeof( size_t ) * 3;
             case CL_DEVICE_MAX_WORK_ITEM_SIZES          : return sizeof( size_t );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR  : return sizeof( cl_uint );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT : return sizeof( cl_uint );
@@ -205,6 +206,34 @@ public:
                 throw library_exception( CL_INVALID_VALUE );
         }
     }
+};
+//-----------------------------------------------------------------------------
+class generic_device :
+    public cl_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE >,
+    public dcl_object< device_info >
+{
+public:
+    generic_device() : info_loaded_( false ){}
+    ~generic_device(){}
+
+    inline void load_info()
+    {
+        if( !info_loaded_ )
+        {
+            info_loaded_ = load_device_info();
+        }
+    }
+
+protected:
+    virtual bool load_device_info() = 0;
+
+    inline bool get_info_loaded() const
+    {
+        return info_loaded_;
+    }
+
+private:
+    bool info_loaded_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

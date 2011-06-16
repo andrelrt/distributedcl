@@ -29,12 +29,14 @@
 #include "info/dcl_objects.h"
 #include "info/platform_info.h"
 //-----------------------------------------------------------------------------
+namespace dcl { namespace info {
+class generic_device;
+}}
+//-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class device;
 class opencl_library;
-typedef std::vector< device* > devices_t;
 //-----------------------------------------------------------------------------
 class platform :
     public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
@@ -45,7 +47,7 @@ public:
 	platform( const opencl_library& opencl, cl_platform_id platform_id = NULL );
     ~platform(){}
 
-    inline void add_device( device* device_ptr )
+    inline void add_device( dcl::info::generic_device* device_ptr )
     {
         devices_.push_back( device_ptr );
     }

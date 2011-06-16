@@ -38,11 +38,17 @@
 #endif
 
 #include <stdint.h>
+#include <vector>
 #include "library_exception.h"
+//-----------------------------------------------------------------------------
+namespace dcl { namespace info {
+class generic_device;
+}}
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------
-typedef uint8_t remote_id_t;
+typedef uint16_t remote_id_t;
+typedef std::vector< dcl::info::generic_device* > devices_t;
 //-----------------------------------------------------------------------------
 } // namespace dcl
 //-----------------------------------------------------------------------------

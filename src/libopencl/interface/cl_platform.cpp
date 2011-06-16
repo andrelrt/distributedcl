@@ -22,8 +22,10 @@
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
-#include "remote/remote_platform.h"
-using dcl::remote::remote_platform;
+#include "composite/opencl_composite.h"
+#include "composite/composite_platform.h"
+using dcl::composite::opencl_composite;
+using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
@@ -44,7 +46,7 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
     {
         try
         {
-            *platforms = remote_platform::get_instance().get_icd_obj();
+            *platforms = opencl_composite::get_instance().get_platform().get_icd_obj();
         }
         catch( dcl::library_exception& ex )
         {
@@ -66,8 +68,8 @@ clGetPlatformInfo( cl_platform_id platform, cl_platform_info param_name,
 {
     try
     {
-        get_info< remote_platform >( platform, param_name, param_value_size, 
-                                     param_value, param_value_size_ret );
+        get_info< composite_platform >( platform, param_name, param_value_size, 
+                                        param_value, param_value_size_ret );
     }
     catch( dcl::library_exception& ex )
     {

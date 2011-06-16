@@ -24,48 +24,34 @@
 #define _DCL_REMOTE_OBJECT_H_
 
 #include "distributedcl_internal.h"
-#include "icd_object_manager.h"
+#include "object_manager.h"
 #include "client/session_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-enum dcl_object_types
-{
-    dcl_platform_id = 0,
-    dcl_device_id = 1,
-};
-//-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, typename DCL_TYPE_T, uint32_t DCL_TYPE_ID >
-class icd_object
-{
-public:
-    static const uint32_t type_id = DCL_TYPE_ID;
-
-    inline CL_TYPE_T get_icd_obj() const
-    {
-        return icd_obj_;
-    }
-
-protected:
-    CL_TYPE_T icd_obj_;
-
-    icd_object(){}
-
-    inline void create_icd_obj( DCL_TYPE_T* ptr )
-    {
-        icd_obj_ = icd_object_manager::get_instance().get_cl_id< DCL_TYPE_T >( ptr );
-    }
-};
-//-----------------------------------------------------------------------------
+template< typename DCL_TYPE_T >
 class remote_object
 {
 protected:
-    dcl::remote_id_t remote_id_;
     dcl::network::client::session_manager::session_t& session_ref_;
 
-    remote_object( dcl::network::client::session_manager::session_t& session_ref, dcl::remote_id_t remote_id ) :
-        session_ref_( session_ref ), remote_id_( remote_id ) {}
+    remote_object( dcl::network::client::session_manager::session_t& session_ref ) :
+        session_ref_( session_ref ), remote_id_( 0 ) {}
+
+    inline dcl::remote_id_t get_remote_id() const
+    {
+        return remote_id_;
+    }
+
+private:
+    dcl::remote_id_t remote_id_;
+
+    friend class object_manager< DCL_TYPE_T >;
+    inline void set_remote_id( dcl::remote_id_t remote_id )
+    {
+        remote_id_ = remote_id;
+    }
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

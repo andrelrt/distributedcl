@@ -20,12 +20,10 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "remote_platform.h"
+#include "remote_opencl.h"
 #include "remote_device.h"
-#include "client/session_manager.h"
 #include "message/message.h"
 #include "message/msg_device.h"
-using dcl::network::client::session_manager;
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
@@ -33,23 +31,19 @@ using dcl::network::message::msgGetDeviceIDs;
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-remote_platform* remote_platform::instance_ptr_ = NULL;
-//-----------------------------------------------------------------------------
-//void remote_platform::load_devices()
-//{
-//    session_manager::session_t& client_session = session_manager::get_session();
-//
-//    dcl_message< msgGetDeviceIDs > msg;
-//
-//    client_session.send_message( reinterpret_cast< base_message* >( &msg ) );
-//
-//    std::size_t device_count = msg.get_device_count();
-//
-//    for( std::size_t i = 0; i < device_count; i++ )
-//    {
-//        remote_devices_.push_back( new remote_device( client_session ) );
-//    }
-//}
+void remote_opencl::load_devices()
+{
+    dcl_message< msgGetDeviceIDs > msg;
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    std::size_t device_count = msg.get_device_count();
+
+    for( std::size_t i = 0; i < device_count; i++ )
+    {
+        devices_.add( new remote_device( session_ref_ ) );
+    }
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------

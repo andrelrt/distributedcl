@@ -38,7 +38,6 @@ typedef std::vector< remote_device* > remote_devices_t;
 //-----------------------------------------------------------------------------
 class remote_platform :
     public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
-    public icd_object< cl_platform_id, remote_platform, dcl_platform_id >,
     public dcl::info::dcl_object< dcl::info::platform_info >
 {
 public:
@@ -51,27 +50,23 @@ public:
         return( *instance_ptr_ );
     }
 
-    inline const remote_devices_t& get_devices() const
-    {
-        if( remote_devices_.empty() )
-        {
-            const_cast< remote_platform* >( this )->load_devices();
-        }
-        return remote_devices_;
-    }
+    //inline const remote_devices_t& get_devices() const
+    //{
+    //    if( remote_devices_.empty() )
+    //    {
+    //        const_cast< remote_platform* >( this )->load_devices();
+    //    }
+    //    return remote_devices_;
+    //}
 
 private:
     static remote_platform* instance_ptr_;
-    remote_devices_t remote_devices_;
+    //remote_devices_t remote_devices_;
 
-    remote_platform()
-    {
-        create_icd_obj( this );
-    }
-
+    remote_platform(){}
     ~remote_platform(){}
 
-    void load_devices();
+    //void load_devices();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

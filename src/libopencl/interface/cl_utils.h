@@ -20,25 +20,21 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#ifndef _DCL_CL_UTILS_H_
+#define _DCL_CL_UTILS_H_
+
 #include <string.h>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
-#include "remote/icd_object_manager.h"
-//-----------------------------------------------------------------------------
-#define TO_BOOL(x) (((x)==CL_TRUE)?true:false)
-#define RETURN_IF_NULL(id,err) if((id)==NULL)return(err)
-#define SET_IF_NOT_NULL(ptr,val) if((ptr)!=NULL)*(ptr)=(val)
-#define SET_ERROR_IF_NULL(id,ret,err) if((id)==NULL){if((ret)!=NULL)*(ret)=(err);return NULL;}
+#include "composite/icd_object.h"
 //-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
 cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
 {
-    RETURN_IF_NULL( id, DCL_TYPE_T::invalid_value_error );
-
     try
     {
-        DCL_TYPE_T* obj_ptr = reinterpret_cast< DCL_TYPE_T* >( id );
-
+        DCL_TYPE_T* obj_ptr = dcl::composite::icd_object_manager::get_instance().get_object_ptr( id );
+            
         obj_ptr->retain();
 
         return CL_SUCCESS;
@@ -52,11 +48,9 @@ cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
 template< class DCL_TYPE_T >
 cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 {
-    RETURN_IF_NULL( id, DCL_TYPE_T::invalid_value_error );
-
     try
     {
-        DCL_TYPE_T* obj_ptr = reinterpret_cast< DCL_TYPE_T* >( id );
+        DCL_TYPE_T* obj_ptr = dcl::composite::icd_object_manager::get_instance().get_object_ptr( id );
 
         if( obj_ptr->get_reference_count() > 0 )
         {
@@ -64,7 +58,7 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 
             if( obj_ptr->get_reference_count() == 0 )
             {
-                delete obj_ptr;
+                dcl::composite::icd_object_manager::get_instance().remove_object( id );
             }
         }
 
@@ -76,9 +70,10 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
     }
 }
 //-----------------------------------------------------------------------------
-template< typename DCL_TYPE_T >
-void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_type_info_t info, 
-               size_t param_value_size, void *param_value, size_t *param_value_size_ret )
+template< typename DCL_TYPE_T > inline
+void get_info_check_parameters( const typename DCL_TYPE_T::cl_type_t cl_obj,
+                                size_t param_value_size, void *param_value, 
+                                size_t *param_value_size_ret )
 {
     if( cl_obj == NULL )
     {
@@ -90,6 +85,13 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
     {
         throw dcl::library_exception( CL_INVALID_VALUE );
     }
+}
+//-----------------------------------------------------------------------------
+template< typename DCL_TYPE_T >
+void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_type_info_t info, 
+               size_t param_value_size, void *param_value, size_t *param_value_size_ret )
+{
+    get_info_check_parameters< DCL_TYPE_T >( cl_obj, param_value_size, param_value, param_value_size_ret );
 
     DCL_TYPE_T* obj_ptr = reinterpret_cast< DCL_TYPE_T* >( cl_obj );
     const DCL_TYPE_T::dcl_info_t& info_ptr = obj_ptr->get_info();
@@ -113,3 +115,4 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
     }
 }
 //-----------------------------------------------------------------------------
+#endif // _DCL_CL_UTILS_H_

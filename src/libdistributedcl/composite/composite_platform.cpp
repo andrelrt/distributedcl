@@ -21,26 +21,25 @@
  */
 //-----------------------------------------------------------------------------
 #include "composite_platform.h"
-using dcl::single::devices_t;
 using dcl::single::platforms_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-composite_platform::~composite_platform()
-{
-    for( devices_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
-    {
-        delete( *it );
-    }
-    devices_.clear();
-
-    for( platforms_t::iterator it = platforms_.begin(); it != platforms_.end(); it++ )
-    {
-        delete( it->second );
-    }
-    platforms_.clear();
-}
+//composite_platform::~composite_platform()
+//{
+//    for( devices_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
+//    {
+//        delete( *it );
+//    }
+//    devices_.clear();
+//
+//    for( platforms_t::iterator it = platforms_.begin(); it != platforms_.end(); it++ )
+//    {
+//        delete( it->second );
+//    }
+//    platforms_.clear();
+//}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------

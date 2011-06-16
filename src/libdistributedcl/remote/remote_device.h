@@ -32,22 +32,17 @@ namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 class remote_device : 
-    public dcl::info::cl_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE >,
-    public icd_object< cl_device_id, remote_device, dcl_device_id >,
-    public dcl::info::dcl_object< dcl::info::device_info >,
-    public remote_object
+    public dcl::info::generic_device,
+    public remote_object< remote_device >
 {
 public:
-    remote_device( dcl::network::client::session_manager::session_t& session_ref, 
-                   dcl::remote_id_t remote_id ) : 
-        remote_object( session_ref, remote_id ), data_loaded_( false ) {}
+    remote_device( dcl::network::client::session_manager::session_t& session_ref ) : 
+        remote_object( session_ref ) {}
 
     ~remote_device();
 
-    const dcl_info_t& get_info();
-
-private:
-    bool data_loaded_;
+protected:
+    virtual bool load_device_info();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

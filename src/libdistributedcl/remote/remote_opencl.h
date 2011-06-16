@@ -20,36 +20,48 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "remote_platform.h"
-#include "remote_device.h"
+#ifndef _DCL_REMOTE_OPENCL_H_
+#define _DCL_REMOTE_OPENCL_H_
+
+#include "distributedcl_internal.h"
+#include "object_manager.h"
 #include "client/session_manager.h"
-#include "message/message.h"
-#include "message/msg_device.h"
-using dcl::network::client::session_manager;
-using dcl::network::message::base_message;
-using dcl::network::message::dcl_message;
-using dcl::network::message::msgGetDeviceIDs;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-remote_platform* remote_platform::instance_ptr_ = NULL;
+class remote_device;
 //-----------------------------------------------------------------------------
-//void remote_platform::load_devices()
-//{
-//    session_manager::session_t& client_session = session_manager::get_session();
-//
-//    dcl_message< msgGetDeviceIDs > msg;
-//
-//    client_session.send_message( reinterpret_cast< base_message* >( &msg ) );
-//
-//    std::size_t device_count = msg.get_device_count();
-//
-//    for( std::size_t i = 0; i < device_count; i++ )
-//    {
-//        remote_devices_.push_back( new remote_device( client_session ) );
-//    }
-//}
+class remote_opencl
+{
+public:
+    remote_opencl( dcl::network::client::session_manager::session_t& session_ref ) :
+        session_ref_( session_ref ) {}
+
+    ~remote_opencl(){}
+
+    inline const object_manager< remote_device >& get_devices() const
+    {
+        if( devices_.empty() )
+        {
+            const_cast< remote_opencl* >( this )->load_devices();
+        }
+
+        return( devices_ );
+    }
+
+    inline dcl::network::client::session_manager::session_t& get_session() const
+    {
+        return session_ref_;
+    }
+
+private:
+    object_manager< remote_device > devices_;
+    dcl::network::client::session_manager::session_t& session_ref_;
+
+    void load_devices();
+};
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
+#endif // _DCL_REMOTE_OPENCL_H_

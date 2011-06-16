@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_icd_object_manager_H_
-#define _DCL_icd_object_manager_H_
+#ifndef _DCL_ICD_OBJECT_H_
+#define _DCL_ICD_OBJECT_H_
 
 #include <set>
 #include <map>
@@ -29,7 +29,35 @@
 #include "info/opencl_functions.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace composite {
+//-----------------------------------------------------------------------------
+enum dcl_object_types
+{
+    dcl_platform_id = 0,
+    dcl_device_id = 1,
+};
+//-----------------------------------------------------------------------------
+template< typename CL_TYPE_T, typename DCL_TYPE_T, uint32_t DCL_TYPE_ID >
+class icd_object
+{
+public:
+    static const uint32_t type_id = DCL_TYPE_ID;
+
+    inline CL_TYPE_T get_icd_obj() const
+    {
+        return icd_obj_;
+    }
+
+protected:
+    CL_TYPE_T icd_obj_;
+
+    icd_object(){}
+
+    inline void create_icd_obj( DCL_TYPE_T* ptr )
+    {
+        icd_obj_ = icd_object_manager::get_instance().get_cl_id< DCL_TYPE_T >( ptr );
+    }
+};
 //-----------------------------------------------------------------------------
 #define DECLARE_FUNCTION(x) dcl::info::x##_t x
 
@@ -201,12 +229,16 @@ public:
     }
 
     template< typename DCL_TYPE_T >
-    DCL_TYPE_T* remove_object( typename DCL_TYPE_T::cl_type_t cl_ptr )
+    void remove_object( typename DCL_TYPE_T::cl_type_t cl_ptr )
     {
         cl_object_set_t::iterator it = get_internal_object< DCL_TYPE_T >( cl_ptr );
 
+        DCL_TYPE_T* obj_ptr = reinterpret_cast< DCL_TYPE_T* >( (*it)->dcl_object );
+
         object_map_.erase( (*it)->dcl_object );
         object_set_.erase( it );
+
+        delete obj_ptr;
     }
 
     template< typename DCL_TYPE_T >
@@ -240,7 +272,6 @@ public:
     }
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif // _DCL_icd_object_manager_H_
-
+#endif // _DCL_ICD_OBJECT_H_

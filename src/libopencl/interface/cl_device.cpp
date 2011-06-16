@@ -22,13 +22,16 @@
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
-#include "remote/remote_device.h"
-#include "remote/remote_platform.h"
-#include "remote/icd_object_manager.h"
-using dcl::remote::remote_device;
-using dcl::remote::remote_platform;
-using dcl::remote::remote_devices_t;
-using dcl::remote::icd_object_manager;
+#include "info/device_info.h"
+#include "composite/composite_platform.h"
+#include "composite/opencl_composite.h"
+#include "composite/composite_device.h"
+using dcl::devices_t;
+using dcl::info::generic_device;
+using dcl::composite::icd_object_manager;
+using dcl::composite::composite_platform;
+using dcl::composite::opencl_composite;
+using dcl::composite::composite_device;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num_entries,
@@ -42,11 +45,12 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 
     try
     {
-        remote_platform* remote_platform_ptr = icd_object_manager::get_instance().get_object_ptr< remote_platform >( platform );
+        composite_platform* platform_ptr = icd_object_manager::get_instance().get_object_ptr< composite_platform >( platform );
 
-        const remote_devices_t& remote_devices_ref = remote_platform_ptr->get_devices();
+        devices_t devs;
+        opencl_composite::get_instance().get_devices( devs, device_type );
 
-        cl_uint count = static_cast< cl_uint >( remote_devices_ref.size() );
+        cl_uint count = static_cast< cl_uint >( devs.size() );
 
         if( num_devices != NULL )
         {
@@ -62,7 +66,8 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 
             for( cl_uint i = 0; i < count; i++ )
             {
-                devices[ i ] = reinterpret_cast< cl_device_id >( remote_devices_ref[ i ] );
+                devices[ i ] = icd_object_manager::get_instance().get_cl_id< composite_device >( 
+                                            reinterpret_cast< composite_device* >( devs[ i ] ) ); 
             }
         }
     }
@@ -80,11 +85,11 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetDeviceInfo( cl_device_id device, cl_device_info param_name, size_t param_value_size,
-                 void *param_value, size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+                 void *param_value, size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
 {
     try
     {
-        get_info< remote_device >( device, param_name, param_value_size, param_value, param_value_size_ret );
+        get_info< dcl::info::generic_device >( device, param_name, param_value_size, param_value, param_value_size_ret );
     }
     catch( dcl::library_exception& ex )
     {
