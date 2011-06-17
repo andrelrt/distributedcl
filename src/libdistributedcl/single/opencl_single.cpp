@@ -58,8 +58,8 @@ const platforms_t& opencl_single::get_platforms()
     return platforms_;
 }
 //-----------------------------------------------------------------------------
-//const devices_t& opencl_single::get_devices()
-//{
+const devices_t& opencl_single::get_devices()
+{
 //    if( devices_.empty() )
 //    {
 //        if( platforms_.empty() )
@@ -99,8 +99,8 @@ const platforms_t& opencl_single::get_platforms()
 //        }
 //    }
 //
-//    return( devices_ );
-//}
+    return( devices_ );
+}
 //-----------------------------------------------------------------------------
 //void opencl_single::get_devices( devices_t& devices, const platform& platform_ref,
 //                                 cl_device_type device_type )

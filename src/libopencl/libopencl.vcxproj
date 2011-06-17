@@ -52,7 +52,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>OPENCL_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBOPENCL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OPENCL_EXPORTS;WIN32;BOOST_ALL_DYN_LINK;_WIN32_WINNT=0x0501;_DEBUG;_WINDOWS;_USRDLL;LIBOPENCL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
@@ -67,7 +67,7 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>OPENCL_EXPORTS;WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBOPENCL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OPENCL_EXPORTS;WIN32;BOOST_ALL_DYN_LINK;_WIN32_WINNT=0x0501;NDEBUG;_WINDOWS;_USRDLL;LIBOPENCL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
