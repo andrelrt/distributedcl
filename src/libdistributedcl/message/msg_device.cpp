@@ -29,12 +29,22 @@ namespace message {
 void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_ptr )
 {
     const dcl_message< msgGetDeviceIDs >* msg_response_ptr = reinterpret_cast< const dcl_message< msgGetDeviceIDs >* >( response_ptr );
-    device_count_ = *( reinterpret_cast< const std::size_t* >( msg_response_ptr ->get_payload() ));
+    const msgGetDeviceIDs_response* response = reinterpret_cast< const msgGetDeviceIDs_response* >( msg_response_ptr ->get_payload() );
+
+    cpu_count_ = ntohs( response->cpu_count );
+    gpu_count_ = ntohs( response->gpu_count );
+    accelerator_count_ = ntohs( response->accelerator_count );
+    other_count_ = ntohs( response->other_count );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
 {
-    *( reinterpret_cast< std::size_t* >( payload_ptr )) = device_count_;
+    msgGetDeviceIDs_response* response = reinterpret_cast< msgGetDeviceIDs_response* >( payload_ptr );
+
+    response->cpu_count = htons( static_cast< uint16_t >( cpu_count_ ) );
+    response->gpu_count = htons( static_cast< uint16_t >( gpu_count_ ) );
+    response->accelerator_count  = htons( static_cast< uint16_t >( accelerator_count_ ) );
+    response->other_count = htons( static_cast< uint16_t >( other_count_ ) );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

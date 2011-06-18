@@ -33,26 +33,76 @@ template<>
 class dcl_message< msgGetDeviceIDs > : public base_message
 {
 public:
+    dcl_message< msgGetDeviceIDs >() : 
+        base_message( msgGetDeviceIDs, true ), 
+        cpu_count_( 0 ), gpu_count_( 0 ), accelerator_count_( 0 ), other_count_( 0 ) {}
+
     virtual void set_response( const base_message* response_ptr );
 
-    std::size_t get_device_count()
+    inline std::size_t get_device_count()
     {
-        return device_count_;
+        return cpu_count_ + gpu_count_ + accelerator_count_ + other_count_;
     }
 
-    void set_device_count( std::size_t device_count )
+    inline std::size_t get_cpu_count()
     {
-        device_count_ = device_count;
+        return cpu_count_;
     }
 
-    dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), device_count_( 0 ) {}
+    inline std::size_t get_gpu_count()
+    {
+        return gpu_count_;
+    }
+
+    inline std::size_t get_accelerator_count()
+    {
+        return accelerator_count_;
+    }
+
+    inline std::size_t get_other_count()
+    {
+        return other_count_;
+    }
+
+    inline void set_cpu_count( std::size_t cpu_count )
+    {
+        cpu_count_ = cpu_count;
+    }
+
+    inline void set_gpu_count( std::size_t gpu_count )
+    {
+        gpu_count_ = gpu_count;
+    }
+
+    inline void set_accelerator_count( std::size_t accelerator_count )
+    {
+        accelerator_count_ = accelerator_count;
+    }
+
+    inline void set_other_count( std::size_t other_count )
+    {
+        other_count_ = other_count;
+    }
 
 protected:
     virtual void create_response( uint8_t* payload_ptr );
 
 private:
-    std::size_t device_count_;
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgGetDeviceIDs_response
+    {
+        uint16_t cpu_count;
+        uint16_t gpu_count;
+        uint16_t accelerator_count;
+        uint16_t other_count;
+    };
+    #pragma pack( pop )
+
+    std::size_t cpu_count_;
+    std::size_t gpu_count_;
+    std::size_t accelerator_count_;
+    std::size_t other_count_;
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

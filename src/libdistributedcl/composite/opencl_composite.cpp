@@ -71,15 +71,15 @@ void opencl_composite::add_remote( const remote_opencl& remote )
 //-----------------------------------------------------------------------------
 void opencl_composite::get_devices( devices_t& devices, cl_device_type device_type )
 {
-    //devices.clear();
+    devices.clear();
 
-    //for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
-    //{
-    //    if( device_type & (*it)->get_type() )
-    //    {
-    //        devices.push_back( *it );
-    //    }
-    //}
+    for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
+    {
+        if( device_type & (*it)->get_type() )
+        {
+            devices.push_back( *it );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 //composite_context* opencl_composite::create_context( const devices_t& devices )

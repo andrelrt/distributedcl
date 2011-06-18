@@ -21,9 +21,12 @@
  */
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
+#include "composite/opencl_composite.h"
+using dcl::composite::opencl_composite;
 //-----------------------------------------------------------------------------
 void setup_library()
 {
+    opencl_composite::get_instance().add_library( "C:\\Windows\\System32\\OpenCL.dll" );
 }
 //-----------------------------------------------------------------------------
 void free_library()
@@ -89,4 +92,3 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved )
 }
 //-----------------------------------------------------------------------------
 #endif // WIN32
-

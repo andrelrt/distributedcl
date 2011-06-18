@@ -213,7 +213,16 @@ class generic_device :
     public dcl_object< device_info >
 {
 public:
-    generic_device() : info_loaded_( false ){}
+    generic_device() : info_loaded_( false )
+    {
+        local_info_.type_ = 0;
+    }
+
+    generic_device( cl_device_type type ) : info_loaded_( false )
+    {
+        local_info_.type_ = type;
+    }
+
     ~generic_device(){}
 
     inline void load_info()
@@ -222,6 +231,11 @@ public:
         {
             info_loaded_ = load_device_info();
         }
+    }
+
+    inline cl_device_type get_type() const
+    {
+        return local_info_.type_;
     }
 
 protected:
