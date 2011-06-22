@@ -36,10 +36,10 @@ class remote_device :
     public remote_object< remote_device >
 {
 public:
-    remote_device( dcl::network::client::session_manager::session_t& session_ref ) : 
-        remote_object( session_ref ) {}
+    remote_device( dcl::network::client::session_manager::session_t& session_ref, cl_device_type type ) : 
+        dcl::info::generic_device( type ), remote_object( session_ref ) {}
 
-    ~remote_device();
+        ~remote_device(){}
 
 protected:
     virtual bool load_device_info();

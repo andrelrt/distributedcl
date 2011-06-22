@@ -40,7 +40,7 @@ public:
 
     ~remote_opencl(){}
 
-    inline const object_manager< remote_device >& get_devices() const
+    inline const devices_t& get_devices() const
     {
         if( devices_.empty() )
         {
@@ -56,7 +56,8 @@ public:
     }
 
 private:
-    object_manager< remote_device > devices_;
+    devices_t devices_;
+    object_manager< remote_device > device_manager_;
     dcl::network::client::session_manager::session_t& session_ref_;
 
     void load_devices();

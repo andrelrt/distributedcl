@@ -20,27 +20,37 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_SERVER_PLATFORM_H_
-#define _DCL_SERVER_PLATFORM_H_
+#ifndef _DCL_MESSAGE_INTERNAL_H_
+#define _DCL_MESSAGE_INTERNAL_H_
 
 #include "distributedcl_internal.h"
-#include "message_dispatcher.h"
-#include "message/message.h"
+#include "message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
-namespace server {
+namespace message {
 //-----------------------------------------------------------------------------
-class GetDeviceIDs_command : 
-    public server_command< dcl::network::message::msgGetDeviceIDs >
+template<>
+class dcl_message< msg_error_message > : public base_message
 {
 public:
-    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
+    static dcl_message< msg_error_message > success;
 
-    void execute();
+    dcl_message< msg_error_message >( int32_t error_code ) : 
+        base_message( msg_error_message, false, sizeof( int32_t ) ), error_code_( error_code ) {}
+
+    inline int32_t get_error_code() const
+    {
+        return error_code_;
+    }
+
+protected:
+    virtual void create_response( uint8_t* payload_ptr );
+
+private:
+    int32_t error_code_;
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
+}}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
-#endif // _DCL_SERVER_PLATFORM_H_
+#endif // _DCL_MESSAGE_INTERNAL_H_

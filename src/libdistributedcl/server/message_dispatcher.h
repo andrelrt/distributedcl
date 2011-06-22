@@ -31,14 +31,24 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-class message_dipatcher
+class message_dispatcher
 {
 public:
     void dispatch_messages( dcl::network::message::message_vector_t& messages );
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type TYPE >
-class server_execute{};
+class server_command
+{
+protected:
+    typedef typename dcl::network::message::base_message* recv_ptr_t;
+    typedef typename dcl::network::message::dcl_message< TYPE > message_t;
+
+    server_command( recv_ptr_t message_ptr ) : 
+        message_( *(reinterpret_cast< message_t* >( message_ptr )) ){}
+
+    message_t& message_;
+};
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server
 //-----------------------------------------------------------------------------

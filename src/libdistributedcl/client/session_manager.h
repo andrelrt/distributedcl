@@ -36,7 +36,7 @@ class session_manager
 public:
     typedef client_session< dcl::network::platform::tcp_transport > session_t;
 
-    inline static session_t& get_session()
+    inline static session_t& create_session( const std::string& connection_string )
     {
         if( instance_.session_ptr_ == NULL )
         {

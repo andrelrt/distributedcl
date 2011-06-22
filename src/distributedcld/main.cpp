@@ -20,27 +20,41 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_SERVER_PLATFORM_H_
-#define _DCL_SERVER_PLATFORM_H_
-
+#include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
-#include "message_dispatcher.h"
-#include "message/message.h"
+#include "server/server.h"
+#include "network/tcp_transport.h"
+using dcl::network::server::server;
+using dcl::network::platform::tcp_transport;
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace network {
-namespace server {
-//-----------------------------------------------------------------------------
-class GetDeviceIDs_command : 
-    public server_command< dcl::network::message::msgGetDeviceIDs >
+int main( int argc, char* argv[] )
 {
-public:
-    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
+#if defined( WIN32 )
 
-    void execute();
-};
+    // Winsock startup
+    WSADATA wsaData;
+    WSAStartup( MAKEWORD(1, 1), &wsaData );
+
+#endif
+
+    // TCP Network Server -----------------------------------------------------
+    typedef server< tcp_transport > tcp_server_t;
+
+    // default config info (bind ip 0.0.0.0, port 4791)
+    tcp_server_t::config_info_t tcp_config;
+
+    boost::scoped_ptr< tcp_server_t > tcp_server_ptr( new tcp_server_t( tcp_config ) );
+    tcp_server_ptr->start_accept_thread();
+
+    tcp_server_ptr->wait();
+
+#if defined( WIN32 )
+
+    WSACleanup();
+
+#endif
+
+    return 0;
+}
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_SERVER_PLATFORM_H_

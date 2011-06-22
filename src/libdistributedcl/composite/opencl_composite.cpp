@@ -24,10 +24,12 @@
 #include "single/opencl_single.h"
 #include "single/opencl_library.h"
 #include "remote/remote_opencl.h"
+#include "client/session_manager.h"
 using dcl::single::platforms_t;
 using dcl::single::opencl_single;
 using dcl::single::opencl_library;
 using dcl::remote::remote_opencl;
+using dcl::network::client::session_manager;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -61,12 +63,16 @@ void opencl_composite::add_library( const std::string& libpath )
     devices_.insert( devices_.end(), single_devices.begin(), single_devices.end() );
 }
 //-----------------------------------------------------------------------------
-void opencl_composite::add_remote( const remote_opencl& remote )
+void opencl_composite::add_remote( const std::string& connection_string )
 {
-    //remote_set_.insert( &remote );
+    session_manager::session_t& session_ref = session_manager::create_session( connection_string );
 
-    //const devices_t& single_devices = remote.get_devices();
-    //devices_.insert( devices_.end(), single_devices.begin(), single_devices.end() );
+    remote_opencl* remote_ptr = new remote_opencl( session_ref );
+    
+    const devices_t& remote_devices = remote_ptr->get_devices();
+    devices_.insert( devices_.end(), remote_devices.begin(), remote_devices.end() );
+
+    remote_set_.insert( remote_ptr );
 }
 //-----------------------------------------------------------------------------
 void opencl_composite::get_devices( devices_t& devices, cl_device_type device_type )

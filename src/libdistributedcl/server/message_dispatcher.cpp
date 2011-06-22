@@ -21,6 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include "message_dispatcher.h"
+#include "server_platform.h"
 #include "message/message.h"
 using namespace dcl::network::message;
 //-----------------------------------------------------------------------------
@@ -28,7 +29,7 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-void message_dipatcher::dispatch_messages( message_vector_t& messages )
+void message_dispatcher::dispatch_messages( message_vector_t& messages )
 {
     message_vector_t::iterator it;
 
@@ -51,8 +52,12 @@ void message_dipatcher::dispatch_messages( message_vector_t& messages )
                 break;
 
             case msgGetDeviceIDs:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+                {
+                    GetDeviceIDs_command command( *it );
+
+                    command.execute();
+                    break;
+                }
 
             case msgGetDeviceInfo:
                 throw dcl::library_exception( "Not implemented" );

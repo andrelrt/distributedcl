@@ -24,6 +24,7 @@
 #define _DCL_NETWORK_SERVER_H_
 
 #include "distributedcl_internal.h"
+#include "server_session.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {

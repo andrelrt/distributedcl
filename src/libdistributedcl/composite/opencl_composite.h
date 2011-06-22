@@ -53,7 +53,7 @@ public:
     }
 
     void add_library( const std::string& libpath );
-    void add_remote( const dcl::remote::remote_opencl& remote );
+    void add_remote( const std::string& connection_string );
 
     const composite_platform& get_platform() const
     { 

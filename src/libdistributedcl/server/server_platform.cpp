@@ -32,13 +32,12 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-void server_execute< msgGetDeviceIDs >::execute( dcl_message< msgGetDeviceIDs >& message )
+void GetDeviceIDs_command::execute()
 {
-    //ocg::devices_t devs;
-    //opencl_composite::instance().get_devices( devs, device_type );
-
-    //message.set_device_count( devs.size() );
-    message.set_device_count( 1 );
+    message_.set_cpu_count( 1 );
+    message_.set_gpu_count( 0 );
+    message_.set_accelerator_count( 0 );
+    message_.set_other_count( 0 );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

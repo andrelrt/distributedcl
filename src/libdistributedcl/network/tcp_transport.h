@@ -102,7 +102,7 @@ public:
     {
         if( accept_thread_ptr_ == NULL )
         {
-            accept_thread_ptr_ = new boost::thread( &ocg::server::tcp_transport< OBSERVER >::accept_loop, this );
+            accept_thread_ptr_ = new boost::thread( &dcl::network::platform::tcp_transport< OBSERVER >::accept_loop, this );
 
             boost::this_thread::sleep( boost::posix_time::milliseconds( 10 ) );
         }

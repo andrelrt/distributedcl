@@ -27,14 +27,16 @@
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "message_dispatcher.h"
+#include "network/session.h"
 #include "message/packet.h"
+#include "message/msg_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
 template< template< class > class COMM >
-class server_session : public session< COMM >
+class server_session : public dcl::network::platform::session< COMM >
 {
 public:
 	typedef typename session< COMM >::config_info_t config_info_t;
@@ -54,7 +56,7 @@ public:
         {
             session< COMM >::get_communication().startup( this );
 
-            receive_thread_ptr_ = new boost::thread( &ocg::server::server_session< COMM >::receive_thread, this );
+            receive_thread_ptr_ = new boost::thread( &dcl::network::server::server_session< COMM >::receive_thread, this );
         }
     }
 
@@ -89,25 +91,31 @@ private:
         while( !boost::this_thread::interruption_requested() )
         {
             // Receive packet
-            boost::scoped_ptr< packet > recv_packet( session< COMM >::receive_packet() );
+            boost::scoped_ptr< dcl::network::message::packet > recv_packet( session< COMM >::receive_packet() );
 
             if( boost::this_thread::interruption_requested() )
                 break;
 
             // Create response packet
-            boost::scoped_ptr< packet > ret_packet( session< COMM >::create_packet() );
+            boost::scoped_ptr< dcl::network::message::packet > ret_packet( session< COMM >::create_packet() );
 
             // Execute packet base_messages
             try
             {
                 recv_packet->parse_messages();
-                dispatcher_.dispatch_messages( recv_packet->get_messages() );
 
-                ret_packet->add( &msg_error::success );
+                dcl::network::message::message_vector_t messages_ref = recv_packet->get_messages();
+
+                dispatcher_.dispatch_messages( messages_ref );
+
+                if( messages_ref.back()->waiting_response() )
+                {
+                    ret_packet->add( messages_ref.back() );
+                }
             }
             catch( dcl::library_exception& ex )
             {
-                ret_packet->add( new msg_error( ex.get_error_code() ) );
+                ret_packet->add( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
             }
 
             ret_packet->create_packet();

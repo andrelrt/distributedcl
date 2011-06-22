@@ -25,6 +25,7 @@
     <ClInclude Include="library_exception.h" />
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_device.h" />
+    <ClInclude Include="message\msg_internal.h" />
     <ClInclude Include="message\packet.h" />
     <ClInclude Include="network\platform.h" />
     <ClInclude Include="network\session.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="composite\opencl_composite.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
+    <ClCompile Include="message\msg_internal.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_opencl.cpp" />

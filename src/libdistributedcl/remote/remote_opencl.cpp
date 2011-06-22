@@ -37,11 +37,28 @@ void remote_opencl::load_devices()
 
     session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
 
-    std::size_t device_count = msg.get_device_count();
-
-    for( std::size_t i = 0; i < device_count; i++ )
+    for( std::size_t i = 0; i < msg.get_gpu_count(); i++ )
     {
-        devices_.add( new remote_device( session_ref_ ) );
+        remote_device* dev_ptr = new remote_device( session_ref_, CL_DEVICE_TYPE_GPU );
+
+        device_manager_.add( dev_ptr );
+        devices_.push_back( dev_ptr );
+    }
+
+    for( std::size_t i = 0; i < msg.get_cpu_count(); i++ )
+    {
+        remote_device* dev_ptr = new remote_device( session_ref_, CL_DEVICE_TYPE_CPU );
+
+        device_manager_.add( dev_ptr );
+        devices_.push_back( dev_ptr );
+    }
+
+    for( std::size_t i = 0; i < msg.get_accelerator_count(); i++ )
+    {
+        remote_device* dev_ptr = new remote_device( session_ref_, CL_DEVICE_TYPE_ACCELERATOR );
+
+        device_manager_.add( dev_ptr );
+        devices_.push_back( dev_ptr );
     }
 }
 //-----------------------------------------------------------------------------
