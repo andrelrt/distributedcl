@@ -27,6 +27,7 @@
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "composite/icd_object.h"
+using dcl::composite::icd_object_manager;
 //-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
 cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
@@ -93,7 +94,7 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
 {
     get_info_check_parameters< DCL_TYPE_T >( cl_obj, param_value_size, param_value, param_value_size_ret );
 
-    DCL_TYPE_T* obj_ptr = reinterpret_cast< DCL_TYPE_T* >( cl_obj );
+    DCL_TYPE_T* obj_ptr = icd_object_manager::get_instance().get_object_ptr< DCL_TYPE_T >( cl_obj );
     const DCL_TYPE_T::dcl_info_t& info_ptr = obj_ptr->get_info();
 
     size_t info_size = info_ptr.get_info_size( info );

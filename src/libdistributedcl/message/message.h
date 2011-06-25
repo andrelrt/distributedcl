@@ -131,6 +131,13 @@ public:
 
     virtual void set_response( const base_message* ){}
 
+    void set_response_mode()
+    {
+        response_ = true;
+        wait_response_ = false;
+        set_size( response_size_ );
+    }
+
     inline void get_buffer( uint8_t* buffer_ptr )
     {
         buffer_ptr_ = buffer_ptr;
@@ -138,11 +145,18 @@ public:
         message_header* header = reinterpret_cast< message_header* >( buffer_ptr_ );
         header->version = message_v1_0;
         header->type = type_;
-        header->request = 1;
+        header->request = response_ ? 0 : 1;
         header->id = 0;
         header->length = static_cast< uint32_t >( htonl( static_cast< u_long >( size_ ) ) );
 
-        create_request( buffer_ptr_ + sizeof( message_header ) );
+        if( !response_ )
+        {
+            create_request( buffer_ptr_ + sizeof( message_header ) );
+        }
+        else
+        {
+            create_response( buffer_ptr_ + sizeof( message_header ) );
+        }
     }
 
     inline std::size_t get_size() const
@@ -156,12 +170,12 @@ public:
     }
 
 protected:
-    base_message( message_type type, bool wait_response = false, std::size_t size = 0 ) : 
+    base_message( message_type type, bool wait_response = false, std::size_t request_size = 0, std::size_t response_size = 0 ) : 
         wait_response_( wait_response ), buffer_ptr_( NULL ),
-        size_( size + sizeof( message_header ) ), type_( type )
+        size_( request_size + sizeof( message_header ) ), type_( type ),
+        request_size_( request_size ), response_size_( response_size ), response_( false )
     {}
 
-    virtual void parse(){}
     virtual void create_request( uint8_t* payload_ptr ){}
     virtual void create_response( uint8_t* payload_ptr ){}
 
@@ -195,6 +209,9 @@ private:
     uint8_t* buffer_ptr_;
     std::size_t size_;
     message_type type_;
+    std::size_t request_size_;
+    std::size_t response_size_;
+    bool response_;
 
     enum{ message_v1_0 = 0x10 };
 

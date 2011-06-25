@@ -34,7 +34,7 @@ class dcl_message< msgGetDeviceIDs > : public base_message
 {
 public:
     dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true ), 
+        base_message( msgGetDeviceIDs, true, 0, sizeof( msgGetDeviceIDs_response ) ), 
         cpu_count_( 0 ), gpu_count_( 0 ), accelerator_count_( 0 ), other_count_( 0 ) {}
 
     virtual void set_response( const base_message* response_ptr );

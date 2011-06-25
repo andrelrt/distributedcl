@@ -51,7 +51,7 @@ public:
         {
             object_id = static_cast< remote_id_t >( random_() );
 
-        } while( object_map_.find( object_id ) == object_map_.end() );
+        } while( object_map_.find( object_id ) != object_map_.end() );
 
         object_map_.insert( object_map_t::value_type( object_id, object_ptr ) );
 

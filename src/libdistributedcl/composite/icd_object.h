@@ -181,7 +181,7 @@ private:
     typedef std::set< cl_object* > cl_object_set_t;
     typedef std::map< void*, cl_object* > dcl_object_map_t;
 
-    static icd_object_manager instance_;
+    static icd_object_manager* instance_ptr_;
 
     cl_object_set_t object_set_;
     dcl_object_map_t object_map_;
@@ -225,7 +225,11 @@ private:
 public:
     static icd_object_manager& get_instance()
     {
-        return instance_;
+        if( instance_ptr_ == NULL )
+        {
+            instance_ptr_ = new icd_object_manager();
+        }
+        return *instance_ptr_;
     }
 
     template< typename DCL_TYPE_T >

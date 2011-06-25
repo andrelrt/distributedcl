@@ -25,7 +25,7 @@
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-icd_object_manager icd_object_manager::instance_;
+icd_object_manager* icd_object_manager::instance_ptr_;
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------

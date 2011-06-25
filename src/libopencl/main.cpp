@@ -27,10 +27,12 @@ using dcl::composite::opencl_composite;
 void setup_library()
 {
     opencl_composite::get_instance().add_library( "C:\\Windows\\System32\\OpenCL.dll" );
+    opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
 }
 //-----------------------------------------------------------------------------
 void free_library()
 {
+    opencl_composite::get_instance().free_all();
 }
 //-----------------------------------------------------------------------------
 #if defined(__GNUC__)
@@ -40,6 +42,9 @@ void __attribute__ ((constructor)) so_load()
     try
     {
         setup_library();
+    }
+    catch( dcl::library_exception& ex )
+    {
     }
     catch( ... )
     {
@@ -51,6 +56,9 @@ void __attribute__ ((destructor)) so_unload()
     try
     {
         free_library();
+    }
+    catch( dcl::library_exception& ex )
+    {
     }
     catch( ... )
     {
@@ -69,7 +77,15 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved )
         case DLL_PROCESS_ATTACH:
             try
             {
+                // Winsock startup
+                WSADATA wsaData;
+                WSAStartup( MAKEWORD(1, 1), &wsaData );
+
                 setup_library();
+            }
+            catch( dcl::library_exception& ex )
+            {
+                return FALSE;
             }
             catch( ... )
             {
@@ -81,6 +97,12 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved )
             try
             {
                 free_library();
+
+                WSACleanup();
+            }
+            catch( dcl::library_exception& ex )
+            {
+                return FALSE;
             }
             catch( ... )
             {

@@ -1,4 +1,4 @@
-LIBRARY   OPENCL
+LIBRARY   LIBOPENCL
 EXPORTS
 ;    clBuildProgram                  @1
 ;    clCreateBuffer                  @2
@@ -39,8 +39,8 @@ EXPORTS
 ;    clFlush                         @37
 ;    clGetCommandQueueInfo           @38
 ;    clGetContextInfo                @39
-;    clGetDeviceIDs                  @40
-;    clGetDeviceInfo                 @41
+    clGetDeviceIDs                  @40
+    clGetDeviceInfo                 @41
 ;    clGetEventInfo                  @42
 ;    clGetEventProfilingInfo         @43
 ;    clGetExtensionFunctionAddress   @44

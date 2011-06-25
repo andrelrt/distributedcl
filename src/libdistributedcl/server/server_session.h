@@ -110,7 +110,11 @@ private:
 
                 if( messages_ref.back()->waiting_response() )
                 {
-                    ret_packet->add( messages_ref.back() );
+                    dcl::network::message::message_vector_t::reference ref = messages_ref.back();
+
+                    ref->set_response_mode();
+
+                    ret_packet->add( ref );
                 }
             }
             catch( dcl::library_exception& ex )
