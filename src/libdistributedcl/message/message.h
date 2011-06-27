@@ -204,6 +204,11 @@ protected:
         wait_response_ = true;
     }
 
+    inline void set_response_size( std::size_t size )
+    {
+        response_size_ = size;
+    }
+
 private:
     bool wait_response_;
     uint8_t* buffer_ptr_;

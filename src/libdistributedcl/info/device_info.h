@@ -37,15 +37,23 @@ public:
     cl_device_type type_;                               // CL_DEVICE_TYPE
     cl_uint vendor_id_;                                 // CL_DEVICE_VENDOR_ID
     cl_uint max_compute_units_;                         // CL_DEVICE_MAX_COMPUTE_UNITS
-    cl_uint max_work_item_dimension_;                   // CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
-    size_t max_work_item_size_[3];                      // CL_DEVICE_MAX_WORK_GROUP_SIZE
-    size_t max_work_group_size_;                        // CL_DEVICE_MAX_WORK_ITEM_SIZES
+    cl_uint max_work_item_dimensions_;                  // CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
+    size_t max_work_item_sizes_[3];                     // CL_DEVICE_MAX_WORK_ITEM_SIZES
+    size_t max_work_group_size_;                        // CL_DEVICE_MAX_WORK_GROUP_SIZE
     cl_uint preferred_vector_width_char_;               // CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR
     cl_uint preferred_vector_width_short_;              // CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT
     cl_uint preferred_vector_width_int_;                // CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT
     cl_uint preferred_vector_width_long_;               // CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG
     cl_uint preferred_vector_width_float_;              // CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT
     cl_uint preferred_vector_width_double_;             // CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE
+    cl_uint preferred_vector_width_half_;               // CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF
+    cl_uint native_vector_width_char_;                  // CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR
+    cl_uint native_vector_width_short_;                 // CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT
+    cl_uint native_vector_width_int_;                   // CL_DEVICE_NATIVE_VECTOR_WIDTH_INT
+    cl_uint native_vector_width_long_;                  // CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG
+    cl_uint native_vector_width_float_;                 // CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT
+    cl_uint native_vector_width_double_;                // CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE
+    cl_uint native_vector_width_half_;                  // CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF
     cl_uint max_clock_frequency_;                       // CL_DEVICE_MAX_CLOCK_FREQUENCY
     cl_uint address_bits_;                              // CL_DEVICE_ADDRESS_BITS
     cl_uint max_read_image_args_;                       // CL_DEVICE_MAX_READ_IMAGE_ARGS
@@ -71,6 +79,7 @@ public:
     cl_device_local_mem_type local_mem_type_;           // CL_DEVICE_LOCAL_MEM_TYPE
     cl_ulong local_mem_size_;                           // CL_DEVICE_LOCAL_MEM_SIZE
     cl_bool error_correction_support_;                  // CL_DEVICE_ERROR_CORRECTION_SUPPORT
+    cl_bool host_unified_memory_;                       // CL_DEVICE_HOST_UNIFIED_MEMORY
     size_t profiling_timer_resolution_;                 // CL_DEVICE_PROFILING_TIMER_RESOLUTION
     cl_bool endian_little_;                             // CL_DEVICE_ENDIAN_LITTLE
     cl_bool avaiable_;                                  // CL_DEVICE_AVAILABLE
@@ -82,7 +91,10 @@ public:
     std::string driver_version_;                        // CL_DRIVER_VERSION
     std::string profile_;                               // CL_DEVICE_PROFILE
     std::string version_;                               // CL_DEVICE_VERSION
+    std::string opencl_c_version_;                      // CL_DEVICE_OPENCL_C_VERSION
     std::string extensions_;                            // CL_DEVICE_EXTENSIONS
+
+    device_info() : max_work_item_dimensions_( 3 ){}
 
     inline bool operator< ( const device_info& other ) const
     {
@@ -97,14 +109,22 @@ public:
             case CL_DEVICE_VENDOR_ID                    : return sizeof( cl_uint );
             case CL_DEVICE_MAX_COMPUTE_UNITS            : return sizeof( cl_uint );
             case CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS     : return sizeof( cl_uint );
-            case CL_DEVICE_MAX_WORK_GROUP_SIZE          : return sizeof( size_t ) * 3;
-            case CL_DEVICE_MAX_WORK_ITEM_SIZES          : return sizeof( size_t );
+            case CL_DEVICE_MAX_WORK_GROUP_SIZE          : return sizeof( size_t );
+            case CL_DEVICE_MAX_WORK_ITEM_SIZES          : return sizeof( size_t ) * 3;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR  : return sizeof( cl_uint );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT : return sizeof( cl_uint );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT   : return sizeof( cl_uint );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG  : return sizeof( cl_uint );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT : return sizeof( cl_uint );
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE: return sizeof( cl_uint );
+            case CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF  : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR     : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT    : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_INT      : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG     : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT    : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE   : return sizeof( cl_uint );
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF     : return sizeof( cl_uint );
             case CL_DEVICE_MAX_CLOCK_FREQUENCY          : return sizeof( cl_uint );
             case CL_DEVICE_ADDRESS_BITS                 : return sizeof( cl_uint );
             case CL_DEVICE_MAX_READ_IMAGE_ARGS          : return sizeof( cl_uint );
@@ -130,6 +150,7 @@ public:
             case CL_DEVICE_LOCAL_MEM_TYPE               : return sizeof( cl_device_local_mem_type );
             case CL_DEVICE_LOCAL_MEM_SIZE               : return sizeof( cl_ulong );
             case CL_DEVICE_ERROR_CORRECTION_SUPPORT     : return sizeof( cl_bool );
+            case CL_DEVICE_HOST_UNIFIED_MEMORY          : return sizeof( cl_bool );
             case CL_DEVICE_PROFILING_TIMER_RESOLUTION   : return sizeof( size_t );
             case CL_DEVICE_ENDIAN_LITTLE                : return sizeof( cl_bool );
             case CL_DEVICE_AVAILABLE                    : return sizeof( cl_bool );
@@ -141,6 +162,7 @@ public:
             case CL_DRIVER_VERSION                      : return driver_version_.length() + 1;
             case CL_DEVICE_PROFILE                      : return profile_.length() + 1;
             case CL_DEVICE_VERSION                      : return version_.length() + 1;
+            case CL_DEVICE_OPENCL_C_VERSION             : return opencl_c_version_.length() + 1;
             case CL_DEVICE_EXTENSIONS                   : return extensions_.length() + 1;
 
             default:
@@ -155,15 +177,23 @@ public:
             case CL_DEVICE_TYPE                         : return &type_;
             case CL_DEVICE_VENDOR_ID                    : return &vendor_id_;
             case CL_DEVICE_MAX_COMPUTE_UNITS            : return &max_compute_units_;
-            case CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS     : return &max_work_item_dimension_;
-            case CL_DEVICE_MAX_WORK_GROUP_SIZE          : return max_work_item_size_;
-            case CL_DEVICE_MAX_WORK_ITEM_SIZES          : return &max_work_group_size_;
+            case CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS     : return &max_work_item_dimensions_;
+            case CL_DEVICE_MAX_WORK_ITEM_SIZES          : return max_work_item_sizes_;
+            case CL_DEVICE_MAX_WORK_GROUP_SIZE          : return &max_work_group_size_;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR  : return &preferred_vector_width_char_;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT : return &preferred_vector_width_short_;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT   : return &preferred_vector_width_int_;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG  : return &preferred_vector_width_long_;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT : return &preferred_vector_width_float_;
             case CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE: return &preferred_vector_width_double_;
+            case CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF  : return &preferred_vector_width_half_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR     : return &native_vector_width_char_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT    : return &native_vector_width_short_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_INT      : return &native_vector_width_int_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG     : return &native_vector_width_long_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT    : return &native_vector_width_float_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE   : return &native_vector_width_double_;
+            case CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF     : return &native_vector_width_half_;
             case CL_DEVICE_MAX_CLOCK_FREQUENCY          : return &max_clock_frequency_;
             case CL_DEVICE_ADDRESS_BITS                 : return &address_bits_;
             case CL_DEVICE_MAX_READ_IMAGE_ARGS          : return &max_read_image_args_;
@@ -189,6 +219,7 @@ public:
             case CL_DEVICE_LOCAL_MEM_TYPE               : return &local_mem_type_;
             case CL_DEVICE_LOCAL_MEM_SIZE               : return &local_mem_size_;
             case CL_DEVICE_ERROR_CORRECTION_SUPPORT     : return &error_correction_support_;
+            case CL_DEVICE_HOST_UNIFIED_MEMORY          : return &host_unified_memory_;
             case CL_DEVICE_PROFILING_TIMER_RESOLUTION   : return &profiling_timer_resolution_;
             case CL_DEVICE_ENDIAN_LITTLE                : return &endian_little_;
             case CL_DEVICE_AVAILABLE                    : return &avaiable_;
@@ -200,6 +231,7 @@ public:
             case CL_DRIVER_VERSION                      : return driver_version_.c_str();
             case CL_DEVICE_PROFILE                      : return profile_.c_str();
             case CL_DEVICE_VERSION                      : return version_.c_str();
+            case CL_DEVICE_OPENCL_C_VERSION             : return opencl_c_version_.c_str();
             case CL_DEVICE_EXTENSIONS                   : return extensions_.c_str();
 
             default:

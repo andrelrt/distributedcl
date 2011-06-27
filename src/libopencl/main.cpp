@@ -26,7 +26,6 @@ using dcl::composite::opencl_composite;
 //-----------------------------------------------------------------------------
 void setup_library()
 {
-    opencl_composite::get_instance().add_library( "C:\\Windows\\System32\\OpenCL.dll" );
     opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
 }
 //-----------------------------------------------------------------------------

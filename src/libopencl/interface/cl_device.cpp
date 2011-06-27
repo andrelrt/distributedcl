@@ -89,7 +89,24 @@ clGetDeviceInfo( cl_device_id device, cl_device_info param_name, size_t param_va
 {
     try
     {
-        get_info< composite_device >( device, param_name, param_value_size, param_value, param_value_size_ret );
+        if( param_name != CL_DEVICE_PLATFORM )
+        {
+            get_info< composite_device >( device, param_name, param_value_size, param_value, param_value_size_ret );
+        }
+        else
+        {
+            get_info_check_parameters< composite_device >( device, param_value_size, param_value, param_value_size_ret );
+
+            if( param_value != NULL )
+            {
+                if( param_value_size < sizeof(cl_platform_id) )
+                {
+                    throw dcl::library_exception( CL_INVALID_VALUE );
+                }
+
+                *(reinterpret_cast< cl_platform_id* >( param_value )) = opencl_composite::get_instance().get_platform().get_icd_obj();
+            }
+        }
     }
     catch( dcl::library_exception& ex )
     {

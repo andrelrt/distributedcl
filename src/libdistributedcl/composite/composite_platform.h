@@ -47,6 +47,7 @@ public:
     }
     ~composite_platform(){}
 
+    inline void load_info(){}
     //void add_platform( dcl::single::platform* platform_ptr )
     //{
     //    platforms_.insert( dcl::single::platforms_t::value_type( platform_ptr->get_id(), platform_ptr ) );

@@ -214,7 +214,10 @@ private:
             throw dcl::library_exception( "Unknow object", DCL_TYPE_T::invalid_value_error );
         }
 
-        if( (*it)->dcl_type != DCL_TYPE_T::type_id )
+        uint32_t type = (*it)->dcl_type;
+        uint32_t type_id = DCL_TYPE_T::type_id;
+
+        if( type != type_id )
         {
             throw dcl::library_exception( "Invalid object type", DCL_TYPE_T::invalid_value_error );
         }
@@ -266,6 +269,7 @@ public:
         {
             cl_object* newObj = new cl_object();
             newObj->table = &dispatch_table_;
+            newObj->dcl_type = DCL_TYPE_T::type_id;
             newObj->dcl_object = reinterpret_cast< void* >( cl_object_ptr );
 
             object_map_.insert( dcl_object_map_t::value_type( reinterpret_cast< void* >( cl_object_ptr ), newObj ) );
