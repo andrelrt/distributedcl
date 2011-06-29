@@ -50,6 +50,68 @@ namespace dcl {
 typedef uint16_t remote_id_t;
 typedef std::vector< dcl::info::generic_device* > devices_t;
 //-----------------------------------------------------------------------------
+static const union { long one; char little; } is_endian = {1};
+//-----------------------------------------------------------------------------
+static inline uint16_t host_to_network( uint16_t value )
+{
+    if( is_endian.little )
+    {
+        return value;
+    }
+    else
+    {
+        return (value >> 8) | (value << 8);
+    }
+}
+//-----------------------------------------------------------------------------
+static inline uint32_t host_to_network( uint32_t value )
+{
+    if( is_endian.little )
+    {
+        return value;
+    }
+    else
+    {
+        return ((value << 24) | (value >> 24)) |
+               ((value << 8) & 0x00ff0000) |
+               ((value >> 8) & 0x0000ff00);
+    }
+}
+//-----------------------------------------------------------------------------
+static inline uint64_t host_to_network( uint64_t value )
+{
+    if( is_endian.little )
+    {
+        return value;
+    }
+    else
+    {
+        return ((value << 56) | (value >> 56)) |
+               ((value << 40) & 0x00ff000000000000) |
+               ((value << 24) & 0x0000ff0000000000) |
+               ((value << 8)  & 0x000000ff00000000) |
+               ((value >> 8)  & 0x00000000ff000000) |
+               ((value >> 24) & 0x0000000000ff0000) |
+               ((value >> 40) & 0x000000000000ff00);
+    }
+}
+//-----------------------------------------------------------------------------
+static inline uint16_t network_to_host( uint16_t value )
+{
+    return host_to_network( value );
+}
+//-----------------------------------------------------------------------------
+static inline uint32_t network_to_host( uint32_t value )
+{
+    return host_to_network( value );
+}
+//-----------------------------------------------------------------------------
+static inline uint64_t network_to_host( uint64_t value )
+{
+    return host_to_network( value );
+}
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 } // namespace dcl
 //-----------------------------------------------------------------------------
 #endif // _DCL_INTERNAL_H_
