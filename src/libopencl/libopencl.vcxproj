@@ -161,6 +161,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="interface\cl_context.cpp" />
     <ClCompile Include="interface\cl_device.cpp" />
     <ClCompile Include="interface\cl_platform.cpp" />
     <ClCompile Include="main.cpp" />

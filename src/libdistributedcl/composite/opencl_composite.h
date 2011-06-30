@@ -27,6 +27,7 @@
 #include <set>
 #include "distributedcl_internal.h"
 #include "composite_platform.h"
+#include "composite_context.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace single { 
 class opencl_single;
@@ -67,7 +68,7 @@ public:
 
     void get_devices( devices_t& devices, cl_device_type device_type );
 
-//    composite_context* create_context( const dcl::single::devices_t& devices );
+    composite_context* create_context( const dcl::devices_t& devices );
 //    composite_context* create_context( cl_device_type device_type );
 
     void unload_compiler();

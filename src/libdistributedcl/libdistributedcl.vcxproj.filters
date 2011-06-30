@@ -119,6 +119,12 @@
     <ClInclude Include="message\msg_internal.h">
       <Filter>network\message</Filter>
     </ClInclude>
+    <ClInclude Include="composite\composite_context.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="info\context_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">

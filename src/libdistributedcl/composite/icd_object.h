@@ -35,6 +35,7 @@ enum dcl_object_types
 {
     dcl_platform_id = 0,
     dcl_device_id = 1,
+    dcl_context_id = 2,
 };
 //-----------------------------------------------------------------------------
 template< typename CL_TYPE_T, typename DCL_TYPE_T, uint32_t DCL_TYPE_ID >
@@ -195,6 +196,11 @@ private:
         FILL_DISPATCH_ITEM( clGetPlatformInfo );
         FILL_DISPATCH_ITEM( clGetDeviceIDs );
         FILL_DISPATCH_ITEM( clGetDeviceInfo );
+        FILL_DISPATCH_ITEM( clCreateContext  );
+        FILL_DISPATCH_ITEM( clCreateContextFromType );
+        FILL_DISPATCH_ITEM( clRetainContext );
+        FILL_DISPATCH_ITEM( clReleaseContext );
+        FILL_DISPATCH_ITEM( clGetContextInfo );
     }
 
 #undef FILL_DISPATCH_ITEM

@@ -111,7 +111,11 @@ class dcl_message< msgGetDeviceInfo > : public base_message
 {
 public:
     dcl_message< msgGetDeviceInfo >() : 
-        base_message( msgGetDeviceInfo, true, sizeof(dcl::remote_id_t) )
+        base_message( msgGetDeviceInfo, true, sizeof(dcl::remote_id_t) ), id_( 0xffff )
+    {}
+
+    dcl_message< msgGetDeviceInfo >( remote_id_t id ) : 
+        base_message( msgGetDeviceInfo, true, sizeof(dcl::remote_id_t) ), id_( id )
     {}
 
     virtual void set_response( const base_message* response_ptr );
@@ -129,13 +133,13 @@ public:
                            device_info_.name_.length() +  
                            device_info_.vendor_.length() +  
                            device_info_.driver_version_.length() +  
-                           device_info_.profile_.length() +  
                            device_info_.version_.length() +  
                            device_info_.opencl_c_version_.length() +  
                            device_info_.extensions_.length() );
     }
 
 protected:
+    virtual void create_request( uint8_t* payload_ptr );
     virtual void create_response( uint8_t* payload_ptr );
 
 private:
@@ -204,14 +208,16 @@ private:
         uint32_t name_len_;                         // CL_DEVICE_NAME
         uint32_t vendor_len_;                       // CL_DEVICE_VENDOR
         uint32_t driver_version_len_;               // CL_DRIVER_VERSION
-        //uint32_t profile_len_;                      // CL_DEVICE_PROFILE DistributedCL supports only FULL_PROFILE devices
+        //uint32_t profile_len_;                    // CL_DEVICE_PROFILE DistributedCL supports only FULL_PROFILE devices
         uint32_t version_len_;                      // CL_DEVICE_VERSION
+        uint32_t opencl_c_version_len_;             // CL_DEVICE_OPENCL_C_VERSION
         uint32_t extensions_len_;                   // CL_DEVICE_EXTENSIONS
 
         uint8_t string_buffer_[1];                  // Dummy var to strings address
     };
     #pragma pack( pop )
 
+    remote_id_t id_;
     dcl::info::device_info device_info_;
 };
 //-----------------------------------------------------------------------------

@@ -63,7 +63,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
             break;
 
         case msgGetDeviceInfo:
-            throw dcl::library_exception( "Not implemented" );
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetDeviceInfo >() );
             break;
 
         case msgCreateContext:

@@ -3,8 +3,8 @@ EXPORTS
 ;    clBuildProgram                  @1
 ;    clCreateBuffer                  @2
 ;    clCreateCommandQueue            @3
-;    clCreateContext                 @4
-;    clCreateContextFromType         @5
+    clCreateContext                 @4
+    clCreateContextFromType         @5
 ;    clCreateFromGLBuffer            @6
 ;    clCreateFromGLRenderbuffer      @7
 ;    clCreateFromGLTexture2D         @8
@@ -38,7 +38,7 @@ EXPORTS
 ;    clFinish                        @36
 ;    clFlush                         @37
 ;    clGetCommandQueueInfo           @38
-;    clGetContextInfo                @39
+    clGetContextInfo                @39
     clGetDeviceIDs                  @40
     clGetDeviceInfo                 @41
 ;    clGetEventInfo                  @42
@@ -57,14 +57,14 @@ EXPORTS
 ;    clGetSamplerInfo                @55
 ;    clGetSupportedImageFormats      @56
 ;    clReleaseCommandQueue           @57
-;    clReleaseContext                @58
+    clReleaseContext                @58
 ;    clReleaseEvent                  @59
 ;    clReleaseKernel                 @60
 ;    clReleaseMemObject              @61
 ;    clReleaseProgram                @62
 ;    clReleaseSampler                @63
 ;    clRetainCommandQueue            @64
-;    clRetainContext                 @65
+    clRetainContext                 @65
 ;    clRetainEvent                   @66
 ;    clRetainKernel                  @67
 ;    clRetainMemObject               @68

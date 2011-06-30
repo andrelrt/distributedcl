@@ -58,9 +58,9 @@ void dcl_message< msgGetDeviceInfo >::set_response( const base_message* response
     device_info_.vendor_id_ = network_to_host( response->vendor_id_ );
     device_info_.max_compute_units_ = network_to_host( response->max_compute_units_ );
     device_info_.max_work_item_dimensions_ = 3;
-    device_info_.max_work_item_sizes_[0] = network_to_host( response->max_compute_units_ );
-    device_info_.max_work_item_sizes_[1] = network_to_host( response->max_compute_units_ );
-    device_info_.max_work_item_sizes_[2] = network_to_host( response->max_compute_units_ );
+    device_info_.max_work_item_sizes_[0] = network_to_host( response->max_work_item_sizes_[0] );
+    device_info_.max_work_item_sizes_[1] = network_to_host( response->max_work_item_sizes_[1] );
+    device_info_.max_work_item_sizes_[2] = network_to_host( response->max_work_item_sizes_[2] );
     device_info_.max_work_group_size_ = network_to_host( response->max_work_group_size_ );
     device_info_.preferred_vector_width_char_   = vector_sizes[ response->preferred_vector_width_char_   ];
     device_info_.preferred_vector_width_short_  = vector_sizes[ response->preferred_vector_width_short_  ];
@@ -108,19 +108,118 @@ void dcl_message< msgGetDeviceInfo >::set_response( const base_message* response
     device_info_.compiler_avaiable_ = CL_TRUE;
     device_info_.execution_capabilities_ = CL_EXEC_KERNEL;
     device_info_.queue_properties_ = ((response->queue_properties_ == 0)? 0 : CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE) | CL_QUEUE_PROFILING_ENABLE;
-    //std::string name_;
-    //std::string vendor_;
-    //std::string driver_version_;
+    
+    const uint8_t* string_buffer_ptr = response->string_buffer_;
+
+    device_info_.name_.assign( string_buffer_ptr, string_buffer_ptr + response->name_len_ );
+    string_buffer_ptr += response->name_len_;
+
+    device_info_.vendor_.assign( string_buffer_ptr, string_buffer_ptr + response->vendor_len_ );
+    string_buffer_ptr += response->vendor_len_;
+
+    device_info_.driver_version_.assign( string_buffer_ptr, string_buffer_ptr + response->driver_version_len_ );
+    string_buffer_ptr += response->driver_version_len_;
+
     device_info_.profile_.assign( "FULL_PROFILE" );
-    //std::string version_;
-    //std::string opencl_c_version_;
-    //std::string extensions_;
+
+    device_info_.version_.assign( string_buffer_ptr, string_buffer_ptr + response->version_len_ );
+    string_buffer_ptr += response->version_len_;
+
+    device_info_.opencl_c_version_.assign( string_buffer_ptr, string_buffer_ptr + response->opencl_c_version_len_ );
+    string_buffer_ptr += response->opencl_c_version_len_;
+
+    device_info_.extensions_.assign( string_buffer_ptr, string_buffer_ptr + response->extensions_len_ );
+    string_buffer_ptr += response->extensions_len_;
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetDeviceInfo >::create_request( uint8_t* payload_ptr )
+{
+    remote_id_t* id_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    *id_ptr = id_;
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
 {
+    // Index                    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16
+    uint32_t vector_sizes[] = { 0, 1, 2, 3, 4, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 6 };
     msgGetDeviceInfo_response* response = reinterpret_cast< msgGetDeviceInfo_response* >( payload_ptr );
 
+    response->vendor_id_ = host_to_network( device_info_.vendor_id_ );
+    response->max_compute_units_ = host_to_network( device_info_.max_compute_units_ );
+    response->max_work_item_sizes_[0] = host_to_network( device_info_.max_work_item_sizes_[0] );
+    response->max_work_item_sizes_[1] = host_to_network( device_info_.max_work_item_sizes_[1] );
+    response->max_work_item_sizes_[2] = host_to_network( device_info_.max_work_item_sizes_[2] );
+    response->max_work_group_size_ = host_to_network( device_info_.max_work_group_size_ );
+    response->preferred_vector_width_char_   = vector_sizes[ device_info_.preferred_vector_width_char_ ];
+    response->preferred_vector_width_short_  = vector_sizes[ device_info_.preferred_vector_width_short_ ];
+    response->preferred_vector_width_int_    = vector_sizes[ device_info_.preferred_vector_width_int_ ];
+    response->preferred_vector_width_long_   = vector_sizes[ device_info_.preferred_vector_width_long_ ];
+    response->preferred_vector_width_float_  = vector_sizes[ device_info_.preferred_vector_width_float_ ];
+    response->preferred_vector_width_double_ = vector_sizes[ device_info_.preferred_vector_width_double_ ];
+    response->preferred_vector_width_half_   = vector_sizes[ device_info_.preferred_vector_width_half_ ];
+    response->native_vector_width_char_   = vector_sizes[ device_info_.native_vector_width_char_ ];
+    response->native_vector_width_short_  = vector_sizes[ device_info_.native_vector_width_short_ ];
+    response->native_vector_width_int_    = vector_sizes[ device_info_.native_vector_width_int_ ];
+    response->native_vector_width_long_   = vector_sizes[ device_info_.native_vector_width_long_ ];
+    response->native_vector_width_float_  = vector_sizes[ device_info_.native_vector_width_float_ ];
+    response->native_vector_width_double_ = vector_sizes[ device_info_.native_vector_width_double_ ];
+    response->native_vector_width_half_   = vector_sizes[ device_info_.native_vector_width_half_ ];
+    response->max_clock_frequency_ = host_to_network( device_info_.max_clock_frequency_ );
+    response->address_bits_ = (device_info_.address_bits_ == 64)? 1 : 0;
+    response->max_read_image_args_ = host_to_network( device_info_.max_read_image_args_ );
+    response->max_write_image_args_ = host_to_network( device_info_.max_write_image_args_ );
+    response->max_mem_alloc_size_ = host_to_network( device_info_.max_mem_alloc_size_ );
+    response->image_support_ = (device_info_.image_support_ == CL_TRUE)? 1 : 0;
+    response->image2d_max_width_ = host_to_network( device_info_.image2d_max_width_ );
+    response->image2d_max_height_ = host_to_network( device_info_.image2d_max_height_ );
+    response->image3d_max_width_ = host_to_network( device_info_.image3d_max_width_ );
+    response->image3d_max_height_ = host_to_network( device_info_.image3d_max_height_ );
+    response->image3d_max_depth_ = host_to_network( device_info_.image3d_max_depth_ );
+    response->max_parameter_size_ = host_to_network( device_info_.max_parameter_size_ );
+    response->max_samplers_ = host_to_network( device_info_.max_samplers_ );
+    response->mem_base_address_align_ = host_to_network( device_info_.mem_base_address_align_ );
+    response->min_data_type_align_size_ = host_to_network( device_info_.min_data_type_align_size_ );
+    response->single_fp_config_ = ((device_info_.single_fp_config_ >> 2) & 0x1e) | device_info_.single_fp_config_ & 1;
+    response->global_mem_cache_type_ = (device_info_.global_mem_cache_type_ == CL_NONE)? 0 : (device_info_.global_mem_cache_type_ == CL_READ_ONLY_CACHE)? 1 : 2;
+    response->global_mem_cacheline_size_ = host_to_network( device_info_.global_mem_cacheline_size_ );
+    response->global_mem_cache_size_ = host_to_network( device_info_.global_mem_cache_size_ );
+    response->global_mem_size_ = host_to_network( device_info_.global_mem_size_ );
+    response->max_constant_buffer_size_ = host_to_network( device_info_.max_constant_buffer_size_ );
+    response->max_constant_args_ = host_to_network( device_info_.max_constant_args_ );
+    response->local_mem_type_ = (device_info_.local_mem_type_ == CL_LOCAL)? 0 : 1;
+    response->local_mem_size_ = host_to_network( device_info_.local_mem_size_ );
+    response->error_correction_support_ = (device_info_.error_correction_support_ == CL_TRUE)? 1 : 0;
+    response->profiling_timer_resolution_ = host_to_network( device_info_.profiling_timer_resolution_ );
+    response->endian_little_ = (device_info_.endian_little_ == CL_TRUE)? 1 : 0;
+    response->avaiable_ = (device_info_.avaiable_ == CL_TRUE)? 1 : 0;
+    response->queue_properties_ = (device_info_.queue_properties_ & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)? 1 : 0;
+
+    uint8_t* string_buffer_ptr = response->string_buffer_;
+
+    response->name_len_ = device_info_.name_.length();
+    memcpy( string_buffer_ptr, device_info_.name_.data(), response->name_len_ );
+    string_buffer_ptr += response->name_len_;
+
+    response->vendor_len_ = device_info_.vendor_.length();
+    memcpy( string_buffer_ptr, device_info_.vendor_.data(), response->vendor_len_ );
+    string_buffer_ptr += response->vendor_len_;
+
+    response->driver_version_len_ = device_info_.driver_version_.length();
+    memcpy( string_buffer_ptr, device_info_.driver_version_.data(), response->driver_version_len_ );
+    string_buffer_ptr += response->driver_version_len_;
+
+    response->version_len_ = device_info_.version_.length();
+    memcpy( string_buffer_ptr, device_info_.version_.data(), response->version_len_ );
+    string_buffer_ptr += response->version_len_;
+
+    response->opencl_c_version_len_ = device_info_.opencl_c_version_.length();
+    memcpy( string_buffer_ptr, device_info_.opencl_c_version_.data(), response->opencl_c_version_len_ );
+    string_buffer_ptr += response->opencl_c_version_len_;
+
+    response->extensions_len_ = device_info_.extensions_.length();
+    memcpy( string_buffer_ptr, device_info_.extensions_.data(), response->extensions_len_ );
+    string_buffer_ptr += response->extensions_len_;
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

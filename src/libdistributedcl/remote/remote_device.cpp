@@ -23,18 +23,20 @@
 #include "remote_device.h"
 #include "client/client_session.h"
 #include "message/msg_device.h"
+using dcl::network::message::base_message;
+using dcl::network::message::dcl_message;
+using dcl::network::message::msgGetDeviceInfo;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 bool remote_device::load_device_info()
 {
-    //dcl_message< msgGetPlatformIDs >() msg( remote_id_ );
-    //session_ref_.send_message( msg );
+    dcl_message< msgGetDeviceInfo > msg( get_remote_id() );
 
-    ////TODO: Fill the device_info structure
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
 
-    //data_loaded_ = true;
+    local_info_ = msg.get_info();
 
     return true;
 }

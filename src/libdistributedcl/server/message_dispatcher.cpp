@@ -52,16 +52,20 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
                 break;
 
             case msgGetDeviceIDs:
-                {
-                    GetDeviceIDs_command command( *it );
+            {
+                GetDeviceIDs_command command( *it );
 
-                    command.execute();
-                    break;
-                }
+                command.execute();
+                break;
+            }
 
             case msgGetDeviceInfo:
-                throw dcl::library_exception( "Not implemented" );
+            {
+                GetDeviceInfo_command command( *it );
+
+                command.execute();
                 break;
+            }
 
             case msgCreateContext:
             case msgCreateContextFromType:

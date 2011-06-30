@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,37 +20,30 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_SERVER_PLATFORM_H_
-#define _DCL_SERVER_PLATFORM_H_
+#ifndef _DCL_COMPOSITE_CONTEXT_H_
+#define _DCL_COMPOSITE_CONTEXT_H_
 
 #include "distributedcl_internal.h"
-#include "message_dispatcher.h"
-#include "message/message.h"
+#include "icd_object.h"
+#include "info/dcl_objects.h"
+#include "info/context_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace server {
+namespace composite {
 //-----------------------------------------------------------------------------
-class GetDeviceIDs_command : 
-    public server_command< dcl::network::message::msgGetDeviceIDs >
+class composite_context :
+    public dcl::info::cl_object< cl_context, cl_context_info, CL_INVALID_CONTEXT >,
+    public icd_object< cl_context, composite_context, dcl_context_id >,
+    public dcl::info::dcl_object< dcl::info::context_info >
 {
 public:
-    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
-
-    void execute();
+    composite_context()
+    {
+        create_icd_obj( this );
+    }
+    ~composite_context(){}
 };
 //-----------------------------------------------------------------------------
-class GetDeviceInfo_command : 
-    public server_command< dcl::network::message::msgGetDeviceInfo >
-{
-public:
-    GetDeviceInfo_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
-
-    void execute();
-};
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
-//-----------------------------------------------------------------------------
-#endif // _DCL_SERVER_PLATFORM_H_
+#endif //_DCL_COMPOSITE_PLATFORM_H_

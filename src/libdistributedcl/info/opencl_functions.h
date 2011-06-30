@@ -59,10 +59,10 @@ typedef cl_int
 (CL_API_CALL *clGetDeviceInfo_t)( cl_device_id, cl_device_info, size_t, void*, size_t* );
 
 typedef cl_context 
-(CL_API_CALL *clCreateContext_t)( cl_context_properties*, cl_uint, const cl_device_id*, logging_fn, void*, cl_int* );
+(CL_API_CALL *clCreateContext_t)( const cl_context_properties*, cl_uint, const cl_device_id*, logging_fn, void*, cl_int* );
 
 typedef cl_context 
-(CL_API_CALL *clCreateContextFromType_t)( cl_context_properties*, cl_device_type, logging_fn, void*, cl_int* );
+(CL_API_CALL *clCreateContextFromType_t)( const cl_context_properties*, cl_device_type, logging_fn, void*, cl_int* );
 
 typedef cl_int 
 (CL_API_CALL *clRetainContext_t)( cl_context );

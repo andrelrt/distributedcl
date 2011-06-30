@@ -20,37 +20,19 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_SERVER_PLATFORM_H_
-#define _DCL_SERVER_PLATFORM_H_
+#ifndef _DCL_INFO_CONTEXT_H_
+#define _DCL_INFO_CONTEXT_H_
 
 #include "distributedcl_internal.h"
-#include "message_dispatcher.h"
-#include "message/message.h"
+#include "dcl_objects.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
-namespace server {
+namespace info {
 //-----------------------------------------------------------------------------
-class GetDeviceIDs_command : 
-    public server_command< dcl::network::message::msgGetDeviceIDs >
+struct context_info
 {
-public:
-    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
-
-    void execute();
 };
 //-----------------------------------------------------------------------------
-class GetDeviceInfo_command : 
-    public server_command< dcl::network::message::msgGetDeviceInfo >
-{
-public:
-    GetDeviceInfo_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
-
-    void execute();
-};
+}} // namespace dcl::info
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
-//-----------------------------------------------------------------------------
-#endif // _DCL_SERVER_PLATFORM_H_
+#endif // _DCL_INFO_CONTEXT_H_
