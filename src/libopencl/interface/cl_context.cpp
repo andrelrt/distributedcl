@@ -66,7 +66,7 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
 
                 for( cl_uint i = 0; i < num_devices; i++ )
                 {
-                    devs.push_back( reinterpret_cast< generic_device* >( icd_object_manager::get_instance().get_object_ptr< composite_device >( devices + i ) ) );
+                    devs.push_back( reinterpret_cast< generic_device* >( icd_object_manager::get_instance().get_object_ptr< composite_device >( devices[ i ] ) ) );
                 }
 
                 composite_context* context_ptr = opencl_composite::get_instance().create_context( devs );
