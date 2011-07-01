@@ -25,6 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include "object_manager.h"
+#include "remote_platform.h"
 #include "client/session_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -36,18 +37,17 @@ class remote_opencl
 {
 public:
     remote_opencl( dcl::network::client::session_manager::session_t& session_ref ) :
-        session_ref_( session_ref ) {}
+        session_ref_( session_ref ) 
+    {
+        remote_platform* platform_ptr = new remote_platform( session_ref_ );
+        platforms_.push_back( reinterpret_cast< dcl::info::generic_platform* >( platform_ptr ) );
+    }
 
     ~remote_opencl(){}
 
-    inline const devices_t& get_devices() const
+    inline const platforms_t& get_platforms() const
     {
-        if( devices_.empty() )
-        {
-            const_cast< remote_opencl* >( this )->load_devices();
-        }
-
-        return( devices_ );
+        return platforms_;
     }
 
     inline dcl::network::client::session_manager::session_t& get_session() const
@@ -56,11 +56,8 @@ public:
     }
 
 private:
-    devices_t devices_;
-    object_manager< remote_device > device_manager_;
+    platforms_t platforms_;
     dcl::network::client::session_manager::session_t& session_ref_;
-
-    void load_devices();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

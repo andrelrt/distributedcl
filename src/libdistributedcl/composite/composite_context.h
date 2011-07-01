@@ -32,9 +32,8 @@ namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
 class composite_context :
-    public dcl::info::cl_object< cl_context, cl_context_info, CL_INVALID_CONTEXT >,
-    public icd_object< cl_context, composite_context, dcl_context_id >,
-    public dcl::info::dcl_object< dcl::info::context_info >
+    public dcl::info::generic_context,
+    public icd_object< cl_context, composite_context, dcl_context_id >
 {
 public:
     composite_context()
@@ -42,6 +41,8 @@ public:
         create_icd_obj( this );
     }
     ~composite_context(){}
+
+    void add( generic_context* context_ptr, const devices_t& devices );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

@@ -34,7 +34,6 @@ namespace single {
 //-----------------------------------------------------------------------------
 class context;
 class platform;
-typedef std::map< cl_platform_id, platform* > platforms_t;
 //-----------------------------------------------------------------------------
 class opencl_single
 {
@@ -42,17 +41,7 @@ public:
     opencl_single( const opencl_library& opencl ) : opencl_( opencl ){}
     ~opencl_single(){}
 
-	const devices_t& get_devices();
 	const platforms_t& get_platforms();
-
-    void get_devices( devices_t& devices, const platform& platform_ref,
-                      cl_device_type device_type = CL_DEVICE_TYPE_ALL );
-
-	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL );
-
-    context* create_context( const devices_t& devices, const platform& platform_ref = platform() );
-	context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL, 
-                             const platform& platform_ref = platform() );
 
     inline const opencl_library& get_opencl() const
     {

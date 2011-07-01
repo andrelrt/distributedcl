@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <boost/scoped_array.hpp>
 #include "opencl_single.h"
 #include "platform.h"
-//#include "context.h"
-#include <boost/scoped_array.hpp>
+using dcl::info::generic_platform;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -50,16 +50,15 @@ const platforms_t& opencl_single::get_platforms()
 
         for( cl_uint i = 0; i < num_entries; i++ )
         {
-            platforms_.insert( platforms_t::value_type( platformIds[ i ],
-                                                        new platform( opencl_, platformIds[ i ] ) ) );
+            platforms_.push_back( reinterpret_cast< generic_platform* >( new platform( opencl_, platformIds[ i ] ) ) );
         }
     }
 
     return platforms_;
 }
 //-----------------------------------------------------------------------------
-const devices_t& opencl_single::get_devices()
-{
+//const devices_t& opencl_single::get_devices()
+//{
 //    if( devices_.empty() )
 //    {
 //        if( platforms_.empty() )
@@ -99,8 +98,8 @@ const devices_t& opencl_single::get_devices()
 //        }
 //    }
 //
-    return( devices_ );
-}
+//    return( devices_ );
+//}
 //-----------------------------------------------------------------------------
 //void opencl_single::get_devices( devices_t& devices, const platform& platform_ref,
 //                                 cl_device_type device_type )

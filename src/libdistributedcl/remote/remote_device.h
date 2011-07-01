@@ -25,6 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include "remote_object.h"
+#include "remote_platform.h"
 #include "info/device_info.h"
 #include "info/dcl_objects.h"
 //-----------------------------------------------------------------------------
@@ -36,8 +37,8 @@ class remote_device :
     public remote_object< remote_device >
 {
 public:
-    remote_device( dcl::network::client::session_manager::session_t& session_ref, cl_device_type type ) : 
-        dcl::info::generic_device( type ), remote_object( session_ref ) {}
+    remote_device( remote_platform* platform_ptr, cl_device_type type ) : 
+        dcl::info::generic_device( platform_ptr, type ), remote_object( platform_ptr->get_session() ) {}
 
         ~remote_device(){}
 

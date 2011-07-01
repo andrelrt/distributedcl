@@ -245,12 +245,8 @@ class generic_device :
     public dcl_object< device_info >
 {
 public:
-    generic_device() : info_loaded_( false )
-    {
-        local_info_.type_ = 0;
-    }
-
-    generic_device( cl_device_type type ) : info_loaded_( false )
+    generic_device( const generic_platform* platform_ptr, cl_device_type type = 0 ) : 
+        info_loaded_( false ), platform_ptr_( platform_ptr )
     {
         local_info_.type_ = type;
     }
@@ -270,6 +266,11 @@ public:
         return local_info_.type_;
     }
 
+    inline const generic_platform* get_platform() const
+    {
+        return platform_ptr_;
+    }
+
 protected:
     virtual bool load_device_info() = 0;
 
@@ -280,6 +281,7 @@ protected:
 
 private:
     bool info_loaded_;
+    const generic_platform* platform_ptr_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

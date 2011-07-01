@@ -27,18 +27,15 @@
 #include "distributedcl_internal.h"
 #include "icd_object.h"
 #include "info/dcl_objects.h"
-#include "info/device_info.h"
 #include "info/platform_info.h"
-#include "single/platform.h"
-#include "single/opencl_single.h"
+#include "info/context_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
 class composite_platform :
-    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
-    public icd_object< cl_platform_id, composite_platform, dcl_platform_id >,
-    public dcl::info::dcl_object< dcl::info::platform_info >
+    public dcl::info::generic_platform,
+    public icd_object< cl_platform_id, composite_platform, dcl_platform_id >
 {
 public:
     composite_platform()
@@ -48,10 +45,22 @@ public:
     ~composite_platform(){}
 
     inline void load_info(){}
-    //void add_platform( dcl::single::platform* platform_ptr )
-    //{
-    //    platforms_.insert( dcl::single::platforms_t::value_type( platform_ptr->get_id(), platform_ptr ) );
-    //}
+
+    const devices_t& get_devices() const
+    { 
+        return devices_;
+    }
+
+    void get_devices( devices_t& devices, cl_device_type device_type );
+
+    dcl::info::generic_context* create_context( const dcl::devices_t& devices );
+//    dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL );
+
+
+    void add_platform( dcl::info::generic_platform* platform_ptr )
+    {
+        platforms_.push_back( platform_ptr );
+    }
 
     //inline void add_devices( const dcl::single::devices_t& devices_ref )
     //{
@@ -69,8 +78,8 @@ public:
     //}
 
 private:
-    //dcl::single::devices_t devices_;
-    //dcl::single::platforms_t platforms_;
+    platforms_t platforms_;
+    devices_t devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

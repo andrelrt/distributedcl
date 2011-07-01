@@ -33,8 +33,6 @@ using dcl::network::message::msgGetDeviceIDs;
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-remote_platform* remote_platform::instance_ptr_ = NULL;
-//-----------------------------------------------------------------------------
 //void remote_platform::load_devices()
 //{
 //    session_manager::session_t& client_session = session_manager::get_session();

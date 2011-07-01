@@ -21,24 +21,93 @@
  */
 //-----------------------------------------------------------------------------
 #include "composite_platform.h"
-using dcl::single::platforms_t;
+#include "composite_context.h"
+#include "info/device_info.h"
+#include "info/context_info.h"
+using dcl::info::generic_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-//composite_platform::~composite_platform()
+void composite_platform::get_devices( devices_t& devices, cl_device_type device_type )
+{
+    devices.clear();
+
+    for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
+    {
+        if( device_type & (*it)->get_type() )
+        {
+            devices.push_back( *it );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+generic_context* composite_platform::create_context( const devices_t& devices )
+{
+    composite_context* composite_context_ptr = new composite_context();
+
+    try
+    {
+        devices_t context_devices;
+        for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); it++ )
+        {
+            context_devices.clear();
+    
+            for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
+            {
+                if( (*dev_it)->get_platform() == *it )
+                {
+                    context_devices.push_back( *dev_it );
+                }
+            }
+
+            if( context_devices.size() != 0 )
+            {
+                generic_context* context_ptr = (*it)->create_context( context_devices );
+
+                composite_context_ptr->add( context_ptr, context_devices );
+            }
+        }
+    }
+    catch( library_exception& ex )
+    {
+        if( composite_context_ptr != NULL )
+        {
+            delete composite_context_ptr;
+        }
+
+        throw ex;
+    }
+
+    return composite_context_ptr;
+}
+//-----------------------------------------------------------------------------
+//composite_context* composite_platform::create_context( cl_device_type device_type )
 //{
-//    for( devices_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
-//    {
-//        delete( *it );
-//    }
-//    devices_.clear();
+//    composite_context* ctx_ptr = new composite_context();
 //
-//    for( platforms_t::iterator it = platforms_.begin(); it != platforms_.end(); it++ )
+//    try
 //    {
-//        delete( it->second );
+//        const platforms_t& platforms_ref = comp_platform_.get_platforms();
+//
+//        for( platforms_t::const_iterator it = platforms_ref.begin(); it != platforms_ref.end(); it++ )
+//        {
+//            context* ctx = new context( it->second->get_opencl(), device_type, *(it->second) );
+//
+//            ctx_ptr->add( ctx, ctx->get_devices() );
+//        }
 //    }
-//    platforms_.clear();
+//    catch( library_exception& ex )
+//    {
+//        if( ctx_ptr != NULL )
+//        {
+//            delete ctx_ptr;
+//        }
+//
+//        throw ex;
+//    }
+//
+//    return ctx_ptr;
 //}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

@@ -30,6 +30,8 @@
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
+class generic_context;
+//-----------------------------------------------------------------------------
 struct platform_info
 {
 public:
@@ -101,6 +103,51 @@ public:
                 throw library_exception( CL_INVALID_VALUE );
         }
     }
+};
+//-----------------------------------------------------------------------------
+class generic_platform :
+    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public dcl::info::dcl_object< platform_info >
+{
+public:
+    generic_platform() : info_loaded_( false ){}
+    ~generic_platform(){}
+
+    inline void load_info()
+    {
+        if( !info_loaded_ )
+        {
+            info_loaded_ = load_platform_info();
+        }
+    }
+
+    inline void add_device( dcl::info::generic_device* device_ptr )
+    {
+        devices_.push_back( device_ptr );
+    }
+
+    inline const devices_t& get_devices() const
+    {
+        return devices_;
+    }
+
+    virtual generic_context* create_context( const devices_t& devices ) = 0;
+    //virtual generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) = 0;
+
+protected:
+    virtual bool load_platform_info()
+    {
+        return true;
+    }
+
+    inline bool get_info_loaded() const
+    {
+        return true;
+    }
+
+private:
+    bool info_loaded_;
+    devices_t devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

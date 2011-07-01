@@ -29,44 +29,25 @@
 #include "remote_object.h"
 #include "info/dcl_objects.h"
 #include "info/platform_info.h"
+#include "info/context_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-class remote_device;
-typedef std::vector< remote_device* > remote_devices_t;
-//-----------------------------------------------------------------------------
 class remote_platform :
-    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
-    public dcl::info::dcl_object< dcl::info::platform_info >
+    public dcl::info::generic_platform,
+    public remote_object< remote_platform >
 {
 public:
-    static const remote_platform& get_instance()
-    {
-        if( instance_ptr_ == NULL )
-        {
-            instance_ptr_ = new remote_platform();
-        }
-        return( *instance_ptr_ );
-    }
+    remote_platform( dcl::network::client::session_manager::session_t& session_ref ) : 
+        remote_object( session_ref ) {}
 
-    //inline const remote_devices_t& get_devices() const
-    //{
-    //    if( remote_devices_.empty() )
-    //    {
-    //        const_cast< remote_platform* >( this )->load_devices();
-    //    }
-    //    return remote_devices_;
-    //}
-
-private:
-    static remote_platform* instance_ptr_;
-    //remote_devices_t remote_devices_;
-
-    remote_platform(){}
     ~remote_platform(){}
 
-    //void load_devices();
+    dcl::info::generic_context* create_context( const dcl::devices_t& devices );
+
+private:
+    void load_devices();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

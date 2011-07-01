@@ -57,19 +57,9 @@ public:
     void add_remote( const std::string& connection_string );
 
     const composite_platform& get_platform() const
-    { 
+    {
         return comp_platform_;
     }
-
-    const devices_t& get_devices() const
-    { 
-        return devices_;
-    }
-
-    void get_devices( devices_t& devices, cl_device_type device_type );
-
-    composite_context* create_context( const dcl::devices_t& devices );
-//    composite_context* create_context( cl_device_type device_type );
 
     void unload_compiler();
     void free_all();
@@ -80,7 +70,6 @@ private:
     typedef std::set< dcl::single::opencl_library* > library_set_t;
     typedef std::set< const dcl::remote::remote_opencl* > remote_set_t;
 
-    devices_t devices_;
     remote_set_t remote_set_;
     opencl_set_t opencl_set_;
     library_set_t library_set_;

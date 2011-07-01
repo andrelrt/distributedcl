@@ -36,7 +36,8 @@ class composite_device :
     public icd_object< cl_device_id, composite_device, dcl_device_id >
 {
 public:
-    composite_device()
+    composite_device( composite_platform* platform_ptr ) : 
+        generic_device( platform_ptr )
     {
         create_icd_obj( this );
     }

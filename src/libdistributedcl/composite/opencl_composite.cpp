@@ -25,7 +25,7 @@
 #include "single/opencl_library.h"
 #include "remote/remote_opencl.h"
 #include "client/session_manager.h"
-using dcl::single::platforms_t;
+using dcl::platforms_t;
 using dcl::single::opencl_single;
 using dcl::single::opencl_library;
 using dcl::remote::remote_opencl;
@@ -59,8 +59,12 @@ void opencl_composite::add_library( const std::string& libpath )
     library_set_.insert( library_ptr );
     opencl_set_.insert( opencl_ptr );
 
-    const devices_t& single_devices = opencl_ptr->get_devices();
-    devices_.insert( devices_.end(), single_devices.begin(), single_devices.end() );
+    const platforms_t& platforms = opencl_ptr->get_platforms();
+
+    for( platforms_t::const_iterator it = platforms.begin(); it != platforms.end(); it++ )
+    {
+        comp_platform_.add_platform( *it );
+    }
 }
 //-----------------------------------------------------------------------------
 void opencl_composite::add_remote( const std::string& connection_string )
@@ -68,95 +72,16 @@ void opencl_composite::add_remote( const std::string& connection_string )
     session_manager::session_t& session_ref = session_manager::create_session( connection_string );
 
     remote_opencl* remote_ptr = new remote_opencl( session_ref );
-    
-    const devices_t& remote_devices = remote_ptr->get_devices();
-    devices_.insert( devices_.end(), remote_devices.begin(), remote_devices.end() );
+
+    const platforms_t& platforms = remote_ptr->get_platforms();
+
+    for( platforms_t::const_iterator it = platforms.begin(); it != platforms.end(); it++ )
+    {
+        comp_platform_.add_platform( *it );
+    }
 
     remote_set_.insert( remote_ptr );
 }
-//-----------------------------------------------------------------------------
-void opencl_composite::get_devices( devices_t& devices, cl_device_type device_type )
-{
-    devices.clear();
-
-    for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
-    {
-        if( device_type & (*it)->get_type() )
-        {
-            devices.push_back( *it );
-        }
-    }
-}
-//-----------------------------------------------------------------------------
-//composite_context* opencl_composite::create_context( const devices_t& devices )
-//{
-//    composite_context* ctx_ptr = new composite_context();
-//
-//    try
-//    {
-//        const platforms_t& platforms_ref = comp_platform_.get_platforms();
-//
-//        devices_t context_devices;
-//        for( platforms_t::const_iterator it = platforms_ref.begin(); it != platforms_ref.end(); it++ )
-//        {
-//            context_devices.clear();
-//    
-//            for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
-//            {
-//                if( (*dev_it)->get_platform() == *(it->second) )
-//                {
-//                    context_devices.push_back( *dev_it );
-//                }
-//            }
-//
-//            if( context_devices.size() != 0 )
-//            {
-//                context* ctx = new context( it->second->get_opencl(), context_devices, *(it->second) );
-//
-//                ctx_ptr->add( ctx, context_devices );
-//            }
-//        }
-//    }
-//    catch( library_exception& ex )
-//    {
-//        if( ctx_ptr != NULL )
-//        {
-//            delete ctx_ptr;
-//        }
-//
-//        throw ex;
-//    }
-//
-//    return ctx_ptr;
-//}
-//-----------------------------------------------------------------------------
-//composite_context* opencl_composite::create_context( cl_device_type device_type )
-//{
-//    composite_context* ctx_ptr = new composite_context();
-//
-//    try
-//    {
-//        const platforms_t& platforms_ref = comp_platform_.get_platforms();
-//
-//        for( platforms_t::const_iterator it = platforms_ref.begin(); it != platforms_ref.end(); it++ )
-//        {
-//            context* ctx = new context( it->second->get_opencl(), device_type, *(it->second) );
-//
-//            ctx_ptr->add( ctx, ctx->get_devices() );
-//        }
-//    }
-//    catch( library_exception& ex )
-//    {
-//        if( ctx_ptr != NULL )
-//        {
-//            delete ctx_ptr;
-//        }
-//
-//        throw ex;
-//    }
-//
-//    return ctx_ptr;
-//}
 //-----------------------------------------------------------------------------
 void opencl_composite::unload_compiler()
 {

@@ -28,6 +28,7 @@
 #include "distributedcl_internal.h"
 #include "info/dcl_objects.h"
 #include "info/platform_info.h"
+#include "info/context_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace info {
 class generic_device;
@@ -39,27 +40,21 @@ namespace single {
 class opencl_library;
 //-----------------------------------------------------------------------------
 class platform :
-    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
-    public dcl::info::dcl_object< dcl::info::platform_info >
+    public dcl::info::generic_platform
 {
 public:
     platform(){}
 	platform( const opencl_library& opencl, cl_platform_id platform_id = NULL );
     ~platform(){}
 
-    inline void add_device( dcl::info::generic_device* device_ptr )
-    {
-        devices_.push_back( device_ptr );
-    }
+	const devices_t& get_devices();
+	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL );
 
-    inline const devices_t& get_devices() const
-    {
-        return devices_;
-    }
+    dcl::info::generic_context* create_context( const devices_t& devices );
+	//generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL );
+
 
 private:
-    devices_t devices_;
-
 	void load();
     void load_string( cl_platform_info info, std::string& out );
 };

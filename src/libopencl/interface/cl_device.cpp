@@ -45,10 +45,12 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 
     try
     {
-        composite_platform* platform_ptr = icd_object_manager::get_instance().get_object_ptr< composite_platform >( platform );
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_platform* platform_ptr = icd.get_object_ptr< composite_platform >( platform );
 
         devices_t devs;
-        opencl_composite::get_instance().get_devices( devs, device_type );
+        platform_ptr->get_devices( devs, device_type );
 
         cl_uint count = static_cast< cl_uint >( devs.size() );
 
@@ -66,8 +68,7 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 
             for( cl_uint i = 0; i < count; i++ )
             {
-                devices[ i ] = icd_object_manager::get_instance().get_cl_id< composite_device >( 
-                                            reinterpret_cast< composite_device* >( devs[ i ] ) ); 
+                devices[ i ] = icd.get_cl_id< composite_device >( reinterpret_cast< composite_device* >( devs[ i ] ) ); 
             }
         }
     }

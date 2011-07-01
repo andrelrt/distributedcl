@@ -42,12 +42,14 @@
 #include "library_exception.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace info {
+class generic_platform;
 class generic_device;
 }}
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------
 typedef uint16_t remote_id_t;
+typedef std::vector< dcl::info::generic_platform* > platforms_t;
 typedef std::vector< dcl::info::generic_device* > devices_t;
 //-----------------------------------------------------------------------------
 static const union { long one; char little; } is_endian = {1};

@@ -57,26 +57,27 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
         {
             if( properties[ index ] == CL_CONTEXT_PLATFORM )
             {
+                icd_object_manager& icd = icd_object_manager::get_instance();
+
                 cl_platform_id platform_id = reinterpret_cast< cl_platform_id >( properties[ index + 1 ] );
-                composite_platform* platform_ptr = icd_object_manager::get_instance().get_object_ptr< composite_platform >( platform_id );
+                composite_platform* platform_ptr = icd.get_object_ptr< composite_platform >( platform_id );
 
                 devices_t devs;
-
                 devs.reserve( num_devices );
 
                 for( cl_uint i = 0; i < num_devices; i++ )
                 {
-                    devs.push_back( reinterpret_cast< generic_device* >( icd_object_manager::get_instance().get_object_ptr< composite_device >( devices[ i ] ) ) );
+                    devs.push_back( reinterpret_cast< generic_device* >( icd.get_object_ptr< composite_device >( devices[ i ] ) ) );
                 }
 
-                composite_context* context_ptr = opencl_composite::get_instance().create_context( devs );
+                composite_context* context_ptr = reinterpret_cast< composite_context* >(  platform_ptr->create_context( devs ) );
 
                 if( errcode_ret != NULL )
                 {
                     *errcode_ret = CL_SUCCESS;
                 }
 
-                return icd_object_manager::get_instance().get_cl_id( context_ptr );
+                return icd.get_cl_id( context_ptr );
             }
 
             index += 2;

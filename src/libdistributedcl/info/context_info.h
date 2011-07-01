@@ -33,6 +33,12 @@ struct context_info
 {
 };
 //-----------------------------------------------------------------------------
+class generic_context :
+    public cl_object< cl_context, cl_context_info, CL_INVALID_CONTEXT >,
+    public dcl_object< context_info >
+{
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::info
 //-----------------------------------------------------------------------------
 #endif // _DCL_INFO_CONTEXT_H_
