@@ -210,14 +210,14 @@ private:
     {
         if( cl_ptr == NULL )
         {
-            throw dcl::library_exception( "Invalid object", DCL_TYPE_T::invalid_value_error );
+            throw dcl::library_exception( "Invalid object", DCL_TYPE_T::invalid_error_value );
         }
 
         cl_object_set_t::iterator it = object_set_.find( reinterpret_cast< cl_object* >( cl_ptr ) );
 
         if( it == object_set_.end() )
         {
-            throw dcl::library_exception( "Unknow object", DCL_TYPE_T::invalid_value_error );
+            throw dcl::library_exception( "Unknow object", DCL_TYPE_T::invalid_error_value );
         }
 
         uint32_t type = (*it)->dcl_type;
@@ -225,7 +225,7 @@ private:
 
         if( type != type_id )
         {
-            throw dcl::library_exception( "Invalid object type", DCL_TYPE_T::invalid_value_error );
+            throw dcl::library_exception( "Invalid object type", DCL_TYPE_T::invalid_error_value );
         }
 
         return it;

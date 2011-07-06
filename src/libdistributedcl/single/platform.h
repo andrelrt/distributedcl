@@ -28,10 +28,10 @@
 #include "distributedcl_internal.h"
 #include "info/dcl_objects.h"
 #include "info/platform_info.h"
-#include "info/context_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace info {
 class generic_device;
+class generic_context;
 }}
 //-----------------------------------------------------------------------------
 namespace dcl {

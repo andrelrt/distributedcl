@@ -49,6 +49,7 @@ class generic_device;
 namespace dcl {
 //-----------------------------------------------------------------------------
 typedef uint16_t remote_id_t;
+typedef std::vector< cl_image_format > image_formats_t;
 typedef std::vector< dcl::info::generic_platform* > platforms_t;
 typedef std::vector< dcl::info::generic_device* > devices_t;
 //-----------------------------------------------------------------------------
@@ -112,7 +113,6 @@ static inline uint64_t network_to_host( uint64_t value )
 {
     return host_to_network( value );
 }
-//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 } // namespace dcl
 //-----------------------------------------------------------------------------

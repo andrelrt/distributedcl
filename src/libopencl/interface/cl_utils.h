@@ -78,7 +78,7 @@ void get_info_check_parameters( const typename DCL_TYPE_T::cl_type_t cl_obj,
 {
     if( cl_obj == NULL )
     {
-        throw dcl::library_exception( DCL_TYPE_T::invalid_value_error );
+        throw dcl::library_exception( DCL_TYPE_T::invalid_error_value );
     }
 
     if( ( (param_value_size == 0) && (param_value != NULL) ) ||

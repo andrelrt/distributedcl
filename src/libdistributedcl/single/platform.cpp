@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,11 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "platform.h"
 #include <boost/scoped_array.hpp>
+#include "platform.h"
+#include "info/platform_info.h"
+#include "info/context_info.h"
+using dcl::info::generic_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -59,6 +62,12 @@ void platform::load_string( cl_platform_info info, std::string& out )
     //        out.assign( param_value.get() );
     //    }
     //}
+}
+//-----------------------------------------------------------------------------
+generic_context* platform::create_context( const devices_t& devices )
+{
+    throw library_exception( "Not implemented" );
+    return NULL;
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

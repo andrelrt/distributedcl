@@ -67,10 +67,17 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
 
                 for( cl_uint i = 0; i < num_devices; i++ )
                 {
-                    devs.push_back( reinterpret_cast< generic_device* >( icd.get_object_ptr< composite_device >( devices[ i ] ) ) );
+                    composite_device* dev_ptr = icd.get_object_ptr< composite_device >( devices[ i ] ) );
+
+                    if( dev_ptr->get_platform() != platform_ptr )
+                    {
+                        throw library_exception( CL_INVALID_DEVICE );
+                    }
+
+                    devs.push_back( reinterpret_cast< generic_device* >( dev_ptr );
                 }
 
-                composite_context* context_ptr = reinterpret_cast< composite_context* >(  platform_ptr->create_context( devs ) );
+                composite_context* context_ptr = reinterpret_cast< composite_context* >( platform_ptr->create_context( devs ) );
 
                 if( errcode_ret != NULL )
                 {
@@ -83,6 +90,7 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
             index += 2;
         }
 
+        // Property CL_CONTEXT_PLATFORM not found
         if( errcode_ret != NULL )
         {
             *errcode_ret = CL_INVALID_PROPERTY;

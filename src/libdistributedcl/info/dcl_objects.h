@@ -34,7 +34,7 @@ class cl_object
 public:
     typedef CL_TYPE_T cl_type_t;
     typedef CL_TYPE_INFO cl_type_info_t;
-    static const cl_int invalid_value_error = CL_TYPE_INVALID_VALUE;
+    static const cl_int invalid_error_value = CL_TYPE_INVALID_VALUE;
 };
 //-----------------------------------------------------------------------------
 template< typename DCL_TYPE_INFO >
