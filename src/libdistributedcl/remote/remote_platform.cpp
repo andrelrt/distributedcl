@@ -35,7 +35,7 @@ using dcl::network::message::msgGetDeviceIDs;
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-generic_context* remote_platform::create_context( const dcl::devices_t& devices )
+generic_context* remote_platform::create_context( const dcl::devices_t& devices ) const
 {
     throw library_exception( "Not implemented" );
     return NULL;

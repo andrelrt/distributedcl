@@ -47,11 +47,11 @@ public:
 	platform( const opencl_library& opencl, cl_platform_id platform_id = NULL );
     ~platform(){}
 
-	const devices_t& get_devices();
-	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL );
+	const devices_t& get_devices() const;
+	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
 
-    dcl::info::generic_context* create_context( const devices_t& devices );
-	//generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL );
+    dcl::info::generic_context* create_context( const devices_t& devices ) const;
+	//generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
 
 
 private:

@@ -29,7 +29,7 @@ using dcl::info::generic_context;
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-void composite_platform::get_devices( devices_t& devices, cl_device_type device_type )
+void composite_platform::get_devices( devices_t& devices, cl_device_type device_type ) const
 {
     devices.clear();
 
@@ -42,7 +42,7 @@ void composite_platform::get_devices( devices_t& devices, cl_device_type device_
     }
 }
 //-----------------------------------------------------------------------------
-generic_context* composite_platform::create_context( const devices_t& devices )
+generic_context* composite_platform::create_context( const devices_t& devices ) const
 {
     composite_context* composite_context_ptr = new composite_context();
 

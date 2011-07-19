@@ -51,9 +51,9 @@ public:
         return devices_;
     }
 
-    void get_devices( devices_t& devices, cl_device_type device_type );
+    void get_devices( devices_t& devices, cl_device_type device_type ) const;
 
-    dcl::info::generic_context* create_context( const dcl::devices_t& devices );
+    dcl::info::generic_context* create_context( const dcl::devices_t& devices ) const;
 //    dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL );
 
 

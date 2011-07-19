@@ -44,7 +44,7 @@ public:
 
     ~remote_platform(){}
 
-    dcl::info::generic_context* create_context( const dcl::devices_t& devices );
+    dcl::info::generic_context* create_context( const dcl::devices_t& devices ) const;
 
 private:
     void load_devices();
