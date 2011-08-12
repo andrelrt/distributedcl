@@ -50,6 +50,15 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
         return NULL;
     }
 
+    if( properties == NULL )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_PROPERTY;
+        }
+        return NULL;
+    }
+
     try
     {
         int index = 0;
