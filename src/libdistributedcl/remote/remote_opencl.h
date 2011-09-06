@@ -24,14 +24,11 @@
 #define _DCL_REMOTE_OPENCL_H_
 
 #include "distributedcl_internal.h"
-#include "object_manager.h"
 #include "remote_platform.h"
 #include "client/session_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
-//-----------------------------------------------------------------------------
-class remote_device;
 //-----------------------------------------------------------------------------
 class remote_opencl
 {

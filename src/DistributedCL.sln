@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libopencl", "libopencl\libo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLinfo", "CLInfo\CLinfo.vcxproj", "{2180CC88-E455-42AD-ACD5-446AA42AB15C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCL", "HelloCL\HelloCL.vcxproj", "{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -111,6 +113,20 @@ Global
 		{2180CC88-E455-42AD-ACD5-446AA42AB15C}.Release|Win32.Build.0 = Release|Win32
 		{2180CC88-E455-42AD-ACD5-446AA42AB15C}.Release|x64.ActiveCfg = Release|x64
 		{2180CC88-E455-42AD-ACD5-446AA42AB15C}.Release|x64.Build.0 = Release|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|Win32.Build.0 = Debug|Win32
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|x64.ActiveCfg = Debug|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Debug|x64.Build.0 = Debug|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|Any CPU.ActiveCfg = Release|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|Mixed Platforms.Build.0 = Release|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|Win32.ActiveCfg = Release|Win32
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|Win32.Build.0 = Release|Win32
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|x64.ActiveCfg = Release|x64
+		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,11 +33,18 @@ void composite_platform::get_devices( devices_t& devices, cl_device_type device_
 {
     devices.clear();
 
-    for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
+    if( device_type == CL_DEVICE_TYPE_ALL )
     {
-        if( device_type & (*it)->get_type() )
+        devices.insert( devices.end(), devices_.begin(), devices_.end() );
+    }
+    else
+    {
+        for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
         {
-            devices.push_back( *it );
+            if( device_type & (*it)->get_type() )
+            {
+                devices.push_back( *it );
+            }
         }
     }
 }

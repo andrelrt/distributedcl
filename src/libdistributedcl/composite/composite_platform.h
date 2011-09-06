@@ -60,6 +60,10 @@ public:
     void add_platform( dcl::info::generic_platform* platform_ptr )
     {
         platforms_.push_back( platform_ptr );
+
+        const devices_t& devs = platform_ptr->get_devices();
+
+        devices_.insert( devices_.end(), devs.begin(), devs.end() );
     }
 
     //inline void add_devices( const dcl::single::devices_t& devices_ref )

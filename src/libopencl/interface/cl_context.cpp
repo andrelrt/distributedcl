@@ -78,11 +78,6 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
                 {
                     composite_device* dev_ptr = icd.get_object_ptr< composite_device >( devices[ i ] );
 
-                    if( dev_ptr->get_platform() != platform_ptr )
-                    {
-                        throw dcl::library_exception( CL_INVALID_DEVICE );
-                    }
-
                     devs.push_back( reinterpret_cast< generic_device* >( dev_ptr ) );
                 }
 

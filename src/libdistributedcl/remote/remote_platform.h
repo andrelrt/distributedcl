@@ -27,6 +27,7 @@
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "remote_object.h"
+#include "object_manager.h"
 #include "info/dcl_objects.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
@@ -34,13 +35,18 @@
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
+class remote_device;
+//-----------------------------------------------------------------------------
 class remote_platform :
     public dcl::info::generic_platform,
     public remote_object< remote_platform >
 {
 public:
     remote_platform( dcl::network::client::session_manager::session_t& session_ref ) : 
-        remote_object( session_ref ) {}
+        remote_object( session_ref ) 
+    {
+        load_devices();
+    }
 
     ~remote_platform(){}
 
@@ -48,6 +54,7 @@ public:
 
 private:
     void load_devices();
+    object_manager< remote_device > device_manager_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

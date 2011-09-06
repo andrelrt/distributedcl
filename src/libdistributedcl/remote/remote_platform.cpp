@@ -41,21 +41,36 @@ generic_context* remote_platform::create_context( const dcl::devices_t& devices 
     return NULL;
 }
 //-----------------------------------------------------------------------------
-//void remote_platform::load_devices()
-//{
-//    session_manager::session_t& client_session = session_manager::get_session();
-//
-//    dcl_message< msgGetDeviceIDs > msg;
-//
-//    client_session.send_message( reinterpret_cast< base_message* >( &msg ) );
-//
-//    std::size_t device_count = msg.get_device_count();
-//
-//    for( std::size_t i = 0; i < device_count; i++ )
-//    {
-//        remote_devices_.push_back( new remote_device( client_session ) );
-//    }
-//}
+void remote_platform::load_devices()
+{
+    dcl_message< msgGetDeviceIDs > msg;
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    for( std::size_t i = 0; i < msg.get_gpu_count(); i++ )
+    {
+        remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_GPU );
+
+        device_manager_.add( dev_ptr );
+        add_device( dev_ptr );
+    }
+
+    for( std::size_t i = 0; i < msg.get_cpu_count(); i++ )
+    {
+        remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_CPU );
+
+        device_manager_.add( dev_ptr );
+        add_device( dev_ptr );
+    }
+
+    for( std::size_t i = 0; i < msg.get_accelerator_count(); i++ )
+    {
+        remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_ACCELERATOR );
+
+        device_manager_.add( dev_ptr );
+        add_device( dev_ptr );
+    }
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
