@@ -27,6 +27,7 @@
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
 using dcl::composite::opencl_composite;
+using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -34,10 +35,40 @@ namespace server {
 //-----------------------------------------------------------------------------
 void GetDeviceIDs_command::execute()
 {
-    message_.set_cpu_count( 0 );
-    message_.set_gpu_count( 0 );
-    message_.set_accelerator_count( 1 );
-    message_.set_other_count( 0 );
+    const composite_platform& platform = opencl_composite::get_instance().get_platform();
+    const devices_t& devs = platform.get_devices();
+
+    size_t cpu_count = 0;
+    size_t gpu_count = 0;
+    size_t acc_count = 0;
+    size_t oth_count = 0;
+
+    for( devices_t::const_iterator it = devs.begin(); it != devs.end(); it++ )
+    {
+        switch( (*it)->get_type() )
+        {
+            case CL_DEVICE_TYPE_CPU:
+                cpu_count++;
+                break;
+
+            case CL_DEVICE_TYPE_GPU:
+                gpu_count++;
+                break;
+
+            case CL_DEVICE_TYPE_ACCELERATOR:
+                acc_count++;
+                break;
+
+            default:
+                oth_count++;
+                break;
+        }
+    }
+
+    message_.set_cpu_count( cpu_count );
+    message_.set_gpu_count( gpu_count );
+    message_.set_accelerator_count( acc_count );
+    message_.set_other_count( oth_count );
 }
 //-----------------------------------------------------------------------------
 void GetDeviceInfo_command::execute()

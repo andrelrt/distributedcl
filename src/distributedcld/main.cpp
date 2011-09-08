@@ -24,8 +24,16 @@
 #include "distributedcl_internal.h"
 #include "server/server.h"
 #include "network/tcp_transport.h"
+#include "composite/opencl_composite.h"
 using dcl::network::server::server;
 using dcl::network::platform::tcp_transport;
+using dcl::composite::opencl_composite;
+
+#if defined( WIN32 )
+#define OPENCL_LIBRARY  "OpenCL.dll"
+#else
+#define OPENCL_LIBRARY  "libOpenCL.so"
+#endif
 //-----------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
@@ -37,7 +45,10 @@ int main( int argc, char* argv[] )
 
 #endif
 
-    // TCP Network Server -----------------------------------------------------
+    // Load OpenCL Libraries --------------------------------------------------
+    opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
+
+    // Start TCP Network Server -----------------------------------------------
     typedef server< tcp_transport > tcp_server_t;
 
     // default config info (bind ip 0.0.0.0, port 4791)
@@ -47,6 +58,9 @@ int main( int argc, char* argv[] )
     tcp_server_ptr->start_accept_thread();
 
     tcp_server_ptr->wait();
+
+    // Free OpenCL Libraries --------------------------------------------------
+    opencl_composite::get_instance().free_all();
 
 #if defined( WIN32 )
 
