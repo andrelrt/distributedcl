@@ -254,7 +254,7 @@ public:
         delete obj_ptr;
     }
 
-    template< typename DCL_TYPE_T >
+    inline template< typename DCL_TYPE_T >
     DCL_TYPE_T* get_object_ptr( typename DCL_TYPE_T::cl_type_t cl_ptr )
     {
         cl_object* cl_object_ptr = *get_internal_object< DCL_TYPE_T >( cl_ptr );

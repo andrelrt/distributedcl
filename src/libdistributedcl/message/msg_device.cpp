@@ -29,22 +29,86 @@ namespace message {
 void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_ptr )
 {
     const dcl_message< msgGetDeviceIDs >* msg_response_ptr = reinterpret_cast< const dcl_message< msgGetDeviceIDs >* >( response_ptr );
-    const msgGetDeviceIDs_response* response = reinterpret_cast< const msgGetDeviceIDs_response* >( msg_response_ptr ->get_payload() );
+    const msgGetDeviceIDs_response* response = reinterpret_cast< const msgGetDeviceIDs_response* >( msg_response_ptr->get_payload() );
 
-    cpu_count_ = ntohs( response->cpu_count );
-    gpu_count_ = ntohs( response->gpu_count );
-    accelerator_count_ = ntohs( response->accelerator_count );
-    other_count_ = ntohs( response->other_count );
+    uint16_t cpu_count = ntohs( response->cpu_count );
+    uint16_t gpu_count = ntohs( response->gpu_count );
+    uint16_t accelerator_count = ntohs( response->accelerator_count );
+    uint16_t other_count = ntohs( response->other_count );
+
+    uint16_t dev_idx = 0;
+
+    // --------------------
+    cpu_devices_.clear();
+    cpu_devices_.reserve( cpu_count );
+
+    for( uint16_t i = 0; i < cpu_count; i++ )
+    {
+        cpu_devices_.push_back( response->device_ids[ dev_idx ] );
+
+        dev_idx++;
+    }
+
+    // --------------------
+    gpu_devices_.clear();
+    gpu_devices_.reserve( gpu_count );
+
+    for( uint16_t i = 0; i < gpu_count; i++ )
+    {
+        gpu_devices_.push_back( response->device_ids[ dev_idx ] );
+
+        dev_idx++;
+    }
+
+    // --------------------
+    accelerator_devices_.clear();
+    accelerator_devices_.reserve( accelerator_count );
+
+    for( uint16_t i = 0; i < accelerator_count; i++ )
+    {
+        accelerator_devices_.push_back( response->device_ids[ dev_idx ] );
+
+        dev_idx++;
+    }
+
+    // --------------------
+    other_devices_.clear();
+    other_devices_.reserve( other_count );
+
+    for( uint16_t i = 0; i < other_count; i++ )
+    {
+        other_devices_.push_back( response->device_ids[ dev_idx ] );
+
+        dev_idx++;
+    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
 {
     msgGetDeviceIDs_response* response = reinterpret_cast< msgGetDeviceIDs_response* >( payload_ptr );
 
-    response->cpu_count = htons( static_cast< uint16_t >( cpu_count_ ) );
-    response->gpu_count = htons( static_cast< uint16_t >( gpu_count_ ) );
-    response->accelerator_count  = htons( static_cast< uint16_t >( accelerator_count_ ) );
-    response->other_count = htons( static_cast< uint16_t >( other_count_ ) );
+    response->cpu_count = htons( static_cast< uint16_t >( cpu_devices_.size() ) );
+    response->gpu_count = htons( static_cast< uint16_t >( gpu_devices_.size() ) );
+    response->accelerator_count  = htons( static_cast< uint16_t >( accelerator_devices_.size() ) );
+    response->other_count = htons( static_cast< uint16_t >( other_devices_.size() ) );
+
+    uint16_t dev_idx = 0;
+
+    // --------------------
+    for( uint16_t i = 0; i < cpu_count; i++ )
+        response->device_ids[ dev_idx++ ] = cpu_devices_[ i ];
+
+    // --------------------
+    for( uint16_t i = 0; i < gpu_count; i++ )
+        response->device_ids[ dev_idx++ ] = gpu_devices_[ i ];
+
+    // --------------------
+    for( uint16_t i = 0; i < accelerator_count; i++ )
+        response->device_ids[ dev_idx++ ] = accelerator_devices_[ i ];
+
+    // --------------------
+    for( uint16_t i = 0; i < other_count; i++ )
+        response->device_ids[ dev_idx++ ] = other_devices_[ i ];
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::set_response( const base_message* response_ptr )

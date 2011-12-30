@@ -25,6 +25,7 @@
 
 #include "message.h"
 #include "info/device_info.h"
+#include "remote/remote_device.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -35,54 +36,59 @@ class dcl_message< msgGetDeviceIDs > : public base_message
 {
 public:
     dcl_message< msgGetDeviceIDs >() : 
-        base_message( msgGetDeviceIDs, true, 0, sizeof( msgGetDeviceIDs_response ) ), 
-        cpu_count_( 0 ), gpu_count_( 0 ), accelerator_count_( 0 ), other_count_( 0 ) {}
+        base_message( msgGetDeviceIDs, true, 0, sizeof( msgGetDeviceIDs_response ) ) {}
 
     virtual void set_response( const base_message* response_ptr );
 
     inline std::size_t get_device_count()
     {
-        return cpu_count_ + gpu_count_ + accelerator_count_ + other_count_;
+        return get_cpu_count() + get_gpu_count() + get_accelerator_count() + get_other_count();
     }
 
     inline std::size_t get_cpu_count()
     {
-        return cpu_count_;
+        return cpu_devices_.size();
     }
 
     inline std::size_t get_gpu_count()
     {
-        return gpu_count_;
+        return gpu_devices_.size();
     }
 
     inline std::size_t get_accelerator_count()
     {
-        return accelerator_count_;
+        return accelerator_devices_.size();
     }
 
     inline std::size_t get_other_count()
     {
-        return other_count_;
+        return other_devices_.size();
     }
 
-    inline void set_cpu_count( std::size_t cpu_count )
+    inline void add_cpu_device( dcl::remote_id_t dev_id )
     {
-        cpu_count_ = cpu_count;
+        cpu_devices_.push_back( dev_id );
     }
 
-    inline void set_gpu_count( std::size_t gpu_count )
+    inline void add_gpu_device( dcl::remote_id_t dev_id )
     {
-        gpu_count_ = gpu_count;
+        gpu_devices_.push_back( dev_id );
     }
 
-    inline void set_accelerator_count( std::size_t accelerator_count )
+    inline void add_accelerator_device( dcl::remote_id_t dev_id )
     {
-        accelerator_count_ = accelerator_count;
+        accelerator_devices_.push_back( dev_id );
     }
 
-    inline void set_other_count( std::size_t other_count )
+    inline void add_other_device( dcl::remote_id_t dev_id )
     {
-        other_count_ = other_count;
+        other_devices_.push_back( dev_id );
+    }
+
+    inline void update_response_size()
+    {
+        set_response_size( sizeof( msgGetDeviceIDs_response ) - sizeof( dcl::remote_id_t ) +
+                           sizeof( dcl::remote_id_t ) * get_device_count() );
     }
 
 protected:
@@ -97,13 +103,16 @@ private:
         uint16_t gpu_count;
         uint16_t accelerator_count;
         uint16_t other_count;
+        dcl::remote_id_t device_ids[1];
     };
     #pragma pack( pop )
 
-    std::size_t cpu_count_;
-    std::size_t gpu_count_;
-    std::size_t accelerator_count_;
-    std::size_t other_count_;
+    typedef std::vector< dcl::remote_id_t > remote_ids_t;
+    remote_ids_t cpu_devices_;
+    remote_ids_t gpu_devices_;
+    remote_ids_t accelerator_devices_;
+    remote_ids_t other_devices_;
+
 };
 //-----------------------------------------------------------------------------
 template<>
