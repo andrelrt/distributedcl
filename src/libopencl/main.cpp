@@ -82,7 +82,7 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved )
 
                 setup_library();
             }
-            catch( dcl::library_exception& ex )
+            catch( dcl::library_exception& )
             {
                 return FALSE;
             }
@@ -99,7 +99,7 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved )
 
                 WSACleanup();
             }
-            catch( dcl::library_exception& ex )
+            catch( dcl::library_exception& )
             {
                 return FALSE;
             }

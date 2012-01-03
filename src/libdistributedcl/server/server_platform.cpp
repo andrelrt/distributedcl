@@ -24,10 +24,12 @@
 #include "message/message.h"
 #include "message/msg_device.h"
 #include "composite/opencl_composite.h"
+#include "remote/remote_device.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
+using dcl::remote::remote_device;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -40,22 +42,24 @@ void GetDeviceIDs_command::execute()
 
     for( devices_t::const_iterator it = devs.begin(); it != devs.end(); it++ )
     {
-        switch( (*it)->get_type() )
+        remote_device* pDev = reinterpret_cast< remote_device* >( *it );
+
+        switch( pDev->get_type() )
         {
             case CL_DEVICE_TYPE_CPU:
-                message_.add_cpu_device( *it );
+                message_.add_cpu_device( pDev->get_remote_id() );
                 break;
 
             case CL_DEVICE_TYPE_GPU:
-                message_.add_gpu_device( *it );
+                message_.add_gpu_device( pDev->get_remote_id() );
                 break;
 
             case CL_DEVICE_TYPE_ACCELERATOR:
-                message_.add_accelerator_device( *it );
+                message_.add_accelerator_device( pDev->get_remote_id() );
                 break;
 
             default:
-                message_.add_other_device( *it );
+                message_.add_other_device( pDev->get_remote_id() );
                 break;
         }
     }

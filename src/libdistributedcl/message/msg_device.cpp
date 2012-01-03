@@ -95,19 +95,19 @@ void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
     uint16_t dev_idx = 0;
 
     // --------------------
-    for( uint16_t i = 0; i < cpu_count; i++ )
+    for( uint16_t i = 0; i < response->cpu_count; i++ )
         response->device_ids[ dev_idx++ ] = cpu_devices_[ i ];
 
     // --------------------
-    for( uint16_t i = 0; i < gpu_count; i++ )
+    for( uint16_t i = 0; i < response->gpu_count; i++ )
         response->device_ids[ dev_idx++ ] = gpu_devices_[ i ];
 
     // --------------------
-    for( uint16_t i = 0; i < accelerator_count; i++ )
+    for( uint16_t i = 0; i < response->accelerator_count; i++ )
         response->device_ids[ dev_idx++ ] = accelerator_devices_[ i ];
 
     // --------------------
-    for( uint16_t i = 0; i < other_count; i++ )
+    for( uint16_t i = 0; i < response->other_count; i++ )
         response->device_ids[ dev_idx++ ] = other_devices_[ i ];
 }
 //-----------------------------------------------------------------------------

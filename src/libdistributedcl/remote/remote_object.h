@@ -39,16 +39,16 @@ public:
         return session_ref_;
     }
 
+    inline dcl::remote_id_t get_remote_id() const
+    {
+        return remote_id_;
+    }
+
 protected:
     dcl::network::client::session_manager::session_t& session_ref_;
 
     remote_object( dcl::network::client::session_manager::session_t& session_ref ) :
         session_ref_( session_ref ), remote_id_( 0 ) {}
-
-    inline dcl::remote_id_t get_remote_id() const
-    {
-        return remote_id_;
-    }
 
 private:
     dcl::remote_id_t remote_id_;
