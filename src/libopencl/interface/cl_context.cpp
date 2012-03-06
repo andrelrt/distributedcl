@@ -22,13 +22,14 @@
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
+#include "icd/icd_object_manager.h"
 #include "composite/opencl_composite.h"
 #include "composite/composite_device.h"
 #include "composite/composite_context.h"
 #include "composite/composite_platform.h"
 using dcl::devices_t;
+using dcl::icd::icd_object_manager;
 using dcl::info::generic_device;
-using dcl::composite::icd_object_manager;
 using dcl::composite::composite_platform;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_device;

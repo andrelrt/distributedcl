@@ -161,6 +161,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="icd\icd_object_manager.cpp" />
     <ClCompile Include="interface\cl_context.cpp" />
     <ClCompile Include="interface\cl_device.cpp" />
     <ClCompile Include="interface\cl_platform.cpp" />
@@ -172,6 +173,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="icd\icd_object_manager.h" />
     <ClInclude Include="interface\cl_utils.h" />
     <ClInclude Include="local_session.h" />
   </ItemGroup>

@@ -58,7 +58,6 @@
     <ClCompile Include="client\session_manager.cpp" />
     <ClCompile Include="composite\composite_context.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
-    <ClCompile Include="composite\icd_object.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />

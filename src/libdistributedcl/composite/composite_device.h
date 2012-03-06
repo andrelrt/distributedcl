@@ -39,7 +39,7 @@ public:
     composite_device( composite_platform* platform_ptr ) : 
         generic_device( platform_ptr )
     {
-        create_icd_obj( this );
+        //create_icd_obj( this );
     }
     ~composite_device(){}
 

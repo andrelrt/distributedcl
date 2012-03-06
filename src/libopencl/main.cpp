@@ -21,12 +21,21 @@
  */
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
+#include "icd/icd_object_manager.h"
 #include "composite/opencl_composite.h"
+#include "composite/composite_platform.h"
+using dcl::icd::icd_object_manager;
 using dcl::composite::opencl_composite;
+using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
 void setup_library()
 {
     opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
+
+    const composite_platform& platform_ref = opencl_composite::get_instance().get_platform();
+    composite_platform* platform_ptr = const_cast< composite_platform* >( &platform_ref );
+
+    icd_object_manager::get_instance().get_cl_id< composite_platform >( platform_ptr );
 }
 //-----------------------------------------------------------------------------
 void free_library()

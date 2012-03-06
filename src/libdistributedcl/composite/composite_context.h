@@ -38,7 +38,7 @@ class composite_context :
 public:
     composite_context()
     {
-        create_icd_obj( this );
+        //create_icd_obj( this );
     }
     ~composite_context(){}
 

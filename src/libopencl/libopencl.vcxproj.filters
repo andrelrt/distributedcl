@@ -4,6 +4,9 @@
     <Filter Include="interface">
       <UniqueIdentifier>{4698a11f-050f-4568-95f2-ca37092c1b42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="icd">
+      <UniqueIdentifier>{6075edb6-7293-40e9-9ef7-03f811fa0760}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="interface\cl_platform.cpp">
@@ -16,6 +19,9 @@
     <ClCompile Include="interface\cl_context.cpp">
       <Filter>interface</Filter>
     </ClCompile>
+    <ClCompile Include="icd\icd_object_manager.cpp">
+      <Filter>icd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="libopencl.def" />
@@ -25,5 +31,8 @@
       <Filter>interface</Filter>
     </ClInclude>
     <ClInclude Include="local_session.h" />
+    <ClInclude Include="icd\icd_object_manager.h">
+      <Filter>icd</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

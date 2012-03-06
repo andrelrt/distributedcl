@@ -110,9 +110,6 @@
     <ClInclude Include="composite\composite_device.h">
       <Filter>composite</Filter>
     </ClInclude>
-    <ClInclude Include="composite\icd_object.h">
-      <Filter>composite</Filter>
-    </ClInclude>
     <ClInclude Include="message\msg_internal.h">
       <Filter>network\message</Filter>
     </ClInclude>
@@ -127,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="remote\object_manager.h">
       <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\icd_object.h">
+      <Filter>composite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,9 +171,6 @@
     </ClCompile>
     <ClCompile Include="remote\remote_opencl.cpp">
       <Filter>remote</Filter>
-    </ClCompile>
-    <ClCompile Include="composite\icd_object.cpp">
-      <Filter>composite</Filter>
     </ClCompile>
     <ClCompile Include="message\msg_internal.cpp">
       <Filter>network\message</Filter>

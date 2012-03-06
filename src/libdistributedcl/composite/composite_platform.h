@@ -40,7 +40,7 @@ class composite_platform :
 public:
     composite_platform()
     {
-        create_icd_obj( this );
+        //create_icd_obj( this );
     }
     ~composite_platform(){}
 

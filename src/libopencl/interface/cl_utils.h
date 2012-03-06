@@ -26,15 +26,14 @@
 #include <string.h>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
-#include "composite/icd_object.h"
-using dcl::composite::icd_object_manager;
+#include "icd/icd_object_manager.h"
 //-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
 cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
 {
     try
     {
-        DCL_TYPE_T* obj_ptr = dcl::composite::icd_object_manager::get_instance().get_object_ptr( id );
+        DCL_TYPE_T* obj_ptr = dcl::icd::icd_object_manager::get_instance().get_object_ptr( id );
             
         obj_ptr->retain();
 
@@ -51,7 +50,7 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 {
     try
     {
-        DCL_TYPE_T* obj_ptr = dcl::composite::icd_object_manager::get_instance().get_object_ptr( id );
+        DCL_TYPE_T* obj_ptr = dcl::icd::icd_object_manager::get_instance().get_object_ptr( id );
 
         if( obj_ptr->get_reference_count() > 0 )
         {
@@ -59,7 +58,7 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 
             if( obj_ptr->get_reference_count() == 0 )
             {
-                dcl::composite::icd_object_manager::get_instance().remove_object( id );
+                dcl::icd::icd_object_manager::get_instance().remove_object( id );
             }
         }
 
@@ -94,7 +93,7 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
 {
     get_info_check_parameters< DCL_TYPE_T >( cl_obj, param_value_size, param_value, param_value_size_ret );
 
-    DCL_TYPE_T* obj_ptr = icd_object_manager::get_instance().get_object_ptr< DCL_TYPE_T >( cl_obj );
+    DCL_TYPE_T* obj_ptr = dcl::icd::icd_object_manager::get_instance().get_object_ptr< DCL_TYPE_T >( cl_obj );
 
     obj_ptr->load_info();
 
