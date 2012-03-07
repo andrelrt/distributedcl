@@ -22,6 +22,8 @@
 //-----------------------------------------------------------------------------
 #include <boost/scoped_array.hpp>
 #include "platform.h"
+#include "device.h"
+#include "opencl_library.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
 using dcl::info::generic_context;
@@ -30,6 +32,7 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 platform::platform( const opencl_library& opencl, cl_platform_id platform_id )
+    : opencl_( opencl ), platform_id_( platform_id )
 {
 	load();
 }
@@ -41,6 +44,29 @@ void platform::load()
 	load_string( CL_PLATFORM_NAME, local_info_.name_ );
 	load_string( CL_PLATFORM_VENDOR, local_info_.vendor_ );
 	load_string( CL_PLATFORM_EXTENSIONS, local_info_.extensions_ );
+
+    cl_uint num_devices = 0;
+    cl_int ret = opencl_.clGetDeviceIDs( platform_id_, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices );
+
+    if( ret != CL_SUCCESS )
+    {
+        throw library_exception( ret );
+    }
+
+    cl_uint num_entries = num_devices;
+    boost::scoped_array<cl_device_id> deviceIds( new cl_device_id[ num_devices ] );
+
+    ret = opencl_.clGetDeviceIDs( platform_id_, CL_DEVICE_TYPE_ALL,
+                                  num_entries, deviceIds.get(), &num_devices );
+    if( ret != CL_SUCCESS )
+    {
+        throw new library_exception( ret );
+    }
+
+    for( cl_uint i = 0; i < num_entries; i++ )
+    {
+        add_device( new device( this, deviceIds[ i ] ) );
+    }
 }
 //-----------------------------------------------------------------------------
 void platform::load_string( cl_platform_info info, std::string& out )

@@ -279,6 +279,8 @@ protected:
         return info_loaded_;
     }
 
+
+
 private:
     bool info_loaded_;
     const generic_platform* platform_ptr_;

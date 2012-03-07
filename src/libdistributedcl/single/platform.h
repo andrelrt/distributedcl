@@ -43,8 +43,7 @@ class platform :
     public dcl::info::generic_platform
 {
 public:
-    platform(){}
-	platform( const opencl_library& opencl, cl_platform_id platform_id = NULL );
+	platform( const opencl_library& opencl, cl_platform_id platform_id );
     ~platform(){}
 
 	const devices_t& get_devices() const;
@@ -53,8 +52,15 @@ public:
     dcl::info::generic_context* create_context( const devices_t& devices ) const;
 	//generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
 
+    const opencl_library& get_opencl() const
+    {
+        return opencl_;
+    }
 
 private:
+    const opencl_library& opencl_;
+    cl_platform_id platform_id_;
+
 	void load();
     void load_string( cl_platform_info info, std::string& out );
 };

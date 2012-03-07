@@ -211,10 +211,10 @@ void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
 
     response->vendor_id_ = host_to_network( device_info_.vendor_id_ );
     response->max_compute_units_ = host_to_network( device_info_.max_compute_units_ );
-    response->max_work_item_sizes_[0] = host_to_network( device_info_.max_work_item_sizes_[0] );
-    response->max_work_item_sizes_[1] = host_to_network( device_info_.max_work_item_sizes_[1] );
-    response->max_work_item_sizes_[2] = host_to_network( device_info_.max_work_item_sizes_[2] );
-    response->max_work_group_size_ = host_to_network( device_info_.max_work_group_size_ );
+    response->max_work_item_sizes_[0] = host_to_network( static_cast<uint32_t>( device_info_.max_work_item_sizes_[0] ) );
+    response->max_work_item_sizes_[1] = host_to_network( static_cast<uint32_t>( device_info_.max_work_item_sizes_[1] ) ); 
+    response->max_work_item_sizes_[2] = host_to_network( static_cast<uint32_t>( device_info_.max_work_item_sizes_[2] ) );
+    response->max_work_group_size_ = static_cast<uint32_t>( host_to_network( device_info_.max_work_group_size_ ) );
     response->preferred_vector_width_char_   = vector_sizes[ device_info_.preferred_vector_width_char_ ];
     response->preferred_vector_width_short_  = vector_sizes[ device_info_.preferred_vector_width_short_ ];
     response->preferred_vector_width_int_    = vector_sizes[ device_info_.preferred_vector_width_int_ ];
@@ -235,12 +235,12 @@ void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
     response->max_write_image_args_ = host_to_network( device_info_.max_write_image_args_ );
     response->max_mem_alloc_size_ = host_to_network( device_info_.max_mem_alloc_size_ );
     response->image_support_ = (device_info_.image_support_ == CL_TRUE)? 1 : 0;
-    response->image2d_max_width_ = host_to_network( device_info_.image2d_max_width_ );
-    response->image2d_max_height_ = host_to_network( device_info_.image2d_max_height_ );
-    response->image3d_max_width_ = host_to_network( device_info_.image3d_max_width_ );
-    response->image3d_max_height_ = host_to_network( device_info_.image3d_max_height_ );
-    response->image3d_max_depth_ = host_to_network( device_info_.image3d_max_depth_ );
-    response->max_parameter_size_ = host_to_network( device_info_.max_parameter_size_ );
+    response->image2d_max_width_ = host_to_network( static_cast<uint32_t>( device_info_.image2d_max_width_ ) );
+    response->image2d_max_height_ = host_to_network( static_cast<uint32_t>( device_info_.image2d_max_height_ ) );
+    response->image3d_max_width_ = host_to_network( static_cast<uint32_t>( device_info_.image3d_max_width_ ) );
+    response->image3d_max_height_ = host_to_network( static_cast<uint32_t>( device_info_.image3d_max_height_ ) );
+    response->image3d_max_depth_ = host_to_network( static_cast<uint32_t>( device_info_.image3d_max_depth_ ) );
+    response->max_parameter_size_ = host_to_network( static_cast<uint32_t>( device_info_.max_parameter_size_ ) );
     response->max_samplers_ = host_to_network( device_info_.max_samplers_ );
     response->mem_base_address_align_ = host_to_network( device_info_.mem_base_address_align_ );
     response->min_data_type_align_size_ = host_to_network( device_info_.min_data_type_align_size_ );
@@ -254,34 +254,34 @@ void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
     response->local_mem_type_ = (device_info_.local_mem_type_ == CL_LOCAL)? 0 : 1;
     response->local_mem_size_ = host_to_network( device_info_.local_mem_size_ );
     response->error_correction_support_ = (device_info_.error_correction_support_ == CL_TRUE)? 1 : 0;
-    response->profiling_timer_resolution_ = host_to_network( device_info_.profiling_timer_resolution_ );
+    response->profiling_timer_resolution_ = host_to_network( static_cast<uint32_t>( device_info_.profiling_timer_resolution_ ) );
     response->endian_little_ = (device_info_.endian_little_ == CL_TRUE)? 1 : 0;
     response->avaiable_ = (device_info_.avaiable_ == CL_TRUE)? 1 : 0;
     response->queue_properties_ = (device_info_.queue_properties_ & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)? 1 : 0;
 
     uint8_t* string_buffer_ptr = response->string_buffer_;
 
-    response->name_len_ = device_info_.name_.length();
+    response->name_len_ = static_cast<uint32_t>( device_info_.name_.length() );
     memcpy( string_buffer_ptr, device_info_.name_.data(), response->name_len_ );
     string_buffer_ptr += response->name_len_;
 
-    response->vendor_len_ = device_info_.vendor_.length();
+    response->vendor_len_ = static_cast<uint32_t>( device_info_.vendor_.length() );
     memcpy( string_buffer_ptr, device_info_.vendor_.data(), response->vendor_len_ );
     string_buffer_ptr += response->vendor_len_;
 
-    response->driver_version_len_ = device_info_.driver_version_.length();
+    response->driver_version_len_ = static_cast<uint32_t>( device_info_.driver_version_.length() );
     memcpy( string_buffer_ptr, device_info_.driver_version_.data(), response->driver_version_len_ );
     string_buffer_ptr += response->driver_version_len_;
 
-    response->version_len_ = device_info_.version_.length();
+    response->version_len_ = static_cast<uint32_t>( device_info_.version_.length() );
     memcpy( string_buffer_ptr, device_info_.version_.data(), response->version_len_ );
     string_buffer_ptr += response->version_len_;
 
-    response->opencl_c_version_len_ = device_info_.opencl_c_version_.length();
+    response->opencl_c_version_len_ = static_cast<uint32_t>( device_info_.opencl_c_version_.length() );
     memcpy( string_buffer_ptr, device_info_.opencl_c_version_.data(), response->opencl_c_version_len_ );
     string_buffer_ptr += response->opencl_c_version_len_;
 
-    response->extensions_len_ = device_info_.extensions_.length();
+    response->extensions_len_ = static_cast<uint32_t>( device_info_.extensions_.length() );
     memcpy( string_buffer_ptr, device_info_.extensions_.data(), response->extensions_len_ );
     string_buffer_ptr += response->extensions_len_;
 }
