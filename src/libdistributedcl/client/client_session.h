@@ -78,9 +78,18 @@ public:
 
         // Send data
         session< COMM >::send_packet( packet_ptr.get() );
+        boost::scoped_ptr< dcl::network::message::packet > recv_packet_ptr;
 
-        // Wait response
-        boost::scoped_ptr< dcl::network::message::packet > recv_packet_ptr( session< COMM >::receive_packet() );
+        try
+        {
+            // Wait response
+            recv_packet_ptr.reset( session< COMM >::receive_packet() );
+        }
+        catch( dcl::library_exception& )
+        {
+            // Connection reset, reconnect
+            // TODO: Reconnect
+        }
 
         if( recv_packet_ptr->get_message_count() != 1 )
         {

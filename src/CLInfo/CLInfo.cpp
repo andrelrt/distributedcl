@@ -595,5 +595,8 @@ main(int argc, char** argv)
             << std::endl;
     }
 
+    std::string pause;
+    std::cin >> pause;
+
     return status;
 }

@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------
 #include <boost/scoped_array.hpp>
 #include "platform.h"
-#include "device.h"
+//#include "device.h"
 #include "opencl_library.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
@@ -65,29 +65,29 @@ void platform::load()
 
     for( cl_uint i = 0; i < num_entries; i++ )
     {
-        add_device( new device( this, deviceIds[ i ] ) );
+        //add_device( new device( this, deviceIds[ i ] ) );
     }
 }
 //-----------------------------------------------------------------------------
 void platform::load_string( cl_platform_info info, std::string& out )
 {
-    //size_t value_size;
+    size_t value_size;
 
-    //out.clear();
+    out.clear();
 
-    //cl_int cl_error = get_opencl().clGetPlatformInfo( get_id(), info, 0, NULL, &value_size );
+    cl_int cl_error = opencl_.clGetPlatformInfo( platform_id_, info, 0, NULL, &value_size );
 
-    //if( cl_error == CL_SUCCESS )
-    //{
-    //    boost::scoped_array<char> param_value( new char[ value_size +1 ] );
+    if( cl_error == CL_SUCCESS )
+    {
+        boost::scoped_array<char> param_value( new char[ value_size +1 ] );
 
-    //    cl_error = get_opencl().clGetPlatformInfo( get_id(), info, value_size, param_value.get(), &value_size );
+        cl_error = opencl_.clGetPlatformInfo( platform_id_, info, value_size, param_value.get(), &value_size );
 
-    //    if( cl_error == CL_SUCCESS )
-    //    {
-    //        out.assign( param_value.get() );
-    //    }
-    //}
+        if( cl_error == CL_SUCCESS )
+        {
+            out.assign( param_value.get() );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 generic_context* platform::create_context( const devices_t& devices ) const

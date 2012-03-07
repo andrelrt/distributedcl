@@ -90,8 +90,17 @@ private:
 
         while( !boost::this_thread::interruption_requested() )
         {
-            // Receive packet
-            boost::scoped_ptr< dcl::network::message::packet > recv_packet( session< COMM >::receive_packet() );
+            boost::scoped_ptr< dcl::network::message::packet > recv_packet;
+            try
+            {
+                // Receive packet
+                recv_packet.reset( session< COMM >::receive_packet() );
+            }
+            catch( dcl::library_exception& )
+            {
+                // Connection reset, close session
+                break;
+            }
 
             if( boost::this_thread::interruption_requested() )
                 break;
@@ -127,8 +136,16 @@ private:
             if( boost::this_thread::interruption_requested() )
                 break;
 
-            // Send response
-            session< COMM >::send_packet( ret_packet.get() );
+            try
+            {
+                // Send response
+                session< COMM >::send_packet( ret_packet.get() );
+            }
+            catch( dcl::library_exception& )
+            {
+                // Connection reset, close session
+                break;
+            }
         }
     }
 };

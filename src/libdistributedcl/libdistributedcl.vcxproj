@@ -26,7 +26,6 @@
     <ClInclude Include="composite\composite_platform.h" />
     <ClInclude Include="composite\icd_object.h" />
     <ClInclude Include="composite\opencl_composite.h" />
-    <ClInclude Include="single\device.h" />
     <ClInclude Include="info\context_info.h" />
     <ClInclude Include="info\dcl_objects.h" />
     <ClInclude Include="info\device_info.h" />
@@ -60,7 +59,6 @@
     <ClCompile Include="composite\composite_context.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
-    <ClCompile Include="single\device.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\msg_internal.cpp" />
