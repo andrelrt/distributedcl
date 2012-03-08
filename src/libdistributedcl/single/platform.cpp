@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------
 #include <boost/scoped_array.hpp>
 #include "platform.h"
-//#include "device.h"
+#include "device.h"
 #include "opencl_library.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
@@ -65,7 +65,7 @@ void platform::load()
 
     for( cl_uint i = 0; i < num_entries; i++ )
     {
-        //add_device( new device( this, deviceIds[ i ] ) );
+        add_device( new device( this, deviceIds[ i ] ) );
     }
 }
 //-----------------------------------------------------------------------------

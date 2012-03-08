@@ -40,7 +40,7 @@ public:
     remote_device( remote_platform* platform_ptr, cl_device_type type ) : 
         dcl::info::generic_device( platform_ptr, type ), remote_object( platform_ptr->get_session() ) {}
 
-        ~remote_device(){}
+    ~remote_device(){}
 
 protected:
     virtual bool load_device_info();

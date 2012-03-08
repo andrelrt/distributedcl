@@ -31,10 +31,10 @@ void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_
     const dcl_message< msgGetDeviceIDs >* msg_response_ptr = reinterpret_cast< const dcl_message< msgGetDeviceIDs >* >( response_ptr );
     const msgGetDeviceIDs_response* response = reinterpret_cast< const msgGetDeviceIDs_response* >( msg_response_ptr->get_payload() );
 
-    uint16_t cpu_count = ntohs( response->cpu_count );
-    uint16_t gpu_count = ntohs( response->gpu_count );
-    uint16_t accelerator_count = ntohs( response->accelerator_count );
-    uint16_t other_count = ntohs( response->other_count );
+    uint16_t cpu_count = network_to_host( response->cpu_count );
+    uint16_t gpu_count = network_to_host( response->gpu_count );
+    uint16_t accelerator_count = network_to_host( response->accelerator_count );
+    uint16_t other_count = network_to_host( response->other_count );
 
     uint16_t dev_idx = 0;
 
@@ -44,7 +44,7 @@ void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_
 
     for( uint16_t i = 0; i < cpu_count; i++ )
     {
-        cpu_devices_.push_back( response->device_ids[ dev_idx ] );
+        cpu_devices_.push_back( network_to_host( response->device_ids[ dev_idx ] ) );
 
         dev_idx++;
     }
@@ -55,7 +55,7 @@ void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_
 
     for( uint16_t i = 0; i < gpu_count; i++ )
     {
-        gpu_devices_.push_back( response->device_ids[ dev_idx ] );
+        gpu_devices_.push_back( network_to_host( response->device_ids[ dev_idx ] ) );
 
         dev_idx++;
     }
@@ -66,7 +66,7 @@ void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_
 
     for( uint16_t i = 0; i < accelerator_count; i++ )
     {
-        accelerator_devices_.push_back( response->device_ids[ dev_idx ] );
+        accelerator_devices_.push_back( network_to_host( response->device_ids[ dev_idx ] ) );
 
         dev_idx++;
     }
@@ -77,7 +77,7 @@ void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_
 
     for( uint16_t i = 0; i < other_count; i++ )
     {
-        other_devices_.push_back( response->device_ids[ dev_idx ] );
+        other_devices_.push_back( network_to_host( response->device_ids[ dev_idx ] ) );
 
         dev_idx++;
     }
@@ -87,28 +87,28 @@ void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
 {
     msgGetDeviceIDs_response* response = reinterpret_cast< msgGetDeviceIDs_response* >( payload_ptr );
 
-    response->cpu_count = htons( static_cast< uint16_t >( cpu_devices_.size() ) );
-    response->gpu_count = htons( static_cast< uint16_t >( gpu_devices_.size() ) );
-    response->accelerator_count  = htons( static_cast< uint16_t >( accelerator_devices_.size() ) );
-    response->other_count = htons( static_cast< uint16_t >( other_devices_.size() ) );
+    response->cpu_count = host_to_network( static_cast< uint16_t >( cpu_devices_.size() ) );
+    response->gpu_count = host_to_network( static_cast< uint16_t >( gpu_devices_.size() ) );
+    response->accelerator_count  = host_to_network( static_cast< uint16_t >( accelerator_devices_.size() ) );
+    response->other_count = host_to_network( static_cast< uint16_t >( other_devices_.size() ) );
 
     uint16_t dev_idx = 0;
 
     // --------------------
     for( uint16_t i = 0; i < response->cpu_count; i++ )
-        response->device_ids[ dev_idx++ ] = cpu_devices_[ i ];
+        response->device_ids[ dev_idx++ ] = host_to_network( cpu_devices_[ i ] );
 
     // --------------------
     for( uint16_t i = 0; i < response->gpu_count; i++ )
-        response->device_ids[ dev_idx++ ] = gpu_devices_[ i ];
+        response->device_ids[ dev_idx++ ] = host_to_network( gpu_devices_[ i ] );
 
     // --------------------
     for( uint16_t i = 0; i < response->accelerator_count; i++ )
-        response->device_ids[ dev_idx++ ] = accelerator_devices_[ i ];
+        response->device_ids[ dev_idx++ ] = host_to_network( accelerator_devices_[ i ] );
 
     // --------------------
     for( uint16_t i = 0; i < response->other_count; i++ )
-        response->device_ids[ dev_idx++ ] = other_devices_[ i ];
+        response->device_ids[ dev_idx++ ] = host_to_network( other_devices_[ i ] );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::set_response( const base_message* response_ptr )

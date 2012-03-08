@@ -50,6 +50,7 @@
     <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_session.h" />
     <ClInclude Include="single\context.h" />
+    <ClInclude Include="single\device.h" />
     <ClInclude Include="single\opencl_library.h" />
     <ClInclude Include="single\opencl_single.h" />
     <ClInclude Include="single\platform.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="server\message_dispatcher.cpp" />
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="single\context.cpp" />
+    <ClCompile Include="single\device.cpp" />
     <ClCompile Include="single\opencl_library.cpp" />
     <ClCompile Include="single\opencl_single.cpp" />
     <ClCompile Include="single\platform.cpp" />

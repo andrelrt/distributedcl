@@ -89,6 +89,7 @@ public:
         {
             // Connection reset, reconnect
             // TODO: Reconnect
+            return;
         }
 
         if( recv_packet_ptr->get_message_count() != 1 )

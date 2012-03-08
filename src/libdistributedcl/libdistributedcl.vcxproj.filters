@@ -128,6 +128,9 @@
     <ClInclude Include="composite\icd_object.h">
       <Filter>composite</Filter>
     </ClInclude>
+    <ClInclude Include="single\device.h">
+      <Filter>single</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -179,6 +182,9 @@
       <Filter>composite</Filter>
     </ClCompile>
     <ClCompile Include="single\context.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="single\device.cpp">
       <Filter>single</Filter>
     </ClCompile>
   </ItemGroup>
