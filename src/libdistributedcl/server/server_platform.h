@@ -20,36 +20,36 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_NETWORK_MESSAGE_DISPATCHER_H_
-#define _DCL_NETWORK_MESSAGE_DISPATCHER_H_
+#ifndef _DCL_SERVER_PLATFORM_H_
+#define _DCL_SERVER_PLATFORM_H_
 
 #include "distributedcl_internal.h"
-#include "message/packet.h"
+#include "server_command.h"
 #include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-class message_dispatcher
+class GetDeviceIDs_command : 
+    public server_command< dcl::network::message::msgGetDeviceIDs >
 {
 public:
-    void dispatch_messages( dcl::network::message::message_vector_t& messages );
+    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
+
+    void execute();
 };
 //-----------------------------------------------------------------------------
-template< dcl::network::message::message_type TYPE >
-class server_command
+class GetDeviceInfo_command : 
+    public server_command< dcl::network::message::msgGetDeviceInfo >
 {
-protected:
-    typedef typename dcl::network::message::base_message* recv_ptr_t;
-    typedef typename dcl::network::message::dcl_message< TYPE > message_t;
+public:
+    GetDeviceInfo_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
 
-    server_command( recv_ptr_t message_ptr ) : 
-        message_( *(reinterpret_cast< message_t* >( message_ptr )) ){}
-
-    message_t& message_;
+    void execute();
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_NETWORK_MESSAGE_DISPATCHER_H_
+#endif // _DCL_SERVER_PLATFORM_H_

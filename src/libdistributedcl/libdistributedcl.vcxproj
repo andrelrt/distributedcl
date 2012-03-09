@@ -19,8 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\client_session.h" />
-    <ClInclude Include="client\session_manager.h" />
     <ClInclude Include="composite\composite_context.h" />
     <ClInclude Include="composite\composite_device.h" />
     <ClInclude Include="composite\composite_platform.h" />
@@ -37,18 +35,20 @@
     <ClInclude Include="message\msg_device.h" />
     <ClInclude Include="message\msg_internal.h" />
     <ClInclude Include="message\packet.h" />
+    <ClInclude Include="network\client_session.h" />
+    <ClInclude Include="network\message_dispatcher.h" />
     <ClInclude Include="network\platform.h" />
+    <ClInclude Include="network\server.h" />
+    <ClInclude Include="network\server_session.h" />
     <ClInclude Include="network\session.h" />
+    <ClInclude Include="network\session_manager.h" />
     <ClInclude Include="network\tcp_transport.h" />
-    <ClInclude Include="remote\object_manager.h" />
     <ClInclude Include="remote\remote_device.h" />
     <ClInclude Include="remote\remote_opencl.h" />
     <ClInclude Include="remote\remote_platform.h" />
     <ClInclude Include="remote\remote_object.h" />
-    <ClInclude Include="server\message_dispatcher.h" />
-    <ClInclude Include="server\server.h" />
+    <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_platform.h" />
-    <ClInclude Include="server\server_session.h" />
     <ClInclude Include="single\context.h" />
     <ClInclude Include="single\device.h" />
     <ClInclude Include="single\opencl_library.h" />
@@ -56,7 +56,6 @@
     <ClInclude Include="single\platform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client\session_manager.cpp" />
     <ClCompile Include="composite\composite_context.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
@@ -64,10 +63,11 @@
     <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\msg_internal.cpp" />
     <ClCompile Include="message\packet.cpp" />
+    <ClCompile Include="network\message_dispatcher.cpp" />
+    <ClCompile Include="network\session_manager.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_opencl.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
-    <ClCompile Include="server\message_dispatcher.cpp" />
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="single\context.cpp" />
     <ClCompile Include="single\device.cpp" />

@@ -33,7 +33,6 @@ using dcl::remote::remote_device;
 using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
 void GetDeviceIDs_command::execute()
@@ -71,8 +70,6 @@ void GetDeviceIDs_command::execute()
 void GetDeviceInfo_command::execute()
 {
     remote_id_t remote_id = message_.get_remote_id();
-
-    object_
 
     dcl::info::device_info info;
 
@@ -141,5 +138,5 @@ void GetDeviceInfo_command::execute()
     message_.set_info( info );
 }
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------

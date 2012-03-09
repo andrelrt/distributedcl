@@ -21,7 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include "remote_device.h"
-#include "client/client_session.h"
+#include "network/client_session.h"
 #include "message/msg_device.h"
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;

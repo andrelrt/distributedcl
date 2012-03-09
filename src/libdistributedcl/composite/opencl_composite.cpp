@@ -24,7 +24,7 @@
 #include "single/opencl_single.h"
 #include "single/opencl_library.h"
 #include "remote/remote_opencl.h"
-#include "client/session_manager.h"
+#include "network/session_manager.h"
 using dcl::platforms_t;
 using dcl::single::opencl_single;
 using dcl::single::opencl_library;

@@ -23,7 +23,7 @@
 #include "remote_platform.h"
 #include "remote_device.h"
 #include "info/platform_info.h"
-#include "client/session_manager.h"
+#include "network/session_manager.h"
 #include "message/message.h"
 #include "message/msg_device.h"
 using dcl::info::generic_context;

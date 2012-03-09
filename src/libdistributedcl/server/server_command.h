@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,43 +20,29 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_OPENCL_H_
-#define _DCL_REMOTE_OPENCL_H_
+#ifndef _DCL_SERVER_SERVER_COMMAND_H_
+#define _DCL_SERVER_SERVER_COMMAND_H_
 
 #include "distributedcl_internal.h"
-#include "remote_platform.h"
-#include "network/session_manager.h"
+#include "message/packet.h"
+#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace server {
 //-----------------------------------------------------------------------------
-class remote_opencl
+template< dcl::network::message::message_type TYPE >
+class server_command
 {
-public:
-    remote_opencl( dcl::network::client::session_manager::session_t& session_ref ) :
-        session_ref_( session_ref ) 
-    {
-        remote_platform* platform_ptr = new remote_platform( session_ref_ );
-        platforms_.push_back( reinterpret_cast< dcl::info::generic_platform* >( platform_ptr ) );
-    }
+protected:
+    typedef typename dcl::network::message::base_message* recv_ptr_t;
+    typedef typename dcl::network::message::dcl_message< TYPE > message_t;
 
-    ~remote_opencl(){}
+    server_command( recv_ptr_t message_ptr ) : 
+        message_( *(reinterpret_cast< message_t* >( message_ptr )) ){}
 
-    inline const platforms_t& get_platforms() const
-    {
-        return platforms_;
-    }
-
-    inline dcl::network::client::session_manager::session_t& get_session() const
-    {
-        return session_ref_;
-    }
-
-private:
-    platforms_t platforms_;
-    dcl::network::client::session_manager::session_t& session_ref_;
+    message_t& message_;
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_OPENCL_H_
+#endif //_DCL_SERVER_SERVER_COMMAND_H_

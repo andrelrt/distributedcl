@@ -25,7 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include "object_manager.h"
-#include "client/session_manager.h"
+#include "network/session_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {

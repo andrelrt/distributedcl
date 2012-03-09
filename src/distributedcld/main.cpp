@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
-#include "server/server.h"
+#include "network/server.h"
 #include "network/tcp_transport.h"
 #include "composite/opencl_composite.h"
 using dcl::network::server::server;

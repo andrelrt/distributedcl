@@ -21,9 +21,10 @@
  */
 //-----------------------------------------------------------------------------
 #include "message_dispatcher.h"
-#include "server_platform.h"
 #include "message/message.h"
+#include "server/server_platform.h"
 using namespace dcl::network::message;
+using namespace dcl::server;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {

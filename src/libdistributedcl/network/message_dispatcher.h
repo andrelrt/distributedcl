@@ -20,37 +20,23 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_SERVER_PLATFORM_H_
-#define _DCL_SERVER_PLATFORM_H_
+#ifndef _DCL_NETWORK_MESSAGE_DISPATCHER_H_
+#define _DCL_NETWORK_MESSAGE_DISPATCHER_H_
 
 #include "distributedcl_internal.h"
-#include "message_dispatcher.h"
+#include "message/packet.h"
 #include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-class GetDeviceIDs_command : 
-    public server_command< dcl::network::message::msgGetDeviceIDs >
+class message_dispatcher
 {
 public:
-    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
-
-    void execute();
-};
-//-----------------------------------------------------------------------------
-class GetDeviceInfo_command : 
-    public server_command< dcl::network::message::msgGetDeviceInfo >
-{
-public:
-    GetDeviceInfo_command( recv_ptr_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
-
-    void execute();
+    void dispatch_messages( dcl::network::message::message_vector_t& messages );
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_SERVER_PLATFORM_H_
+#endif // _DCL_NETWORK_MESSAGE_DISPATCHER_H_

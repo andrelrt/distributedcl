@@ -16,20 +16,11 @@
     <Filter Include="network">
       <UniqueIdentifier>{b4438628-6cf3-4e35-9919-0e84642e215a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="network\client">
-      <UniqueIdentifier>{c9bebe80-6886-41ea-9321-c483cb9fc626}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="network\message">
-      <UniqueIdentifier>{b3a2455e-4d8d-4792-8bd6-0bac112e6dd4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="network\server">
-      <UniqueIdentifier>{199f7f8c-86a8-4f3b-b3d6-325910fb51b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="network\platform">
-      <UniqueIdentifier>{bfd5cef3-c08c-4dd4-a2c6-5ca47a1a6217}</UniqueIdentifier>
-    </Filter>
     <Filter Include="server">
       <UniqueIdentifier>{51c83356-1bbe-4256-be7b-4312d95de1c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="message">
+      <UniqueIdentifier>{b3a2455e-4d8d-4792-8bd6-0bac112e6dd4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,7 +33,7 @@
       <Filter>remote</Filter>
     </ClInclude>
     <ClInclude Include="message\message.h">
-      <Filter>network\message</Filter>
+      <Filter>message</Filter>
     </ClInclude>
     <ClInclude Include="remote\remote_object.h">
       <Filter>remote</Filter>
@@ -56,38 +47,11 @@
     <ClInclude Include="info\opencl_functions.h">
       <Filter>info</Filter>
     </ClInclude>
-    <ClInclude Include="client\session_manager.h">
-      <Filter>network\client</Filter>
-    </ClInclude>
     <ClInclude Include="message\msg_device.h">
-      <Filter>network\message</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server.h">
-      <Filter>network\server</Filter>
-    </ClInclude>
-    <ClInclude Include="network\tcp_transport.h">
-      <Filter>network\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="client\client_session.h">
-      <Filter>network\client</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server_session.h">
-      <Filter>network\server</Filter>
-    </ClInclude>
-    <ClInclude Include="network\session.h">
-      <Filter>network\platform</Filter>
+      <Filter>message</Filter>
     </ClInclude>
     <ClInclude Include="message\packet.h">
-      <Filter>network\message</Filter>
-    </ClInclude>
-    <ClInclude Include="network\platform.h">
-      <Filter>network\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="server\message_dispatcher.h">
-      <Filter>network\server</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server_platform.h">
-      <Filter>network\server</Filter>
+      <Filter>message</Filter>
     </ClInclude>
     <ClInclude Include="composite\composite_platform.h">
       <Filter>composite</Filter>
@@ -114,7 +78,7 @@
       <Filter>composite</Filter>
     </ClInclude>
     <ClInclude Include="message\msg_internal.h">
-      <Filter>network\message</Filter>
+      <Filter>message</Filter>
     </ClInclude>
     <ClInclude Include="composite\composite_context.h">
       <Filter>composite</Filter>
@@ -125,14 +89,41 @@
     <ClInclude Include="single\context.h">
       <Filter>single</Filter>
     </ClInclude>
-    <ClInclude Include="remote\object_manager.h">
-      <Filter>remote</Filter>
-    </ClInclude>
     <ClInclude Include="single\device.h">
       <Filter>single</Filter>
     </ClInclude>
     <ClInclude Include="info\icd_object.h">
       <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="network\platform.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\session.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\tcp_transport.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\client_session.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\message_dispatcher.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\server.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\server_session.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\session_manager.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_platform.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_command.h">
+      <Filter>server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -140,25 +131,16 @@
       <Filter>remote</Filter>
     </ClCompile>
     <ClCompile Include="message\message.cpp">
-      <Filter>network\message</Filter>
+      <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="remote\remote_device.cpp">
       <Filter>remote</Filter>
     </ClCompile>
-    <ClCompile Include="client\session_manager.cpp">
-      <Filter>network\client</Filter>
-    </ClCompile>
     <ClCompile Include="message\packet.cpp">
-      <Filter>network\message</Filter>
+      <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="message\msg_device.cpp">
-      <Filter>network\message</Filter>
-    </ClCompile>
-    <ClCompile Include="server\message_dispatcher.cpp">
-      <Filter>network\server</Filter>
-    </ClCompile>
-    <ClCompile Include="server\server_platform.cpp">
-      <Filter>network\server</Filter>
+      <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="composite\composite_platform.cpp">
       <Filter>composite</Filter>
@@ -179,7 +161,7 @@
       <Filter>remote</Filter>
     </ClCompile>
     <ClCompile Include="message\msg_internal.cpp">
-      <Filter>network\message</Filter>
+      <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="composite\composite_context.cpp">
       <Filter>composite</Filter>
@@ -189,6 +171,15 @@
     </ClCompile>
     <ClCompile Include="single\device.cpp">
       <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="network\message_dispatcher.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\session_manager.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_platform.cpp">
+      <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
