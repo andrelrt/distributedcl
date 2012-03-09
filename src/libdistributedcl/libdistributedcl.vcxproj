@@ -24,12 +24,12 @@
     <ClInclude Include="composite\composite_context.h" />
     <ClInclude Include="composite\composite_device.h" />
     <ClInclude Include="composite\composite_platform.h" />
-    <ClInclude Include="composite\icd_object.h" />
     <ClInclude Include="composite\opencl_composite.h" />
     <ClInclude Include="info\context_info.h" />
     <ClInclude Include="info\dcl_objects.h" />
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
+    <ClInclude Include="info\icd_object.h" />
     <ClInclude Include="info\opencl_functions.h" />
     <ClInclude Include="info\platform_info.h" />
     <ClInclude Include="library_exception.h" />

@@ -25,25 +25,12 @@
 
 #include <set>
 #include "distributedcl_internal.h"
-#include "icd_object.h"
 #include "info/device_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-class composite_device :
-    public dcl::info::generic_device,
-    public icd_object< cl_device_id, composite_device, dcl_device_id >
-{
-public:
-    composite_device( composite_platform* platform_ptr ) : 
-        generic_device( platform_ptr )
-    {
-        //create_icd_obj( this );
-    }
-    ~composite_device(){}
-
-};
+typedef dcl::info::generic_device composite_device;
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------

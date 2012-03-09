@@ -25,6 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -35,6 +36,7 @@ struct context_info
 //-----------------------------------------------------------------------------
 class generic_context :
     public cl_object< cl_context, cl_context_info, CL_INVALID_CONTEXT >,
+    public icd_object< cl_context, dcl_context_id >,
     public dcl_object< context_info >
 {
 };

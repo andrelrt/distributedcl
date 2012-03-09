@@ -26,6 +26,8 @@
 #include <string>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
+#include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -106,8 +108,9 @@ public:
 };
 //-----------------------------------------------------------------------------
 class generic_platform :
-    public dcl::info::cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
-    public dcl::info::dcl_object< platform_info >
+    public cl_object< cl_platform_id, cl_platform_info, CL_INVALID_PLATFORM >,
+    public icd_object< cl_platform_id, dcl_platform_id >,
+    public dcl_object< platform_info >
 {
 public:
     generic_platform() : info_loaded_( false ){}

@@ -27,6 +27,7 @@
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -242,6 +243,7 @@ public:
 //-----------------------------------------------------------------------------
 class generic_device :
     public cl_object< cl_device_id, cl_device_info, CL_INVALID_DEVICE >,
+    public icd_object< cl_device_id, dcl_device_id >,
     public dcl_object< device_info >
 {
 public:

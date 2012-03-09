@@ -129,6 +129,11 @@ public:
 
     virtual void set_response( const base_message* response_ptr );
 
+    const dcl::remote_id_t get_remote_id() const
+    {
+        return id_;
+    }
+
     const dcl::info::device_info& get_info() const
     {
         return device_info_;
@@ -226,7 +231,7 @@ private:
     };
     #pragma pack( pop )
 
-    remote_id_t id_;
+    dcl::remote_id_t id_;
     dcl::info::device_info device_info_;
 };
 //-----------------------------------------------------------------------------

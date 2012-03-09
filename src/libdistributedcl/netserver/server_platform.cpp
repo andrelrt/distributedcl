@@ -30,6 +30,7 @@ using dcl::network::message::msgGetDeviceIDs;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
 using dcl::remote::remote_device;
+using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -69,6 +70,10 @@ void GetDeviceIDs_command::execute()
 //-----------------------------------------------------------------------------
 void GetDeviceInfo_command::execute()
 {
+    remote_id_t remote_id = message_.get_remote_id();
+
+    object_
+
     dcl::info::device_info info;
 
     info.type_ = CL_DEVICE_TYPE_ACCELERATOR;

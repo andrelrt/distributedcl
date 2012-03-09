@@ -25,8 +25,6 @@
 
 #include <set>
 #include "distributedcl_internal.h"
-#include "icd_object.h"
-#include "info/dcl_objects.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
 //-----------------------------------------------------------------------------
@@ -34,8 +32,7 @@ namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
 class composite_platform :
-    public dcl::info::generic_platform,
-    public icd_object< cl_platform_id, composite_platform, dcl_platform_id >
+    public dcl::info::generic_platform
 {
 public:
     composite_platform()

@@ -28,6 +28,9 @@
     <Filter Include="network\platform">
       <UniqueIdentifier>{bfd5cef3-c08c-4dd4-a2c6-5ca47a1a6217}</UniqueIdentifier>
     </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{51c83356-1bbe-4256-be7b-4312d95de1c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="distributedcl_internal.h" />
@@ -125,11 +128,11 @@
     <ClInclude Include="remote\object_manager.h">
       <Filter>remote</Filter>
     </ClInclude>
-    <ClInclude Include="composite\icd_object.h">
-      <Filter>composite</Filter>
-    </ClInclude>
     <ClInclude Include="single\device.h">
       <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="info\icd_object.h">
+      <Filter>info</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

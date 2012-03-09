@@ -26,10 +26,10 @@
 #include <set>
 #include <map>
 #include "distributedcl_internal.h"
-#include "info/opencl_functions.h"
+#include "opencl_functions.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace info {
 //-----------------------------------------------------------------------------
 enum dcl_object_types
 {
@@ -38,7 +38,7 @@ enum dcl_object_types
     dcl_context_id = 2,
 };
 //-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, typename DCL_TYPE_T, uint32_t DCL_TYPE_ID >
+template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >
 class icd_object
 {
 public:
@@ -58,13 +58,8 @@ protected:
     CL_TYPE_T icd_obj_;
 
     icd_object() : icd_obj_( NULL ){}
-
-    //inline void create_icd_obj( DCL_TYPE_T* ptr )
-    //{
-    //    icd_obj_ = icd_object_manager::get_instance().get_cl_id< DCL_TYPE_T >( ptr );
-    //}
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+}} // namespace dcl::info
 //-----------------------------------------------------------------------------
 #endif // _DCL_ICD_OBJECT_H_

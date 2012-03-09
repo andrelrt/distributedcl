@@ -24,7 +24,6 @@
 #define _DCL_COMPOSITE_CONTEXT_H_
 
 #include "distributedcl_internal.h"
-#include "icd_object.h"
 #include "info/dcl_objects.h"
 #include "info/context_info.h"
 //-----------------------------------------------------------------------------
@@ -32,8 +31,7 @@ namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
 class composite_context :
-    public dcl::info::generic_context,
-    public icd_object< cl_context, composite_context, dcl_context_id >
+    public dcl::info::generic_context
 {
 public:
     composite_context()
