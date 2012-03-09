@@ -24,7 +24,9 @@
 #include "composite_context.h"
 #include "info/device_info.h"
 #include "info/context_info.h"
+#include "single/context.h"
 using dcl::info::generic_context;
+using dcl::single::context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -89,33 +91,31 @@ generic_context* composite_platform::create_context( const devices_t& devices ) 
     return composite_context_ptr;
 }
 //-----------------------------------------------------------------------------
-//composite_context* composite_platform::create_context( cl_device_type device_type )
-//{
-//    composite_context* ctx_ptr = new composite_context();
-//
-//    try
-//    {
-//        const platforms_t& platforms_ref = comp_platform_.get_platforms();
-//
-//        for( platforms_t::const_iterator it = platforms_ref.begin(); it != platforms_ref.end(); it++ )
-//        {
-//            context* ctx = new context( it->second->get_opencl(), device_type, *(it->second) );
-//
-//            ctx_ptr->add( ctx, ctx->get_devices() );
-//        }
-//    }
-//    catch( library_exception& ex )
-//    {
-//        if( ctx_ptr != NULL )
-//        {
-//            delete ctx_ptr;
-//        }
-//
-//        throw ex;
-//    }
-//
-//    return ctx_ptr;
-//}
+generic_context* composite_platform::create_context( cl_device_type device_type ) const
+{
+    composite_context* ctx_ptr = new composite_context();
+
+    try
+    {
+        for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); it++ )
+        {
+            generic_context* ctx = (*it)->create_context( device_type );
+
+            ctx_ptr->add( ctx, ctx->get_devices() );
+        }
+    }
+    catch( library_exception& ex )
+    {
+        if( ctx_ptr != NULL )
+        {
+            delete ctx_ptr;
+        }
+
+        throw ex;
+    }
+
+    return ctx_ptr;
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------

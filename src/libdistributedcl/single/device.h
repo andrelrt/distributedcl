@@ -25,6 +25,7 @@
 
 #include <boost/scoped_array.hpp>
 #include "distributedcl_internal.h"
+#include "opencl_single.h"
 #include "info/device_info.h"
 #include "opencl_library.h"
 //-----------------------------------------------------------------------------
@@ -34,16 +35,14 @@ namespace single {
 class platform;
 //-----------------------------------------------------------------------------
 class device :
-    public dcl::info::generic_device
+    public dcl::info::generic_device,
+    public opencl_object< cl_device_id >
 {
 public:
     device( const platform* platform_ptr, cl_device_id id );
     virtual ~device(){}
 
 private:
-    cl_device_id id_;
-    const opencl_library& opencl_;
-
     virtual bool load_device_info();
 
     inline void load_info_data( cl_device_info info )

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Andr√© Tupinamb√° (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 AndrÈ Tupinamb· (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,45 +20,41 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PLATFORM_H_
-#define _DCL_PLATFORM_H_
-
-#include <string>
-#include <vector>
-#include "distributedcl_internal.h"
-#include "opencl_single.h"
-#include "info/dcl_objects.h"
-#include "info/platform_info.h"
-//-----------------------------------------------------------------------------
-namespace dcl { namespace info {
-class generic_device;
-class generic_context;
-}}
+#include "msg_context.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace network {
+namespace message {
 //-----------------------------------------------------------------------------
-class opencl_library;
-//-----------------------------------------------------------------------------
-class platform :
-    public dcl::info::generic_platform,
-    public opencl_object< cl_platform_id >
+void dcl_message< msgCreateContextFromType >::create_request( uint8_t* payload_ptr )
 {
-public:
-	platform( const opencl_library& opencl, cl_platform_id platform_id );
-    ~platform(){}
+    cl_device_type* device_type_ptr = reinterpret_cast< cl_device_type* >( payload_ptr );
 
-	const devices_t& get_devices() const;
-	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
-
-    dcl::info::generic_context* create_context( const devices_t& devices ) const;
-	dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
-
-private:
-	void load();
-    void load_string( cl_platform_info info, std::string& out );
-};
+    *device_type_ptr = host_to_network( device_type_ );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+void dcl_message< msgCreateContextFromType >::parse_request( const uint8_t* payload_ptr )
+{
+    const cl_device_type* device_type_ptr = reinterpret_cast< const cl_device_type* >( payload_ptr );
+
+    device_type_ = network_to_host( *device_type_ptr );
+}
 //-----------------------------------------------------------------------------
-#endif // _DCL_PLATFORM_H_
+void dcl_message< msgCreateContextFromType >::create_response( uint8_t* payload_ptr )
+{
+    remote_id_t* id_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    *id_ptr = host_to_network( id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateContextFromType >::parse_response( const base_message* message_ptr )
+{
+    const dcl_message< msgCreateContextFromType >* msg_response_ptr = reinterpret_cast< const dcl_message< msgCreateContextFromType >* >( message_ptr );
+
+    const remote_id_t* id_ptr = reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
+
+    id_ = network_to_host( *id_ptr );
+}
+//-----------------------------------------------------------------------------
+}}} // namespace dcl::network::message
+//-----------------------------------------------------------------------------

@@ -28,6 +28,7 @@
 #include "info/object_manager.h"
 #include "message/message.h"
 #include "composite/composite_device.h"
+#include "composite/composite_context.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -56,8 +57,10 @@ class server_platform
 {
 private:
     typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
 
     device_manager_t device_manager_;
+    context_manager_t context_manager_;
     static server_platform instance_;
 
     server_platform(){}
@@ -71,6 +74,11 @@ public:
     inline device_manager_t& get_device_manager()
     {
         return device_manager_;
+    }
+
+    inline context_manager_t& get_context_manager()
+    {
+        return context_manager_;
     }
 };
 //-----------------------------------------------------------------------------

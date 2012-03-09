@@ -23,6 +23,7 @@
 #include "message_dispatcher.h"
 #include "message/message.h"
 #include "server/server_platform.h"
+#include "server/server_context.h"
 using namespace dcl::network::message;
 using namespace dcl::server;
 //-----------------------------------------------------------------------------
@@ -69,7 +70,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             }
 
             case msgCreateContext:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgCreateContextFromType:
+            {
+                CreateContextFromType_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgRetainContext:
             case msgReleaseContext:
             case msgGetContextInfo:

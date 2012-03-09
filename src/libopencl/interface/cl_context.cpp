@@ -35,6 +35,27 @@ using dcl::composite::opencl_composite;
 using dcl::composite::composite_device;
 using dcl::composite::composite_context;
 //-----------------------------------------------------------------------------
+static composite_platform* find_platform_in_properties( const cl_context_properties* properties )
+{
+    if( properties != NULL )
+    {
+        int index = 0;
+        while( properties[ index ] != 0 )
+        {
+            if( properties[ index ] == CL_CONTEXT_PLATFORM )
+            {
+                cl_platform_id platform_id = reinterpret_cast< cl_platform_id >( properties[ index + 1 ] );
+
+                return icd_object_manager::get_instance().get_object_ptr< composite_platform >( platform_id );
+            }
+
+            index += 2;
+        }
+    }
+
+    throw dcl::library_exception( CL_INVALID_PROPERTY );
+}
+//-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_context CL_API_CALL
 clCreateContext( const cl_context_properties* properties, cl_uint num_devices, 
                  const cl_device_id* devices, 
@@ -51,56 +72,29 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
         return NULL;
     }
 
-    if( properties == NULL )
-    {
-        if( errcode_ret != NULL )
-        {
-            *errcode_ret = CL_INVALID_PROPERTY;
-        }
-        return NULL;
-    }
-
     try
     {
-        int index = 0;
-        while( properties[ index ] != 0 )
+        composite_platform* platform_ptr = find_platform_in_properties( properties );
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        devices_t devs;
+        devs.reserve( num_devices );
+
+        for( cl_uint i = 0; i < num_devices; i++ )
         {
-            if( properties[ index ] == CL_CONTEXT_PLATFORM )
-            {
-                icd_object_manager& icd = icd_object_manager::get_instance();
+            composite_device* dev_ptr = icd.get_object_ptr< composite_device >( devices[ i ] );
 
-                cl_platform_id platform_id = reinterpret_cast< cl_platform_id >( properties[ index + 1 ] );
-                composite_platform* platform_ptr = icd.get_object_ptr< composite_platform >( platform_id );
-
-                devices_t devs;
-                devs.reserve( num_devices );
-
-                for( cl_uint i = 0; i < num_devices; i++ )
-                {
-                    composite_device* dev_ptr = icd.get_object_ptr< composite_device >( devices[ i ] );
-
-                    devs.push_back( reinterpret_cast< generic_device* >( dev_ptr ) );
-                }
-
-                composite_context* context_ptr = reinterpret_cast< composite_context* >( platform_ptr->create_context( devs ) );
-
-                if( errcode_ret != NULL )
-                {
-                    *errcode_ret = CL_SUCCESS;
-                }
-
-                return icd.get_cl_id( context_ptr );
-            }
-
-            index += 2;
+            devs.push_back( reinterpret_cast< generic_device* >( dev_ptr ) );
         }
 
-        // Property CL_CONTEXT_PLATFORM not found
+        composite_context* context_ptr = reinterpret_cast< composite_context* >( platform_ptr->create_context( devs ) );
+
         if( errcode_ret != NULL )
         {
-            *errcode_ret = CL_INVALID_PROPERTY;
+            *errcode_ret = CL_SUCCESS;
         }
-        return NULL;
+
+        return icd.get_cl_id( context_ptr );
     }
     catch( dcl::library_exception& ex )
     {
@@ -132,6 +126,46 @@ clCreateContextFromType( const cl_context_properties* properties, cl_device_type
                          void (CL_CALLBACK * pfn_notify)(const char*,const void*,size_t,void*), 
                          void* user_data, cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
 {
+    if( ((pfn_notify == NULL) && (user_data != NULL)) )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
+    }
+
+    try
+    {
+        composite_platform* platform_ptr = find_platform_in_properties( properties );
+
+        composite_context* context_ptr = reinterpret_cast< composite_context* >( platform_ptr->create_context( device_type ) );
+
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_SUCCESS;
+        }
+
+        return icd_object_manager::get_instance().get_cl_id( context_ptr );
+    }
+    catch( dcl::library_exception& ex )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = ex.get_error();
+        }
+        return NULL;
+    }
+    catch( ... )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
+    }
+
+    // Dummy
     if( errcode_ret != NULL )
     {
         *errcode_ret = CL_INVALID_VALUE;

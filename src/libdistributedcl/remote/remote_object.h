@@ -34,7 +34,7 @@ template< typename DCL_TYPE_T >
 class remote_object
 {
 public:
-    inline dcl::network::client::session_manager::session_t& get_session()
+    inline dcl::network::client::session_manager::session_t& get_session() const
     {
         return session_ref_;
     }

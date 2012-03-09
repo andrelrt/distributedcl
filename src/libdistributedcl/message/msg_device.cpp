@@ -26,7 +26,7 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetDeviceIDs >::set_response( const base_message* response_ptr )
+void dcl_message< msgGetDeviceIDs >::parse_response( const base_message* response_ptr )
 {
     const dcl_message< msgGetDeviceIDs >* msg_response_ptr = reinterpret_cast< const dcl_message< msgGetDeviceIDs >* >( response_ptr );
     const msgGetDeviceIDs_response* response = reinterpret_cast< const msgGetDeviceIDs_response* >( msg_response_ptr->get_payload() );
@@ -111,7 +111,7 @@ void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
         response->device_ids[ dev_idx++ ] = host_to_network( other_devices_[ i ] );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetDeviceInfo >::set_response( const base_message* response_ptr )
+void dcl_message< msgGetDeviceInfo >::parse_response( const base_message* response_ptr )
 {
     cl_uint vector_sizes[] = { 0, 1, 2, 3, 4, 8, 16, 0 };
     cl_uint cache_types[] = { CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE, 0 };

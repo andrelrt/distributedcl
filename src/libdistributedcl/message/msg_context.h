@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Andr√© Tupinamb√° (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,45 +20,58 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PLATFORM_H_
-#define _DCL_PLATFORM_H_
+#ifndef _DCL_CONTEXT_MESSAGES_H_
+#define _DCL_CONTEXT_MESSAGES_H_
 
-#include <string>
-#include <vector>
-#include "distributedcl_internal.h"
-#include "opencl_single.h"
-#include "info/dcl_objects.h"
-#include "info/platform_info.h"
-//-----------------------------------------------------------------------------
-namespace dcl { namespace info {
-class generic_device;
-class generic_context;
-}}
+#include "message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace network {
+namespace message {
 //-----------------------------------------------------------------------------
-class opencl_library;
+    //msgCreateContext            = 24,
+    //msgCreateContextFromType    = 25,
+    //msgRetainContext            = 26,
+    //msgReleaseContext           = 27,
+    //msgGetContextInfo           = 28,
 //-----------------------------------------------------------------------------
-class platform :
-    public dcl::info::generic_platform,
-    public opencl_object< cl_platform_id >
+template<>
+class dcl_message< msgCreateContextFromType > : public base_message
 {
 public:
-	platform( const opencl_library& opencl, cl_platform_id platform_id );
-    ~platform(){}
+    dcl_message< msgCreateContextFromType >() : 
+        base_message( msgCreateContextFromType, true, sizeof( cl_device_type ), sizeof( remote_id_t ) ) {}
 
-	const devices_t& get_devices() const;
-	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
+    inline const dcl::remote_id_t get_remote_id() const
+    {
+        return id_;
+    }
 
-    dcl::info::generic_context* create_context( const devices_t& devices ) const;
-	dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
+    inline void set_remote_id( dcl::remote_id_t id )
+    {
+        id_ = id;
+    }
 
-private:
-	void load();
-    void load_string( cl_platform_info info, std::string& out );
+    inline cl_device_type get_device_type() const
+    {
+        return device_type_;
+    }
+
+    inline void set_device_type( cl_device_type device_type )
+    {
+        device_type_ = device_type;
+    }
+
+protected:
+    dcl::remote_id_t id_;
+    cl_device_type device_type_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void create_response( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void parse_response( const base_message* message_ptr );
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
-#endif // _DCL_PLATFORM_H_
+#endif // _DCL_CONTEXT_MESSAGES_H_

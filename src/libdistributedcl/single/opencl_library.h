@@ -165,6 +165,36 @@ private:
 	void* load_function( const char* function );
 };
 //-----------------------------------------------------------------------------
+template< typename CL_TYPE_T >
+class opencl_object
+{
+public:
+    opencl_object( opencl_object& obj ) : 
+        id_( obj.get_id() ), opencl_( obj.get_opencl() ){}
+
+    opencl_object( const opencl_library& opencl, CL_TYPE_T id = NULL ) : 
+        id_( id ), opencl_( opencl ){}
+
+    inline CL_TYPE_T get_id() const
+    {
+        return id_;
+    }
+
+    inline const opencl_library& get_opencl() const
+    {
+        return opencl_;
+    }
+
+protected:
+    inline void set_id( CL_TYPE_T id )
+    {
+        id_ = id;
+    }
+
+    CL_TYPE_T id_;
+    const opencl_library& opencl_;
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::single
 //-----------------------------------------------------------------------------
 #endif // _DCL_OPENCL_LIBRARY_H_

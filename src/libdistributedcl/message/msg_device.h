@@ -38,7 +38,7 @@ public:
     dcl_message< msgGetDeviceIDs >() : 
         base_message( msgGetDeviceIDs, true, 0, sizeof( msgGetDeviceIDs_response ) ) {}
 
-    virtual void set_response( const base_message* response_ptr );
+    virtual void parse_response( const base_message* response_ptr );
 
     inline std::size_t get_device_count()
     {
@@ -127,7 +127,7 @@ public:
         base_message( msgGetDeviceInfo, true, sizeof(dcl::remote_id_t) ), id_( id )
     {}
 
-    virtual void set_response( const base_message* response_ptr );
+    virtual void parse_response( const base_message* response_ptr );
 
     const dcl::remote_id_t get_remote_id() const
     {

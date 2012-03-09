@@ -120,22 +120,7 @@ main()
             std::cerr << "Platform::get() failed (" << err << ")" << std::endl;
         }
 
-        cl::vector<cl::Platform>::iterator i;
-        if(platforms.size() > 0)
-        {
-            for(i = platforms.begin(); i != platforms.end(); ++i)
-            {
-                if(!strcmp((*i).getInfo<CL_PLATFORM_VENDOR>().c_str(), "Advanced Micro Devices, Inc."))
-                {
-                    break;
-                }
-            }
-        }
-
-        /* 
-         * If we could find our platform, use it. Otherwise pass a NULL and get whatever the
-         * implementation thinks we should be using.
-         */
+        cl::vector<cl::Platform>::iterator i = platforms.begin();
 
         cl_context_properties cps[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)(*i)(), 0 };
 
@@ -157,6 +142,7 @@ main()
             return SDK_FAILURE;
         }
 
+        /*
         std::cout<<"Loading and compiling CL source\n";
     	streamsdk::SDKFile file;
         if (!file.open("HelloCL_Kernels.cl")) {
@@ -211,12 +197,12 @@ main()
         }
 
         delete pProgram;
-
+        */
         std::cout<<"Done\nPassed!\n";
     }
     while( 0 );
 
-    int qwe;
+    std::string qwe;
     std::cin >> qwe;
     return SDK_SUCCESS;
 }

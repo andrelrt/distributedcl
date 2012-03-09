@@ -129,7 +129,7 @@ public:
         return type_;
     }
 
-    virtual void set_response( const base_message* ){}
+    virtual void parse_response( const base_message* ){}
 
     void set_response_mode()
     {

@@ -39,6 +39,17 @@ class generic_context :
     public icd_object< cl_context, dcl_context_id >,
     public dcl_object< context_info >
 {
+public:
+    generic_context(){}
+    generic_context( const devices_t& devices_ref ) : devices_( devices_ref ){}
+
+    inline const devices_t& get_devices() const
+    {
+        return( devices_ );
+    }
+
+protected:
+    devices_t devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

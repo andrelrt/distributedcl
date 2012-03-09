@@ -117,7 +117,7 @@ public:
 
             if( (*sent_message_it)->waiting_response() )
             {
-                (*sent_message_it)->set_response( (*recv_message_it) );
+                (*sent_message_it)->parse_response( (*recv_message_it) );
             }
         }
     }

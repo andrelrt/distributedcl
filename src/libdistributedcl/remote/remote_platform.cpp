@@ -22,15 +22,18 @@
 //-----------------------------------------------------------------------------
 #include "remote_platform.h"
 #include "remote_device.h"
+#include "remote_context.h"
 #include "info/platform_info.h"
 #include "network/session_manager.h"
 #include "message/message.h"
 #include "message/msg_device.h"
+#include "message/msg_context.h"
 using dcl::info::generic_context;
 using dcl::network::client::session_manager;
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
+using dcl::network::message::msgCreateContextFromType;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -39,6 +42,20 @@ generic_context* remote_platform::create_context( const dcl::devices_t& devices 
 {
     throw library_exception( "Not implemented" );
     return NULL;
+}
+//-----------------------------------------------------------------------------
+generic_context* remote_platform::create_context( cl_device_type device_type ) const
+{
+    dcl_message< msgCreateContextFromType > msg;
+
+    msg.set_device_type( device_type );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    remote_context* context_ptr = new remote_context( this );
+    context_ptr->set_remote_id( msg.get_remote_id() );
+
+    return reinterpret_cast<generic_context*>( context_ptr );
 }
 //-----------------------------------------------------------------------------
 void remote_platform::load_devices()

@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_OBJECT_MANAGER_H_
-#define _DCL_REMOTE_OBJECT_MANAGER_H_
+#ifndef _DCL_INFO_OBJECT_MANAGER_H_
+#define _DCL_INFO_OBJECT_MANAGER_H_
 
 #include <map>
 #include <boost/random/mersenne_twister.hpp>
@@ -30,7 +30,7 @@
 #include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace info {
 //-----------------------------------------------------------------------------
 template< typename DCL_TYPE_T >
 class object_manager
@@ -55,7 +55,7 @@ public:
 
         object_map_.insert( object_map_t::value_type( object_id, object_ptr ) );
 
-        object_ptr->set_remote_id( object_id );
+        //object_ptr->set_remote_id( object_id );
 
         return( object_id );
     }
@@ -133,6 +133,6 @@ private:
     boost::variate_generator< boost::mt19937&, boost::uniform_int<> > random_;
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::info
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_OBJECT_MANAGER_H_
+#endif // _DCL_INFO_OBJECT_MANAGER_H_

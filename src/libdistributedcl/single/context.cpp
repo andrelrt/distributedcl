@@ -23,16 +23,19 @@
 #include <boost/scoped_array.hpp>
 #include "context.h"
 #include "platform.h"
+#include "device.h"
 using dcl::info::generic_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-context::context( const context& ctx ) : devices_( ctx.devices_ )
+context::context( const context& ctx ) : 
+    generic_context( ctx.devices_ ), opencl_object( ctx.get_opencl(), ctx.get_id() )
 {
 }
 //-----------------------------------------------------------------------------
-context::context( const devices_t& devices_ref ) : devices_( devices_ref )
+context::context( const devices_t& devices_ref ) : 
+    generic_context( devices_ref ), opencl_object( reinterpret_cast<device*>( devices_ref[ 0 ] )->get_opencl() )
 {
     //if( devices_ref.empty() )
     //    throw library_exception( CL_INVALID_VALUE );
@@ -60,51 +63,44 @@ context::context( const devices_t& devices_ref ) : devices_( devices_ref )
     //set_id( context );
 }
 //-----------------------------------------------------------------------------
-context::context( const platform& platform_ref, cl_device_type device_type )
+context::context( const platform& platform_ref, cl_device_type device_type ) : 
+    opencl_object( platform_ref.get_opencl() )
 {
-    //cl_int error_code;
-    //cl_context ctx;
+    cl_int error_code;
+    cl_context ctx;
 
-    ////TODO: Work with callback function
+    //TODO: Work with callback function
 
-    //if( platform_ref.is_empty() )
-    //{
-    //    ctx = get_opencl().clCreateContextFromType( NULL, device_type, NULL, 
-    //                                                static_cast<void*>( NULL ), &error_code );
-    //}
-    //else
-    //{
-    //    cl_context_properties properties[3] = { CL_CONTEXT_PLATFORM, reinterpret_cast< cl_context_properties >( platform_ref.get_id() ), 0 };
+    cl_context_properties properties[3] = { CL_CONTEXT_PLATFORM, reinterpret_cast< cl_context_properties >( platform_ref.get_id() ), 0 };
 
-    //    ctx = get_opencl().clCreateContextFromType( properties, device_type, NULL, 
-    //                                                static_cast<void*>( NULL ), &error_code );
-    //}
+    ctx = opencl_.clCreateContextFromType( properties, device_type, NULL, 
+                                                static_cast<void*>( NULL ), &error_code );
 
-    //if( error_code != CL_SUCCESS )
-    //    throw library_exception( error_code );
+    if( error_code != CL_SUCCESS )
+        throw library_exception( error_code );
 
-    //// Load the devices objects
-    //size_t param_value_size_ret;
-    //error_code = get_opencl().clGetContextInfo( ctx, CL_CONTEXT_DEVICES, 0, NULL, &param_value_size_ret );
+    // Load the devices objects
+    size_t param_value_size_ret;
+    error_code = opencl_.clGetContextInfo( ctx, CL_CONTEXT_DEVICES, 0, NULL, &param_value_size_ret );
 
-    //if( error_code != CL_SUCCESS )
-    //    throw library_exception( error_code );
+    if( error_code != CL_SUCCESS )
+        throw library_exception( error_code );
 
-    //size_t ret_count = param_value_size_ret / sizeof( cl_device_id );
+    size_t ret_count = param_value_size_ret / sizeof( cl_device_id );
 
-    //boost::scoped_array<cl_device_id> device_ids( new cl_device_id[ ret_count ] );
+    boost::scoped_array<cl_device_id> device_ids( new cl_device_id[ ret_count ] );
 
-    //error_code = get_opencl().clGetContextInfo( ctx, CL_CONTEXT_DEVICES, param_value_size_ret, device_ids.get(), NULL );
+    error_code = opencl_.clGetContextInfo( ctx, CL_CONTEXT_DEVICES, param_value_size_ret, device_ids.get(), NULL );
 
-    //if( error_code != CL_SUCCESS )
-    //    throw library_exception( error_code );
+    if( error_code != CL_SUCCESS )
+        throw library_exception( error_code );
 
-    //for( int i = 0; i < (int) ret_count; i++ )
-    //{
-    //    devices_.push_back( new device( opencl_ref, platform_ref, device_ids[ i ] ) );
-    //}
+    for( int i = 0; i < (int) ret_count; i++ )
+    {
+        devices_.push_back( new device( &platform_ref, device_ids[ i ] ) );
+    }
 
-    //set_id( ctx );
+    set_id( ctx );
 }
 //-----------------------------------------------------------------------------
 //void context::add( command_queue& queue )

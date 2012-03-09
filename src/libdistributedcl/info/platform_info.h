@@ -135,7 +135,7 @@ public:
     }
 
     virtual generic_context* create_context( const devices_t& devices ) const = 0;
-    //virtual generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const = 0;
+    virtual generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const = 0;
 
 protected:
     virtual bool load_platform_info()

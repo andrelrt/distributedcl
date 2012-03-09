@@ -23,6 +23,7 @@
 #include "message.h"
 #include "distributedcl_internal.h"
 #include "msg_device.h"
+#include "msg_context.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -67,7 +68,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
             break;
 
         case msgCreateContext:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgCreateContextFromType:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateContextFromType >() );
+            break;
+
         case msgRetainContext:
         case msgReleaseContext:
         case msgGetContextInfo:

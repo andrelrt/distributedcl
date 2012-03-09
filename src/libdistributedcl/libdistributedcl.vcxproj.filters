@@ -128,6 +128,15 @@
     <ClInclude Include="info\object_manager.h">
       <Filter>info</Filter>
     </ClInclude>
+    <ClInclude Include="message\msg_context.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\remote_context.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_context.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -182,6 +191,12 @@
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="server\server_platform.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="message\msg_context.cpp">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_context.cpp">
       <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>

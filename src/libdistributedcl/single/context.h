@@ -24,6 +24,7 @@
 #define _DCL_CONTEXT_H_
 
 #include "distributedcl_internal.h"
+#include "opencl_single.h"
 #include "info/dcl_objects.h"
 #include "info/context_info.h"
 //-----------------------------------------------------------------------------
@@ -33,7 +34,8 @@ namespace single {
 class platform;
 //-----------------------------------------------------------------------------
 class context : 
-    public dcl::info::generic_context
+    public dcl::info::generic_context,
+    public opencl_object< cl_context >
 {
 public:
 	context( const context& ctx );
@@ -49,11 +51,6 @@ public:
     //    add( cmd_queue );
     //    return *this;
     //}
-
-    inline const devices_t& get_devices() const
-    {
-        return( devices_ );
-    }
 
     inline const image_formats_t& get_image2d_formats()
     {
@@ -78,7 +75,6 @@ public:
 private:
     void load_image_formats( image_formats_t& image_formats, cl_mem_object_type image_type );
 
-    devices_t devices_;
     image_formats_t image2d_formats_;
     image_formats_t image3d_formats_;
 };

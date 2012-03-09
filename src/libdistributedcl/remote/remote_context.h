@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,69 +20,32 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_COMPOSITE_PLATFORM_H_
-#define _DCL_COMPOSITE_PLATFORM_H_
+#ifndef _DCL_REMOTE_CONTEXT_H_
+#define _DCL_REMOTE_CONTEXT_H_
 
-#include <set>
 #include "distributedcl_internal.h"
-#include "info/platform_info.h"
+#include "remote_object.h"
 #include "info/context_info.h"
+#include "info/dcl_objects.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace remote {
 //-----------------------------------------------------------------------------
-class composite_platform :
-    public dcl::info::generic_platform
+class remote_context : 
+    public dcl::info::generic_context,
+    public remote_object< remote_context >
 {
 public:
-    composite_platform()
-    {
-        //create_icd_obj( this );
-    }
-    ~composite_platform(){}
+    remote_context( const remote_platform* platform_ptr ) : 
+        platform_ptr_( platform_ptr ), dcl::info::generic_context(), 
+        remote_object( platform_ptr->get_session() ) {}
 
-    inline void load_info(){}
-
-    const devices_t& get_devices() const
-    { 
-        return devices_;
-    }
-
-    void get_devices( devices_t& devices, cl_device_type device_type ) const;
-
-    dcl::info::generic_context* create_context( const dcl::devices_t& devices ) const;
-    dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
-
-
-    void add_platform( dcl::info::generic_platform* platform_ptr )
-    {
-        platforms_.push_back( platform_ptr );
-
-        const devices_t& devs = platform_ptr->get_devices();
-
-        devices_.insert( devices_.end(), devs.begin(), devs.end() );
-    }
-
-    //inline void add_devices( const dcl::single::devices_t& devices_ref )
-    //{
-    //    devices_.insert( devices_.end(), devices_ref.begin(), devices_ref.end() );
-    //}
-
-    //inline const dcl::single::platforms_t& get_platforms() const
-    //{
-    //    return platforms_;
-    //}
-
-    //inline const dcl::single::devices_t& get_devices() const
-    //{
-    //    return devices_;
-    //}
+    ~remote_context(){}
 
 private:
-    platforms_t platforms_;
-    devices_t devices_;
+    const remote_platform* platform_ptr_;
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+}} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif //_DCL_COMPOSITE_PLATFORM_H_
+#endif // _DCL_REMOTE_CONTEXT_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Andr√© Tupinamb√° (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,45 +20,30 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PLATFORM_H_
-#define _DCL_PLATFORM_H_
-
-#include <string>
-#include <vector>
-#include "distributedcl_internal.h"
-#include "opencl_single.h"
-#include "info/dcl_objects.h"
-#include "info/platform_info.h"
-//-----------------------------------------------------------------------------
-namespace dcl { namespace info {
-class generic_device;
-class generic_context;
-}}
+#include "server_context.h"
+#include "server_platform.h"
+#include "message/message.h"
+#include "message/msg_context.h"
+#include "composite/opencl_composite.h"
+#include "composite/composite_context.h"
+using dcl::network::message::dcl_message;
+using dcl::network::message::msgCreateContextFromType;
+using dcl::composite::opencl_composite;
+using dcl::composite::composite_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace server {
 //-----------------------------------------------------------------------------
-class opencl_library;
-//-----------------------------------------------------------------------------
-class platform :
-    public dcl::info::generic_platform,
-    public opencl_object< cl_platform_id >
+void CreateContextFromType_command::execute()
 {
-public:
-	platform( const opencl_library& opencl, cl_platform_id platform_id );
-    ~platform(){}
+    cl_device_type device_type = message_.get_device_type();
 
-	const devices_t& get_devices() const;
-	void get_devices( devices_t& devices, cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
+    composite_context* context_ptr = reinterpret_cast<composite_context*>( opencl_composite::get_instance().get_platform().create_context( device_type ) );
 
-    dcl::info::generic_context* create_context( const devices_t& devices ) const;
-	dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
+    remote_id_t id = server_platform::get_instance().get_context_manager().add( context_ptr );
 
-private:
-	void load();
-    void load_string( cl_platform_info info, std::string& out );
-};
+    message_.set_remote_id( id );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_PLATFORM_H_

@@ -23,6 +23,7 @@
 #include <boost/scoped_array.hpp>
 #include "platform.h"
 #include "device.h"
+#include "context.h"
 #include "opencl_library.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
@@ -32,7 +33,7 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 platform::platform( const opencl_library& opencl, cl_platform_id platform_id )
-    : opencl_( opencl ), platform_id_( platform_id )
+    : opencl_object( opencl, platform_id )
 {
 	load();
 }
@@ -46,7 +47,7 @@ void platform::load()
 	load_string( CL_PLATFORM_EXTENSIONS, local_info_.extensions_ );
 
     cl_uint num_devices = 0;
-    cl_int ret = opencl_.clGetDeviceIDs( platform_id_, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices );
+    cl_int ret = opencl_.clGetDeviceIDs( id_, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices );
 
     if( ret != CL_SUCCESS )
     {
@@ -56,7 +57,7 @@ void platform::load()
     cl_uint num_entries = num_devices;
     boost::scoped_array<cl_device_id> deviceIds( new cl_device_id[ num_devices ] );
 
-    ret = opencl_.clGetDeviceIDs( platform_id_, CL_DEVICE_TYPE_ALL,
+    ret = opencl_.clGetDeviceIDs( id_, CL_DEVICE_TYPE_ALL,
                                   num_entries, deviceIds.get(), &num_devices );
     if( ret != CL_SUCCESS )
     {
@@ -75,13 +76,13 @@ void platform::load_string( cl_platform_info info, std::string& out )
 
     out.clear();
 
-    cl_int cl_error = opencl_.clGetPlatformInfo( platform_id_, info, 0, NULL, &value_size );
+    cl_int cl_error = opencl_.clGetPlatformInfo( id_, info, 0, NULL, &value_size );
 
     if( cl_error == CL_SUCCESS )
     {
         boost::scoped_array<char> param_value( new char[ value_size +1 ] );
 
-        cl_error = opencl_.clGetPlatformInfo( platform_id_, info, value_size, param_value.get(), &value_size );
+        cl_error = opencl_.clGetPlatformInfo( id_, info, value_size, param_value.get(), &value_size );
 
         if( cl_error == CL_SUCCESS )
         {
@@ -94,6 +95,11 @@ generic_context* platform::create_context( const devices_t& devices ) const
 {
     throw library_exception( "Not implemented" );
     return NULL;
+}
+//-----------------------------------------------------------------------------
+generic_context* platform::create_context( cl_device_type device_type ) const
+{
+    return new context( *this, device_type );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single
