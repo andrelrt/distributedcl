@@ -27,7 +27,7 @@
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "remote_object.h"
-#include "object_manager.h"
+#include "info/object_manager.h"
 #include "info/dcl_objects.h"
 #include "info/platform_info.h"
 #include "info/context_info.h"
@@ -54,7 +54,7 @@ public:
 
 private:
     void load_devices();
-    object_manager< remote_device > device_manager_;
+    dcl::info::object_manager< remote_device > device_manager_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

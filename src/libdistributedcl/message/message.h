@@ -147,7 +147,7 @@ public:
         header->type = type_;
         header->request = response_ ? 0 : 1;
         header->id = 0;
-        header->length = static_cast< uint32_t >( htonl( static_cast< u_long >( size_ ) ) );
+        header->length = static_cast< uint32_t >( host_to_network( static_cast< uint32_t >( size_ ) ) );
 
         if( !response_ )
         {
@@ -178,6 +178,7 @@ protected:
 
     virtual void create_request( uint8_t* payload_ptr ){}
     virtual void create_response( uint8_t* payload_ptr ){}
+    virtual void parse_request( const uint8_t* payload_ptr ){}
 
     inline void set_size( std::size_t size )
     {
@@ -236,6 +237,8 @@ private:
     {
         buffer_ptr_ = msg_buffer_ptr;
         size_ = size;
+
+        parse_request( get_payload() );
     }
 };
 //-----------------------------------------------------------------------------

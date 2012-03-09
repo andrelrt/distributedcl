@@ -33,7 +33,7 @@ void packet::parse()
 {
     packet_header* header_ptr = reinterpret_cast< packet_header* >( buffer_ptr_ );
 
-    uint16_t packet_len = ntohs( header_ptr->length );
+    uint16_t packet_len = network_to_host( header_ptr->length );
 
     THROW_IF( buffer_size_ < sizeof( packet_header ), "Invalid packet size" );
     THROW_IF( header_ptr->version != packet_v1_0, "Invalid packet version" );
@@ -60,7 +60,7 @@ void packet::parse()
 void packet::parse_messages()
 {
     packet_header* header_ptr = reinterpret_cast< packet_header* >( buffer_ptr_ );
-    uint16_t packet_len = ntohs( header_ptr->length );
+    uint16_t packet_len = network_to_host( header_ptr->length );
 
     uint32_t length = packet_len - sizeof( packet_header );
     uint8_t* it = buffer_ptr_ + sizeof( packet_header );
@@ -106,7 +106,7 @@ void packet::create_packet()
             offset += static_cast< uint16_t >( (*it)->get_size() );
         }
 
-        header_ptr_->length = static_cast< uint16_t >( htons( static_cast< u_short >( length_ ) ) );
+        header_ptr_->length = static_cast< uint16_t >( host_to_network( static_cast< u_short >( length_ ) ) );
     }
 }
 //-----------------------------------------------------------------------------

@@ -155,6 +155,7 @@ public:
 protected:
     virtual void create_request( uint8_t* payload_ptr );
     virtual void create_response( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
 
 private:
     #pragma pack( push, 1 )

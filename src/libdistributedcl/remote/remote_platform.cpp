@@ -51,7 +51,7 @@ void remote_platform::load_devices()
     {
         remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_GPU );
 
-        device_manager_.add( dev_ptr );
+        dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
         add_device( dev_ptr );
     }
 
@@ -59,7 +59,7 @@ void remote_platform::load_devices()
     {
         remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_CPU );
 
-        device_manager_.add( dev_ptr );
+        dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
         add_device( dev_ptr );
     }
 
@@ -67,7 +67,7 @@ void remote_platform::load_devices()
     {
         remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_ACCELERATOR );
 
-        device_manager_.add( dev_ptr );
+        dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
         add_device( dev_ptr );
     }
 }

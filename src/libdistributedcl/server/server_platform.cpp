@@ -24,16 +24,20 @@
 #include "message/message.h"
 #include "message/msg_device.h"
 #include "composite/opencl_composite.h"
-#include "remote/remote_device.h"
+#include "composite/composite_platform.h"
+#include "composite/composite_device.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
+using dcl::composite::composite_device;
 using dcl::remote::remote_device;
 using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
+//-----------------------------------------------------------------------------
+server_platform server_platform::instance_;
 //-----------------------------------------------------------------------------
 void GetDeviceIDs_command::execute()
 {
@@ -42,24 +46,25 @@ void GetDeviceIDs_command::execute()
 
     for( devices_t::const_iterator it = devs.begin(); it != devs.end(); it++ )
     {
-        remote_device* pDev = reinterpret_cast< remote_device* >( *it );
+        composite_device* device_ptr = reinterpret_cast< composite_device* >( *it );
+        remote_id_t id = server_platform::get_instance().get_device_manager().add( device_ptr );
 
-        switch( pDev->get_type() )
+        switch( device_ptr->get_type() )
         {
             case CL_DEVICE_TYPE_CPU:
-                message_.add_cpu_device( pDev->get_remote_id() );
+                message_.add_cpu_device( id );
                 break;
 
             case CL_DEVICE_TYPE_GPU:
-                message_.add_gpu_device( pDev->get_remote_id() );
+                message_.add_gpu_device( id );
                 break;
 
             case CL_DEVICE_TYPE_ACCELERATOR:
-                message_.add_accelerator_device( pDev->get_remote_id() );
+                message_.add_accelerator_device( id );
                 break;
 
             default:
-                message_.add_other_device( pDev->get_remote_id() );
+                message_.add_other_device( id );
                 break;
         }
     }
@@ -71,71 +76,9 @@ void GetDeviceInfo_command::execute()
 {
     remote_id_t remote_id = message_.get_remote_id();
 
-    dcl::info::device_info info;
+    const composite_device* device_ptr = server_platform::get_instance().get_device_manager().get( remote_id );
 
-    info.type_ = CL_DEVICE_TYPE_ACCELERATOR;
-    info.vendor_id_ = 0xe1babaca;
-    info.max_compute_units_ = 2;
-    info.max_work_item_dimensions_ = 1024;
-    info.max_work_item_sizes_[0] = 1025;
-    info.max_work_item_sizes_[1] = 1026;
-    info.max_work_item_sizes_[2] = 1027;
-    info.max_work_group_size_ = 1028;
-    info.preferred_vector_width_char_ = 16;
-    info.preferred_vector_width_short_ = 8;
-    info.preferred_vector_width_int_ = 4;
-    info.preferred_vector_width_long_ = 2;
-    info.preferred_vector_width_float_ = 4;
-    info.preferred_vector_width_double_ = 1;
-    info.preferred_vector_width_half_ = 0;
-    info.native_vector_width_char_ = 16;
-    info.native_vector_width_short_ = 8;
-    info.native_vector_width_int_ = 4;
-    info.native_vector_width_long_ = 2;
-    info.native_vector_width_float_ = 4;
-    info.native_vector_width_double_ = 1;
-    info.native_vector_width_half_ = 0;
-    info.max_clock_frequency_ = 1029;
-    info.address_bits_ = 64;
-    info.max_read_image_args_ = 1030;
-    info.max_write_image_args_ = 1031;
-    info.max_mem_alloc_size_ = 1032;
-    info.image_support_ = true;
-    info.image2d_max_width_ = 1033;
-    info.image2d_max_height_ = 1034;
-    info.image3d_max_width_ = 1035;
-    info.image3d_max_height_ = 1036;
-    info.image3d_max_depth_ = 1037;
-    info.max_parameter_size_ = 1038;
-    info.max_samplers_ = 1039;
-    info.mem_base_address_align_ = 1040;
-    info.min_data_type_align_size_ = 1041;
-    info.single_fp_config_ = 0x7f;
-    info.global_mem_cache_type_ = CL_READ_WRITE_CACHE;
-    info.global_mem_cacheline_size_ = 1043;
-    info.global_mem_cache_size_ = 1044;
-    info.global_mem_size_ = 1045;
-    info.max_constant_buffer_size_ = 1046;
-    info.max_constant_args_ = 1047;
-    info.local_mem_type_ = CL_LOCAL;
-    info.local_mem_size_ = 1042;
-    info.error_correction_support_ = false;
-    info.host_unified_memory_ = false;
-    info.profiling_timer_resolution_ = 1048;
-    info.endian_little_ = true;
-    info.avaiable_ = true;
-    info.compiler_avaiable_ = true;
-    info.execution_capabilities_ = CL_EXEC_KERNEL;
-    info.queue_properties_ = CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
-    info.name_.assign( "DistributedCL Sample" );
-    info.vendor_.assign( "DistributedCL Project" );
-    info.driver_version_.assign( "OpenCL 1.0 DistributedCL Sample 0.1" );
-    info.profile_.assign( "FULL PROFILE" );
-    info.version_.assign( "OpenCL 1.0 DistributedCL Sample 0.1" );
-    info.opencl_c_version_.assign( "OpenCL C 1.0 DistributedCL Sample 0.1" );
-    info.extensions_.assign( "cl_khr_icd" );
-
-    message_.set_info( info );
+    message_.set_info( device_ptr->get_info() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

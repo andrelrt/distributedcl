@@ -125,6 +125,9 @@
     <ClInclude Include="server\server_command.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="info\object_manager.h">
+      <Filter>info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">

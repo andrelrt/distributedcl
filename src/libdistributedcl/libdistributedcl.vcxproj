@@ -28,6 +28,7 @@
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
     <ClInclude Include="info\icd_object.h" />
+    <ClInclude Include="info\object_manager.h" />
     <ClInclude Include="info\opencl_functions.h" />
     <ClInclude Include="info\platform_info.h" />
     <ClInclude Include="library_exception.h" />

@@ -34,7 +34,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 {
     const message_header* header_ptr = reinterpret_cast< const message_header* >( msg_buffer_ptr );
 
-    uint32_t message_len = ntohl( header_ptr->length );
+    uint32_t message_len = network_to_host( header_ptr->length );
 
     THROW_IF( (length < sizeof( message_header )), "Invalid base_message size" );
     THROW_IF( (length < message_len), "Message size mismatch" );

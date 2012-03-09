@@ -25,7 +25,9 @@
 
 #include "distributedcl_internal.h"
 #include "server_command.h"
+#include "info/object_manager.h"
 #include "message/message.h"
+#include "composite/composite_device.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -48,6 +50,28 @@ public:
         server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
 
     void execute();
+};
+//-----------------------------------------------------------------------------
+class server_platform
+{
+private:
+    typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
+
+    device_manager_t device_manager_;
+    static server_platform instance_;
+
+    server_platform(){}
+
+public:
+    static server_platform& get_instance()
+    {
+        return instance_;
+    }
+
+    inline device_manager_t& get_device_manager()
+    {
+        return device_manager_;
+    }
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

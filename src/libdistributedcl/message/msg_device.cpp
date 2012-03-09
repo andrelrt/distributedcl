@@ -203,6 +203,13 @@ void dcl_message< msgGetDeviceInfo >::create_request( uint8_t* payload_ptr )
     *id_ptr = id_;
 }
 //-----------------------------------------------------------------------------
+void dcl_message< msgGetDeviceInfo >::parse_request( const uint8_t* payload_ptr )
+{
+    const remote_id_t* id_ptr = reinterpret_cast< const remote_id_t* >( payload_ptr );
+
+    id_ = *id_ptr;
+}
+//-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
 {
     // Index                    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16

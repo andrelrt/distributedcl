@@ -24,7 +24,7 @@
 #define _DCL_REMOTE_OBJECT_H_
 
 #include "distributedcl_internal.h"
-#include "object_manager.h"
+#include "info/object_manager.h"
 #include "network/session_manager.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -44,6 +44,11 @@ public:
         return remote_id_;
     }
 
+    inline void set_remote_id( dcl::remote_id_t remote_id )
+    {
+        remote_id_ = remote_id;
+    }
+
 protected:
     dcl::network::client::session_manager::session_t& session_ref_;
 
@@ -52,12 +57,6 @@ protected:
 
 private:
     dcl::remote_id_t remote_id_;
-
-    friend class object_manager< DCL_TYPE_T >;
-    inline void set_remote_id( dcl::remote_id_t remote_id )
-    {
-        remote_id_ = remote_id;
-    }
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

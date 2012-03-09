@@ -107,7 +107,7 @@ public:
     {
         packet_header* header_ptr = reinterpret_cast< packet_header* >( buffer );
 
-        return ntohs( header_ptr->length );
+        return network_to_host( header_ptr->length );
     }
 
     void add( base_message* base_message_ptr );
