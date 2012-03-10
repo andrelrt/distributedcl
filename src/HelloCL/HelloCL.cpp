@@ -142,7 +142,6 @@ main()
             return SDK_FAILURE;
         }
 
-        /*
         std::cout<<"Loading and compiling CL source\n";
     	streamsdk::SDKFile file;
         if (!file.open("HelloCL_Kernels.cl")) {
@@ -165,6 +164,7 @@ main()
             return SDK_FAILURE;
         }
 
+        /*
         cl::Kernel kernel(program, "hello", &err);
         if (err != CL_SUCCESS) {
             std::cerr << "Kernel::Kernel() failed (" << err << ")\n";

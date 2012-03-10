@@ -22,6 +22,9 @@
     <ClCompile Include="icd\icd_object_manager.cpp">
       <Filter>icd</Filter>
     </ClCompile>
+    <ClCompile Include="interface\cl_program.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="libopencl.def" />

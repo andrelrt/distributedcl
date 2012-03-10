@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="composite\composite_context.h" />
     <ClInclude Include="composite\composite_device.h" />
+    <ClInclude Include="composite\composite_object.h" />
     <ClInclude Include="composite\composite_platform.h" />
     <ClInclude Include="composite\opencl_composite.h" />
     <ClInclude Include="info\context_info.h" />

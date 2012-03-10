@@ -137,6 +137,9 @@
     <ClInclude Include="server\server_context.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="composite\composite_object.h">
+      <Filter>composite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
