@@ -59,6 +59,7 @@
     <ClInclude Include="single\opencl_library.h" />
     <ClInclude Include="single\opencl_single.h" />
     <ClInclude Include="single\platform.h" />
+    <ClInclude Include="single\program.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="composite\composite_context.cpp" />
@@ -81,6 +82,7 @@
     <ClCompile Include="single\opencl_library.cpp" />
     <ClCompile Include="single\opencl_single.cpp" />
     <ClCompile Include="single\platform.cpp" />
+    <ClCompile Include="single\program.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}</ProjectGuid>

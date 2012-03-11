@@ -140,6 +140,9 @@
     <ClInclude Include="composite\composite_object.h">
       <Filter>composite</Filter>
     </ClInclude>
+    <ClInclude Include="single\program.h">
+      <Filter>single</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -201,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="server\server_context.cpp">
       <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="single\program.cpp">
+      <Filter>single</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
