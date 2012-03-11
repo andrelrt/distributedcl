@@ -143,6 +143,12 @@
     <ClInclude Include="single\program.h">
       <Filter>single</Filter>
     </ClInclude>
+    <ClInclude Include="info\program_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="single\single_object.h">
+      <Filter>single</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">

@@ -36,6 +36,7 @@ enum dcl_object_types
     dcl_platform_id = 0,
     dcl_device_id = 1,
     dcl_context_id = 2,
+    dcl_program_id = 3,
 };
 //-----------------------------------------------------------------------------
 template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >

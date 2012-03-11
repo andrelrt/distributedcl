@@ -25,6 +25,7 @@
 
 #include <map>
 #include "distributedcl_internal.h"
+#include "info/context_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -45,16 +46,16 @@ template< class DCL_TYPE_T >
 class composite_object
 {
 public:
-    typedef std::map< context*, DCL_TYPE_T* > composite_map_t;
+    typedef std::map< dcl::info::generic_context*, DCL_TYPE_T* > composite_map_t;
     typedef typename composite_map_t::const_iterator const_iterator;
     typedef typename DCL_TYPE_T::cl_type_t cl_type_t;
-    typedef typename DCL_TYPE_T::object_info_t object_info_t;
+    typedef typename DCL_TYPE_T::dcl_info_t dcl_info_t;
     typedef typename DCL_TYPE_T::cl_type_info_t cl_type_info_t;
-    static const cl_int invalid_value_error = DCL_TYPE_T::invalid_value_error;
+    static const cl_int invalid_error_value = DCL_TYPE_T::invalid_error_value;
 
 private:
     cl_uint reference_count_;
-    object_info_t object_data_;
+    dcl_info_t object_data_;
     const composite_context& context_ref_;
     composite_map_t composite_map_;
 
@@ -62,7 +63,7 @@ private:
     {
         for( typename composite_context::iterator it = context_ref_.begin(); it != context_ref_.end(); it++ )
         {
-            DCL_TYPE_T* new_obj = new DCL_TYPE_T( (*it)->get_opencl(), object_data_ );
+            //DCL_TYPE_T* new_obj = new DCL_TYPE_T( (*it)->get_opencl(), object_data_ );
 
             insert_context_object( *it, new_obj );
         }
@@ -71,7 +72,7 @@ private:
 protected:
     typedef typename composite_map_t::iterator iterator;
 
-    inline void insert_context_object( context* context_ptr, DCL_TYPE_T* new_obj )
+    inline void insert_context_object( dcl::info::generic_context* context_ptr, DCL_TYPE_T* new_obj )
     {
         composite_map_.insert( typename composite_map_t::value_type( context_ptr, new_obj ) );
 
@@ -94,7 +95,7 @@ public:
     {
     }
 
-    composite_object< DCL_TYPE_T >( const composite_context& context_ref, object_info_t& object_data ) :
+    composite_object< DCL_TYPE_T >( const composite_context& context_ref, dcl_info_t& object_data ) :
         reference_count_( 1 ), object_data_( object_data ), context_ref_( context_ref )
     {
         create_context_objects();
@@ -113,7 +114,7 @@ public:
         return context_ref_;
     }
 
-    inline object_info_t& get_info()
+    inline dcl_info_t& get_info()
     {
         return object_data_;
     }
@@ -128,9 +129,9 @@ public:
         return composite_map_.end();
     }
 
-    inline DCL_TYPE_T* find( const context* ctx ) const
+    inline DCL_TYPE_T* find( const dcl::info::generic_context* ctx ) const
     {
-        const_iterator it = composite_map_.find( const_cast< context* >( ctx ) );
+        const_iterator it = composite_map_.find( const_cast< dcl::info::generic_context* >( ctx ) );
 
         if( it != composite_map_.end() )
         {

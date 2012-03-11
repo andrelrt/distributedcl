@@ -24,7 +24,10 @@
 #include "context.h"
 #include "platform.h"
 #include "device.h"
+#include "program.h"
 using dcl::info::generic_context;
+using dcl::info::generic_program;
+using dcl::info::program_info;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -132,6 +135,12 @@ void context::load_image_formats( image_formats_t& image_formats, cl_mem_object_
     //image_formats.clear();
     //image_formats.reserve( num_image_formats );
     //image_formats.assign( formats.get(), formats.get() + num_image_formats );
+}
+//-----------------------------------------------------------------------------
+generic_program* context::do_create_program( const std::string& source_code )
+{
+    program_info info( source_code );
+    return new program( opencl_, info );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

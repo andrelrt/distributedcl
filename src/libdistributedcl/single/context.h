@@ -75,6 +75,8 @@ public:
 private:
     void load_image_formats( image_formats_t& image_formats, cl_mem_object_type image_type );
 
+    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+
     image_formats_t image2d_formats_;
     image_formats_t image3d_formats_;
 };

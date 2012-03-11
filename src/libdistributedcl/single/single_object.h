@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,53 +20,58 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INFO_CONTEXT_H_
-#define _DCL_INFO_CONTEXT_H_
+#ifndef _DCL_SINGLE_OBJECT_H_
+#define _DCL_SINGLE_OBJECT_H_
 
 #include "distributedcl_internal.h"
-#include "dcl_objects.h"
-#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
+namespace single {
 //-----------------------------------------------------------------------------
-class generic_program;
+class context;
 //-----------------------------------------------------------------------------
-struct context_info
+template< class CONTEXT_WRAPPER_T >
+struct context_wrapper{};
+//-----------------------------------------------------------------------------
+template< class CONTEXT_WRAPPER_T >
+class context_object : 
+    public context_wrapper< CONTEXT_WRAPPER_T >
 {
-};
-//-----------------------------------------------------------------------------
-class generic_context :
-    public cl_object< cl_context, cl_context_info, CL_INVALID_CONTEXT >,
-    public icd_object< cl_context, dcl_context_id >,
-    public dcl_object< context_info >
-{
+private:
+    context* context_ptr_;
+
 public:
-    generic_context(){}
-    generic_context( const devices_t& devices_ref ) : devices_( devices_ref ){}
-
-    inline const devices_t& get_devices() const
+    context_object()
+        : context_ptr_( NULL )
     {
-        return( devices_ );
     }
 
-    inline generic_program* create_program( const std::string& source_code )
+    context_object( const context_object& copy )
+        : context_ptr_( copy.context_ptr_ )
     {
-        generic_program* program_ptr = do_create_program( source_code );
-
-        programs_.push_back( program_ptr );
     }
 
-protected:
-    typedef std::vector< generic_program* > programs_t;
+    ~context_object(){}
 
-    devices_t devices_;
-    programs_t programs_;
+    inline void set_context( context* context_ptr, CONTEXT_WRAPPER_T* obj_ptr )
+    {
+        context_wrapper< CONTEXT_WRAPPER_T >::context_attach( context_ptr, obj_ptr );
 
-    virtual generic_program* do_create_program( const std::string& source_code ) = 0;
+        context_ptr_ = context_ptr;
+    }
 
+    inline const context* get_context() const
+    {
+        return context_ptr_;
+    }
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::info
+template< class OBJECT_INFO_T >
+struct single_object
+{
+    typedef OBJECT_INFO_T object_info_t;
+};
 //-----------------------------------------------------------------------------
-#endif // _DCL_INFO_CONTEXT_H_
+}} // namespace dcl::single
+//-----------------------------------------------------------------------------
+#endif //_DCL_SINGLE_OBJECT_H_

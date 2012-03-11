@@ -185,14 +185,21 @@ public:
         return opencl_;
     }
 
-protected:
     inline void set_id( CL_TYPE_T id )
     {
         id_ = id;
     }
 
+protected:
     CL_TYPE_T id_;
     const opencl_library& opencl_;
+};
+//-----------------------------------------------------------------------------
+template< typename CL_TYPE_T >
+struct reference_wrapper
+{
+    static inline void retain( const opencl_library& opencl, CL_TYPE_T id ){}
+    static inline void release( const opencl_library& opencl, CL_TYPE_T id ){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

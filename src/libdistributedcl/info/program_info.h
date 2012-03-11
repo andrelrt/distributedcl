@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,53 +20,72 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INFO_CONTEXT_H_
-#define _DCL_INFO_CONTEXT_H_
+#ifndef _DCL_INFO_PROGRAM_H_
+#define _DCL_INFO_PROGRAM_H_
 
+#include <string>
 #include "distributedcl_internal.h"
+#include "library_exception.h"
 #include "dcl_objects.h"
 #include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
-class generic_program;
+class generic_context;
 //-----------------------------------------------------------------------------
-struct context_info
-{
-};
-//-----------------------------------------------------------------------------
-class generic_context :
-    public cl_object< cl_context, cl_context_info, CL_INVALID_CONTEXT >,
-    public icd_object< cl_context, dcl_context_id >,
-    public dcl_object< context_info >
+struct program_info
 {
 public:
-    generic_context(){}
-    generic_context( const devices_t& devices_ref ) : devices_( devices_ref ){}
+    std::string source_code_;
+    std::string build_options_;
 
-    inline const devices_t& get_devices() const
+    inline program_info(){}
+
+    inline program_info( const std::string& source_code ) :
+        source_code_( source_code ) {}
+
+    inline program_info( const program_info& info ) :
+        source_code_( info.source_code_ ),
+        build_options_( info.build_options_ )
+    {}
+};
+//-----------------------------------------------------------------------------
+class generic_program :
+    public cl_object< cl_program, cl_program_info, CL_INVALID_PROGRAM >,
+    public icd_object< cl_program, dcl_program_id >,
+    public dcl_object< program_info >
+{
+public:
+    generic_program(){}
+    generic_program( const std::string& source_code )
     {
-        return( devices_ );
+        local_info_.source_code_.assign( source_code );
     }
 
-    inline generic_program* create_program( const std::string& source_code )
+    inline const std::string& get_source() const
     {
-        generic_program* program_ptr = do_create_program( source_code );
-
-        programs_.push_back( program_ptr );
+        return local_info_.source_code_;
     }
 
-protected:
-    typedef std::vector< generic_program* > programs_t;
+    inline const std::string& get_build_options() const
+    {
+        return local_info_.build_options_;
+    }
 
-    devices_t devices_;
-    programs_t programs_;
+    inline void set_build_options( const std::string& build_options )
+    {
+        local_info_.build_options_.assign( build_options );
+    }
 
-    virtual generic_program* do_create_program( const std::string& source_code ) = 0;
+    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
+    //virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
 
+    //cl_build_status get_build_status( const device& dev );
+    //void get_build_log( const device& dev, std::string& str_log );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info
 //-----------------------------------------------------------------------------
-#endif // _DCL_INFO_CONTEXT_H_
+#endif // _DCL_INFO_PROGRAM_H_
+

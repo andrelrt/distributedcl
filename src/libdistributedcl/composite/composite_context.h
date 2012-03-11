@@ -23,9 +23,16 @@
 #ifndef _DCL_COMPOSITE_CONTEXT_H_
 #define _DCL_COMPOSITE_CONTEXT_H_
 
+#include <map>
 #include "distributedcl_internal.h"
 #include "info/dcl_objects.h"
 #include "info/context_info.h"
+//-----------------------------------------------------------------------------
+namespace dcl {
+namespace info {
+class generic_device;
+class generic_program;
+}}
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -33,14 +40,36 @@ namespace composite {
 class composite_context :
     public dcl::info::generic_context
 {
+private:
+    typedef std::vector< dcl::info::generic_context* > contexts_t;
+    typedef std::map< const dcl::info::generic_device*, dcl::info::generic_context* > context_map_t;
+
+    contexts_t contexts_;
+    context_map_t context_map_;
+
 public:
-    composite_context()
-    {
-        //create_icd_obj( this );
-    }
-    ~composite_context(){}
+    typedef contexts_t::const_iterator iterator;
+
+    composite_context();
+    ~composite_context();
 
     void add( generic_context* context_ptr, const devices_t& devices );
+
+    void retain();
+    void release();
+
+    inline contexts_t::const_iterator begin() const
+    {
+        return contexts_.begin();
+    }
+
+    inline contexts_t::const_iterator end() const
+    {
+        return contexts_.end();
+    }
+
+private:
+    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

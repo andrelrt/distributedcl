@@ -32,6 +32,7 @@
     <ClInclude Include="info\object_manager.h" />
     <ClInclude Include="info\opencl_functions.h" />
     <ClInclude Include="info\platform_info.h" />
+    <ClInclude Include="info\program_info.h" />
     <ClInclude Include="library_exception.h" />
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_device.h" />
@@ -60,6 +61,7 @@
     <ClInclude Include="single\opencl_single.h" />
     <ClInclude Include="single\platform.h" />
     <ClInclude Include="single\program.h" />
+    <ClInclude Include="single\single_object.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="composite\composite_context.cpp" />
