@@ -23,6 +23,7 @@
     <ClInclude Include="composite\composite_device.h" />
     <ClInclude Include="composite\composite_object.h" />
     <ClInclude Include="composite\composite_platform.h" />
+    <ClInclude Include="composite\composite_program.h" />
     <ClInclude Include="composite\opencl_composite.h" />
     <ClInclude Include="info\context_info.h" />
     <ClInclude Include="info\dcl_objects.h" />
@@ -66,6 +67,7 @@
   <ItemGroup>
     <ClCompile Include="composite\composite_context.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
+    <ClCompile Include="composite\composite_program.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
@@ -74,6 +76,7 @@
     <ClCompile Include="message\msg_context.cpp" />
     <ClCompile Include="network\message_dispatcher.cpp" />
     <ClCompile Include="network\session_manager.cpp" />
+    <ClCompile Include="remote\remote_context.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_opencl.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />

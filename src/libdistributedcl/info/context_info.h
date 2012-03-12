@@ -55,6 +55,8 @@ public:
         generic_program* program_ptr = do_create_program( source_code );
 
         programs_.push_back( program_ptr );
+
+        return program_ptr;
     }
 
 protected:

@@ -20,35 +20,15 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_CONTEXT_H_
-#define _DCL_REMOTE_CONTEXT_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_platform.h"
-#include "info/context_info.h"
-#include "info/dcl_objects.h"
+#include "composite_program.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace composite {
 //-----------------------------------------------------------------------------
-class remote_context : 
-    public dcl::info::generic_context,
-    public remote_object< remote_context >
+void composite_program::build( const std::string& build_options, cl_bool blocking )
 {
-public:
-    remote_context( const remote_platform* platform_ptr ) : 
-        platform_ptr_( platform_ptr ),
-        remote_object( platform_ptr->get_session() ) {}
-
-    ~remote_context(){}
-
-private:
-    const remote_platform* platform_ptr_;
-
-    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
-};
+    throw dcl::library_exception( "Not implemented" );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_CONTEXT_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,16 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_CONTEXT_H_
-#define _DCL_REMOTE_CONTEXT_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_platform.h"
-#include "info/context_info.h"
-#include "info/dcl_objects.h"
+#include "remote_context.h"
+using dcl::info::generic_program;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-class remote_context : 
-    public dcl::info::generic_context,
-    public remote_object< remote_context >
+generic_program* remote_context::do_create_program( const std::string& source_code )
 {
-public:
-    remote_context( const remote_platform* platform_ptr ) : 
-        platform_ptr_( platform_ptr ),
-        remote_object( platform_ptr->get_session() ) {}
-
-    ~remote_context(){}
-
-private:
-    const remote_platform* platform_ptr_;
-
-    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
-};
+    throw dcl::library_exception( "Not implemented" );
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_CONTEXT_H_

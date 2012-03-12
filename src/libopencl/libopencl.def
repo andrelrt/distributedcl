@@ -1,6 +1,6 @@
 LIBRARY   LIBOPENCL
 EXPORTS
-;    clBuildProgram                  @1
+    clBuildProgram                  @1
 ;    clCreateBuffer                  @2
 ;    clCreateCommandQueue            @3
     clCreateContext                 @4
@@ -13,8 +13,8 @@ EXPORTS
 ;    clCreateImage3D                 @11
 ;    clCreateKernel                  @12
 ;    clCreateKernelsInProgram        @13
-;    clCreateProgramWithBinary       @14
-;    clCreateProgramWithSource       @15
+    clCreateProgramWithBinary       @14
+    clCreateProgramWithSource       @15
 ;    clCreateSampler                 @16
 ;    clEnqueueAcquireGLObjects       @17
 ;    clEnqueueBarrier                @18
@@ -52,8 +52,8 @@ EXPORTS
 ;    clGetMemObjectInfo              @50
     clGetPlatformIDs                @51
     clGetPlatformInfo               @52
-;    clGetProgramBuildInfo           @53
-;    clGetProgramInfo                @54
+    clGetProgramBuildInfo           @53
+    clGetProgramInfo                @54
 ;    clGetSamplerInfo                @55
 ;    clGetSupportedImageFormats      @56
 ;    clReleaseCommandQueue           @57
@@ -61,16 +61,16 @@ EXPORTS
 ;    clReleaseEvent                  @59
 ;    clReleaseKernel                 @60
 ;    clReleaseMemObject              @61
-;    clReleaseProgram                @62
+    clReleaseProgram                @62
 ;    clReleaseSampler                @63
 ;    clRetainCommandQueue            @64
     clRetainContext                 @65
 ;    clRetainEvent                   @66
 ;    clRetainKernel                  @67
 ;    clRetainMemObject               @68
-;    clRetainProgram                 @69
+    clRetainProgram                 @69
 ;    clRetainSampler                 @70
 ;    clSetCommandQueueProperty       @71
 ;    clSetKernelArg                  @72
-;    clUnloadCompiler                @73
+    clUnloadCompiler                @73
 ;    clWaitForEvents                 @74

@@ -149,6 +149,9 @@
     <ClInclude Include="single\single_object.h">
       <Filter>single</Filter>
     </ClInclude>
+    <ClInclude Include="composite\composite_program.h">
+      <Filter>composite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -213,6 +216,12 @@
     </ClCompile>
     <ClCompile Include="single\program.cpp">
       <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="composite\composite_program.cpp">
+      <Filter>composite</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_context.cpp">
+      <Filter>remote</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

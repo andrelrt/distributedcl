@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,35 +20,27 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_CONTEXT_H_
-#define _DCL_REMOTE_CONTEXT_H_
+#ifndef _DCL_COMPOSITE_PROGRAM_H_
+#define _DCL_COMPOSITE_PROGRAM_H_
 
 #include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_platform.h"
-#include "info/context_info.h"
-#include "info/dcl_objects.h"
+#include "composite_object.h"
+#include "info/program_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace composite {
 //-----------------------------------------------------------------------------
-class remote_context : 
-    public dcl::info::generic_context,
-    public remote_object< remote_context >
+class composite_program :
+    public dcl::info::generic_program,
+    public composite_object< dcl::info::generic_program >
 {
 public:
-    remote_context( const remote_platform* platform_ptr ) : 
-        platform_ptr_( platform_ptr ),
-        remote_object( platform_ptr->get_session() ) {}
+    composite_program( const composite_context& context_ref ) :
+        composite_object< dcl::info::generic_program >( context_ref ){}
 
-    ~remote_context(){}
-
-private:
-    const remote_platform* platform_ptr_;
-
-    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_CONTEXT_H_
+#endif //_DCL_COMPOSITE_PROGRAM_H_

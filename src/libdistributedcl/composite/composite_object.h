@@ -27,20 +27,21 @@
 #include "distributedcl_internal.h"
 #include "info/context_info.h"
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace single {
+//namespace dcl {
+//namespace info {
 //class memory;
 //struct memory_object_info;
 //class image;
 //struct image_info;
 //class sampler;
 //struct sampler_info;
-class program;
-struct program_info;
-}}
+//class generic_program;
+//}}
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
+//-----------------------------------------------------------------------------
+class composite_context;
 //-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
 class composite_object
@@ -48,14 +49,14 @@ class composite_object
 public:
     typedef std::map< dcl::info::generic_context*, DCL_TYPE_T* > composite_map_t;
     typedef typename composite_map_t::const_iterator const_iterator;
-    typedef typename DCL_TYPE_T::cl_type_t cl_type_t;
-    typedef typename DCL_TYPE_T::dcl_info_t dcl_info_t;
-    typedef typename DCL_TYPE_T::cl_type_info_t cl_type_info_t;
-    static const cl_int invalid_error_value = DCL_TYPE_T::invalid_error_value;
+    //typedef typename DCL_TYPE_T::cl_type_t cl_type_t;
+    //typedef typename DCL_TYPE_T::dcl_info_t dcl_info_t;
+    //typedef typename DCL_TYPE_T::cl_type_info_t cl_type_info_t;
+    //static const cl_int invalid_error_value = DCL_TYPE_T::invalid_error_value;
 
 private:
     cl_uint reference_count_;
-    dcl_info_t object_data_;
+    //dcl_info_t object_data_;
     const composite_context& context_ref_;
     composite_map_t composite_map_;
 
@@ -71,13 +72,6 @@ private:
 
 protected:
     typedef typename composite_map_t::iterator iterator;
-
-    inline void insert_context_object( dcl::info::generic_context* context_ptr, DCL_TYPE_T* new_obj )
-    {
-        composite_map_.insert( typename composite_map_t::value_type( context_ptr, new_obj ) );
-
-        new_obj->set_context( context_ptr, new_obj );
-    }
 
     inline iterator begin()
     {
@@ -95,11 +89,11 @@ public:
     {
     }
 
-    composite_object< DCL_TYPE_T >( const composite_context& context_ref, dcl_info_t& object_data ) :
-        reference_count_( 1 ), object_data_( object_data ), context_ref_( context_ref )
-    {
-        create_context_objects();
-    }
+    //composite_object< DCL_TYPE_T >( const composite_context& context_ref, dcl_info_t& object_data ) :
+    //    reference_count_( 1 ), object_data_( object_data ), context_ref_( context_ref )
+    //{
+    //    create_context_objects();
+    //}
 
     ~composite_object< DCL_TYPE_T >()
     {
@@ -109,15 +103,22 @@ public:
         }
     }
 
+    inline void insert_context_object( dcl::info::generic_context* context_ptr, DCL_TYPE_T* new_obj )
+    {
+        composite_map_.insert( typename composite_map_t::value_type( context_ptr, new_obj ) );
+
+        //new_obj->set_context( context_ptr, new_obj );
+    }
+
     inline const composite_context& get_context() const
     {
         return context_ref_;
     }
 
-    inline dcl_info_t& get_info()
-    {
-        return object_data_;
-    }
+    //inline dcl_info_t& get_info()
+    //{
+    //    return object_data_;
+    //}
 
     inline const_iterator map_begin() const
     {
@@ -173,21 +174,21 @@ public:
         return( reference_count_ );
     }
 
-    inline std::size_t get_info_size( cl_type_info_t info )
-    {
-        return object_data_.get_info_size( info );
-    }
+    //inline std::size_t get_info_size( cl_type_info_t info )
+    //{
+    //    return object_data_.get_info_size( info );
+    //}
 
-    inline const void* get_info_pointer( cl_type_info_t info )
-    {
-        return object_data_.get_info_pointer( info );
-    }
+    //inline const void* get_info_pointer( cl_type_info_t info )
+    //{
+    //    return object_data_.get_info_pointer( info );
+    //}
 };
 //-----------------------------------------------------------------------------
 //typedef composite_object< dcl::single::memory > composite_memory;
 //typedef composite_object< dcl::single::image > composite_image;
 //typedef composite_object< dcl::single::sampler > composite_sampler;
-typedef composite_object< dcl::single::program > composite_program;
+//typedef composite_object< dcl::info::generic_program > composite_program;
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------

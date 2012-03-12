@@ -21,7 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include "composite_context.h"
-#include "composite_object.h"
+#include "composite_program.h"
 #include "info/program_info.h"
 using dcl::info::generic_context;
 using dcl::info::generic_program;
@@ -39,14 +39,16 @@ generic_program* composite_context::do_create_program( const std::string& source
 {
     contexts_t::iterator it;
 
-    composite_program* programs = new composite_program();
+    composite_program* programs = new composite_program( *this );
 
     for( it = contexts_.begin(); it != contexts_.end(); it++ )
     {
         generic_program* program_ptr = (*it)->create_program( source_code );
 
-        programs.
+        programs->insert_context_object( *it, program_ptr );
     }
+
+    return reinterpret_cast< generic_program* >( programs );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

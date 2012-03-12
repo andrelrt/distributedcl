@@ -26,7 +26,7 @@
 #include "info/program_info.h"
 #include "single/program.h"
 #include "composite/composite_context.h"
-#include "composite/composite_object.h"
+#include "composite/composite_program.h"
 using dcl::icd::icd_object_manager;
 using dcl::composite::composite_context;
 using dcl::composite::composite_program;
@@ -71,8 +71,7 @@ clCreateProgramWithSource( cl_context context, cl_uint count,
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_context* context_ptr = icd.get_object_ptr< composite_context >( context );
-        program_info info( source_code );
-        composite_program* program_ptr = new composite_program( *context_ptr, info );
+        composite_program* program_ptr = reinterpret_cast< composite_program* >( context_ptr->create_program( source_code ) );
 
         return icd.get_cl_id< composite_program >( program_ptr );
     }
