@@ -28,7 +28,10 @@ namespace composite {
 //-----------------------------------------------------------------------------
 void composite_program::build( const std::string& build_options, cl_bool blocking )
 {
-    throw dcl::library_exception( "Not implemented" );
+    for( iterator it = begin(); it != end(); it++ )
+    {
+        it->second->build( build_options, blocking );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

@@ -72,6 +72,68 @@ protected:
     virtual void parse_response( const base_message* message_ptr );
 };
 //-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgGetContextInfo > : public base_message
+{
+public:
+    dcl_message< msgGetContextInfo >() : 
+        device_count_( 0 ), id_( 0xffff ), devices_( NULL ), 
+        base_message( msgGetContextInfo, true, sizeof( remote_id_t ), 0 ) {}
+
+    inline const dcl::remote_id_t get_remote_id() const
+    {
+        return id_;
+    }
+
+    inline void set_remote_id( dcl::remote_id_t id )
+    {
+        id_ = id;
+    }
+
+    inline dcl::remote_id_t* get_devices()
+    {
+        return devices_;
+    }
+
+    inline uint32_t get_device_count()
+    {
+        return device_count_;
+    }
+
+    inline void set_device_count( uint32_t count )
+    {
+        device_count_ = count;
+
+        if( devices_ != NULL )
+        {
+            delete[] devices_;
+        }
+
+        devices_ = new dcl::remote_id_t[ count ];
+
+        set_size( sizeof( uint32_t ) + sizeof( dcl::remote_id_t ) * count );
+    }
+
+protected:
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgGetContextInfo_response
+    {
+        uint32_t device_count_;
+        dcl::remote_id_t devices_[1];
+    };
+    #pragma pack( pop )
+
+    uint32_t device_count_;
+    dcl::remote_id_t id_;
+    dcl::remote_id_t* devices_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void create_response( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void parse_response( const base_message* message_ptr );
+};
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
 #endif // _DCL_CONTEXT_MESSAGES_H_

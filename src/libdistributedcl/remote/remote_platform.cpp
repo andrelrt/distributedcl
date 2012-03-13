@@ -66,7 +66,7 @@ void remote_platform::load_devices()
 
     for( std::size_t i = 0; i < msg.get_gpu_count(); i++ )
     {
-        remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_GPU );
+        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
 
         dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
         add_device( dev_ptr );
@@ -74,7 +74,7 @@ void remote_platform::load_devices()
 
     for( std::size_t i = 0; i < msg.get_cpu_count(); i++ )
     {
-        remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_CPU );
+        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_CPU ) );
 
         dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
         add_device( dev_ptr );
@@ -82,7 +82,7 @@ void remote_platform::load_devices()
 
     for( std::size_t i = 0; i < msg.get_accelerator_count(); i++ )
     {
-        remote_device* dev_ptr = new remote_device( this, CL_DEVICE_TYPE_ACCELERATOR );
+        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_ACCELERATOR ) );
 
         dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
         add_device( dev_ptr );

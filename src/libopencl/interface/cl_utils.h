@@ -71,9 +71,9 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 }
 //-----------------------------------------------------------------------------
 template< typename DCL_TYPE_T > inline
-void get_info_check_parameters( const typename DCL_TYPE_T::cl_type_t cl_obj,
-                                size_t param_value_size, void *param_value, 
-                                size_t *param_value_size_ret )
+DCL_TYPE_T* get_info_check_parameters( const typename DCL_TYPE_T::cl_type_t cl_obj,
+                                       size_t param_value_size, void *param_value, 
+                                       size_t *param_value_size_ret )
 {
     if( cl_obj == NULL )
     {
@@ -85,15 +85,17 @@ void get_info_check_parameters( const typename DCL_TYPE_T::cl_type_t cl_obj,
     {
         throw dcl::library_exception( CL_INVALID_VALUE );
     }
+
+    return dcl::icd::icd_object_manager::get_instance().get_object_ptr< DCL_TYPE_T >( cl_obj );
 }
 //-----------------------------------------------------------------------------
 template< typename DCL_TYPE_T >
 void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_type_info_t info, 
                size_t param_value_size, void *param_value, size_t *param_value_size_ret )
 {
-    get_info_check_parameters< DCL_TYPE_T >( cl_obj, param_value_size, param_value, param_value_size_ret );
-
-    DCL_TYPE_T* obj_ptr = dcl::icd::icd_object_manager::get_instance().get_object_ptr< DCL_TYPE_T >( cl_obj );
+    DCL_TYPE_T* obj_ptr = 
+        get_info_check_parameters< DCL_TYPE_T >( cl_obj, param_value_size, 
+                                                 param_value, param_value_size_ret );
 
     obj_ptr->load_info();
 
@@ -114,7 +116,7 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
         }
 
         memset( param_value, 0, param_value_size );
-        memcpy_s( param_value, info_size, info_ptr.get_info_pointer( info ), info_size );
+        memcpy( param_value, info_ptr.get_info_pointer( info ), info_size );
     }
 }
 //-----------------------------------------------------------------------------

@@ -229,9 +229,6 @@
     <ClCompile Include="composite\composite_program.cpp">
       <Filter>composite</Filter>
     </ClCompile>
-    <ClCompile Include="remote\remote_context.cpp">
-      <Filter>remote</Filter>
-    </ClCompile>
     <ClCompile Include="remote\remote_program.cpp">
       <Filter>remote</Filter>
     </ClCompile>
@@ -240,6 +237,9 @@
     </ClCompile>
     <ClCompile Include="server\server_program.cpp">
       <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_context.cpp">
+      <Filter>remote</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

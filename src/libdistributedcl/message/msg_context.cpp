@@ -49,11 +49,56 @@ void dcl_message< msgCreateContextFromType >::create_response( uint8_t* payload_
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateContextFromType >::parse_response( const base_message* message_ptr )
 {
-    const dcl_message< msgCreateContextFromType >* msg_response_ptr = reinterpret_cast< const dcl_message< msgCreateContextFromType >* >( message_ptr );
+    const dcl_message< msgCreateContextFromType >* msg_response_ptr = 
+        reinterpret_cast< const dcl_message< msgCreateContextFromType >* >( message_ptr );
 
-    const remote_id_t* id_ptr = reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
+    const remote_id_t* id_ptr = 
+        reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
 
     id_ = network_to_host( *id_ptr );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetContextInfo >::create_request( uint8_t* payload_ptr )
+{
+    remote_id_t* id_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    *id_ptr = host_to_network( id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetContextInfo >::parse_request( const uint8_t* payload_ptr )
+{
+    const remote_id_t* id_ptr = reinterpret_cast< const remote_id_t* >( payload_ptr );
+
+    id_ = network_to_host( *id_ptr );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetContextInfo >::create_response( uint8_t* payload_ptr )
+{
+    msgGetContextInfo_response* response_ptr =
+        reinterpret_cast< msgGetContextInfo_response* >( payload_ptr );
+
+    response_ptr->device_count_ = host_to_network( device_count_ );
+    
+    for( uint32_t i = 0; i < device_count_; i++ )
+    {
+        response_ptr->devices_[ i ] = host_to_network( devices_[ i ] );
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetContextInfo >::parse_response( const base_message* message_ptr )
+{
+    const dcl_message< msgGetContextInfo >* msg_response_ptr =
+        reinterpret_cast< const dcl_message< msgGetContextInfo >* >( message_ptr );
+
+    const msgGetContextInfo_response* response_ptr =
+        reinterpret_cast< const msgGetContextInfo_response* >( msg_response_ptr->get_payload() );
+
+    set_device_count( network_to_host( response_ptr->device_count_ ) );
+
+    for( uint32_t i = 0; i < device_count_; i++ )
+    {
+        devices_[ i ] = network_to_host( response_ptr->devices_[ i ] );
+    }
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

@@ -117,13 +117,13 @@ clCreateProgramWithBinary( cl_context context, cl_uint num_devices,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_INVALID_VALUE;
+    return CL_SUCCESS;
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_INVALID_VALUE;
+    return CL_SUCCESS;
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -132,6 +132,43 @@ clBuildProgram( cl_program program, cl_uint num_devices,
                 void (CL_CALLBACK* pfn_notify)( cl_program program, void* user_data ),
                 void* user_data ) CL_API_SUFFIX__VERSION_1_1
 {
+    if( ((device_list == NULL) && (num_devices != 0)) ||
+        ((device_list != NULL) && (num_devices == 0)) ||
+        ((pfn_notify == NULL) && (user_data != NULL)) )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_program* program_ptr = icd.get_object_ptr< composite_program >( program );
+
+        std::string build_options( options );
+
+        if( num_devices != 0 )
+        {
+            // Not implemented
+            return CL_INVALID_DEVICE;
+        }
+        else
+        {
+            program_ptr->build( build_options );
+        }
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
     return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------

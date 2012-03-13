@@ -32,8 +32,6 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class platform;
-//-----------------------------------------------------------------------------
 class device :
     public dcl::info::generic_device,
     public opencl_object< cl_device_id >

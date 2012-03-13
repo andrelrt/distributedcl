@@ -33,7 +33,8 @@ void dcl_message< msgCreateProgramWithSource >::create_request( uint8_t* payload
 
     request_ptr->context_id_ = host_to_network( context_id_ );
     request_ptr->source_code_len_ = host_to_network( static_cast<uint32_t>( source_code_.length() ) );
-    source_code_.copy( reinterpret_cast<char*>( request_ptr->source_code_ ), source_code_.length() );
+    
+    memcpy( request_ptr->source_code_, source_code_.data(), source_code_.length() );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateProgramWithSource >::parse_request( const uint8_t* payload_ptr )
@@ -63,6 +64,28 @@ void dcl_message< msgCreateProgramWithSource >::parse_response( const base_messa
         reinterpret_cast< const dcl::remote_id_t* >( msg_response_ptr->get_payload() );
 
     id_ = network_to_host( *response_ptr );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgBuildProgram >::create_request( uint8_t* payload_ptr )
+{
+    msgBuildProgram_request* request_ptr = 
+        reinterpret_cast< msgBuildProgram_request* >( payload_ptr );
+
+    request_ptr->program_id_ = host_to_network( program_id_ );
+    request_ptr->build_options_len_ = host_to_network( static_cast<uint32_t>( build_options_.length() ) );
+    
+    memcpy( request_ptr->build_options_, build_options_.data(), build_options_.length() );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgBuildProgram >::parse_request( const uint8_t* payload_ptr )
+{
+    const msgBuildProgram_request* request_ptr = 
+        reinterpret_cast< const msgBuildProgram_request* >( payload_ptr );
+
+    program_id_ = network_to_host( request_ptr->program_id_ );
+
+    build_options_.assign( reinterpret_cast<const char*>( request_ptr->build_options_ ), 
+                           network_to_host( request_ptr->build_options_len_ ) );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

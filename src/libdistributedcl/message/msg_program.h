@@ -99,6 +99,54 @@ private:
     #pragma pack( pop )
 };
 //-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgBuildProgram > : public base_message
+{
+public:
+    dcl_message< msgBuildProgram >() : 
+        base_message( msgBuildProgram, false, 0, 0 ) {}
+
+    inline const dcl::remote_id_t get_program_id() const
+    {
+        return program_id_;
+    }
+
+    inline void set_program_id( dcl::remote_id_t id )
+    {
+        program_id_ = id;
+    }
+
+    inline const std::string& get_build_options() const
+    {
+        return build_options_;
+    }
+
+    inline void set_build_options( const std::string& build_options )
+    {
+        build_options_.assign( build_options );
+
+        set_size( build_options.length() + sizeof( msgBuildProgram_request ) - 1 );
+    }
+
+private:
+    dcl::remote_id_t program_id_;
+    std::string build_options_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgBuildProgram_request
+    {
+        dcl::remote_id_t program_id_;
+        uint32_t build_options_len_;
+
+        uint8_t build_options_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
 #endif // _DCL_PROGRAM_MESSAGES_H_

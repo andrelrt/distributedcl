@@ -193,7 +193,8 @@ private:
         uint32_t global_mem_cache_type_:2;          // CL_DEVICE_GLOBAL_MEM_CACHE_TYPE
         uint32_t local_mem_type_:1;                 // CL_DEVICE_LOCAL_MEM_TYPE: CL_LOCAL or CL_GLOBAL (0 or 1)
         uint32_t queue_properties_:1;               // CL_DEVICE_QUEUE_PROPERTIES: out of order execution support (true or false)
-        uint32_t reserved_bits_:8;
+        uint32_t type_:2;                           // CL_DEVICE_TYPE: 0-CPU, 1-GPU, 2-ACCELERATOR
+        uint32_t reserved_bits_:6;
 
         //uint32_t host_unified_memory_:1;          // CL_DEVICE_HOST_UNIFIED_MEMORY always false in DistributedCL
         //uint32_t compiler_avaiable_:1;            // CL_DEVICE_COMPILER_AVAILABLE always TRUE in FULL_PROFILE

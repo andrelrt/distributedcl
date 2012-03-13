@@ -189,6 +189,56 @@ extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetContextInfo( cl_context context, cl_context_info param_name, size_t param_value_size, 
                   void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_INVALID_VALUE;
+    try
+    {
+        composite_context* context_ptr =
+            get_info_check_parameters< composite_context >( context, param_value_size, 
+                                                            param_value, param_value_size_ret );
+
+        size_t info_size = 0;
+
+        if( param_name == CL_CONTEXT_NUM_DEVICES )
+        {
+            info_size = sizeof( cl_uint );
+
+            if( param_value != NULL )
+            {
+                *(reinterpret_cast< cl_uint* >( param_value )) = context_ptr->get_devices().size();
+            }
+        }
+        else if( param_name == CL_CONTEXT_DEVICES )
+        {
+            const devices_t& devices_ref = context_ptr->get_devices();
+
+            info_size = sizeof( cl_device_id ) * devices_ref.size();
+
+            if( param_value != NULL )
+            {
+                cl_device_id* cl_devices_ptr = reinterpret_cast< cl_device_id* >( param_value );
+
+                for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); it++ )
+                {
+                    *cl_devices_ptr = icd_object_manager::get_instance().get_cl_id< composite_device >( *it );
+
+                    cl_devices_ptr++;
+                }
+            }
+        }
+
+        if( param_value_size_ret != NULL )
+        {
+            *param_value_size_ret = info_size;
+        }
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    return CL_SUCCESS;
 }
 //-----------------------------------------------------------------------------

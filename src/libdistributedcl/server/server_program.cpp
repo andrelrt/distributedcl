@@ -47,5 +47,15 @@ void CreateProgramWithSource_command::execute()
     message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
+void BuildProgram_command::execute()
+{
+    remote_id_t program_id = message_.get_program_id();
+
+    composite_program* program_ptr = 
+        server_platform::get_instance().get_program_manager().get( program_id );
+
+    program_ptr->build( message_.get_build_options() );
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------

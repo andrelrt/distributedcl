@@ -22,21 +22,38 @@
 //-----------------------------------------------------------------------------
 #include "remote_context.h"
 #include "remote_program.h"
+#include "remote_device.h"
 #include "message/msg_program.h"
+#include "message/msg_context.h"
 using dcl::info::generic_program;
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
+using dcl::network::message::msgGetContextInfo;
 using dcl::network::message::msgCreateProgramWithSource;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
+//-----------------------------------------------------------------------------
+void remote_context::load_devices()
+{
+    dcl_message< msgGetContextInfo > msg;
+
+    msg.set_remote_id( get_remote_id() );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    for( uint32_t i = 0; i < msg.get_device_count(); i++ )
+    {
+        devices_.push_back( new remote_device( platform_ptr_, msg.get_devices()[ i ] ) );
+    }
+}
 //-----------------------------------------------------------------------------
 generic_program* remote_context::do_create_program( const std::string& source_code )
 {
     dcl_message< msgCreateProgramWithSource > msg;
 
     msg.set_source_code( source_code );
-    msg.set_context_id( get_remote_id() );
+    msg.set_remote_id( get_remote_id() );
 
     session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
 

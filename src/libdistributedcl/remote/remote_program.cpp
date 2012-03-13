@@ -21,13 +21,22 @@
  */
 //-----------------------------------------------------------------------------
 #include "remote_program.h"
+#include "message/msg_program.h"
+using dcl::network::message::dcl_message;
+using dcl::network::message::base_message;
+using dcl::network::message::msgBuildProgram;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 void remote_program::build( const std::string& build_options, cl_bool blocking )
 {
-    throw dcl::library_exception( "Not implemented" );
+    dcl_message< msgBuildProgram > msg;
+
+    msg.set_program_id( get_remote_id() );
+    msg.set_build_options( build_options );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

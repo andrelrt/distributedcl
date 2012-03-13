@@ -25,14 +25,38 @@
 #include "info/program_info.h"
 using dcl::info::generic_context;
 using dcl::info::generic_program;
+using dcl::composite::opencl_composite;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
+//-----------------------------------------------------------------------------
+composite_context::composite_context() : 
+    generic_context( opencl_composite::get_instance().get_platform() )
+{
+}
 //-----------------------------------------------------------------------------
 void composite_context::add( generic_context* context_ptr, const devices_t& devices )
 {
     contexts_.push_back( context_ptr );
     devices_.insert( devices_.end(), devices.begin(), devices.end() );
+
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+    {
+        context_map_.insert( context_map_t::value_type( *it, context_ptr ) );
+    }
+}
+//-----------------------------------------------------------------------------
+void composite_context::load_devices()
+{
+    contexts_t::iterator it;
+    devices_.clear();
+
+    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    {
+        (*it)->get_devices();
+
+        devices_.insert( devices_.end(), (*it)->get_devices().begin(), (*it)->get_devices().end() );
+    }
 }
 //-----------------------------------------------------------------------------
 generic_program* composite_context::do_create_program( const std::string& source_code )

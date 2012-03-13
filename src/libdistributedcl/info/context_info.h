@@ -31,6 +31,7 @@ namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
 class generic_program;
+class generic_platform;
 //-----------------------------------------------------------------------------
 struct context_info
 {
@@ -42,11 +43,18 @@ class generic_context :
     public dcl_object< context_info >
 {
 public:
-    generic_context(){}
-    generic_context( const devices_t& devices_ref ) : devices_( devices_ref ){}
+    generic_context( const generic_platform& platform ) : 
+        platform_( platform ){}
+    generic_context( const generic_platform& platform, const devices_t& devices_ref ) : 
+        platform_( platform ), devices_( devices_ref ){}
 
-    inline const devices_t& get_devices() const
+    inline const devices_t& get_devices()
     {
+        if( devices_.empty() )
+        {
+            load_devices();
+        }
+
         return( devices_ );
     }
 
@@ -59,12 +67,19 @@ public:
         return program_ptr;
     }
 
+    inline const generic_platform& get_platform() const
+    {
+        return platform_;
+    }
+
 protected:
     typedef std::vector< generic_program* > programs_t;
 
+    const generic_platform& platform_;
     devices_t devices_;
     programs_t programs_;
 
+    virtual void load_devices() = 0;
     virtual generic_program* do_create_program( const std::string& source_code ) = 0;
 
 };

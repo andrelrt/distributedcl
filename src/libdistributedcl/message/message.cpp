@@ -78,7 +78,12 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 
         case msgRetainContext:
         case msgReleaseContext:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgGetContextInfo:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetContextInfo >() );
+            break;
 
         case msgCreateCommandQueue:
         case msgRetainCommandQueue:
@@ -109,7 +114,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgCreateProgramWithBinary:
         case msgRetainProgram:
         case msgReleaseProgram:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgBuildProgram:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgBuildProgram >() );
+            break;
+
         case msgUnloadCompiler:
         case msgGetProgramInfo:
         case msgGetProgramBuildInfo:

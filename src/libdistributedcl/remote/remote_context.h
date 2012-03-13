@@ -37,7 +37,8 @@ class remote_context :
     public remote_object< remote_context >
 {
 public:
-    remote_context( const remote_platform* platform_ptr ) : 
+    remote_context( const remote_platform* platform_ptr ) :
+        generic_context( *platform_ptr ),
         platform_ptr_( platform_ptr ),
         remote_object( platform_ptr->get_session() ) {}
 
@@ -46,6 +47,7 @@ public:
 private:
     const remote_platform* platform_ptr_;
 
+    virtual void load_devices();
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
 };
 //-----------------------------------------------------------------------------

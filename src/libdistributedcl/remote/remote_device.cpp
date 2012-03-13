@@ -32,13 +32,13 @@ namespace remote {
 //-----------------------------------------------------------------------------
 bool remote_device::load_device_info()
 {
-    cl_device_type type = local_info_.type_;
+    //cl_device_type type = local_info_.type_;
 
     dcl_message< msgGetDeviceInfo > msg( get_remote_id() );
     session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
 
     local_info_ = msg.get_info();
-    local_info_.type_ = type;
+    //local_info_.type_ = type;
 
     return true;
 }

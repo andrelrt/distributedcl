@@ -40,6 +40,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class GetContextInfo_command :
+    public server_command< dcl::network::message::msgGetContextInfo >
+{
+public:
+    GetContextInfo_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgGetContextInfo >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_CONTEXT_H_

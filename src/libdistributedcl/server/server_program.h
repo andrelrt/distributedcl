@@ -40,6 +40,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class BuildProgram_command : 
+    public server_command< dcl::network::message::msgBuildProgram >
+{
+public:
+    BuildProgram_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgBuildProgram >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_PROGRAM_H_

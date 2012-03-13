@@ -84,7 +84,16 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
 
             case msgRetainContext:
             case msgReleaseContext:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgGetContextInfo:
+            {
+                GetContextInfo_command command( *it );
+
+                command.execute();
+                break;
+            }
 
             case msgCreateCommandQueue:
             case msgRetainCommandQueue:
@@ -119,7 +128,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgCreateProgramWithBinary:
             case msgRetainProgram:
             case msgReleaseProgram:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgBuildProgram:
+            {
+                BuildProgram_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgUnloadCompiler:
             case msgGetProgramInfo:
             case msgGetProgramBuildInfo:

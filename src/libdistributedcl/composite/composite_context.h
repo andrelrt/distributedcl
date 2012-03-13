@@ -25,6 +25,7 @@
 
 #include <map>
 #include "distributedcl_internal.h"
+#include "opencl_composite.h"
 #include "info/dcl_objects.h"
 #include "info/context_info.h"
 //-----------------------------------------------------------------------------
@@ -36,6 +37,8 @@ class generic_program;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
+//-----------------------------------------------------------------------------
+class opencl_composite;
 //-----------------------------------------------------------------------------
 class composite_context :
     public dcl::info::generic_context
@@ -50,7 +53,7 @@ private:
 public:
     typedef contexts_t::const_iterator iterator;
 
-    composite_context(){}
+    composite_context();
     ~composite_context(){}
 
     void add( generic_context* context_ptr, const devices_t& devices );
@@ -69,6 +72,7 @@ public:
     }
 
 private:
+    virtual void load_devices();
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
 };
 //-----------------------------------------------------------------------------

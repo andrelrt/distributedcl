@@ -113,6 +113,7 @@ void dcl_message< msgGetDeviceIDs >::create_response( uint8_t* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::parse_response( const base_message* response_ptr )
 {
+    cl_device_type device_types[] = { CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_GPU, CL_DEVICE_TYPE_ACCELERATOR };
     cl_uint vector_sizes[] = { 0, 1, 2, 3, 4, 8, 16, 0 };
     cl_uint cache_types[] = { CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE, 0 };
 
@@ -172,6 +173,7 @@ void dcl_message< msgGetDeviceInfo >::parse_response( const base_message* respon
     device_info_.compiler_avaiable_ = CL_TRUE;
     device_info_.execution_capabilities_ = CL_EXEC_KERNEL;
     device_info_.queue_properties_ = ((response->queue_properties_ == 0)? 0 : CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE) | CL_QUEUE_PROFILING_ENABLE;
+    device_info_.type_ = device_types[ response->type_ ]; 
     
     const uint8_t* string_buffer_ptr = response->string_buffer_;
 
@@ -265,6 +267,21 @@ void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
     response->endian_little_ = (device_info_.endian_little_ == CL_TRUE)? 1 : 0;
     response->avaiable_ = (device_info_.avaiable_ == CL_TRUE)? 1 : 0;
     response->queue_properties_ = (device_info_.queue_properties_ & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)? 1 : 0;
+
+    switch( device_info_.type_ )
+    {
+        case CL_DEVICE_TYPE_CPU:
+            response->type_ = 0;
+            break;
+
+        case CL_DEVICE_TYPE_GPU:
+            response->type_ = 1;
+            break;
+
+        case CL_DEVICE_TYPE_ACCELERATOR:
+            response->type_ = 2;
+            break;
+    }
 
     uint8_t* string_buffer_ptr = response->string_buffer_;
 

@@ -39,7 +39,7 @@ class context :
 {
 public:
 	context( const context& ctx );
-    context( const devices_t& devices_ref );
+    context( const platform& platform_ref, const devices_t& devices_ref );
     context( const platform& platform_ref, cl_device_type device_type );
 
     ~context();
@@ -73,6 +73,8 @@ public:
     }
 	
 private:
+    virtual void load_devices();
+
     void load_image_formats( image_formats_t& image_formats, cl_mem_object_type image_type );
 
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );

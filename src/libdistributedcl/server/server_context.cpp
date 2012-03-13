@@ -25,10 +25,12 @@
 #include "message/message.h"
 #include "message/msg_context.h"
 #include "composite/opencl_composite.h"
+#include "composite/composite_device.h"
 #include "composite/composite_context.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgCreateContextFromType;
 using dcl::composite::opencl_composite;
+using dcl::composite::composite_device;
 using dcl::composite::composite_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -43,6 +45,32 @@ void CreateContextFromType_command::execute()
     remote_id_t id = server_platform::get_instance().get_context_manager().add( context_ptr );
 
     message_.set_remote_id( id );
+}
+//-----------------------------------------------------------------------------
+void GetContextInfo_command::execute()
+{
+    remote_id_t id = message_.get_remote_id();
+
+    composite_context* context_ptr = server_platform::get_instance().get_context_manager().get( id );
+
+    const devices_t& devices_ref = context_ptr->get_devices();
+
+    message_.set_device_count( devices_ref.size() );
+
+    devices_t::const_iterator it;
+    remote_id_t* devices_ptr = message_.get_devices();
+
+    for( it = devices_ref.begin(); it != devices_ref.end(); it++ )
+    {
+        try
+        {
+            *devices_ptr = server_platform::get_instance().get_device_manager().get( *it );
+        }
+        catch( dcl::library_exception& )
+        {
+            *devices_ptr = server_platform::get_instance().get_device_manager().add( *it );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server
