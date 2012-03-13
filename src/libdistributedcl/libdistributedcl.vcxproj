@@ -38,6 +38,7 @@
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_device.h" />
     <ClInclude Include="message\msg_internal.h" />
+    <ClInclude Include="message\msg_program.h" />
     <ClInclude Include="message\packet.h" />
     <ClInclude Include="message\msg_context.h" />
     <ClInclude Include="network\client_session.h" />
@@ -53,9 +54,11 @@
     <ClInclude Include="remote\remote_platform.h" />
     <ClInclude Include="remote\remote_object.h" />
     <ClInclude Include="remote\remote_context.h" />
+    <ClInclude Include="remote\remote_program.h" />
     <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_context.h" />
+    <ClInclude Include="server\server_program.h" />
     <ClInclude Include="single\context.h" />
     <ClInclude Include="single\device.h" />
     <ClInclude Include="single\opencl_library.h" />
@@ -72,6 +75,7 @@
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\msg_internal.cpp" />
+    <ClCompile Include="message\msg_program.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="message\msg_context.cpp" />
     <ClCompile Include="network\message_dispatcher.cpp" />
@@ -80,8 +84,10 @@
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_opencl.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
+    <ClCompile Include="remote\remote_program.cpp" />
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="server\server_context.cpp" />
+    <ClCompile Include="server\server_program.cpp" />
     <ClCompile Include="single\context.cpp" />
     <ClCompile Include="single\device.cpp" />
     <ClCompile Include="single\opencl_library.cpp" />

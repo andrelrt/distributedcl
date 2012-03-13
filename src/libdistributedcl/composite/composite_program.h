@@ -30,13 +30,18 @@
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
+class composite_context;
+//-----------------------------------------------------------------------------
 class composite_program :
     public dcl::info::generic_program,
     public composite_object< dcl::info::generic_program >
 {
 public:
-    composite_program( const composite_context& context_ref ) :
+    composite_program( const composite_context& context_ref, const std::string& source_code ) :
+        dcl::info::generic_program( source_code ), 
         composite_object< dcl::info::generic_program >( context_ref ){}
+
+    ~composite_program(){}
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
 };

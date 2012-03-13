@@ -21,14 +21,29 @@
  */
 //-----------------------------------------------------------------------------
 #include "remote_context.h"
+#include "remote_program.h"
+#include "message/msg_program.h"
 using dcl::info::generic_program;
+using dcl::network::message::base_message;
+using dcl::network::message::dcl_message;
+using dcl::network::message::msgCreateProgramWithSource;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 generic_program* remote_context::do_create_program( const std::string& source_code )
 {
-    throw dcl::library_exception( "Not implemented" );
+    dcl_message< msgCreateProgramWithSource > msg;
+
+    msg.set_source_code( source_code );
+    msg.set_context_id( get_remote_id() );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    remote_program* program_ptr = new remote_program( *this, source_code );
+    program_ptr->set_remote_id( msg.get_remote_id() );
+
+    return reinterpret_cast< generic_program* >( program_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

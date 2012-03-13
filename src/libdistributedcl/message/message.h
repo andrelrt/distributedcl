@@ -129,8 +129,6 @@ public:
         return type_;
     }
 
-    virtual void parse_response( const base_message* ){}
-
     void set_response_mode()
     {
         response_ = true;
@@ -168,6 +166,8 @@ public:
     {
         return wait_response_;
     }
+
+    virtual void parse_response( const base_message* ){}
 
 protected:
     base_message( message_type type, bool wait_response = false, std::size_t request_size = 0, std::size_t response_size = 0 ) : 

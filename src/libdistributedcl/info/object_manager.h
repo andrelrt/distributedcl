@@ -103,7 +103,7 @@ public:
         throw library_exception( "Invalid object pointer" );
     }
 
-    inline const DCL_TYPE_T* get( remote_id_t object_id ) const
+    inline DCL_TYPE_T* get( remote_id_t object_id ) const
     {
         object_map_t::const_iterator it = object_map_.find( object_id );
 
@@ -125,7 +125,7 @@ public:
     }
 
 private:
-    typedef std::map< remote_id_t, const DCL_TYPE_T* > object_map_t;
+    typedef std::map< remote_id_t, DCL_TYPE_T* > object_map_t;
 
     object_map_t object_map_;
     boost::mt19937 rand_;

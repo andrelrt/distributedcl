@@ -20,36 +20,32 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "composite_context.h"
-#include "composite_program.h"
-#include "info/program_info.h"
-using dcl::info::generic_context;
-using dcl::info::generic_program;
+#include "server_program.h"
+#include "server_platform.h"
+#include "message/msg_program.h"
+#include "composite/composite_context.h"
+#include "composite/composite_program.h"
+using dcl::composite::composite_context;
+using dcl::composite::composite_program;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace server {
 //-----------------------------------------------------------------------------
-void composite_context::add( generic_context* context_ptr, const devices_t& devices )
+void CreateProgramWithSource_command::execute()
 {
-    contexts_.push_back( context_ptr );
-    devices_.insert( devices_.end(), devices.begin(), devices.end() );
+    server_platform& server = server_platform::get_instance();
+
+    remote_id_t context_id = message_.get_context_id();
+
+    composite_context* context_ptr = server.get_context_manager().get( context_id );
+
+    composite_program* program_ptr = 
+        reinterpret_cast<composite_program*>( context_ptr->create_program( message_.get_source_code() ) );
+
+    remote_id_t id = server.get_program_manager().add( program_ptr );
+
+    message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
-generic_program* composite_context::do_create_program( const std::string& source_code )
-{
-    contexts_t::iterator it;
-
-    composite_program* programs = new composite_program( *this, source_code );
-
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
-    {
-        generic_program* program_ptr = (*it)->create_program( source_code );
-
-        programs->insert_context_object( *it, program_ptr );
-    }
-
-    return reinterpret_cast< generic_program* >( programs );
-}
-//-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------

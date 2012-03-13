@@ -185,14 +185,14 @@ public:
         return opencl_;
     }
 
+protected:
+    CL_TYPE_T id_;
+    const opencl_library& opencl_;
+
     inline void set_id( CL_TYPE_T id )
     {
         id_ = id;
     }
-
-protected:
-    CL_TYPE_T id_;
-    const opencl_library& opencl_;
 };
 //-----------------------------------------------------------------------------
 template< typename CL_TYPE_T >

@@ -20,36 +20,31 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "composite_context.h"
-#include "composite_program.h"
+#ifndef _DCL_REMOTE_PROGRAM_H_
+#define _DCL_REMOTE_PROGRAM_H_
+
+#include "distributedcl_internal.h"
+#include "remote_object.h"
+#include "remote_context.h"
 #include "info/program_info.h"
-using dcl::info::generic_context;
-using dcl::info::generic_program;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace remote {
 //-----------------------------------------------------------------------------
-void composite_context::add( generic_context* context_ptr, const devices_t& devices )
+class remote_program :
+    public dcl::info::generic_program,
+    public remote_object< remote_program >
 {
-    contexts_.push_back( context_ptr );
-    devices_.insert( devices_.end(), devices.begin(), devices.end() );
-}
+public:
+    remote_program( const remote_context& context_ref, const std::string& source_code ) :
+        dcl::info::generic_program( source_code ), 
+        remote_object( context_ref.get_session() ) {}
+
+    ~remote_program(){}
+
+    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
+};
 //-----------------------------------------------------------------------------
-generic_program* composite_context::do_create_program( const std::string& source_code )
-{
-    contexts_t::iterator it;
-
-    composite_program* programs = new composite_program( *this, source_code );
-
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
-    {
-        generic_program* program_ptr = (*it)->create_program( source_code );
-
-        programs->insert_context_object( *it, program_ptr );
-    }
-
-    return reinterpret_cast< generic_program* >( programs );
-}
+}} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
-//-----------------------------------------------------------------------------
+#endif // _DCL_REMOTE_PROGRAM_H_

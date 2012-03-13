@@ -139,8 +139,7 @@ void context::load_image_formats( image_formats_t& image_formats, cl_mem_object_
 //-----------------------------------------------------------------------------
 generic_program* context::do_create_program( const std::string& source_code )
 {
-    program_info info( source_code );
-    return new program( opencl_, info );
+    return new program( *this, source_code );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

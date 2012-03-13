@@ -24,6 +24,7 @@
 #include "distributedcl_internal.h"
 #include "msg_device.h"
 #include "msg_context.h"
+#include "msg_program.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -98,8 +99,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgRetainSampler:
         case msgReleaseSampler:
         case msgGetSamplerInfo:
+            throw dcl::library_exception( "Not implemented" );
+            break;
 
         case msgCreateProgramWithSource:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateProgramWithSource >() );
+            break;
+
         case msgCreateProgramWithBinary:
         case msgRetainProgram:
         case msgReleaseProgram:

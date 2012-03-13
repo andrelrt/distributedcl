@@ -20,36 +20,15 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "composite_context.h"
-#include "composite_program.h"
-#include "info/program_info.h"
-using dcl::info::generic_context;
-using dcl::info::generic_program;
+#include "remote_program.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace remote {
 //-----------------------------------------------------------------------------
-void composite_context::add( generic_context* context_ptr, const devices_t& devices )
+void remote_program::build( const std::string& build_options, cl_bool blocking )
 {
-    contexts_.push_back( context_ptr );
-    devices_.insert( devices_.end(), devices.begin(), devices.end() );
+    throw dcl::library_exception( "Not implemented" );
 }
 //-----------------------------------------------------------------------------
-generic_program* composite_context::do_create_program( const std::string& source_code )
-{
-    contexts_t::iterator it;
-
-    composite_program* programs = new composite_program( *this, source_code );
-
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
-    {
-        generic_program* program_ptr = (*it)->create_program( source_code );
-
-        programs->insert_context_object( *it, program_ptr );
-    }
-
-    return reinterpret_cast< generic_program* >( programs );
-}
-//-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+}} // namespace dcl::remote
 //-----------------------------------------------------------------------------

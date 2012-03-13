@@ -152,6 +152,15 @@
     <ClInclude Include="composite\composite_program.h">
       <Filter>composite</Filter>
     </ClInclude>
+    <ClInclude Include="remote\remote_program.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="message\msg_program.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_program.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -222,6 +231,15 @@
     </ClCompile>
     <ClCompile Include="remote\remote_context.cpp">
       <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_program.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="message\msg_program.cpp">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_program.cpp">
+      <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

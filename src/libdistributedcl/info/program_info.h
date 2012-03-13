@@ -57,7 +57,7 @@ class generic_program :
     public dcl_object< program_info >
 {
 public:
-    generic_program(){}
+    //generic_program(){}
     generic_program( const std::string& source_code )
     {
         local_info_.source_code_.assign( source_code );

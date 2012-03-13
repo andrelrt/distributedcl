@@ -24,6 +24,7 @@
 #include "message/message.h"
 #include "server/server_platform.h"
 #include "server/server_context.h"
+#include "server/server_program.h"
 using namespace dcl::network::message;
 using namespace dcl::server;
 //-----------------------------------------------------------------------------
@@ -104,8 +105,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgRetainSampler:
             case msgReleaseSampler:
             case msgGetSamplerInfo:
+                throw dcl::library_exception( "Not implemented" );
+                break;
 
             case msgCreateProgramWithSource:
+            {
+                CreateProgramWithSource_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgCreateProgramWithBinary:
             case msgRetainProgram:
             case msgReleaseProgram:

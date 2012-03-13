@@ -25,63 +25,43 @@
 #include "device.h"
 #include "library_exception.h"
 #include "context.h"
+using dcl::info::generic_program;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-void context_wrapper< program >::context_attach( context* context_ptr, program* program_ptr )
+program::program( const context& context_ref, const std::string& source_code ) :
+    generic_program( source_code ), opencl_object( context_ref.get_opencl() ) 
 {
-    if( context_ptr->get_opencl().loaded() )
+    if( opencl_.loaded() )
     {
         cl_int error_code;
         cl_program prog;
 
-        //if( program_ptr->get_from_source() )
-        //{
-            const char *strings = program_ptr->get_source().c_str();
+        size_t string_len = source_code.length();
+        const char* strings = source_code.data();
 
-            prog = context_ptr->get_opencl().clCreateProgramWithSource( context_ptr->get_id(), 1, &strings,
-                                                                        NULL, &error_code );
-        //}
-        //else
-        //{
-        //    error_code = CL_INVALID_BINARY;
-            //size_t devices = program_ptr->get_binaries().size();
-            //cl_device_id *device_list = new cl_device_id[ devices ];
-            //unsigned char** binaries = new unsigned char*[ devices ];
-
-            //int i = 0;
-            //for( program::binary_map_t::const_iterator it = program_ptr->get_binaries().begin(); 
-            //     it != program_ptr->get_binaries().end(); 
-            //     it++ )
-            //{
-            //    device_list[ i ] = it->first->get_id();
-            //    binaries[ i ] = it->second.begin();
-
-            //    i++;
-            //}
-
-            //prog = context_ptr->get_opencl().clCreateProgramWithBinary( *context_ptr, binaries_.size()
-        //}
-
+        prog = opencl_.clCreateProgramWithSource( context_ref.get_id(), 1,
+                                                  &strings, &string_len,
+                                                  &error_code );
         if( error_code != CL_SUCCESS )
         {
             throw dcl::library_exception( error_code );
         }
 
-        program_ptr->set_id( prog );
+        set_id( prog );
     }
 }
 //-----------------------------------------------------------------------------
 void program::build( const std::string& build_options, cl_bool blocking )
 {
-    if( get_opencl().loaded() )
+    if( opencl_.loaded() )
     {
         cl_int error_code;
 
-        error_code = get_opencl().clBuildProgram( id_, 0, NULL,
-                                                  local_info_.build_options_.c_str(),
-                                                  NULL, NULL );
+        error_code = opencl_.clBuildProgram( id_, 0, NULL,
+                                             build_options.c_str(),
+                                             NULL, NULL );
 
         if( error_code != CL_SUCCESS )
         {

@@ -65,14 +65,7 @@ class program :
     public context_object< program >
 {
 public:
-    typedef dcl::info::generic_program::cl_type_t cl_type_t;
-    typedef dcl::info::generic_program::dcl_info_t dcl_info_t;
-    typedef dcl::info::generic_program::cl_type_info_t cl_type_info_t;
-    static const cl_int invalid_error_value = dcl::info::generic_program::invalid_error_value;
-
-    program( const opencl_library& opencl, const dcl::info::program_info& info ) :
-        dcl::info::generic_program(), opencl_object( opencl ) {}
-
+    program( const context& context_ref, const std::string& source_code );
     ~program(){}
 
     // TODO: Create a version of build method using the pfn_notify callback

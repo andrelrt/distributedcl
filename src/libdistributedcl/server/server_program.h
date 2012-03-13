@@ -20,36 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "composite_context.h"
-#include "composite_program.h"
-#include "info/program_info.h"
-using dcl::info::generic_context;
-using dcl::info::generic_program;
+#ifndef _DCL_SERVER_PROGRAM_H_
+#define _DCL_SERVER_PROGRAM_H_
+
+#include "distributedcl_internal.h"
+#include "server_command.h"
+#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace server {
 //-----------------------------------------------------------------------------
-void composite_context::add( generic_context* context_ptr, const devices_t& devices )
+class CreateProgramWithSource_command : 
+    public server_command< dcl::network::message::msgCreateProgramWithSource >
 {
-    contexts_.push_back( context_ptr );
-    devices_.insert( devices_.end(), devices.begin(), devices.end() );
-}
+public:
+    CreateProgramWithSource_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgCreateProgramWithSource >( message_ptr ) {}
+
+    void execute();
+};
 //-----------------------------------------------------------------------------
-generic_program* composite_context::do_create_program( const std::string& source_code )
-{
-    contexts_t::iterator it;
-
-    composite_program* programs = new composite_program( *this, source_code );
-
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
-    {
-        generic_program* program_ptr = (*it)->create_program( source_code );
-
-        programs->insert_context_object( *it, program_ptr );
-    }
-
-    return reinterpret_cast< generic_program* >( programs );
-}
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
-//-----------------------------------------------------------------------------
+#endif // _DCL_SERVER_PROGRAM_H_
