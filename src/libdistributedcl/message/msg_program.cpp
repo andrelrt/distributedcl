@@ -21,6 +21,10 @@
  */
 //-----------------------------------------------------------------------------
 #include "msg_program.h"
+#include "remote/remote_device.h"
+using dcl::remote_id_t;
+using dcl::remote_ids_t;
+using dcl::remote::remote_device;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -72,9 +76,20 @@ void dcl_message< msgBuildProgram >::create_request( uint8_t* payload_ptr )
         reinterpret_cast< msgBuildProgram_request* >( payload_ptr );
 
     request_ptr->program_id_ = host_to_network( program_id_ );
+    request_ptr->devices_count_ = host_to_network( static_cast<uint16_t>( devices_.size() ) );
     request_ptr->build_options_len_ = host_to_network( static_cast<uint32_t>( build_options_.length() ) );
     
-    memcpy( request_ptr->build_options_, build_options_.data(), build_options_.length() );
+
+    remote_id_t* devices_ptr = reinterpret_cast<dcl::remote_id_t*>( request_ptr->buffer_ );
+
+    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
+    {
+        *devices_ptr++ = *it;
+    }
+
+    uint8_t* build_options_ptr = request_ptr->buffer_ + sizeof( remote_id_t ) * devices_.size();
+
+    memcpy( build_options_ptr, build_options_.data(), build_options_.length() );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgBuildProgram >::parse_request( const uint8_t* payload_ptr )
@@ -84,8 +99,39 @@ void dcl_message< msgBuildProgram >::parse_request( const uint8_t* payload_ptr )
 
     program_id_ = network_to_host( request_ptr->program_id_ );
 
-    build_options_.assign( reinterpret_cast<const char*>( request_ptr->build_options_ ), 
+    uint32_t device_count = network_to_host( request_ptr->devices_count_ );
+
+    devices_.clear();
+
+    if( device_count != 0 )
+    {
+        devices_.reserve( device_count );
+        const remote_id_t* devices_ptr = reinterpret_cast<const remote_id_t*>( request_ptr->buffer_ );
+
+        for( uint32_t i = 0; i < device_count; i++ )
+        {
+            devices_.push_back( devices_ptr[ i ] );
+        }
+    }
+
+    const uint8_t* build_options_ptr = request_ptr->buffer_ + sizeof( remote_id_t ) * device_count;
+
+    build_options_.assign( reinterpret_cast<const char*>( build_options_ptr ), 
                            network_to_host( request_ptr->build_options_len_ ) );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgBuildProgram >::set_devices( const devices_t& devices )
+{
+    devices_.clear();
+    devices_.reserve( devices.size() );
+
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+    {
+        remote_device* remote_device_ptr = reinterpret_cast<remote_device*>( *it );
+        devices_.push_back( remote_device_ptr->get_remote_id() );
+    }
+
+    update_request_size();
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

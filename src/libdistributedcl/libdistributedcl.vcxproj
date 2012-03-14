@@ -82,7 +82,6 @@
     <ClCompile Include="network\session_manager.cpp" />
     <ClCompile Include="remote\remote_context.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
-    <ClCompile Include="remote\remote_opencl.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
     <ClCompile Include="server\server_platform.cpp" />

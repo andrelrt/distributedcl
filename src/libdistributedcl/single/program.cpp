@@ -70,32 +70,33 @@ void program::build( const std::string& build_options, cl_bool blocking )
     }
 }
 //-----------------------------------------------------------------------------
-//void program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
-//{
-//    if( get_opencl().loaded() )
-//    {
-//        cl_int error_code;
-//        cl_uint device_count = static_cast< cl_uint >( devices.size() );
-//        boost::scoped_array< cl_device_id > device_list( new cl_device_id[ device_count ] );
-//
-//        //program_info_.build_options_.assign( build_options );
-//
-//        int i = 0;
-//        for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
-//        {
-//            device_list[ i++ ] = (*it)->get_id();
-//        }
-//        
-//        //TODO: Use the callback function
-//        error_code = get_opencl().clBuildProgram( *this, device_count, device_list.get(), 
-//                                                  build_options.c_str(), NULL, NULL );
-//
-//        if( error_code != CL_SUCCESS )
-//        {
-//            throw library_exception( error_code );
-//        }
-//    }
-//}
+void program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+        cl_uint device_count = static_cast< cl_uint >( devices.size() );
+        boost::scoped_array< cl_device_id > device_list( new cl_device_id[ device_count ] );
+
+        //program_info_.build_options_.assign( build_options );
+
+        int i = 0;
+        for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+        {
+            const device* device_ptr = reinterpret_cast<const device*>( *it );
+            device_list[ i++ ] = device_ptr->get_id();
+        }
+        
+        //TODO: Use the callback function
+        error_code = get_opencl().clBuildProgram( id_, device_count, device_list.get(), 
+                                                  build_options.c_str(), NULL, NULL );
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw library_exception( error_code );
+        }
+    }
+}
 //-----------------------------------------------------------------------------
 //cl_build_status program::get_build_status( const device& dev )
 //{

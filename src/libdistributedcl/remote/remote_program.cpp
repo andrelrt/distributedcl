@@ -31,8 +31,14 @@ namespace remote {
 //-----------------------------------------------------------------------------
 void remote_program::build( const std::string& build_options, cl_bool blocking )
 {
+    build( devices_t(), build_options, blocking );
+}
+//-----------------------------------------------------------------------------
+void remote_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
+{
     dcl_message< msgBuildProgram > msg;
 
+    msg.set_devices( devices );
     msg.set_program_id( get_remote_id() );
     msg.set_build_options( build_options );
 

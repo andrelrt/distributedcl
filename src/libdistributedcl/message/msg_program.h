@@ -74,7 +74,7 @@ public:
     {
         source_code_.assign( source_code );
 
-        set_size( source_code.length() + sizeof( msgCreateProgramWithSource_request ) - 1 );
+        set_size( source_code.length() +  sizeof( msgCreateProgramWithSource_request ) - 1 );
     }
 
 private:
@@ -104,7 +104,7 @@ class dcl_message< msgBuildProgram > : public base_message
 {
 public:
     dcl_message< msgBuildProgram >() : 
-        base_message( msgBuildProgram, false, 0, 0 ) {}
+        base_message( msgBuildProgram, true, 0, 0 ) {}
 
     inline const dcl::remote_id_t get_program_id() const
     {
@@ -125,24 +125,40 @@ public:
     {
         build_options_.assign( build_options );
 
-        set_size( build_options.length() + sizeof( msgBuildProgram_request ) - 1 );
+        update_request_size();
     }
 
+    inline const dcl::remote_ids_t& get_devices() const
+    {
+        return devices_;
+    }
+
+    void set_devices( const devices_t& devices );
+
 private:
-    dcl::remote_id_t program_id_;
     std::string build_options_;
+    dcl::remote_id_t program_id_;
+    dcl::remote_ids_t devices_;
 
     virtual void create_request( uint8_t* payload_ptr );
     virtual void parse_request( const uint8_t* payload_ptr );
+
+    void update_request_size()
+    {
+        set_size( build_options_.length() +
+                  devices_.size() * sizeof( dcl::remote_id_t ) +
+                  sizeof( msgBuildProgram_request ) - 1 );
+    }
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
     struct msgBuildProgram_request
     {
         dcl::remote_id_t program_id_;
+        uint16_t devices_count_;
         uint32_t build_options_len_;
 
-        uint8_t build_options_[1];
+        uint8_t buffer_[1];
     };
     #pragma pack( pop )
 };

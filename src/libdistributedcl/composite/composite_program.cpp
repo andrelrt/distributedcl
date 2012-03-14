@@ -42,8 +42,6 @@ void composite_program::build( const devices_t& devices, const std::string& buil
 {
     typedef std::set< generic_device* > device_set_t;
 
-    context_device_map_t context_device_map;
-
     for( iterator it = begin(); it != end(); it++ )
     {
         devices_t build_devices;

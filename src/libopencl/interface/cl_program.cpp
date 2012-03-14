@@ -25,9 +25,11 @@
 #include "icd/icd_object_manager.h"
 #include "info/program_info.h"
 #include "single/program.h"
+#include "composite/composite_device.h"
 #include "composite/composite_context.h"
 #include "composite/composite_program.h"
 using dcl::icd::icd_object_manager;
+using dcl::composite::composite_device;
 using dcl::composite::composite_context;
 using dcl::composite::composite_program;
 using dcl::info::program_info;
@@ -128,7 +130,7 @@ clReleaseProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clBuildProgram( cl_program program, cl_uint num_devices,
-                const cl_device_id* device_list, const char* options, 
+                const cl_device_id* device_list, const char* options,
                 void (CL_CALLBACK* pfn_notify)( cl_program program, void* user_data ),
                 void* user_data ) CL_API_SUFFIX__VERSION_1_1
 {
@@ -149,8 +151,17 @@ clBuildProgram( cl_program program, cl_uint num_devices,
 
         if( num_devices != 0 )
         {
-            // Not implemented
-            return CL_INVALID_DEVICE;
+            dcl::devices_t devices;
+
+            devices.reserve( num_devices );
+
+            for( uint32_t i = 0; i < num_devices; i++ )
+            {
+                composite_device* device_ptr = icd.get_object_ptr< composite_device >( device_list[ i ] );
+                devices.push_back( device_ptr );
+            }
+
+            program_ptr->build( devices, build_options );
         }
         else
         {

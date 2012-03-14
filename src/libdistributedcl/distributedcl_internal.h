@@ -47,6 +47,7 @@ class generic_device;
 namespace dcl {
 //-----------------------------------------------------------------------------
 typedef uint16_t remote_id_t;
+typedef std::vector< remote_id_t > remote_ids_t;
 typedef std::vector< cl_image_format > image_formats_t;
 typedef std::vector< dcl::info::generic_platform* > platforms_t;
 typedef std::vector< dcl::info::generic_device* > devices_t;

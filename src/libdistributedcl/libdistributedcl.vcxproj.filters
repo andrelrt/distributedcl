@@ -193,9 +193,6 @@
     <ClCompile Include="single\opencl_single.cpp">
       <Filter>single</Filter>
     </ClCompile>
-    <ClCompile Include="remote\remote_opencl.cpp">
-      <Filter>remote</Filter>
-    </ClCompile>
     <ClCompile Include="message\msg_internal.cpp">
       <Filter>message</Filter>
     </ClCompile>

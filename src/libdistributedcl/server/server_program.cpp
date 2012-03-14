@@ -49,12 +49,23 @@ void CreateProgramWithSource_command::execute()
 //-----------------------------------------------------------------------------
 void BuildProgram_command::execute()
 {
+    server_platform& server = server_platform::get_instance();
+
     remote_id_t program_id = message_.get_program_id();
 
-    composite_program* program_ptr = 
-        server_platform::get_instance().get_program_manager().get( program_id );
+    composite_program* program_ptr = server.get_program_manager().get( program_id );
 
-    program_ptr->build( message_.get_build_options() );
+    devices_t devices;
+    const remote_ids_t& device_ids = message_.get_devices();
+
+    devices.reserve( device_ids.size() );
+
+    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); it++ )
+    {
+        devices.push_back( server.get_device_manager().get( *it ) );
+    }
+
+    program_ptr->build( devices, message_.get_build_options() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server
