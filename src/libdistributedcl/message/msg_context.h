@@ -111,7 +111,7 @@ public:
 
         devices_ = new dcl::remote_id_t[ count ];
 
-        set_size( sizeof( uint32_t ) + sizeof( dcl::remote_id_t ) * count );
+        set_response_size( sizeof( uint32_t ) + sizeof( dcl::remote_id_t ) * count );
     }
 
 protected:

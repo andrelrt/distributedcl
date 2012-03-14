@@ -79,7 +79,7 @@ public:
     }
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
-    //virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
+    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
 
     //cl_build_status get_build_status( const device& dev );
     //void get_build_log( const device& dev, std::string& str_log );

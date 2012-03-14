@@ -145,7 +145,7 @@ clBuildProgram( cl_program program, cl_uint num_devices,
 
         composite_program* program_ptr = icd.get_object_ptr< composite_program >( program );
 
-        std::string build_options( options );
+        std::string build_options( (options != NULL)? options : "" );
 
         if( num_devices != 0 )
         {

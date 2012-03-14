@@ -32,7 +32,7 @@ class library_exception :  public std::exception
 {
 public:
     library_exception( int error ) throw() : error_( error ) {}
-    library_exception( char* szText ) throw() : text_( szText ), error_( -1 ) {}
+    library_exception( char* szText ) throw() : text_( szText ), error_( -30 ) {}
     library_exception( char* szText, int error ) throw() : text_( szText ), error_( error ) {}
 
 	~library_exception() throw(){};

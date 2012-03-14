@@ -43,6 +43,7 @@ public:
     ~remote_program(){}
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
+    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

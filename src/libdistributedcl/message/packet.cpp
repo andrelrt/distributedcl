@@ -65,6 +65,8 @@ void packet::parse_messages()
     uint32_t length = packet_len - sizeof( packet_header );
     uint8_t* it = buffer_ptr_ + sizeof( packet_header );
 
+    messages_.clear();
+
     while( length != 0 )
     {
         base_message* message_ptr = base_message::parse_message( it, length );

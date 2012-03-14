@@ -42,7 +42,15 @@ void CreateContextFromType_command::execute()
 
     composite_context* context_ptr = reinterpret_cast<composite_context*>( opencl_composite::get_instance().get_platform().create_context( device_type ) );
 
-    remote_id_t id = server_platform::get_instance().get_context_manager().add( context_ptr );
+    remote_id_t id;
+    try
+    {
+        id = server_platform::get_instance().get_context_manager().get( context_ptr );
+    }
+    catch( dcl::library_exception& )
+    {
+        id = server_platform::get_instance().get_context_manager().add( context_ptr );
+    }
 
     message_.set_remote_id( id );
 }
@@ -70,6 +78,8 @@ void GetContextInfo_command::execute()
         {
             *devices_ptr = server_platform::get_instance().get_device_manager().add( *it );
         }
+
+        devices_ptr++;
     }
 }
 //-----------------------------------------------------------------------------

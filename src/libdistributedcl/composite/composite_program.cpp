@@ -20,8 +20,12 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <set>
 #include "composite_program.h"
 #include "composite_context.h"
+#include "info/device_info.h"
+using dcl::info::generic_device;
+using dcl::info::generic_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -31,6 +35,31 @@ void composite_program::build( const std::string& build_options, cl_bool blockin
     for( iterator it = begin(); it != end(); it++ )
     {
         it->second->build( build_options, blocking );
+    }
+}
+//-----------------------------------------------------------------------------
+void composite_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
+{
+    typedef std::set< generic_device* > device_set_t;
+
+    context_device_map_t context_device_map;
+
+    for( iterator it = begin(); it != end(); it++ )
+    {
+        devices_t build_devices;
+
+        const devices_t& context_devices = it->first->get_devices();
+        device_set_t device_set( context_devices.begin(), context_devices.end() );
+
+        for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
+        {
+            if( device_set.find( *dev_it ) != device_set.end() )
+            {
+                build_devices.push_back( *dev_it );
+            }
+        }
+
+        it->second->build( build_devices, build_options, blocking );
     }
 }
 //-----------------------------------------------------------------------------

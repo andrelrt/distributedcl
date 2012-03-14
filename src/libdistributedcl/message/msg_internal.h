@@ -36,7 +36,7 @@ class dcl_message< msg_error_message > : public base_message
 public:
     static dcl_message< msg_error_message > success;
 
-    dcl_message< msg_error_message >( int32_t error_code ) : 
+    dcl_message< msg_error_message >( int32_t error_code = CL_SUCCESS ) : 
         base_message( msg_error_message, false, sizeof( int32_t ) ), error_code_( error_code ) {}
 
     inline int32_t get_error_code() const
@@ -46,6 +46,7 @@ public:
 
 protected:
     virtual void create_response( uint8_t* payload_ptr );
+    virtual void parse_response( const base_message* );
 
 private:
     int32_t error_code_;

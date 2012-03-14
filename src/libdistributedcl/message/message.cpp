@@ -25,6 +25,7 @@
 #include "msg_device.h"
 #include "msg_context.h"
 #include "msg_program.h"
+#include "msg_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -50,8 +51,11 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 
         // Internal base_messages [1-20)
         case msg_invalid_message:
-        case msg_error_message:
             throw dcl::library_exception( "Not implemented" );
+            break;
+
+        case msg_error_message:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msg_error_message >() );
             break;
 
         // OpenCL base_messages [20-128)

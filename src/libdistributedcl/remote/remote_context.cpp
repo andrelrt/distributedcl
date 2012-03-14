@@ -53,7 +53,7 @@ generic_program* remote_context::do_create_program( const std::string& source_co
     dcl_message< msgCreateProgramWithSource > msg;
 
     msg.set_source_code( source_code );
-    msg.set_remote_id( get_remote_id() );
+    msg.set_context_id( get_remote_id() );
 
     session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
 
