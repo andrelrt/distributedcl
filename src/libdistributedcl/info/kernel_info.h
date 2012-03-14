@@ -20,60 +20,45 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <set>
-#include "composite_program.h"
-#include "composite_context.h"
-#include "composite_kernel.h"
-#include "info/device_info.h"
-using dcl::info::generic_device;
-using dcl::info::generic_context;
-using dcl::info::generic_kernel;
+#ifndef _DCL_INFO_KERNEL_H_
+#define _DCL_INFO_KERNEL_H_
+
+#include <string>
+#include "distributedcl_internal.h"
+#include "library_exception.h"
+#include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace info {
 //-----------------------------------------------------------------------------
-void composite_program::build( const std::string& build_options, cl_bool blocking )
+struct kernel_info
 {
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        it->second->build( build_options, blocking );
-    }
-}
+public:
+    std::string name_;
+
+    inline kernel_info(){}
+    inline kernel_info( const std::string& name ) : name_( name ) {}
+};
 //-----------------------------------------------------------------------------
-void composite_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
+class generic_kernel :
+    public cl_object< cl_kernel, cl_kernel_info, CL_INVALID_KERNEL >,
+    public icd_object< cl_kernel, dcl_kernel_id >,
+    public dcl_object< kernel_info >
 {
-    typedef std::set< generic_device* > device_set_t;
-
-    for( iterator it = begin(); it != end(); it++ )
+public:
+    generic_kernel( const std::string& name )
     {
-        devices_t build_devices;
-
-        const devices_t& context_devices = it->first->get_devices();
-        device_set_t device_set( context_devices.begin(), context_devices.end() );
-
-        for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
-        {
-            if( device_set.find( *dev_it ) != device_set.end() )
-            {
-                build_devices.push_back( *dev_it );
-            }
-        }
-
-        it->second->build( build_devices, build_options, blocking );
-    }
-}
-//-----------------------------------------------------------------------------
-generic_kernel* composite_program::create_kernel( const std::string& kernel_name )
-{
-    composite_kernel* kernel_ptr = new composite_kernel( get_context(), kernel_name );
-
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        kernel_ptr->insert_context_object( it->first, it->second->create_kernel( kernel_name ) );
+        local_info_.name_.assign( name );
     }
 
-    return kernel_ptr;
-}
+    inline const std::string& get_name() const
+    {
+        return local_info_.name_;
+    }
+};
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+}} // namespace dcl::info
 //-----------------------------------------------------------------------------
+#endif // _DCL_INFO_KERNEL_H_
+

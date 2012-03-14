@@ -20,60 +20,56 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <set>
-#include "composite_program.h"
-#include "composite_context.h"
-#include "composite_kernel.h"
-#include "info/device_info.h"
-using dcl::info::generic_device;
-using dcl::info::generic_context;
-using dcl::info::generic_kernel;
+#ifndef _DCL_KERNEL_H_
+#define _DCL_KERNEL_H_
+
+#include <map>
+#include <string>
+#include "distributedcl_internal.h"
+#include "single_object.h"
+#include "opencl_library.h"
+#include "info/kernel_info.h"
+#include "program.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace single {
 //-----------------------------------------------------------------------------
-void composite_program::build( const std::string& build_options, cl_bool blocking )
-{
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        it->second->build( build_options, blocking );
-    }
-}
+class kernel;
 //-----------------------------------------------------------------------------
-void composite_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
+template<>
+struct context_wrapper< kernel >
 {
-    typedef std::set< generic_device* > device_set_t;
-
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        devices_t build_devices;
-
-        const devices_t& context_devices = it->first->get_devices();
-        device_set_t device_set( context_devices.begin(), context_devices.end() );
-
-        for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
-        {
-            if( device_set.find( *dev_it ) != device_set.end() )
-            {
-                build_devices.push_back( *dev_it );
-            }
-        }
-
-        it->second->build( build_devices, build_options, blocking );
-    }
-}
+    static void context_attach( context* context_ptr, kernel* kernel_ptr );
+};
 //-----------------------------------------------------------------------------
-generic_kernel* composite_program::create_kernel( const std::string& kernel_name )
+template<>
+struct reference_wrapper< cl_kernel >
 {
-    composite_kernel* kernel_ptr = new composite_kernel( get_context(), kernel_name );
-
-    for( iterator it = begin(); it != end(); it++ )
+    //-------------------------------------------------------------------------
+    static inline void retain( const opencl_library& opencl, cl_kernel krnl )
     {
-        kernel_ptr->insert_context_object( it->first, it->second->create_kernel( kernel_name ) );
+        if( opencl.loaded() )
+            opencl.clRetainKernel( krnl );
     }
 
-    return kernel_ptr;
-}
+    //-------------------------------------------------------------------------
+    static inline void release( const opencl_library& opencl, cl_kernel krnl )
+    {
+        if( opencl.loaded() )
+            opencl.clReleaseKernel( krnl );
+    }
+};
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+class kernel :
+    public dcl::info::generic_kernel,
+    public opencl_object< cl_kernel >,
+    public context_object< kernel >
+{
+public:
+    kernel( const program& program_ref, const std::string& name );
+    ~kernel(){}
+};
 //-----------------------------------------------------------------------------
+}} // namespace dcl::single
+//-----------------------------------------------------------------------------
+#endif //_DCL_KERNEL_H_

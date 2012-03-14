@@ -143,7 +143,7 @@ private:
     virtual void create_request( uint8_t* payload_ptr );
     virtual void parse_request( const uint8_t* payload_ptr );
 
-    void update_request_size()
+    inline void update_request_size()
     {
         set_size( build_options_.length() +
                   devices_.size() * sizeof( dcl::remote_id_t ) +

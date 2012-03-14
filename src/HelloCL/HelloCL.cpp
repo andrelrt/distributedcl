@@ -164,7 +164,6 @@ main()
             return SDK_FAILURE;
         }
 
-        /*
         cl::Kernel kernel(program, "hello", &err);
         if (err != CL_SUCCESS) {
             std::cerr << "Kernel::Kernel() failed (" << err << ")\n";
@@ -175,6 +174,7 @@ main()
             return SDK_FAILURE;
         }
 
+        /*
         cl::CommandQueue queue(context, devices[0], 0, &err);
         if (err != CL_SUCCESS) {
             std::cerr << "CommandQueue::CommandQueue() failed (" << err << ")\n";
@@ -195,9 +195,10 @@ main()
         if (err != CL_SUCCESS) {
             std::cerr << "Event::wait() failed (" << err << ")\n";
         }
+        */
 
         delete pProgram;
-        */
+
         std::cout<<"Done\nPassed!\n";
     }
     while( 0 );

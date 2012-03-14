@@ -33,6 +33,7 @@ namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
 class generic_context;
+class generic_kernel;
 //-----------------------------------------------------------------------------
 struct program_info
 {
@@ -80,9 +81,7 @@ public:
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
     virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
-
-    //cl_build_status get_build_status( const device& dev );
-    //void get_build_log( const device& dev, std::string& str_log );
+    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

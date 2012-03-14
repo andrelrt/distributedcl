@@ -20,33 +20,30 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_PROGRAM_H_
-#define _DCL_REMOTE_PROGRAM_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/program_info.h"
+#include <boost/scoped_array.hpp>
+#include "kernel.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace single {
 //-----------------------------------------------------------------------------
-class remote_program :
-    public dcl::info::generic_program,
-    public remote_object< remote_program >
+kernel::kernel( const program& program_ref, const std::string& name ) :
+    generic_kernel( name ), opencl_object( program_ref.get_opencl() )
 {
-public:
-    remote_program( const remote_context& context_ref, const std::string& source_code ) :
-        dcl::info::generic_program( source_code ), 
-        remote_object( context_ref.get_session() ) {}
+    if( !opencl_.loaded() )
+    {
+        throw library_exception( CL_INVALID_PROGRAM );
+    }
 
-    ~remote_program(){}
+    cl_int error_code;
+    cl_kernel krnl = opencl_.clCreateKernel( program_ref.get_id(), name.c_str(), &error_code );
 
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-};
+    if( error_code != CL_SUCCESS )
+    {
+        throw library_exception( error_code );
+    }
+
+    set_id( krnl );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_PROGRAM_H_

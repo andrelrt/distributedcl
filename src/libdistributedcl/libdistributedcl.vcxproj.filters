@@ -161,6 +161,21 @@
     <ClInclude Include="server\server_program.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="info\kernel_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="single\kernel.h">
+      <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\composite_kernel.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="message\msg_kernel.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\remote_kernel.h">
+      <Filter>remote</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -237,6 +252,12 @@
     </ClCompile>
     <ClCompile Include="remote\remote_context.cpp">
       <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="single\kernel.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="message\msg_kernel.cpp">
+      <Filter>message</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

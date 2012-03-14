@@ -45,6 +45,7 @@ public:
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
     virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
+    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

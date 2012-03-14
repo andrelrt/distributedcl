@@ -21,10 +21,12 @@
  */
 //-----------------------------------------------------------------------------
 #include "remote_program.h"
+#include "remote_kernel.h"
 #include "message/msg_program.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgBuildProgram;
+using dcl::info::generic_kernel;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -43,6 +45,11 @@ void remote_program::build( const devices_t& devices, const std::string& build_o
     msg.set_build_options( build_options );
 
     session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+}
+//-----------------------------------------------------------------------------
+generic_kernel* remote_program::create_kernel( const std::string& kernel_name )
+{
+    return NULL;
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,9 @@
 #include "device.h"
 #include "library_exception.h"
 #include "context.h"
+#include "kernel.h"
 using dcl::info::generic_program;
+using dcl::info::generic_kernel;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -88,14 +90,19 @@ void program::build( const devices_t& devices, const std::string& build_options,
         }
         
         //TODO: Use the callback function
-        error_code = get_opencl().clBuildProgram( id_, device_count, device_list.get(), 
-                                                  build_options.c_str(), NULL, NULL );
+        error_code = opencl_.clBuildProgram( id_, device_count, device_list.get(), 
+                                             build_options.c_str(), NULL, NULL );
 
         if( error_code != CL_SUCCESS )
         {
             throw library_exception( error_code );
         }
     }
+}
+//-----------------------------------------------------------------------------
+generic_kernel* program::create_kernel( const std::string& kernel_name )
+{
+    return new kernel( *this, kernel_name );
 }
 //-----------------------------------------------------------------------------
 //cl_build_status program::get_build_status( const device& dev )

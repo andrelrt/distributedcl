@@ -71,9 +71,7 @@ public:
     // TODO: Create a version of build method using the pfn_notify callback
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
     virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-
-    //cl_build_status get_build_status( const device& dev );
-    //void get_build_log( const device& dev, std::string& str_log );
+    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

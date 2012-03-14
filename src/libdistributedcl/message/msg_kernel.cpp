@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,60 +20,52 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <set>
-#include "composite_program.h"
-#include "composite_context.h"
-#include "composite_kernel.h"
-#include "info/device_info.h"
-using dcl::info::generic_device;
-using dcl::info::generic_context;
-using dcl::info::generic_kernel;
+#include "msg_kernel.h"
+using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace network {
+namespace message {
 //-----------------------------------------------------------------------------
-void composite_program::build( const std::string& build_options, cl_bool blocking )
+void dcl_message< msgCreateKernel >::create_request( uint8_t* payload_ptr )
 {
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        it->second->build( build_options, blocking );
-    }
+    msgCreateKernel_request* request_ptr = 
+        reinterpret_cast< msgCreateKernel_request* >( payload_ptr );
+
+    request_ptr->program_id_ = host_to_network( program_id_ );
+    request_ptr->name_len_ = host_to_network( static_cast<uint32_t>( name_.length() ) );
+
+    memcpy( request_ptr->name_, name_.data(), name_.length() );
 }
 //-----------------------------------------------------------------------------
-void composite_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
+void dcl_message< msgCreateKernel >::parse_request( const uint8_t* payload_ptr )
 {
-    typedef std::set< generic_device* > device_set_t;
+    const msgCreateKernel_request* request_ptr = 
+        reinterpret_cast< const msgCreateKernel_request* >( payload_ptr );
 
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        devices_t build_devices;
+    program_id_ = network_to_host( request_ptr->program_id_ );
 
-        const devices_t& context_devices = it->first->get_devices();
-        device_set_t device_set( context_devices.begin(), context_devices.end() );
-
-        for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
-        {
-            if( device_set.find( *dev_it ) != device_set.end() )
-            {
-                build_devices.push_back( *dev_it );
-            }
-        }
-
-        it->second->build( build_devices, build_options, blocking );
-    }
+    name_.assign( reinterpret_cast<const char*>( request_ptr->name_ ), 
+                  network_to_host( request_ptr->name_len_ ) );
 }
 //-----------------------------------------------------------------------------
-generic_kernel* composite_program::create_kernel( const std::string& kernel_name )
+void dcl_message< msgCreateKernel >::create_response( uint8_t* payload_ptr )
 {
-    composite_kernel* kernel_ptr = new composite_kernel( get_context(), kernel_name );
+    remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
-    for( iterator it = begin(); it != end(); it++ )
-    {
-        kernel_ptr->insert_context_object( it->first, it->second->create_kernel( kernel_name ) );
-    }
-
-    return kernel_ptr;
+    *response_ptr = host_to_network( id_ );
 }
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+void dcl_message< msgCreateKernel >::parse_response( const base_message* message_ptr )
+{
+    const dcl_message< msgCreateKernel >* msg_response_ptr = 
+        reinterpret_cast< const dcl_message< msgCreateKernel >* >( message_ptr );
+
+    const remote_id_t* response_ptr = 
+        reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
+
+    id_ = network_to_host( *response_ptr );
+}
+//-----------------------------------------------------------------------------
+}}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

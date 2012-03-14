@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="composite\composite_context.h" />
     <ClInclude Include="composite\composite_device.h" />
+    <ClInclude Include="composite\composite_kernel.h" />
     <ClInclude Include="composite\composite_object.h" />
     <ClInclude Include="composite\composite_platform.h" />
     <ClInclude Include="composite\composite_program.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
     <ClInclude Include="info\icd_object.h" />
+    <ClInclude Include="info\kernel_info.h" />
     <ClInclude Include="info\object_manager.h" />
     <ClInclude Include="info\opencl_functions.h" />
     <ClInclude Include="info\platform_info.h" />
@@ -38,6 +40,7 @@
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_device.h" />
     <ClInclude Include="message\msg_internal.h" />
+    <ClInclude Include="message\msg_kernel.h" />
     <ClInclude Include="message\msg_program.h" />
     <ClInclude Include="message\packet.h" />
     <ClInclude Include="message\msg_context.h" />
@@ -50,6 +53,7 @@
     <ClInclude Include="network\session_manager.h" />
     <ClInclude Include="network\tcp_transport.h" />
     <ClInclude Include="remote\remote_device.h" />
+    <ClInclude Include="remote\remote_kernel.h" />
     <ClInclude Include="remote\remote_opencl.h" />
     <ClInclude Include="remote\remote_platform.h" />
     <ClInclude Include="remote\remote_object.h" />
@@ -61,6 +65,7 @@
     <ClInclude Include="server\server_program.h" />
     <ClInclude Include="single\context.h" />
     <ClInclude Include="single\device.h" />
+    <ClInclude Include="single\kernel.h" />
     <ClInclude Include="single\opencl_library.h" />
     <ClInclude Include="single\opencl_single.h" />
     <ClInclude Include="single\platform.h" />
@@ -75,6 +80,7 @@
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\msg_internal.cpp" />
+    <ClCompile Include="message\msg_kernel.cpp" />
     <ClCompile Include="message\msg_program.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="message\msg_context.cpp" />
@@ -89,6 +95,7 @@
     <ClCompile Include="server\server_program.cpp" />
     <ClCompile Include="single\context.cpp" />
     <ClCompile Include="single\device.cpp" />
+    <ClCompile Include="single\kernel.cpp" />
     <ClCompile Include="single\opencl_library.cpp" />
     <ClCompile Include="single\opencl_single.cpp" />
     <ClCompile Include="single\platform.cpp" />

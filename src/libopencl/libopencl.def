@@ -11,7 +11,7 @@ EXPORTS
 ;    clCreateFromGLTexture3D         @9
 ;    clCreateImage2D                 @10
 ;    clCreateImage3D                 @11
-;    clCreateKernel                  @12
+    clCreateKernel                  @12
 ;    clCreateKernelsInProgram        @13
     clCreateProgramWithBinary       @14
     clCreateProgramWithSource       @15
@@ -52,14 +52,14 @@ EXPORTS
 ;    clGetMemObjectInfo              @50
     clGetPlatformIDs                @51
     clGetPlatformInfo               @52
-    clGetProgramBuildInfo           @53
-    clGetProgramInfo                @54
+;    clGetProgramBuildInfo           @53
+;    clGetProgramInfo                @54
 ;    clGetSamplerInfo                @55
 ;    clGetSupportedImageFormats      @56
 ;    clReleaseCommandQueue           @57
     clReleaseContext                @58
 ;    clReleaseEvent                  @59
-;    clReleaseKernel                 @60
+    clReleaseKernel                 @60
 ;    clReleaseMemObject              @61
     clReleaseProgram                @62
 ;    clReleaseSampler                @63
@@ -68,9 +68,9 @@ EXPORTS
 ;    clRetainEvent                   @66
 ;    clRetainKernel                  @67
 ;    clRetainMemObject               @68
-    clRetainProgram                 @69
+;    clRetainProgram                 @69
 ;    clRetainSampler                 @70
 ;    clSetCommandQueueProperty       @71
 ;    clSetKernelArg                  @72
-    clUnloadCompiler                @73
+;    clUnloadCompiler                @73
 ;    clWaitForEvents                 @74

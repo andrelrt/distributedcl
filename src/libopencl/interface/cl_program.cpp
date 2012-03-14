@@ -116,11 +116,11 @@ clCreateProgramWithBinary( cl_context context, cl_uint num_devices,
     return NULL;
 }
 //-----------------------------------------------------------------------------
-extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
-{
-    return CL_SUCCESS;
-}
+//extern "C" CL_API_ENTRY cl_int CL_API_CALL
+//clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
+//{
+//    return CL_SUCCESS;
+//}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
@@ -183,25 +183,25 @@ clBuildProgram( cl_program program, cl_uint num_devices,
     return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------
-extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_1
-{
-    return CL_INVALID_VALUE;
-}
+//extern "C" CL_API_ENTRY cl_int CL_API_CALL
+//clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_1
+//{
+//    return CL_INVALID_VALUE;
+//}
 //-----------------------------------------------------------------------------
-extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clGetProgramInfo( cl_program program, cl_program_info param_name,
-                  size_t param_value_size, void* param_value,
-                  size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
-{
-    return CL_INVALID_VALUE;
-}
+//extern "C" CL_API_ENTRY cl_int CL_API_CALL
+//clGetProgramInfo( cl_program program, cl_program_info param_name,
+//                  size_t param_value_size, void* param_value,
+//                  size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+//{
+//    return CL_INVALID_VALUE;
+//}
 //-----------------------------------------------------------------------------
-extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clGetProgramBuildInfo( cl_program program, cl_device_id device,
-                       cl_program_build_info param_name, size_t param_value_size,
-                       void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
-{
-    return CL_INVALID_VALUE;
-}
+//extern "C" CL_API_ENTRY cl_int CL_API_CALL
+//clGetProgramBuildInfo( cl_program program, cl_device_id device,
+//                       cl_program_build_info param_name, size_t param_value_size,
+//                       void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+//{
+//    return CL_INVALID_VALUE;
+//}
 //-----------------------------------------------------------------------------

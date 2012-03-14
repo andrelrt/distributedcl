@@ -20,33 +20,29 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_PROGRAM_H_
-#define _DCL_REMOTE_PROGRAM_H_
+#ifndef _DCL_REMOTE_KERNEL_H_
+#define _DCL_REMOTE_KERNEL_H_
 
 #include "distributedcl_internal.h"
 #include "remote_object.h"
 #include "remote_context.h"
-#include "info/program_info.h"
+#include "info/kernel_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-class remote_program :
-    public dcl::info::generic_program,
-    public remote_object< remote_program >
+class remote_kernel :
+    public dcl::info::generic_kernel,
+    public remote_object< remote_kernel >
 {
 public:
-    remote_program( const remote_context& context_ref, const std::string& source_code ) :
-        dcl::info::generic_program( source_code ), 
+    remote_kernel( const remote_context& context_ref, const std::string& name ) :
+        dcl::info::generic_kernel( name ), 
         remote_object( context_ref.get_session() ) {}
 
-    ~remote_program(){}
-
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
+    ~remote_kernel(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_PROGRAM_H_
+#endif // _DCL_REMOTE_KERNEL_H_
