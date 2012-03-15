@@ -20,36 +20,32 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_PROGRAM_H_
-#define _DCL_REMOTE_PROGRAM_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/program_info.h"
+#include "server_kernel.h"
+#include "server_platform.h"
+#include "message/msg_kernel.h"
+#include "composite/composite_program.h"
+#include "composite/composite_kernel.h"
+using dcl::composite::composite_program;
+using dcl::composite::composite_kernel;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace server {
 //-----------------------------------------------------------------------------
-class remote_program :
-    public dcl::info::generic_program,
-    public remote_object< remote_program >
+void CreateKernel_command::execute()
 {
-public:
-    remote_program( const remote_context& context_ref, const std::string& source_code ) :
-        context_( context_ref ), dcl::info::generic_program( source_code ), 
-        remote_object( context_ref.get_session() ) {}
+    server_platform& server = server_platform::get_instance();
 
-    ~remote_program(){}
+    remote_id_t program_id = message_.get_program_id();
 
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
+    composite_program* program_ptr = server.get_program_manager().get( program_id );
 
-private:
-    const remote_context& context_;
-};
+    composite_kernel* kernel_ptr = 
+        reinterpret_cast< composite_kernel* >( program_ptr->create_kernel( message_.get_name() ) );
+
+    remote_id_t id = server.get_kernel_manager().add( kernel_ptr );
+
+    message_.set_remote_id( id );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_PROGRAM_H_

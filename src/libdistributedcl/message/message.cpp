@@ -25,6 +25,7 @@
 #include "msg_device.h"
 #include "msg_context.h"
 #include "msg_program.h"
+#include "msg_kernel.h"
 #include "msg_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -128,8 +129,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgUnloadCompiler:
         case msgGetProgramInfo:
         case msgGetProgramBuildInfo:
+            throw dcl::library_exception( "Not implemented" );
+            break;
 
         case msgCreateKernel:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateKernel >() );
+            break;
+
         case msgCreateKernelsInProgram:
         case msgRetainKernel:
         case msgReleaseKernel:

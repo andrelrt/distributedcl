@@ -30,6 +30,7 @@
 #include "composite/composite_device.h"
 #include "composite/composite_context.h"
 #include "composite/composite_program.h"
+#include "composite/composite_kernel.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -60,10 +61,12 @@ private:
     typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_kernel > kernel_manager_t;
 
     device_manager_t device_manager_;
     context_manager_t context_manager_;
     program_manager_t program_manager_;
+    kernel_manager_t kernel_manager_;
     static server_platform instance_;
 
     server_platform(){}
@@ -87,6 +90,11 @@ public:
     inline program_manager_t& get_program_manager()
     {
         return program_manager_;
+    }
+
+    inline kernel_manager_t& get_kernel_manager()
+    {
+        return kernel_manager_;
     }
 };
 //-----------------------------------------------------------------------------

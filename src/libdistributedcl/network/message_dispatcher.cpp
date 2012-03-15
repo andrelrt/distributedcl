@@ -25,6 +25,7 @@
 #include "server/server_platform.h"
 #include "server/server_context.h"
 #include "server/server_program.h"
+#include "server/server_kernel.h"
 using namespace dcl::network::message;
 using namespace dcl::server;
 //-----------------------------------------------------------------------------
@@ -142,8 +143,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgUnloadCompiler:
             case msgGetProgramInfo:
             case msgGetProgramBuildInfo:
+                throw dcl::library_exception( "Not implemented" );
+                break;
 
             case msgCreateKernel:
+            {
+                CreateKernel_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgCreateKernelsInProgram:
             case msgRetainKernel:
             case msgReleaseKernel:

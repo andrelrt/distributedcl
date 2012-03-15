@@ -50,6 +50,11 @@ clCreateKernel( cl_program program, const char* kernel_name,
         composite_kernel* kernel_ptr =
             reinterpret_cast< composite_kernel* >( program_ptr->create_kernel( kernel_name ) );
 
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_SUCCESS;
+        }
+
         return icd.get_cl_id< composite_kernel >( kernel_ptr );
     }
     catch( dcl::library_exception& ex )

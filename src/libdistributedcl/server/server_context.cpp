@@ -63,7 +63,7 @@ void GetContextInfo_command::execute()
 
     const devices_t& devices_ref = context_ptr->get_devices();
 
-    message_.set_device_count( devices_ref.size() );
+    message_.set_device_count( static_cast<uint32_t>( devices_ref.size() ) );
 
     devices_t::const_iterator it;
     remote_id_t* devices_ptr = message_.get_devices();

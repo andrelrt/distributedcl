@@ -20,36 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_PROGRAM_H_
-#define _DCL_REMOTE_PROGRAM_H_
+#ifndef _DCL_SERVER_KERNEL_H_
+#define _DCL_SERVER_KERNEL_H_
 
 #include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/program_info.h"
+#include "server_command.h"
+#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace server {
 //-----------------------------------------------------------------------------
-class remote_program :
-    public dcl::info::generic_program,
-    public remote_object< remote_program >
+class CreateKernel_command : 
+    public server_command< dcl::network::message::msgCreateKernel >
 {
 public:
-    remote_program( const remote_context& context_ref, const std::string& source_code ) :
-        context_( context_ref ), dcl::info::generic_program( source_code ), 
-        remote_object( context_ref.get_session() ) {}
+    CreateKernel_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgCreateKernel >( message_ptr ) {}
 
-    ~remote_program(){}
-
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-
-private:
-    const remote_context& context_;
+    void execute();
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_PROGRAM_H_
+#endif // _DCL_SERVER_KERNEL_H_

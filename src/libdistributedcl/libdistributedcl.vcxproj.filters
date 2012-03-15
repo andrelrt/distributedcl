@@ -176,6 +176,9 @@
     <ClInclude Include="remote\remote_kernel.h">
       <Filter>remote</Filter>
     </ClInclude>
+    <ClInclude Include="server\server_kernel.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -258,6 +261,9 @@
     </ClCompile>
     <ClCompile Include="message\msg_kernel.cpp">
       <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_kernel.cpp">
+      <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

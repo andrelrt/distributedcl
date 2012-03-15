@@ -60,6 +60,7 @@
     <ClInclude Include="remote\remote_context.h" />
     <ClInclude Include="remote\remote_program.h" />
     <ClInclude Include="server\server_command.h" />
+    <ClInclude Include="server\server_kernel.h" />
     <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_context.h" />
     <ClInclude Include="server\server_program.h" />
@@ -90,6 +91,7 @@
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
+    <ClCompile Include="server\server_kernel.cpp" />
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="server\server_context.cpp" />
     <ClCompile Include="server\server_program.cpp" />

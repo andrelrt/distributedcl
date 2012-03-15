@@ -23,9 +23,11 @@
 #include "remote_program.h"
 #include "remote_kernel.h"
 #include "message/msg_program.h"
+#include "message/msg_kernel.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgBuildProgram;
+using dcl::network::message::msgCreateKernel;
 using dcl::info::generic_kernel;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -49,7 +51,17 @@ void remote_program::build( const devices_t& devices, const std::string& build_o
 //-----------------------------------------------------------------------------
 generic_kernel* remote_program::create_kernel( const std::string& kernel_name )
 {
-    return NULL;
+    dcl_message< msgCreateKernel > msg;
+
+    msg.set_name( kernel_name );
+    msg.set_program_id( get_remote_id() );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    remote_kernel* kernel_ptr = new remote_kernel( context_, kernel_name );
+    kernel_ptr->set_remote_id( msg.get_remote_id() );
+
+    return reinterpret_cast< generic_kernel* >( kernel_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

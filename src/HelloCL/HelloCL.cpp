@@ -125,7 +125,7 @@ main()
         cl_context_properties cps[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)(*i)(), 0 };
 
         std::cout<<"Creating a context AMD platform\n";
-        cl::Context context(CL_DEVICE_TYPE_CPU, cps, NULL, NULL, &err);
+        cl::Context context(CL_DEVICE_TYPE_ALL, cps, NULL, NULL, &err);
         if (err != CL_SUCCESS) {
             std::cerr << "Context::Context() failed (" << err << ")\n";
             return SDK_FAILURE;
@@ -167,10 +167,6 @@ main()
         cl::Kernel kernel(program, "hello", &err);
         if (err != CL_SUCCESS) {
             std::cerr << "Kernel::Kernel() failed (" << err << ")\n";
-            return SDK_FAILURE;
-        }
-        if (err != CL_SUCCESS) {
-            std::cerr << "Kernel::setArg() failed (" << err << ")\n";
             return SDK_FAILURE;
         }
 
