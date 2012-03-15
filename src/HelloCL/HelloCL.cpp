@@ -170,7 +170,6 @@ main()
             return SDK_FAILURE;
         }
 
-        /*
         cl::CommandQueue queue(context, devices[0], 0, &err);
         if (err != CL_SUCCESS) {
             std::cerr << "CommandQueue::CommandQueue() failed (" << err << ")\n";
@@ -191,7 +190,6 @@ main()
         if (err != CL_SUCCESS) {
             std::cerr << "Event::wait() failed (" << err << ")\n";
         }
-        */
 
         delete pProgram;
 

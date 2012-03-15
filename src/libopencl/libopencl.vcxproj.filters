@@ -28,6 +28,9 @@
     <ClCompile Include="interface\cl_kernel.cpp">
       <Filter>interface</Filter>
     </ClCompile>
+    <ClCompile Include="interface\cl_command_queue.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="libopencl.def" />

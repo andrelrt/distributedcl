@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="icd\icd_object_manager.cpp" />
+    <ClCompile Include="interface\cl_command_queue.cpp" />
     <ClCompile Include="interface\cl_context.cpp" />
     <ClCompile Include="interface\cl_device.cpp" />
     <ClCompile Include="interface\cl_kernel.cpp" />

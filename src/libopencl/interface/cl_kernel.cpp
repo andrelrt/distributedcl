@@ -80,12 +80,6 @@ clCreateKernel( cl_program program, const char* kernel_name,
         *errcode_ret = CL_INVALID_VALUE;
     }
     return NULL;
-
-    if( errcode_ret != NULL )
-    {
-        *errcode_ret = CL_INVALID_VALUE;
-    }
-    return NULL;
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -125,4 +119,14 @@ clReleaseKernel( cl_kernel kernel ) CL_API_SUFFIX__VERSION_1_1
 //                          size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
 //{
 //}
+//-----------------------------------------------------------------------------
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uint work_dim,
+                        const size_t* global_work_offset, const size_t* global_work_size,
+                        const size_t* local_work_size, cl_uint num_events_in_wait_list,
+                        const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_1
+{
+    //FIXME: Not implemented
+    return CL_INVALID_KERNEL;
+}
 //-----------------------------------------------------------------------------
