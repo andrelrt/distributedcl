@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 #include "server/server_context.h"
 #include "server/server_program.h"
 #include "server/server_kernel.h"
+#include "server/server_command_queue.h"
 using namespace dcl::network::message;
 using namespace dcl::server;
 //-----------------------------------------------------------------------------
@@ -97,6 +98,13 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             }
 
             case msgCreateCommandQueue:
+            {
+                CreateCommandQueue_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgRetainCommandQueue:
             case msgReleaseCommandQueue:
             case msgGetCommandQueueInfo:
@@ -168,7 +176,16 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgGetEventProfilingInfo:
 
             case msgFlush:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgFinish:
+            {
+                Finish_command command( *it );
+
+                command.execute();
+                break;
+            }
 
             case msgEnqueueReadBuffer:
             case msgEnqueueWriteBuffer:
@@ -181,7 +198,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgEnqueueMapBuffer:
             case msgEnqueueMapImage:
             case msgEnqueueUnmapMemObject:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgEnqueueNDRangeKernel:
+            {
+                EnqueueNDRangeKernel_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgEnqueueTask:
             case msgEnqueueNativeKernel:
             case msgEnqueueMarker:

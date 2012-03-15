@@ -40,6 +40,11 @@ public:
         composite_object< dcl::info::generic_kernel >( context_ref ){}
 
     ~composite_kernel(){}
+
+    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
+                          const dcl::info::ndrange& offset, 
+                          const dcl::info::ndrange& global, 
+                          const dcl::info::ndrange& local );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

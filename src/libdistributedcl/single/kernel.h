@@ -68,6 +68,11 @@ class kernel :
 public:
     kernel( const program& program_ref, const std::string& name );
     ~kernel(){}
+
+    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
+                          const dcl::info::ndrange& offset, 
+                          const dcl::info::ndrange& global, 
+                          const dcl::info::ndrange& local );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

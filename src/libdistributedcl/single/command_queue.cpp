@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Andrï¿½ Tupinambï¿½ (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,49 +20,46 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_ICD_OBJECT_H_
-#define _DCL_ICD_OBJECT_H_
-
-#include <set>
-#include <map>
-#include "distributedcl_internal.h"
-#include "opencl_functions.h"
+#include <boost/scoped_array.hpp>
+#include "command_queue.h"
+#include "context.h"
+#include "device.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
+namespace single {
 //-----------------------------------------------------------------------------
-enum dcl_object_types
+command_queue::command_queue( const context& context_ref, const device& device_ref, 
+                              cl_command_queue_properties properties ) :
+    dcl::info::generic_command_queue( &context_ref, &device_ref, properties ), 
+    opencl_object( context_ref.get_opencl() )
 {
-    dcl_platform_id = 0,
-    dcl_device_id = 1,
-    dcl_context_id = 2,
-    dcl_program_id = 3,
-    dcl_kernel_id = 4,
-    dcl_command_queue_id = 5,
-};
-//-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >
-class icd_object
-{
-public:
-    static const uint32_t type_id = DCL_TYPE_ID;
-
-    inline CL_TYPE_T get_icd_obj() const
+    if( !opencl_.loaded() )
     {
-        return icd_obj_;
+        throw library_exception( CL_INVALID_CONTEXT );
     }
 
-    inline void set_icd_obj( CL_TYPE_T icd_obj )
+    cl_int error_code;
+    cl_command_queue queue = 
+        opencl_.clCreateCommandQueue( context_ref.get_id(), device_ref.get_id(), 
+                                      properties, &error_code );
+
+    if( error_code != CL_SUCCESS )
     {
-        icd_obj_ = icd_obj;
+        throw library_exception( error_code );
     }
 
-protected:
-    CL_TYPE_T icd_obj_;
+    set_id( queue );
+}
+//-----------------------------------------------------------------------------
+void command_queue::finish()
+{
+    cl_int error_code = opencl_.clFinish( get_id() );
 
-    icd_object() : icd_obj_( NULL ){}
-};
+    if( error_code != CL_SUCCESS )
+    {
+        throw library_exception( error_code );
+    }
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::info
+}} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif // _DCL_ICD_OBJECT_H_

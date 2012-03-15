@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Andrï¿½ Tupinambï¿½ (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,49 +20,47 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_ICD_OBJECT_H_
-#define _DCL_ICD_OBJECT_H_
-
-#include <set>
-#include <map>
-#include "distributedcl_internal.h"
-#include "opencl_functions.h"
+#include "server_command_queue.h"
+#include "server_platform.h"
+#include "message/msg_command_queue.h"
+#include "composite/composite_device.h"
+#include "composite/composite_context.h"
+#include "composite/composite_command_queue.h"
+using dcl::composite::composite_device;
+using dcl::composite::composite_context;
+using dcl::composite::composite_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
+namespace server {
 //-----------------------------------------------------------------------------
-enum dcl_object_types
+void CreateCommandQueue_command::execute()
 {
-    dcl_platform_id = 0,
-    dcl_device_id = 1,
-    dcl_context_id = 2,
-    dcl_program_id = 3,
-    dcl_kernel_id = 4,
-    dcl_command_queue_id = 5,
-};
+    server_platform& server = server_platform::get_instance();
+
+    composite_context* context_ptr =
+        server.get_context_manager().get( message_.get_context_id() );
+
+    composite_device* device_ptr =
+        server.get_device_manager().get( message_.get_device_id() );
+
+    composite_command_queue* command_queue_ptr =
+        reinterpret_cast< composite_command_queue* >
+        ( context_ptr->create_command_queue( device_ptr, message_.get_properties() ) );
+
+    remote_id_t id = server.get_command_queue_manager().add( command_queue_ptr );
+
+    message_.set_remote_id( id );
+}
 //-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >
-class icd_object
+void Finish_command::execute()
 {
-public:
-    static const uint32_t type_id = DCL_TYPE_ID;
+    server_platform& server = server_platform::get_instance();
 
-    inline CL_TYPE_T get_icd_obj() const
-    {
-        return icd_obj_;
-    }
+    composite_command_queue* queue_ptr = 
+        server.get_command_queue_manager().get( message_.get_remote_id() );
 
-    inline void set_icd_obj( CL_TYPE_T icd_obj )
-    {
-        icd_obj_ = icd_obj;
-    }
-
-protected:
-    CL_TYPE_T icd_obj_;
-
-    icd_object() : icd_obj_( NULL ){}
-};
+    queue_ptr->finish();
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::info
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_ICD_OBJECT_H_

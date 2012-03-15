@@ -22,10 +22,13 @@
 //-----------------------------------------------------------------------------
 #include "composite_context.h"
 #include "composite_program.h"
+#include "composite_device.h"
+#include "composite_command_queue.h"
 #include "info/program_info.h"
+using dcl::info::generic_device;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
-using dcl::composite::opencl_composite;
+using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -48,14 +51,11 @@ void composite_context::add( generic_context* context_ptr, const devices_t& devi
 //-----------------------------------------------------------------------------
 void composite_context::load_devices()
 {
-    contexts_t::iterator it;
     devices_.clear();
 
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( contexts_t::iterator it = contexts_.begin(); it != contexts_.end(); it++ )
     {
-        (*it)->get_devices();
-
-        devices_.insert( devices_.end(), (*it)->get_devices().begin(), (*it)->get_devices().end() );
+        add( *it, (*it)->get_devices() );
     }
 }
 //-----------------------------------------------------------------------------
@@ -73,6 +73,20 @@ generic_program* composite_context::do_create_program( const std::string& source
     }
 
     return reinterpret_cast< generic_program* >( programs );
+}
+//-----------------------------------------------------------------------------
+generic_command_queue*
+    composite_context::do_create_command_queue( const generic_device* device_ptr,
+                                                cl_command_queue_properties properties )
+{
+    context_map_t::iterator it = context_map_.find( device_ptr );
+
+    if( it == context_map_.end() )
+    {
+        throw dcl::library_exception( CL_INVALID_DEVICE );
+    }
+
+    return it->second->create_command_queue( device_ptr, properties );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

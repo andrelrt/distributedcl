@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Andrï¿½ Tupinambï¿½ (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,49 +20,18 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_ICD_OBJECT_H_
-#define _DCL_ICD_OBJECT_H_
+#ifndef _DCL_COMPOSITE_COMMAND_QUEUE_H_
+#define _DCL_COMPOSITE_COMMAND_QUEUE_H_
 
 #include <set>
-#include <map>
 #include "distributedcl_internal.h"
-#include "opencl_functions.h"
+#include "info/command_queue_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
+namespace composite {
 //-----------------------------------------------------------------------------
-enum dcl_object_types
-{
-    dcl_platform_id = 0,
-    dcl_device_id = 1,
-    dcl_context_id = 2,
-    dcl_program_id = 3,
-    dcl_kernel_id = 4,
-    dcl_command_queue_id = 5,
-};
+typedef dcl::info::generic_command_queue composite_command_queue;
 //-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >
-class icd_object
-{
-public:
-    static const uint32_t type_id = DCL_TYPE_ID;
-
-    inline CL_TYPE_T get_icd_obj() const
-    {
-        return icd_obj_;
-    }
-
-    inline void set_icd_obj( CL_TYPE_T icd_obj )
-    {
-        icd_obj_ = icd_obj;
-    }
-
-protected:
-    CL_TYPE_T icd_obj_;
-
-    icd_object() : icd_obj_( NULL ){}
-};
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-}} // namespace dcl::info
-//-----------------------------------------------------------------------------
-#endif // _DCL_ICD_OBJECT_H_
+#endif //_DCL_COMPOSITE_COMMAND_QUEUE_H_

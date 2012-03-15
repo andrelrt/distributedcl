@@ -22,10 +22,13 @@
 //-----------------------------------------------------------------------------
 #include "msg_kernel.h"
 using dcl::remote_id_t;
+using dcl::info::ndrange;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace message {
+//-----------------------------------------------------------------------------
+// msgCreateKernel
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateKernel >::create_request( uint8_t* payload_ptr )
 {
@@ -65,6 +68,51 @@ void dcl_message< msgCreateKernel >::parse_response( const base_message* message
         reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
 
     id_ = network_to_host( *response_ptr );
+}
+//-----------------------------------------------------------------------------
+// msgEnqueueNDRangeKernel
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueNDRangeKernel >::create_request( uint8_t* payload_ptr )
+{
+    msgEnqueueNDRangeKernel_request* request_ptr = 
+        reinterpret_cast< msgEnqueueNDRangeKernel_request* >( payload_ptr );
+
+    request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
+    request_ptr->kernel_id_ = host_to_network( kernel_id_ );
+    request_ptr->dimensions_ = host_to_network( static_cast<uint16_t>( global_.get_dimensions() ) );
+
+    for( size_t i = 0; i < global_.get_dimensions(); i++ )
+    {
+        request_ptr->offset_[ i ] = host_to_network( static_cast<uint16_t>( offset_.get_range()[ i ] ) );
+        request_ptr->global_[ i ] = host_to_network( static_cast<uint16_t>( global_.get_range()[ i ] ) );
+        request_ptr->local_[ i ]  = host_to_network( static_cast<uint16_t>( local_.get_range()[ i ] ) );
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const uint8_t* payload_ptr )
+{
+    const msgEnqueueNDRangeKernel_request* request_ptr = 
+        reinterpret_cast< const msgEnqueueNDRangeKernel_request* >( payload_ptr );
+
+    command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
+    kernel_id_ = network_to_host( request_ptr->kernel_id_ );
+    uint16_t dimensions = network_to_host( request_ptr->dimensions_ );
+    size_t value[ 3 ];
+
+    value[ 0 ] = network_to_host( request_ptr->offset_[ 0 ] );
+    value[ 1 ] = network_to_host( request_ptr->offset_[ 1 ] );
+    value[ 2 ] = network_to_host( request_ptr->offset_[ 2 ] );
+    offset_.copy( ndrange( dimensions, value ) );
+
+    value[ 0 ] = network_to_host( request_ptr->global_[ 0 ] );
+    value[ 1 ] = network_to_host( request_ptr->global_[ 1 ] );
+    value[ 2 ] = network_to_host( request_ptr->global_[ 2 ] );
+    global_.copy( ndrange( dimensions, value ) );
+
+    value[ 0 ] = network_to_host( request_ptr->local_[ 0 ] );
+    value[ 1 ] = network_to_host( request_ptr->local_[ 1 ] );
+    value[ 2 ] = network_to_host( request_ptr->local_[ 2 ] );
+    local_.copy( ndrange( dimensions, value ) );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

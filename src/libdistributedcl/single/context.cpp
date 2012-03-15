@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,12 @@
 #include "platform.h"
 #include "device.h"
 #include "program.h"
+#include "command_queue.h"
+using dcl::info::generic_command_queue;
 using dcl::info::generic_platform;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
+using dcl::info::generic_device;
 using dcl::info::program_info;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -147,6 +150,13 @@ void context::load_devices()
 generic_program* context::do_create_program( const std::string& source_code )
 {
     return new program( *this, source_code );
+}
+//-----------------------------------------------------------------------------
+generic_command_queue*
+    context::do_create_command_queue( const generic_device* device_ptr,
+                                      cl_command_queue_properties properties )
+{
+    return new command_queue( *this, *(reinterpret_cast< const device* >( device_ptr )), properties );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

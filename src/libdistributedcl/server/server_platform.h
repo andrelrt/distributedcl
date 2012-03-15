@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 #include "composite/composite_context.h"
 #include "composite/composite_program.h"
 #include "composite/composite_kernel.h"
+#include "composite/composite_command_queue.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -62,11 +63,13 @@ private:
     typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_kernel > kernel_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_command_queue > command_queue_manager_t;
 
     device_manager_t device_manager_;
     context_manager_t context_manager_;
     program_manager_t program_manager_;
     kernel_manager_t kernel_manager_;
+    command_queue_manager_t command_queue_manager_;
     static server_platform instance_;
 
     server_platform(){}
@@ -95,6 +98,11 @@ public:
     inline kernel_manager_t& get_kernel_manager()
     {
         return kernel_manager_;
+    }
+
+    inline command_queue_manager_t& get_command_queue_manager()
+    {
+        return command_queue_manager_;
     }
 };
 //-----------------------------------------------------------------------------

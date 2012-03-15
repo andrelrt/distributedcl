@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,6 +78,10 @@ private:
     void load_image_formats( image_formats_t& image_formats, cl_mem_object_type image_type );
 
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+
+    virtual dcl::info::generic_command_queue*
+        do_create_command_queue( const dcl::info::generic_device* device_ptr,
+                                 cl_command_queue_properties properties );
 
     image_formats_t image2d_formats_;
     image_formats_t image3d_formats_;

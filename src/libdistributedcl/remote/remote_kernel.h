@@ -41,6 +41,11 @@ public:
         remote_object( context_ref.get_session() ) {}
 
     ~remote_kernel(){}
+
+    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
+                          const dcl::info::ndrange& offset, 
+                          const dcl::info::ndrange& global, 
+                          const dcl::info::ndrange& local );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

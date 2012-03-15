@@ -25,8 +25,10 @@
 #include "message/msg_kernel.h"
 #include "composite/composite_program.h"
 #include "composite/composite_kernel.h"
+#include "composite/composite_command_queue.h"
 using dcl::composite::composite_program;
 using dcl::composite::composite_kernel;
+using dcl::composite::composite_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -45,6 +47,20 @@ void CreateKernel_command::execute()
     remote_id_t id = server.get_kernel_manager().add( kernel_ptr );
 
     message_.set_remote_id( id );
+}
+//-----------------------------------------------------------------------------
+void EnqueueNDRangeKernel_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    composite_command_queue* queue_ptr = 
+        server.get_command_queue_manager().get( message_.get_command_queue_id() );
+
+    composite_kernel* kernel_ptr = 
+        server.get_kernel_manager().get( message_.get_kernel_id() );
+
+    kernel_ptr->execute( queue_ptr, message_.get_offset(), 
+                         message_.get_global(), message_.get_local() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

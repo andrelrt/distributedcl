@@ -179,6 +179,24 @@
     <ClInclude Include="server\server_kernel.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="info\command_queue_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\composite_command_queue.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="single\command_queue.h">
+      <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\remote_command_queue.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="message\msg_command_queue.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_command_queue.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -263,6 +281,24 @@
       <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="server\server_kernel.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="single\command_queue.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="message\msg_command_queue.cpp">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="composite\composite_kernel.cpp">
+      <Filter>composite</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_kernel.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_command_queue.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_command_queue.cpp">
       <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>

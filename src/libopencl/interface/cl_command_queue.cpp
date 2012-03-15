@@ -23,12 +23,62 @@
 #include "distributedcl_internal.h"
 #include "cl_utils.h"
 #include "icd/icd_object_manager.h"
+#include "composite/composite_context.h"
+#include "composite/composite_device.h"
+#include "composite/composite_command_queue.h"
+using dcl::icd::icd_object_manager;
+using dcl::composite::composite_context;
+using dcl::composite::composite_device;
+using dcl::composite::composite_command_queue;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_command_queue CL_API_CALL
 clCreateCommandQueue( cl_context context, cl_device_id device, 
                       cl_command_queue_properties properties,
                       cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
 {
+    if( (properties & ~(CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE | CL_QUEUE_PROFILING_ENABLE)) != 0 )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_context* context_ptr = icd.get_object_ptr< composite_context >( context );
+        composite_device* device_ptr = icd.get_object_ptr< composite_device >( device );
+
+        composite_command_queue* command_queue_ptr =
+            reinterpret_cast< composite_command_queue* >( context_ptr->create_command_queue( device_ptr, properties ) );
+
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_SUCCESS;
+        }
+
+        return icd.get_cl_id< composite_command_queue >( command_queue_ptr );
+    }
+    catch( dcl::library_exception& ex )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = ex.get_error();
+        }
+        return NULL;
+    }
+    catch( ... )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
+    }
+
     // Dummy
     if( errcode_ret != NULL )
     {
@@ -47,8 +97,7 @@ clCreateCommandQueue( cl_context context, cl_device_id device,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
 {
-    //FIXME: Not implemented
-    return CL_INVALID_COMMAND_QUEUE;
+    return CL_SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -70,7 +119,27 @@ clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clFinish( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
 {
-    //FIXME: Not implemented
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_command_queue* command_queue_ptr =
+            icd.get_object_ptr< composite_command_queue >( command_queue );
+
+        command_queue_ptr->finish();
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_COMMAND_QUEUE;
+    }
+
+    // Dummy
     return CL_INVALID_COMMAND_QUEUE;
 }
 //-----------------------------------------------------------------------------

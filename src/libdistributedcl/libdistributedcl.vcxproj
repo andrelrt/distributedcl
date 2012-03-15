@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="composite\composite_command_queue.h" />
     <ClInclude Include="composite\composite_context.h" />
     <ClInclude Include="composite\composite_device.h" />
     <ClInclude Include="composite\composite_kernel.h" />
@@ -26,6 +27,7 @@
     <ClInclude Include="composite\composite_platform.h" />
     <ClInclude Include="composite\composite_program.h" />
     <ClInclude Include="composite\opencl_composite.h" />
+    <ClInclude Include="info\command_queue_info.h" />
     <ClInclude Include="info\context_info.h" />
     <ClInclude Include="info\dcl_objects.h" />
     <ClInclude Include="info\device_info.h" />
@@ -38,6 +40,7 @@
     <ClInclude Include="info\program_info.h" />
     <ClInclude Include="library_exception.h" />
     <ClInclude Include="message\message.h" />
+    <ClInclude Include="message\msg_command_queue.h" />
     <ClInclude Include="message\msg_device.h" />
     <ClInclude Include="message\msg_internal.h" />
     <ClInclude Include="message\msg_kernel.h" />
@@ -52,6 +55,7 @@
     <ClInclude Include="network\session.h" />
     <ClInclude Include="network\session_manager.h" />
     <ClInclude Include="network\tcp_transport.h" />
+    <ClInclude Include="remote\remote_command_queue.h" />
     <ClInclude Include="remote\remote_device.h" />
     <ClInclude Include="remote\remote_kernel.h" />
     <ClInclude Include="remote\remote_opencl.h" />
@@ -60,10 +64,12 @@
     <ClInclude Include="remote\remote_context.h" />
     <ClInclude Include="remote\remote_program.h" />
     <ClInclude Include="server\server_command.h" />
+    <ClInclude Include="server\server_command_queue.h" />
     <ClInclude Include="server\server_kernel.h" />
     <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_context.h" />
     <ClInclude Include="server\server_program.h" />
+    <ClInclude Include="single\command_queue.h" />
     <ClInclude Include="single\context.h" />
     <ClInclude Include="single\device.h" />
     <ClInclude Include="single\kernel.h" />
@@ -75,10 +81,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="composite\composite_context.cpp" />
+    <ClCompile Include="composite\composite_kernel.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
     <ClCompile Include="composite\composite_program.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
     <ClCompile Include="message\message.cpp" />
+    <ClCompile Include="message\msg_command_queue.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
     <ClCompile Include="message\msg_internal.cpp" />
     <ClCompile Include="message\msg_kernel.cpp" />
@@ -87,14 +95,18 @@
     <ClCompile Include="message\msg_context.cpp" />
     <ClCompile Include="network\message_dispatcher.cpp" />
     <ClCompile Include="network\session_manager.cpp" />
+    <ClCompile Include="remote\remote_command_queue.cpp" />
     <ClCompile Include="remote\remote_context.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
+    <ClCompile Include="remote\remote_kernel.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
+    <ClCompile Include="server\server_command_queue.cpp" />
     <ClCompile Include="server\server_kernel.cpp" />
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="server\server_context.cpp" />
     <ClCompile Include="server\server_program.cpp" />
+    <ClCompile Include="single\command_queue.cpp" />
     <ClCompile Include="single\context.cpp" />
     <ClCompile Include="single\device.cpp" />
     <ClCompile Include="single\kernel.cpp" />

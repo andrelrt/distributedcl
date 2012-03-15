@@ -34,8 +34,18 @@ class CreateKernel_command :
     public server_command< dcl::network::message::msgCreateKernel >
 {
 public:
-    CreateKernel_command( recv_ptr_t message_ptr ) : 
+    CreateKernel_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgCreateKernel >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
+class EnqueueNDRangeKernel_command : 
+    public server_command< dcl::network::message::msgEnqueueNDRangeKernel >
+{
+public:
+    EnqueueNDRangeKernel_command( recv_ptr_t message_ptr ) :
+        server_command< dcl::network::message::msgEnqueueNDRangeKernel >( message_ptr ) {}
 
     void execute();
 };

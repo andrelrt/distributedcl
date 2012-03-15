@@ -28,9 +28,90 @@
 #include "library_exception.h"
 #include "dcl_objects.h"
 #include "icd_object.h"
+#include "command_queue_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
+//-----------------------------------------------------------------------------
+class ndrange
+{
+private:
+    size_t dimensions_;
+    size_t range_[ 3 ];
+
+public:
+    ndrange() : 
+        dimensions_( 0 ) 
+    {
+        range_[ 0 ] = 0;
+        range_[ 1 ] = 0;
+        range_[ 2 ] = 0;
+    }
+
+    ndrange( cl_uint dim, const size_t* range ) : 
+        dimensions_( dim )
+    {
+        range_[ 0 ] = 0;
+        range_[ 1 ] = 0;
+        range_[ 2 ] = 0;
+
+        if( range != NULL )
+        {
+            switch( dim )
+            {
+                case 3:
+                    range_[ 2 ] = range[ 2 ];
+                    // fall through
+
+                case 2:
+                    range_[ 1 ] = range[ 1 ];
+                    // fall through
+
+                case 1:
+                    range_[ 0 ] = range[ 0 ];
+                    break;
+
+                default:
+                    throw library_exception( CL_INVALID_WORK_DIMENSION );
+            }
+        }
+        else
+        {
+            dimensions_ = 0;
+        }
+    }
+
+    ndrange( const ndrange& range ) : 
+        dimensions_( range.dimensions_ ) 
+    {
+        range_[ 0 ] = range.range_[ 0 ];
+        range_[ 1 ] = range.range_[ 1 ];
+        range_[ 2 ] = range.range_[ 2 ];
+    }
+
+    inline void copy( const ndrange& range )
+    {
+        dimensions_ = range.dimensions_;
+        range_[ 0 ] = range.range_[ 0 ];
+        range_[ 1 ] = range.range_[ 1 ];
+        range_[ 2 ] = range.range_[ 2 ];
+    }
+
+    inline const size_t* get_pointer() const
+    {
+        return (dimensions_ == 0) ? NULL : range_;
+    }
+
+    inline const size_t* get_range() const
+    {
+        return range_;
+    }
+
+    inline size_t get_dimensions() const
+    {
+        return dimensions_;
+    }
+};
 //-----------------------------------------------------------------------------
 struct kernel_info
 {
@@ -56,6 +137,9 @@ public:
     {
         return local_info_.name_;
     }
+
+    virtual void execute( const generic_command_queue* queue_ptr, const ndrange& offset, 
+                          const ndrange& global, const ndrange& local ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

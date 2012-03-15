@@ -24,6 +24,7 @@
 #define _DCL_KERNEL_MESSAGES_H_
 
 #include "message.h"
+#include "info/kernel_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -36,6 +37,8 @@ namespace message {
     //msgSetKernelArg             = 59,
     //msgGetKernelInfo            = 60,
     //msgGetKernelWorkGroupInfo   = 61,
+    //msgEnqueueNDRangeKernel     = 80,
+    //msgEnqueueTask              = 81,
 //-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgCreateKernel > : public base_message
@@ -100,6 +103,72 @@ private:
         uint32_t name_len_;
 
         uint8_t name_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgEnqueueNDRangeKernel > : public base_message
+{
+public:
+    dcl_message< msgEnqueueNDRangeKernel >() :
+        base_message( msgEnqueueNDRangeKernel, true, sizeof( msgEnqueueNDRangeKernel_request ), 0 ) {}
+
+    inline const dcl::remote_id_t get_kernel_id() const
+    {
+        return kernel_id_;
+    }
+
+    inline void set_kernel_id( dcl::remote_id_t id )
+    {
+        kernel_id_ = id;
+    }
+
+    inline const dcl::remote_id_t get_command_queue_id() const
+    {
+        return command_queue_id_;
+    }
+
+    inline void set_command_queue_id( dcl::remote_id_t id )
+    {
+        command_queue_id_ = id;
+    }
+
+    inline dcl::info::ndrange& get_offset()
+    {
+        return offset_;
+    }
+
+    inline dcl::info::ndrange& get_global()
+    {
+        return global_;
+    }
+
+    inline dcl::info::ndrange& get_local()
+    {
+        return local_;
+    }
+
+private:
+    dcl::remote_id_t kernel_id_;
+    dcl::remote_id_t command_queue_id_;
+    dcl::info::ndrange offset_;
+    dcl::info::ndrange global_;
+    dcl::info::ndrange local_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgEnqueueNDRangeKernel_request
+    {
+        dcl::remote_id_t kernel_id_;
+        dcl::remote_id_t command_queue_id_;
+        uint16_t dimensions_;
+        uint16_t offset_[ 3 ];
+        uint16_t global_[ 3 ];
+        uint16_t local_[ 3 ];
     };
     #pragma pack( pop )
 };

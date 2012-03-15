@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,65 +20,68 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_COMPOSITE_CONTEXT_H_
-#define _DCL_COMPOSITE_CONTEXT_H_
+#ifndef _DCL_INFO_COMMAND_QUEUE_H_
+#define _DCL_INFO_COMMAND_QUEUE_H_
 
-#include <map>
+#include <string>
 #include "distributedcl_internal.h"
-#include "opencl_composite.h"
-#include "info/dcl_objects.h"
-#include "info/context_info.h"
+#include "library_exception.h"
+#include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
+//-----------------------------------------------------------------------------
 class generic_device;
-class generic_program;
-}}
+class generic_context;
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace composite {
-//-----------------------------------------------------------------------------
-class opencl_composite;
-//-----------------------------------------------------------------------------
-class composite_context :
-    public dcl::info::generic_context
+struct command_queue_info
 {
-private:
-    typedef std::vector< dcl::info::generic_context* > contexts_t;
-    typedef std::map< const dcl::info::generic_device*, dcl::info::generic_context* > context_map_t;
-
-    contexts_t contexts_;
-    context_map_t context_map_;
-
 public:
-    typedef contexts_t::const_iterator iterator;
+    const generic_device* device_ptr_;
+    const generic_context* context_ptr_;
+    cl_command_queue_properties properties_;
 
-    composite_context();
-    ~composite_context(){}
+    inline command_queue_info(){}
 
-    void add( generic_context* context_ptr, const devices_t& devices );
-
-    void retain();
-    void release();
-
-    inline contexts_t::const_iterator begin() const
-    {
-        return contexts_.begin();
-    }
-
-    inline contexts_t::const_iterator end() const
-    {
-        return contexts_.end();
-    }
-
-private:
-    virtual void load_devices();
-    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
-    virtual dcl::info::generic_command_queue*
-        do_create_command_queue( const dcl::info::generic_device* device_ptr,
-                                 cl_command_queue_properties properties );
+    inline command_queue_info( const generic_context* context_ptr, const generic_device* device_ptr, 
+                               cl_command_queue_properties properties ) : 
+        device_ptr_( device_ptr ), context_ptr_( context_ptr ), properties_( properties ){}
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+class generic_command_queue :
+    public cl_object< cl_command_queue, cl_command_queue_info, CL_INVALID_COMMAND_QUEUE >,
+    public icd_object< cl_command_queue, dcl_command_queue_id >,
+    public dcl_object< command_queue_info >
+{
+public:
+    generic_command_queue( const generic_context* context_ptr, const generic_device* device_ptr,
+                           cl_command_queue_properties properties )
+    {
+        local_info_.device_ptr_ = device_ptr;
+        local_info_.context_ptr_ = context_ptr;
+        local_info_.properties_ = properties;
+    }
+
+    inline const generic_device* get_device() const
+    {
+        return local_info_.device_ptr_;
+    }
+
+    inline const generic_context* get_context() const
+    {
+        return local_info_.context_ptr_;
+    }
+
+    inline cl_command_queue_properties get_properties() const
+    {
+        return local_info_.properties_;
+    }
+
+    //virtual void flush() = 0;
+    virtual void finish() = 0;
+};
 //-----------------------------------------------------------------------------
-#endif //_DCL_COMPOSITE_PLATFORM_H_
+}} // namespace dcl::info
+//-----------------------------------------------------------------------------
+#endif // _DCL_INFO_COMMAND_QUEUE_H_

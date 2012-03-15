@@ -49,6 +49,9 @@ private:
 
     virtual void load_devices();
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+    virtual dcl::info::generic_command_queue*
+        do_create_command_queue( const dcl::info::generic_device* device_ptr,
+                                 cl_command_queue_properties properties );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

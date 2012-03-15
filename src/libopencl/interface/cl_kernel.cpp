@@ -25,9 +25,12 @@
 #include "icd/icd_object_manager.h"
 #include "composite/composite_program.h"
 #include "composite/composite_kernel.h"
+#include "composite/composite_command_queue.h"
+using dcl::info::ndrange;
 using dcl::icd::icd_object_manager;
 using dcl::composite::composite_program;
 using dcl::composite::composite_kernel;
+using dcl::composite::composite_command_queue;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_kernel CL_API_CALL
 clCreateKernel( cl_program program, const char* kernel_name,
@@ -126,7 +129,41 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
                         const size_t* local_work_size, cl_uint num_events_in_wait_list,
                         const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_1
 {
-    //FIXME: Not implemented
+    if( (work_dim < 1) || (work_dim > 3) )
+    {
+        return CL_INVALID_WORK_DIMENSION;
+    }
+
+    if( global_work_size == NULL )
+    {
+        return CL_INVALID_GLOBAL_WORK_SIZE;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_kernel* kernel_ptr = icd.get_object_ptr< composite_kernel >( kernel );
+        composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
+
+        ndrange local( work_dim, local_work_size );
+        ndrange global( work_dim, global_work_size );
+        ndrange offset( work_dim, global_work_offset );
+
+        kernel_ptr->execute( queue_ptr, offset, global, local );
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_KERNEL;
+    }
+
+    // Dummy
     return CL_INVALID_KERNEL;
 }
 //-----------------------------------------------------------------------------

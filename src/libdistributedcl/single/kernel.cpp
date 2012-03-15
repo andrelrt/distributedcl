@@ -20,8 +20,10 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <boost/scoped_array.hpp>
 #include "kernel.h"
+#include "command_queue.h"
+using dcl::info::ndrange;
+using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -43,6 +45,22 @@ kernel::kernel( const program& program_ref, const std::string& name ) :
     }
 
     set_id( krnl );
+}
+//-----------------------------------------------------------------------------
+void kernel::execute( const generic_command_queue* queue_ptr,
+                      const ndrange& offset, const ndrange& global,
+                      const ndrange& local )
+{
+    const command_queue* queue = reinterpret_cast<const command_queue*>( queue_ptr );
+
+    cl_int error_code = 
+        opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(), global.get_dimensions(), 
+                                        offset.get_pointer(), global.get_pointer(), 
+                                        local.get_pointer(), 0, NULL, NULL );
+    if( error_code != CL_SUCCESS )
+    {
+        throw dcl::library_exception( error_code );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

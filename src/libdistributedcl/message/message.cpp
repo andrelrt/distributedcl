@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 #include "msg_program.h"
 #include "msg_kernel.h"
 #include "msg_internal.h"
+#include "msg_command_queue.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -91,6 +92,9 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
             break;
 
         case msgCreateCommandQueue:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateCommandQueue >() );
+            break;
+
         case msgRetainCommandQueue:
         case msgReleaseCommandQueue:
         case msgGetCommandQueueInfo:
@@ -150,7 +154,12 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgGetEventProfilingInfo:
 
         case msgFlush:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgFinish:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgFinish >() );
+            break;
 
         case msgEnqueueReadBuffer:
         case msgEnqueueWriteBuffer:
@@ -163,7 +172,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgEnqueueMapBuffer:
         case msgEnqueueMapImage:
         case msgEnqueueUnmapMemObject:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgEnqueueNDRangeKernel:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgEnqueueNDRangeKernel >() );
+            break;
+
         case msgEnqueueTask:
         case msgEnqueueNativeKernel:
         case msgEnqueueMarker:
