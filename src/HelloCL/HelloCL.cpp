@@ -97,8 +97,8 @@ jurisdiction and venue of these courts.
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <SDKUtil/SDKFile.hpp>
-#include <SDKUtil/SDKCommon.hpp>
+#include <SDKFile.hpp>
+#include <SDKCommon.hpp>
 
 #define __NO_STD_VECTOR
 #define __NO_STD_STRING

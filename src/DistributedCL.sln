@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLinfo", "CLInfo\CLinfo.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCL", "HelloCL\HelloCL.vcxproj", "{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatrixMulDouble", "MatrixMulDouble\MatrixMulDouble.vcxproj", "{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -127,6 +129,18 @@ Global
 		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|Win32.Build.0 = Release|Win32
 		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|x64.ActiveCfg = Release|x64
 		{D2C35DAD-06A1-4851-ACF4-F5CD2DD348D7}.Release|x64.Build.0 = Release|x64
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Win32.Build.0 = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|x64.ActiveCfg = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Any CPU.ActiveCfg = Release|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Win32.ActiveCfg = Release|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Win32.Build.0 = Release|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
