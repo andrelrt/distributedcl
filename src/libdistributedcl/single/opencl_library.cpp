@@ -278,7 +278,7 @@ void opencl_library::load()
 
     if( clLib_ == null_library_handle )
     {
-	    throw library_exception( CL_INVALID_VALUE );
+	    throw library_exception( dlerror() );
     }
 
     LOAD_FUNCTION(clGetPlatformIDs);

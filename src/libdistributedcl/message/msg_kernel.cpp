@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <string.h>
 #include "msg_kernel.h"
 using dcl::remote_id_t;
 using dcl::info::ndrange;

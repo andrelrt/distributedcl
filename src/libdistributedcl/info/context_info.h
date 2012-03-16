@@ -47,7 +47,7 @@ public:
     generic_context( const generic_platform& platform ) : 
         platform_( platform ){}
     generic_context( const generic_platform& platform, const devices_t& devices_ref ) : 
-        platform_( platform ), devices_( devices_ref ){}
+        devices_( devices_ref ), platform_( platform ){}
 
     inline const devices_t& get_devices()
     {

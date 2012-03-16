@@ -39,8 +39,8 @@ class remote_context :
 public:
     remote_context( const remote_platform* platform_ptr ) :
         generic_context( *platform_ptr ),
-        platform_ptr_( platform_ptr ),
-        remote_object( platform_ptr->get_session() ) {}
+        remote_object( platform_ptr->get_session() ),
+        platform_ptr_( platform_ptr ){}
 
     ~remote_context(){}
 

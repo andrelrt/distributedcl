@@ -45,7 +45,11 @@ class opencl_composite
 public:
     static opencl_composite& get_instance()
     {
-        return instance_;
+		if( instance_ptr_ == NULL )
+		{
+			instance_ptr_ = new opencl_composite(); 
+		}
+        return *instance_ptr_;
     }
 
     ~opencl_composite()
@@ -74,7 +78,7 @@ private:
     opencl_set_t opencl_set_;
     library_set_t library_set_;
     composite_platform comp_platform_;
-    static opencl_composite instance_;
+    static opencl_composite* instance_ptr_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

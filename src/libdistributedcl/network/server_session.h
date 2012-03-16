@@ -39,10 +39,11 @@ template< template< class > class COMM >
 class server_session : public dcl::network::platform::session< COMM >
 {
 public:
-	typedef typename session< COMM >::config_info_t config_info_t;
+	typedef typename dcl::network::platform::session< COMM > session_t;
+	typedef typename session_t::config_info_t config_info_t;
 
     server_session( const config_info_t& config ) :
-        session< COMM >( config ), receive_thread_ptr_( NULL )
+        session_t( config ), receive_thread_ptr_( NULL )
     {}
 
     ~server_session()
@@ -54,7 +55,7 @@ public:
     {
         if( receive_thread_ptr_ == NULL )
         {
-            session< COMM >::get_communication().startup( this );
+            session_t::get_communication().startup( this );
 
             receive_thread_ptr_ = new boost::thread( &dcl::network::server::server_session< COMM >::receive_thread, this );
         }
@@ -66,7 +67,7 @@ public:
         {
             receive_thread_ptr_->interrupt();
 
-            session< COMM >::get_communication().close();
+            session_t::get_communication().close();
 
             receive_thread_ptr_->join();
 
@@ -74,7 +75,7 @@ public:
             receive_thread_ptr_ = NULL;
         }
 
-        session< COMM >::get_communication().shutdown();
+        session_t::get_communication().shutdown();
     }
 
 private:
@@ -84,9 +85,9 @@ private:
     void receive_thread()
     {
         //TODO: send hankshake base_messages
-        session< COMM >::set_session_id( 1 );
-        session< COMM >::set_sequence_number( 1 );
-        session< COMM >::set_remote_sequence_number( 1 );
+        session_t::set_session_id( 1 );
+        session_t::set_sequence_number( 1 );
+        session_t::set_remote_sequence_number( 1 );
 
         while( !boost::this_thread::interruption_requested() )
         {
@@ -94,7 +95,7 @@ private:
             try
             {
                 // Receive packet
-                recv_packet.reset( session< COMM >::receive_packet() );
+                recv_packet.reset( session_t::receive_packet() );
             }
             catch( dcl::library_exception& )
             {
@@ -106,7 +107,7 @@ private:
                 break;
 
             // Create response packet
-            boost::scoped_ptr< dcl::network::message::packet > ret_packet( session< COMM >::create_packet() );
+            boost::scoped_ptr< dcl::network::message::packet > ret_packet( session_t::create_packet() );
 
             // Execute packet base_messages
             try
@@ -139,7 +140,7 @@ private:
             try
             {
                 // Send response
-                session< COMM >::send_packet( ret_packet.get() );
+                session_t::send_packet( ret_packet.get() );
             }
             catch( dcl::library_exception& )
             {

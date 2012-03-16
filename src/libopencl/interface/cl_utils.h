@@ -99,7 +99,7 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
 
     obj_ptr->load_info();
 
-    const DCL_TYPE_T::dcl_info_t& info_ptr = obj_ptr->get_info();
+    const typename DCL_TYPE_T::dcl_info_t& info_ptr = obj_ptr->get_info();
 
     size_t info_size = info_ptr.get_info_size( info );
 

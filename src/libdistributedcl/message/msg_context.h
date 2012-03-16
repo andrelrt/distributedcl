@@ -77,8 +77,8 @@ class dcl_message< msgGetContextInfo > : public base_message
 {
 public:
     dcl_message< msgGetContextInfo >() : 
-        device_count_( 0 ), id_( 0xffff ), devices_( NULL ), 
-        base_message( msgGetContextInfo, true, sizeof( remote_id_t ), 0 ) {}
+        base_message( msgGetContextInfo, true, sizeof( remote_id_t ), 0 ),
+        device_count_( 0 ), id_( 0xffff ), devices_( NULL ){}
 
     inline const dcl::remote_id_t get_remote_id() const
     {

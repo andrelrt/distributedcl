@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <stdio.h>
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "network/server.h"
@@ -32,7 +33,7 @@ using dcl::composite::opencl_composite;
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "OpenCL.dll"
 #else
-#define OPENCL_LIBRARY  "libOpenCL.so"
+#define OPENCL_LIBRARY  "/usr/lib64/libOpenCL.so"
 #endif
 //-----------------------------------------------------------------------------
 int main( int argc, char* argv[] )
@@ -44,23 +45,30 @@ int main( int argc, char* argv[] )
     WSAStartup( MAKEWORD(1, 1), &wsaData );
 
 #endif
+	
+	try
+	{
+		// Load OpenCL Libraries --------------------------------------------------
+		opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
 
-    // Load OpenCL Libraries --------------------------------------------------
-    opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
+		// Start TCP Network Server -----------------------------------------------
+		typedef server< tcp_transport > tcp_server_t;
 
-    // Start TCP Network Server -----------------------------------------------
-    typedef server< tcp_transport > tcp_server_t;
+		// default config info (bind ip 0.0.0.0, port 4791)
+		tcp_server_t::config_info_t tcp_config;
 
-    // default config info (bind ip 0.0.0.0, port 4791)
-    tcp_server_t::config_info_t tcp_config;
+		boost::scoped_ptr< tcp_server_t > tcp_server_ptr( new tcp_server_t( tcp_config ) );
+		tcp_server_ptr->start_accept_thread();
 
-    boost::scoped_ptr< tcp_server_t > tcp_server_ptr( new tcp_server_t( tcp_config ) );
-    tcp_server_ptr->start_accept_thread();
+		tcp_server_ptr->wait();
 
-    tcp_server_ptr->wait();
-
-    // Free OpenCL Libraries --------------------------------------------------
-    opencl_composite::get_instance().free_all();
+		// Free OpenCL Libraries --------------------------------------------------
+		opencl_composite::get_instance().free_all();
+	}
+	catch( dcl::library_exception& ex )
+	{
+		printf( "Exception: %s (%d)\n", ex.text().c_str(), ex.get_error() );
+	}
 
 #if defined( WIN32 )
 

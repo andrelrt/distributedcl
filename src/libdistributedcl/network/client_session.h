@@ -40,33 +40,33 @@ template< template< class > class COMM >
 class client_session : public dcl::network::platform::session< COMM >
 {
 public:
-    client_session( const typename session< COMM >::config_info_t& config ) :
-        session< COMM >( config )
+    client_session( const typename dcl::network::platform::session< COMM >::config_info_t& config ) :
+        dcl::network::platform::session< COMM >( config )
     {
-        session< COMM >::get_communication().startup( this );
+        dcl::network::platform::session< COMM >::get_communication().startup( this );
     }
 
     ~client_session()
     {
-        session< COMM >::get_communication().shutdown();
+        dcl::network::platform::session< COMM >::get_communication().shutdown();
         clear_received_messages();
     }
 
     inline void connect()
     {
-        session< COMM >::get_communication().connect();
+        dcl::network::platform::session< COMM >::get_communication().connect();
 
         //TODO: send handshake base_messages
-        session< COMM >::set_session_id( 1 );
-        session< COMM >::set_sequence_number( 1 );
-        session< COMM >::set_remote_sequence_number( 1 );
+        dcl::network::platform::session< COMM >::set_session_id( 1 );
+        dcl::network::platform::session< COMM >::set_sequence_number( 1 );
+        dcl::network::platform::session< COMM >::set_remote_sequence_number( 1 );
     }
 
     void flush_queue()
     {
         scoped_lock_t lock( mutex_ );
 
-        boost::scoped_ptr< dcl::network::message::packet > packet_ptr( session< COMM >::create_packet() );
+        boost::scoped_ptr< dcl::network::message::packet > packet_ptr( dcl::network::platform::session< COMM >::create_packet() );
 
         while( !message_queue_.empty() )
         {
@@ -77,13 +77,13 @@ public:
         }
 
         // Send data
-        session< COMM >::send_packet( packet_ptr.get() );
+        dcl::network::platform::session< COMM >::send_packet( packet_ptr.get() );
         boost::scoped_ptr< dcl::network::message::packet > recv_packet_ptr;
 
         try
         {
             // Wait response
-            recv_packet_ptr.reset( session< COMM >::receive_packet() );
+            recv_packet_ptr.reset( dcl::network::platform::session< COMM >::receive_packet() );
         }
         catch( dcl::library_exception& )
         {

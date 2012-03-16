@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <stdio.h>
 #include "opencl_composite.h"
 #include "single/opencl_single.h"
 #include "single/opencl_library.h"
@@ -34,7 +35,7 @@ using dcl::network::client::session_manager;
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-opencl_composite opencl_composite::instance_;
+opencl_composite* opencl_composite::instance_ptr_ = NULL;
 //-----------------------------------------------------------------------------
 void opencl_composite::free_all()
 {
@@ -81,6 +82,7 @@ void opencl_composite::add_remote( const std::string& connection_string )
     }
 
     remote_set_.insert( remote_ptr );
+
 }
 //-----------------------------------------------------------------------------
 void opencl_composite::unload_compiler()

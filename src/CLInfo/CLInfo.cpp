@@ -124,12 +124,11 @@ main(int argc, char** argv)
     /* Error flag */
     cl_int status = 0;
 
+#ifdef _WIN32
     /* Extensions verification flags */
     bool isGpu = true;
     bool isVistaOrWin7 = false;
 
-
-#ifdef _WIN32
     // Find the version of Windows
     OSVERSIONINFO vInfo;
     memset(&vInfo, 0, sizeof(vInfo));
@@ -145,17 +144,12 @@ main(int argc, char** argv)
     {
         isVistaOrWin7 = true;
     }
-#endif
 
-    /* Check if sample is run for cpu */
-    for(int i = 1; i < argc; i++)
-    {
-        if(!strcmp("cpu", argv[i]))
-            isGpu = false;
-    }
+#endif
 
     cl_int err;
 
+    try {
     // Platform info
     std::vector<cl::Platform> platforms;
     err = cl::Platform::get(&platforms);
@@ -164,7 +158,6 @@ main(int argc, char** argv)
         err && (platforms.size() == 0 ? -1 : CL_SUCCESS),
         "cl::Platform::get()");
 
-    try {
     // Iteratate over platforms
     std::cout << "Number of platforms:\t\t\t\t "
               << platforms.size()
@@ -594,6 +587,10 @@ main(int argc, char** argv)
             << ")"
             << std::endl;
     }
+    catch( ... )
+    {
+		std::cerr << "Error" << std::endl;
+	}
 
     std::string pause;
     std::cin >> pause;

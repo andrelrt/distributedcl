@@ -60,16 +60,6 @@ private:
     const composite_context& context_ref_;
     composite_map_t composite_map_;
 
-    inline void create_context_objects()
-    {
-        for( typename composite_context::iterator it = context_ref_.begin(); it != context_ref_.end(); it++ )
-        {
-            //DCL_TYPE_T* new_obj = new DCL_TYPE_T( (*it)->get_opencl(), object_data_ );
-
-            insert_context_object( *it, new_obj );
-        }
-    }
-
 protected:
     typedef typename composite_map_t::iterator iterator;
 

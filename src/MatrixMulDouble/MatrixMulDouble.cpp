@@ -366,7 +366,8 @@ MatrixMulDouble::setupCL(void)
     }
 
     std::string extensions = devices[deviceId].getInfo<CL_DEVICE_EXTENSIONS>();
-    if(!strstr(extensions.c_str(), "cl_amd_fp64"))
+    if(!strstr(extensions.c_str(), "cl_amd_fp64") || 
+       !strstr(extensions.c_str(), "cl_khr_fp64") )
     {
         sampleCommon->error("Device does not support double precision extension!");
         exit(SDK_SUCCESS);

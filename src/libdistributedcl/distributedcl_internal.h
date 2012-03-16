@@ -33,6 +33,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <WinSock.h>
+#else
+#include <arpa/inet.h>
 #endif
 
 #include <stdint.h>

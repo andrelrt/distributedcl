@@ -53,7 +53,7 @@ public:
 
         } while( object_map_.find( object_id ) != object_map_.end() );
 
-        object_map_.insert( object_map_t::value_type( object_id, object_ptr ) );
+        object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
 
         //object_ptr->set_remote_id( object_id );
 
@@ -67,7 +67,7 @@ public:
 
     inline void remove( const DCL_TYPE_T* object_ptr )
     {
-        object_map_t::const_iterator it;
+        typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin; it != object_map_.end(); it++ )
         {
@@ -85,7 +85,7 @@ public:
 
     inline remote_id_t get( const DCL_TYPE_T* object_ptr ) const
     {
-        object_map_t::const_iterator it;
+        typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin(); it != object_map_.end(); it++ )
         {
@@ -105,7 +105,7 @@ public:
 
     inline DCL_TYPE_T* get( remote_id_t object_id ) const
     {
-        object_map_t::const_iterator it = object_map_.find( object_id );
+        typename object_map_t::const_iterator it = object_map_.find( object_id );
 
         if( it == object_map_.end() )
         {

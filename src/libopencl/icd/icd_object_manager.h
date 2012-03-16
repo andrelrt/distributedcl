@@ -159,7 +159,7 @@ private:
     dcl_object_map_t object_map_;
     icd_dispatch_table dispatch_table_;
 
-#define FILL_DISPATCH_ITEM(x) dispatch_table_.##x=x
+#define FILL_DISPATCH_ITEM(x) dispatch_table_. x = x
 
     icd_object_manager()
     {
@@ -252,7 +252,7 @@ public:
             object_map_.insert( dcl_object_map_t::value_type( reinterpret_cast< void* >( cl_object_ptr ), newObj ) );
             object_set_.insert( newObj );
 
-            DCL_TYPE_T::cl_type_t cl_ret = reinterpret_cast< typename DCL_TYPE_T::cl_type_t >( newObj );
+            typename DCL_TYPE_T::cl_type_t cl_ret = reinterpret_cast< typename DCL_TYPE_T::cl_type_t >( newObj );
 
             cl_object_ptr->set_icd_obj( cl_ret );
 

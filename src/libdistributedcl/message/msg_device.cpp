@@ -156,7 +156,7 @@ void dcl_message< msgGetDeviceInfo >::parse_response( const base_message* respon
     device_info_.max_samplers_ = network_to_host( response->max_samplers_ );
     device_info_.mem_base_address_align_ = network_to_host( response->mem_base_address_align_ );
     device_info_.min_data_type_align_size_ = network_to_host( response->min_data_type_align_size_ );
-    device_info_.single_fp_config_ = ((response->single_fp_config_ << 2) & 0x78) | response->single_fp_config_ & 1 | CL_FP_ROUND_TO_NEAREST | CL_FP_INF_NAN;
+    device_info_.single_fp_config_ = ((response->single_fp_config_ << 2) & 0x78) | (response->single_fp_config_ & 1) | CL_FP_ROUND_TO_NEAREST | CL_FP_INF_NAN;
     device_info_.global_mem_cache_type_ = cache_types[ response->global_mem_cache_type_ ];
     device_info_.global_mem_cacheline_size_ = network_to_host( response->global_mem_cacheline_size_ );
     device_info_.global_mem_cache_size_ = network_to_host( response->global_mem_cache_size_ );
@@ -253,7 +253,7 @@ void dcl_message< msgGetDeviceInfo >::create_response( uint8_t* payload_ptr )
     response->max_samplers_ = host_to_network( device_info_.max_samplers_ );
     response->mem_base_address_align_ = host_to_network( device_info_.mem_base_address_align_ );
     response->min_data_type_align_size_ = host_to_network( device_info_.min_data_type_align_size_ );
-    response->single_fp_config_ = ((device_info_.single_fp_config_ >> 2) & 0x1e) | device_info_.single_fp_config_ & 1;
+    response->single_fp_config_ = ((device_info_.single_fp_config_ >> 2) & 0x1e) | (device_info_.single_fp_config_ & 1);
     response->global_mem_cache_type_ = (device_info_.global_mem_cache_type_ == CL_NONE)? 0 : (device_info_.global_mem_cache_type_ == CL_READ_ONLY_CACHE)? 1 : 2;
     response->global_mem_cacheline_size_ = host_to_network( device_info_.global_mem_cacheline_size_ );
     response->global_mem_cache_size_ = host_to_network( device_info_.global_mem_cache_size_ );
