@@ -176,13 +176,13 @@ clCreateContextFromType( const cl_context_properties* properties, cl_device_type
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clRetainContext( cl_context context ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_INVALID_VALUE;
+    return retain_object< composite_context >( context );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseContext( cl_context context ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_INVALID_VALUE;
+    return release_object< composite_context >( context );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL

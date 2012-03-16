@@ -25,8 +25,10 @@
 #include "message/msg_program.h"
 #include "composite/composite_context.h"
 #include "composite/composite_program.h"
+#include "composite/composite_device.h"
 using dcl::composite::composite_context;
 using dcl::composite::composite_program;
+using dcl::composite::composite_device;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -66,6 +68,29 @@ void BuildProgram_command::execute()
     }
 
     program_ptr->build( devices, message_.get_build_options() );
+}
+//-----------------------------------------------------------------------------
+void GetProgramBuildInfo_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    remote_id_t program_id = message_.get_remote_id();
+    remote_id_t device_id = message_.get_device_id();
+
+    composite_program* program_ptr = server.get_program_manager().get( program_id );
+    composite_device* device_ptr = server.get_device_manager().get( device_id );
+
+    if( message_.get_build_info() == CL_PROGRAM_BUILD_STATUS )
+    {
+        message_.set_build_status( program_ptr->get_build_status( device_ptr ) );
+    }
+    else if( message_.get_build_info() == CL_PROGRAM_BUILD_LOG )
+    {
+        std::string log;
+
+        program_ptr->get_build_log( device_ptr, log );
+        message_.set_build_log( log );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

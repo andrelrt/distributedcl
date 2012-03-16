@@ -114,7 +114,7 @@ class generic_platform :
 {
 public:
     generic_platform() : info_loaded_( false ){}
-    ~generic_platform(){}
+    virtual ~generic_platform(){}
 
     inline void load_info()
     {

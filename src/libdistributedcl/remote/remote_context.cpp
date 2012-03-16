@@ -24,17 +24,21 @@
 #include "remote_program.h"
 #include "remote_device.h"
 #include "remote_command_queue.h"
+#include "remote_memory.h"
 #include "message/msg_program.h"
 #include "message/msg_context.h"
 #include "message/msg_command_queue.h"
+#include "message/msg_memory.h"
 using dcl::info::generic_device;
 using dcl::info::generic_program;
 using dcl::info::generic_command_queue;
+using dcl::info::generic_memory;
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetContextInfo;
 using dcl::network::message::msgCreateProgramWithSource;
 using dcl::network::message::msgCreateCommandQueue;
+using dcl::network::message::msgCreateBuffer;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -86,6 +90,22 @@ generic_command_queue*
     command_queue_ptr->set_remote_id( msg.get_remote_id() );
 
     return reinterpret_cast< generic_command_queue* >( command_queue_ptr );
+}
+//-----------------------------------------------------------------------------
+generic_memory* remote_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+{
+    dcl_message< msgCreateBuffer > msg;
+
+    msg.set_context_id( get_remote_id() );
+    msg.set_buffer( reinterpret_cast<const uint8_t*>( host_ptr ), size );
+    msg.set_flags( flags );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    remote_memory* memory_ptr = new remote_memory( *this );
+    memory_ptr->set_remote_id( msg.get_remote_id() );
+
+    return reinterpret_cast< generic_memory* >( memory_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

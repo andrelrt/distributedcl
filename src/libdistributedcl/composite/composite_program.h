@@ -43,9 +43,13 @@ public:
 
     ~composite_program(){}
 
+    void load_info(){}
+
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
     virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
     virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
+    virtual cl_build_status get_build_status( const dcl::info::generic_device* device_ptr ) const;
+    virtual void get_build_log( const dcl::info::generic_device* device_ptr, std::string& build_log ) const;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

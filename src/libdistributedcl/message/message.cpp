@@ -132,8 +132,11 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 
         case msgUnloadCompiler:
         case msgGetProgramInfo:
-        case msgGetProgramBuildInfo:
             throw dcl::library_exception( "Not implemented" );
+            break;
+
+        case msgGetProgramBuildInfo:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetProgramBuildInfo >() );
             break;
 
         case msgCreateKernel:

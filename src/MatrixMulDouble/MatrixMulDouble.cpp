@@ -161,6 +161,7 @@ MatrixMulDouble::setupMatrixMulDouble()
     return SDK_SUCCESS;
 }
 
+#if 0
 int 
 MatrixMulDouble::genBinaryImage()
 {
@@ -292,7 +293,7 @@ MatrixMulDouble::genBinaryImage()
 
     return SDK_SUCCESS;
 }
-
+#endif 
 
 
 int
@@ -597,7 +598,7 @@ MatrixMulDouble::setupCL(void)
      return SDK_SUCCESS;
 }
 
-
+#if 0
 int 
 MatrixMulDouble::runCLKernels(void)
 {
@@ -780,6 +781,7 @@ MatrixMulDouble::runCLKernels(void)
 
     return SDK_SUCCESS;
 }
+#endif
 
 /*
  * This is a naive O(N^3) CPU implementatio of matrix multiplication
@@ -922,7 +924,7 @@ MatrixMulDouble::setup()
     return SDK_SUCCESS;
 }
 
-
+#if 0
 int 
 MatrixMulDouble::run()
 {
@@ -950,6 +952,7 @@ MatrixMulDouble::run()
 
     return SDK_SUCCESS;
 }
+#endif
 
 int 
 MatrixMulDouble::verifyResults()
@@ -1033,7 +1036,7 @@ main(int argc, char * argv[])
     {
         if(clMatrixMulDouble.setup() == SDK_FAILURE)
             return SDK_FAILURE;
-        
+        /*
         if(clMatrixMulDouble.run() == SDK_FAILURE)
             return SDK_FAILURE;
 
@@ -1044,6 +1047,7 @@ main(int argc, char * argv[])
             return SDK_FAILURE;
 
         clMatrixMulDouble.printStats();
+        */
     }
 
     return SDK_SUCCESS;

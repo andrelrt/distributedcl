@@ -33,16 +33,20 @@ cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
 {
     try
     {
-        DCL_TYPE_T* obj_ptr = dcl::icd::icd_object_manager::get_instance().get_object_ptr( id );
-            
-        obj_ptr->retain();
-
+        icd_object_manager::get_instance().retain< DCL_TYPE_T >( id );
         return CL_SUCCESS;
     }
     catch( dcl::library_exception& ex )
     {
         return ex.get_error();
     }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
@@ -50,24 +54,20 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 {
     try
     {
-        DCL_TYPE_T* obj_ptr = dcl::icd::icd_object_manager::get_instance().get_object_ptr( id );
-
-        if( obj_ptr->get_reference_count() > 0 )
-        {
-            obj_ptr->release();
-
-            if( obj_ptr->get_reference_count() == 0 )
-            {
-                dcl::icd::icd_object_manager::get_instance().remove_object( id );
-            }
-        }
-
+        icd_object_manager::get_instance().release< DCL_TYPE_T >( id );
         return CL_SUCCESS;
     }
     catch( dcl::library_exception& ex )
     {
         return ex.get_error();
     }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------
 template< typename DCL_TYPE_T > inline

@@ -50,6 +50,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class GetProgramBuildInfo_command : 
+    public server_command< dcl::network::message::msgGetProgramBuildInfo >
+{
+public:
+    GetProgramBuildInfo_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgGetProgramBuildInfo >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_PROGRAM_H_

@@ -24,11 +24,13 @@
 #include "composite_program.h"
 #include "composite_device.h"
 #include "composite_command_queue.h"
+#include "composite_memory.h"
 #include "info/program_info.h"
 using dcl::info::generic_device;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
 using dcl::info::generic_command_queue;
+using dcl::info::generic_memory;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -87,6 +89,22 @@ generic_command_queue*
     }
 
     return it->second->create_command_queue( device_ptr, properties );
+}
+//-----------------------------------------------------------------------------
+generic_memory* composite_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+{
+    contexts_t::iterator it;
+
+    composite_memory* memories = new composite_memory( *this );
+
+    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    {
+        generic_memory* memory_ptr = (*it)->create_buffer( host_ptr, size, flags );
+
+        memories->insert_context_object( *it, memory_ptr );
+    }
+
+    return reinterpret_cast< generic_memory* >( memories );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

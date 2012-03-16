@@ -91,15 +91,16 @@ clCreateKernel( cl_program program, const char* kernel_name,
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clRetainKernel( cl_kernel kernel ) CL_API_SUFFIX__VERSION_1_1
-//{
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clRetainKernel( cl_kernel kernel ) CL_API_SUFFIX__VERSION_1_1
+{
+    return retain_object< composite_kernel >( kernel );
+}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseKernel( cl_kernel kernel ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_SUCCESS;
+    return release_object< composite_kernel >( kernel );
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL

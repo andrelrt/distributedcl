@@ -158,13 +158,13 @@ public:
             case CL_DEVICE_COMPILER_AVAILABLE           : return sizeof( cl_bool );
             case CL_DEVICE_EXECUTION_CAPABILITIES       : return sizeof( cl_device_exec_capabilities );
             case CL_DEVICE_QUEUE_PROPERTIES             : return sizeof( cl_command_queue_properties );
-            case CL_DEVICE_NAME                         : return name_.length() + 1;
-            case CL_DEVICE_VENDOR                       : return vendor_.length() + 1;
-            case CL_DRIVER_VERSION                      : return driver_version_.length() + 1;
-            case CL_DEVICE_PROFILE                      : return profile_.length() + 1;
-            case CL_DEVICE_VERSION                      : return version_.length() + 1;
-            case CL_DEVICE_OPENCL_C_VERSION             : return opencl_c_version_.length() + 1;
-            case CL_DEVICE_EXTENSIONS                   : return extensions_.length() + 1;
+            case CL_DEVICE_NAME                         : return name_.length();
+            case CL_DEVICE_VENDOR                       : return vendor_.length();
+            case CL_DRIVER_VERSION                      : return driver_version_.length();
+            case CL_DEVICE_PROFILE                      : return profile_.length();
+            case CL_DEVICE_VERSION                      : return version_.length();
+            case CL_DEVICE_OPENCL_C_VERSION             : return opencl_c_version_.length();
+            case CL_DEVICE_EXTENSIONS                   : return extensions_.length();
 
             default:
                 throw library_exception( CL_INVALID_VALUE );
@@ -227,13 +227,13 @@ public:
             case CL_DEVICE_COMPILER_AVAILABLE           : return &compiler_avaiable_;
             case CL_DEVICE_EXECUTION_CAPABILITIES       : return &execution_capabilities_;
             case CL_DEVICE_QUEUE_PROPERTIES             : return &queue_properties_;
-            case CL_DEVICE_NAME                         : return name_.c_str();
-            case CL_DEVICE_VENDOR                       : return vendor_.c_str();
-            case CL_DRIVER_VERSION                      : return driver_version_.c_str();
-            case CL_DEVICE_PROFILE                      : return profile_.c_str();
-            case CL_DEVICE_VERSION                      : return version_.c_str();
-            case CL_DEVICE_OPENCL_C_VERSION             : return opencl_c_version_.c_str();
-            case CL_DEVICE_EXTENSIONS                   : return extensions_.c_str();
+            case CL_DEVICE_NAME                         : return name_.data();
+            case CL_DEVICE_VENDOR                       : return vendor_.data();
+            case CL_DRIVER_VERSION                      : return driver_version_.data();
+            case CL_DEVICE_PROFILE                      : return profile_.data();
+            case CL_DEVICE_VERSION                      : return version_.data();
+            case CL_DEVICE_OPENCL_C_VERSION             : return opencl_c_version_.data();
+            case CL_DEVICE_EXTENSIONS                   : return extensions_.data();
 
             default:
                 throw library_exception( CL_INVALID_VALUE );
@@ -253,7 +253,7 @@ public:
         local_info_.type_ = type;
     }
 
-    ~generic_device(){}
+    virtual ~generic_device(){}
 
     inline void load_info()
     {

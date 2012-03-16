@@ -75,5 +75,19 @@ generic_kernel* composite_program::create_kernel( const std::string& kernel_name
     return kernel_ptr;
 }
 //-----------------------------------------------------------------------------
+cl_build_status composite_program::get_build_status( const generic_device* device_ptr ) const
+{
+    const generic_program* program_ptr = find( context_ref_.find( device_ptr ) );
+
+    return program_ptr->get_build_status( device_ptr );
+}
+//-----------------------------------------------------------------------------
+void composite_program::get_build_log( const generic_device* device_ptr, std::string& build_log ) const
+{
+    const generic_program* program_ptr = find( context_ref_.find( device_ptr ) );
+
+    program_ptr->get_build_log( device_ptr, build_log );
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------

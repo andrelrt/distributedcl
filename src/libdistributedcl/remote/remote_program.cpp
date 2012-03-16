@@ -22,12 +22,15 @@
 //-----------------------------------------------------------------------------
 #include "remote_program.h"
 #include "remote_kernel.h"
+#include "remote_device.h"
 #include "message/msg_program.h"
 #include "message/msg_kernel.h"
+using dcl::info::generic_device;
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgBuildProgram;
 using dcl::network::message::msgCreateKernel;
+using dcl::network::message::msgGetProgramBuildInfo;
 using dcl::info::generic_kernel;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -62,6 +65,32 @@ generic_kernel* remote_program::create_kernel( const std::string& kernel_name )
     kernel_ptr->set_remote_id( msg.get_remote_id() );
 
     return reinterpret_cast< generic_kernel* >( kernel_ptr );
+}
+//-----------------------------------------------------------------------------
+cl_build_status remote_program::get_build_status( const generic_device* device_ptr ) const
+{
+    dcl_message< msgGetProgramBuildInfo > msg;
+
+    msg.set_remote_id( get_remote_id() );
+    msg.set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
+    msg.set_build_info( CL_PROGRAM_BUILD_STATUS );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    return msg.get_build_status();
+}
+//-----------------------------------------------------------------------------
+void remote_program::get_build_log( const generic_device* device_ptr, std::string& build_log ) const
+{
+    dcl_message< msgGetProgramBuildInfo > msg;
+
+    msg.set_remote_id( get_remote_id() );
+    msg.set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
+    msg.set_build_info( CL_PROGRAM_BUILD_LOG );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+
+    build_log.assign( msg.get_build_log() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

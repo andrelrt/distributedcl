@@ -71,12 +71,24 @@ public:
         return contexts_.end();
     }
 
+    inline const dcl::info::generic_context* find( const dcl::info::generic_device* device_ptr ) const
+    {
+        context_map_t::const_iterator it = context_map_.find( device_ptr );
+
+        if( it == context_map_.end() )
+            throw dcl::library_exception( CL_INVALID_DEVICE );
+
+        return it->second;
+    }
+
 private:
     virtual void load_devices();
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );
+    virtual dcl::info::generic_memory*
+        do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

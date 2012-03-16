@@ -201,9 +201,6 @@
     <ProjectReference Include="..\libopencl\libopencl.vcxproj">
       <Project>{fa62f5e7-e301-4202-bc5d-d817fc32a823}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\OpenCL\OpenCL.vcxproj">
-      <Project>{4fa92968-0206-4c06-afa7-77bf6171ea49}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

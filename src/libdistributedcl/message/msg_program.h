@@ -38,6 +38,8 @@ namespace message {
     //msgGetProgramInfo           = 53,
     //msgGetProgramBuildInfo      = 54,
 //-----------------------------------------------------------------------------
+// msgCreateProgramWithSource
+//-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgCreateProgramWithSource > : public base_message
 {
@@ -99,6 +101,8 @@ private:
     #pragma pack( pop )
 };
 //-----------------------------------------------------------------------------
+// msgBuildProgram
+//-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgBuildProgram > : public base_message
 {
@@ -159,6 +163,107 @@ private:
         uint32_t build_options_len_;
 
         uint8_t buffer_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+// msgGetProgramBuildInfo
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgGetProgramBuildInfo > : public base_message
+{
+public:
+    dcl_message< msgGetProgramBuildInfo >() : 
+        base_message( msgGetProgramBuildInfo, true, sizeof(msgGetProgramBuildInfo_request), 0 ) {}
+
+    // Request
+    inline const dcl::remote_id_t get_remote_id() const
+    {
+        return id_;
+    }
+
+    inline void set_remote_id( dcl::remote_id_t id )
+    {
+        id_ = id;
+    }
+
+    inline const dcl::remote_id_t get_device_id() const
+    {
+        return device_id_;
+    }
+
+    inline void set_device_id( dcl::remote_id_t id )
+    {
+        device_id_ = id;
+    }
+
+    inline cl_program_build_info get_build_info() const
+    {
+        return build_info_;
+    }
+
+    inline void set_build_info( cl_program_build_info build_info )
+    {
+        build_info_ = build_info;
+    }
+
+
+    // Response
+    inline const std::string& get_build_log() const
+    {
+        return build_log_;
+    }
+
+    inline void set_build_log( const std::string& build_log )
+    {
+        build_log_.assign( build_log );
+
+        update_response_size();
+    }
+
+    inline cl_build_status get_build_status() const
+    {
+        return build_status_;
+    }
+
+    inline void set_build_status( cl_build_status build_status )
+    {
+        build_status_ = build_status;
+
+        update_response_size();
+    }
+
+private:
+    dcl::remote_id_t id_;
+    dcl::remote_id_t device_id_;
+    cl_program_build_info build_info_;
+
+    std::string build_log_;
+    cl_build_status build_status_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void create_response( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void parse_response( const base_message* message_ptr );
+
+    inline void update_response_size()
+    {
+        if( build_info_ == CL_PROGRAM_BUILD_STATUS )
+        {
+            set_response_size( sizeof(uint32_t) );
+        }
+        else if( build_info_ == CL_PROGRAM_BUILD_LOG )
+        {
+            set_response_size( sizeof(uint32_t) + build_log_.length() );
+        }
+    }
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgGetProgramBuildInfo_request
+    {
+        dcl::remote_id_t device_id_;
+        uint16_t build_info_;
     };
     #pragma pack( pop )
 };

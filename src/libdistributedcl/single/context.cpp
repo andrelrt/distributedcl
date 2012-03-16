@@ -26,11 +26,13 @@
 #include "device.h"
 #include "program.h"
 #include "command_queue.h"
+#include "memory.h"
 using dcl::info::generic_command_queue;
 using dcl::info::generic_platform;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
 using dcl::info::generic_device;
+using dcl::info::generic_memory;
 using dcl::info::program_info;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -157,6 +159,11 @@ generic_command_queue*
                                       cl_command_queue_properties properties )
 {
     return new command_queue( *this, *(reinterpret_cast< const device* >( device_ptr )), properties );
+}
+//-----------------------------------------------------------------------------
+generic_memory* context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+{
+    return new memory( *this, host_ptr, size, flags );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

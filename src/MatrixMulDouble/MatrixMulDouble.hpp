@@ -208,7 +208,7 @@ public:
      * Override from SDKSample, Generate binary image of given kernel 
      * and exit application
      */
-    int genBinaryImage();
+    int genBinaryImage(){ return 0; }
 
     /**
      * OpenCL related initialisations. 
@@ -263,7 +263,7 @@ public:
      * Override from SDKSample
      * Run OpenCL Matrix Multiplication
      */
-    int run();
+    int run(){ return 0; }
 
     /**
      * Override from SDKSample

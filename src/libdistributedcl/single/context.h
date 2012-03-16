@@ -42,7 +42,7 @@ public:
     context( const platform& platform_ref, const devices_t& devices_ref );
     context( const platform& platform_ref, cl_device_type device_type );
 
-    ~context();
+    virtual ~context(){}
 
     //void add( command_queue& queue );
 
@@ -82,6 +82,9 @@ private:
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );
+
+    virtual dcl::info::generic_memory*
+        do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags );
 
     image_formats_t image2d_formats_;
     image_formats_t image3d_formats_;

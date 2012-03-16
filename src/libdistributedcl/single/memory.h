@@ -20,62 +20,36 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PROGRAM_H_
-#define _DCL_PROGRAM_H_
+#ifndef _DCL_MEMORY_H_
+#define _DCL_MEMORY_H_
 
-#include <map>
-#include <string>
 #include "distributedcl_internal.h"
 #include "single_object.h"
 #include "opencl_library.h"
-#include "info/program_info.h"
+#include "info/memory_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class program;
-//-----------------------------------------------------------------------------
-template<>
-struct context_wrapper< program >
+class memory_object :
+    public dcl::info::generic_memory,
+    public opencl_object< cl_mem >,
+    public context_object< memory_object >
 {
-    static void context_attach( context* context_ptr, program* program_ptr );
+protected:
+    memory_object( const context& context_ref );
+    virtual ~memory_object(){}
 };
 //-----------------------------------------------------------------------------
-template<>
-struct reference_wrapper< cl_program >
-{
-    //-------------------------------------------------------------------------
-    static inline void retain( const opencl_library& opencl, cl_program prog )
-    {
-        if( opencl.loaded() )
-            opencl.clRetainProgram( prog );
-    }
-
-    //-------------------------------------------------------------------------
-    static inline void release( const opencl_library& opencl, cl_program prog )
-    {
-        if( opencl.loaded() )
-            opencl.clReleaseProgram( prog );
-    }
-};
-//-----------------------------------------------------------------------------
-class program :
-    public dcl::info::generic_program,
-    public opencl_object< cl_program >,
-    public context_object< program >
+class memory : 
+    public memory_object
 {
 public:
-    program( const context& context_ref, const std::string& source_code );
-    ~program(){}
+    virtual ~memory(){}
 
-    // TODO: Create a version of build method using the pfn_notify callback
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-    virtual cl_build_status get_build_status( const dcl::info::generic_device* device_ptr ) const;
-    virtual void get_build_log( const dcl::info::generic_device* device_ptr, std::string& build_log ) const;
+    memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif //_DCL_PROGRAM_H_
+#endif //_DCL_MEMORY_H_

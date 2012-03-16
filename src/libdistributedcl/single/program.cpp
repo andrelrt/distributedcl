@@ -28,12 +28,13 @@
 #include "kernel.h"
 using dcl::info::generic_program;
 using dcl::info::generic_kernel;
+using dcl::info::generic_device;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 program::program( const context& context_ref, const std::string& source_code ) :
-    generic_program( source_code ), opencl_object( context_ref.get_opencl() ) 
+    generic_program( source_code ), opencl_object( context_ref.get_opencl() )
 {
     if( opencl_.loaded() )
     {
@@ -61,6 +62,8 @@ void program::build( const std::string& build_options, cl_bool blocking )
     {
         cl_int error_code;
 
+        local_info_.build_options_.assign( build_options );
+
         error_code = opencl_.clBuildProgram( id_, 0, NULL,
                                              build_options.c_str(),
                                              NULL, NULL );
@@ -80,7 +83,7 @@ void program::build( const devices_t& devices, const std::string& build_options,
         cl_uint device_count = static_cast< cl_uint >( devices.size() );
         boost::scoped_array< cl_device_id > device_list( new cl_device_id[ device_count ] );
 
-        //program_info_.build_options_.assign( build_options );
+        local_info_.build_options_.assign( build_options );
 
         int i = 0;
         for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
@@ -105,56 +108,61 @@ generic_kernel* program::create_kernel( const std::string& kernel_name )
     return new kernel( *this, kernel_name );
 }
 //-----------------------------------------------------------------------------
-//cl_build_status program::get_build_status( const device& dev )
-//{
-//    cl_build_status build_status = CL_BUILD_NONE;
-//
-//    if( get_opencl().loaded() )
-//    {
-//        cl_int error_code;
-//        size_t param_value_size_ret;
-//
-//        error_code = get_opencl().clGetProgramBuildInfo( *this, dev, CL_PROGRAM_BUILD_STATUS, 
-//                                                         sizeof( cl_build_status ), &build_status,
-//                                                         &param_value_size_ret );
-//        if( error_code != CL_SUCCESS )
-//        {
-//            throw library_exception( error_code );
-//        }
-//    }
-//
-//    return build_status;
-//}
+cl_build_status program::get_build_status( const generic_device* device_ptr ) const
+{
+    cl_build_status build_status = CL_BUILD_NONE;
+
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+        size_t param_value_size_ret;
+
+        const device* dev_ptr = reinterpret_cast<const device*>( device_ptr );
+
+        error_code = opencl_.clGetProgramBuildInfo( id_, dev_ptr->get_id(), CL_PROGRAM_BUILD_STATUS, 
+                                                    sizeof( cl_build_status ), &build_status,
+                                                    &param_value_size_ret );
+        if( error_code != CL_SUCCESS )
+        {
+            throw library_exception( error_code );
+        }
+    }
+
+    return build_status;
+}
 //-----------------------------------------------------------------------------
-//void program::get_build_log( const device& dev, std::string& str_log )
-//{
-//    str_log.clear();
-//
-//    if( get_opencl().loaded() )
-//    {
-//        cl_int error_code;
-//        size_t param_value_size_ret;
-//
-//        error_code = get_opencl().clGetProgramBuildInfo( *this, dev, CL_PROGRAM_BUILD_LOG, 
-//                                                         0, NULL, &param_value_size_ret );
-//        if( error_code != CL_SUCCESS )
-//        {
-//            throw library_exception( error_code );
-//        }
-//
-//        boost::scoped_array< char > log( new char[ param_value_size_ret +1 ] );
-//
-//        error_code = get_opencl().clGetProgramBuildInfo( *this, dev, CL_PROGRAM_BUILD_LOG, 
-//                                                         param_value_size_ret, log.get(),
-//                                                         &param_value_size_ret );
-//        if( error_code != CL_SUCCESS )
-//        {
-//            throw library_exception( error_code );
-//        }
-//
-//        str_log.assign( log.get() );
-//    }
-//}
+void program::get_build_log( const generic_device* device_ptr, std::string& str_log ) const
+{
+    str_log.clear();
+
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+        size_t param_value_size_ret;
+
+        const device* dev_ptr = reinterpret_cast<const device*>( device_ptr );
+
+        error_code = opencl_.clGetProgramBuildInfo( id_, dev_ptr->get_id(), CL_PROGRAM_BUILD_LOG, 
+                                                    0, NULL, &param_value_size_ret );
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw library_exception( error_code );
+        }
+
+        boost::scoped_array< char > log( new char[ param_value_size_ret +1 ] );
+
+        error_code = opencl_.clGetProgramBuildInfo( id_, dev_ptr->get_id(), CL_PROGRAM_BUILD_LOG, 
+                                                    param_value_size_ret, log.get(),
+                                                    &param_value_size_ret );
+        if( error_code != CL_SUCCESS )
+        {
+            throw library_exception( error_code );
+        }
+
+        str_log.assign( log.get() );
+    }
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single
 //-----------------------------------------------------------------------------

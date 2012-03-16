@@ -33,6 +33,7 @@ namespace info {
 class generic_program;
 class generic_platform;
 class generic_command_queue;
+class generic_memory;
 //-----------------------------------------------------------------------------
 struct context_info
 {
@@ -48,6 +49,8 @@ public:
         platform_( platform ){}
     generic_context( const generic_platform& platform, const devices_t& devices_ref ) : 
         devices_( devices_ref ), platform_( platform ){}
+
+    virtual ~generic_context(){}
 
     inline const devices_t& get_devices()
     {
@@ -77,6 +80,15 @@ public:
         return queue_ptr;
     }
 
+    inline generic_memory* create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+    {
+        generic_memory* buffer_ptr = do_create_buffer( host_ptr, size, flags );
+
+        memory_objects_.push_back( buffer_ptr );
+
+        return buffer_ptr;
+    }
+
     inline const generic_platform& get_platform() const
     {
         return platform_;
@@ -85,18 +97,23 @@ public:
 protected:
     typedef std::vector< generic_program* > programs_t;
     typedef std::vector< generic_command_queue* > queues_t;
+    typedef std::vector< generic_memory* > memory_objects_t;
 
     queues_t queues_;
     devices_t devices_;
     programs_t programs_;
+    memory_objects_t memory_objects_;
     const generic_platform& platform_;
 
     virtual void load_devices() = 0;
     virtual generic_program* do_create_program( const std::string& source_code ) = 0;
 
-    virtual generic_command_queue* 
+    virtual generic_command_queue*
         do_create_command_queue( const generic_device* device_ptr, 
                                  cl_command_queue_properties properties ) = 0;
+
+    virtual generic_memory*
+        do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

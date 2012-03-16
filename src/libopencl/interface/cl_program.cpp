@@ -116,16 +116,16 @@ clCreateProgramWithBinary( cl_context context, cl_uint num_devices,
     return NULL;
 }
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
-//{
-//    return CL_SUCCESS;
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
+{
+    return retain_object< composite_program >( program );
+}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_SUCCESS;
+    return release_object< composite_program >( program );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -197,11 +197,72 @@ clBuildProgram( cl_program program, cl_uint num_devices,
 //    return CL_INVALID_VALUE;
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clGetProgramBuildInfo( cl_program program, cl_device_id device,
-//                       cl_program_build_info param_name, size_t param_value_size,
-//                       void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
-//{
-//    return CL_INVALID_VALUE;
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clGetProgramBuildInfo( cl_program program, cl_device_id device,
+                       cl_program_build_info param_name, size_t param_value_size,
+                       void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+{
+    try
+    {
+        composite_program* program_ptr = 
+            get_info_check_parameters< composite_program >( program, param_value_size, 
+                                                            param_value, param_value_size_ret );
+
+        icd_object_manager& icd = icd_object_manager::get_instance();
+        composite_device* device_ptr = icd.get_object_ptr< composite_device >( device );
+
+        switch( param_name )
+        {
+            case CL_PROGRAM_BUILD_STATUS:
+                if( param_value_size_ret != NULL )
+                {
+                    *param_value_size_ret = sizeof(cl_build_status);
+                }
+
+                if( (param_value != NULL) && 
+                    (param_value_size >= sizeof(cl_build_status)) )
+                {
+                    *(reinterpret_cast< cl_build_status* >( param_value )) = 
+                        program_ptr->get_build_status( device_ptr );
+                }
+                break;
+
+            case CL_PROGRAM_BUILD_LOG:
+            {
+                std::string build_log;
+                program_ptr->get_build_log( device_ptr, build_log );
+
+                if( param_value_size_ret != NULL )
+                {
+                    *param_value_size_ret = build_log.length();
+                }
+
+                if( (param_value != NULL) &&
+                    (param_value_size >= build_log.length()) )
+                {
+                    memcpy( param_value, build_log.data(), build_log.length() );
+                }
+                break;
+            }
+
+            case CL_PROGRAM_BUILD_OPTIONS:
+                get_info< composite_program >( program, param_name, param_value_size, 
+                                               param_value, param_value_size_ret );
+                break;
+        }
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------

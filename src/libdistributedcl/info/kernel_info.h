@@ -128,6 +128,8 @@ class generic_kernel :
     public dcl_object< kernel_info >
 {
 public:
+    virtual ~generic_kernel(){}
+
     generic_kernel( const std::string& name )
     {
         local_info_.name_.assign( name );

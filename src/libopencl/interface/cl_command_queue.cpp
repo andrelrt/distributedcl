@@ -87,17 +87,16 @@ clCreateCommandQueue( cl_context context, cl_device_id device,
     return NULL;
 }
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clRetainCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
-//{
-//    //FIXME: Not implemented
-//    return CL_INVALID_COMMAND_QUEUE;
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clRetainCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
+{
+    return retain_object< composite_command_queue >( command_queue );
+}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
 {
-    return CL_SUCCESS;
+    return release_object< composite_command_queue >( command_queue );
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL

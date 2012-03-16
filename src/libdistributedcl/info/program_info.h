@@ -50,6 +50,23 @@ public:
         source_code_( info.source_code_ ),
         build_options_( info.build_options_ )
     {}
+
+    inline size_t get_info_size( cl_program_info info ) const
+    {
+        if( info == CL_PROGRAM_BUILD_OPTIONS )
+            return build_options_.length();
+
+        throw library_exception( CL_INVALID_VALUE );
+    }
+
+    inline const void* get_info_pointer( cl_program_info info ) const
+    {
+        if( info == CL_PROGRAM_BUILD_OPTIONS )
+            return build_options_.data();
+
+        throw library_exception( CL_INVALID_VALUE );
+    }
+
 };
 //-----------------------------------------------------------------------------
 class generic_program :
@@ -58,7 +75,8 @@ class generic_program :
     public dcl_object< program_info >
 {
 public:
-    //generic_program(){}
+    virtual ~generic_program(){}
+
     generic_program( const std::string& source_code )
     {
         local_info_.source_code_.assign( source_code );
@@ -81,7 +99,9 @@ public:
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
     virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE ) = 0;
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name ) = 0;
+    virtual generic_kernel* create_kernel( const std::string& kernel_name ) = 0;
+    virtual cl_build_status get_build_status( const generic_device* device_ptr ) const = 0;
+    virtual void get_build_log( const generic_device* device_ptr, std::string& build_log ) const = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

@@ -52,6 +52,8 @@ private:
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );
+    virtual dcl::info::generic_memory*
+        do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

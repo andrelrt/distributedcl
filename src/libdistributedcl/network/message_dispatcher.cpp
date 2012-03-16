@@ -150,9 +150,16 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
 
             case msgUnloadCompiler:
             case msgGetProgramInfo:
-            case msgGetProgramBuildInfo:
                 throw dcl::library_exception( "Not implemented" );
                 break;
+
+            case msgGetProgramBuildInfo:
+            {
+                GetProgramBuildInfo_command command( *it );
+
+                command.execute();
+                break;
+            }
 
             case msgCreateKernel:
             {

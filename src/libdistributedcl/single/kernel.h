@@ -36,29 +36,29 @@ namespace single {
 //-----------------------------------------------------------------------------
 class kernel;
 //-----------------------------------------------------------------------------
-template<>
-struct context_wrapper< kernel >
-{
-    static void context_attach( context* context_ptr, kernel* kernel_ptr );
-};
-//-----------------------------------------------------------------------------
-template<>
-struct reference_wrapper< cl_kernel >
-{
-    //-------------------------------------------------------------------------
-    static inline void retain( const opencl_library& opencl, cl_kernel krnl )
-    {
-        if( opencl.loaded() )
-            opencl.clRetainKernel( krnl );
-    }
-
-    //-------------------------------------------------------------------------
-    static inline void release( const opencl_library& opencl, cl_kernel krnl )
-    {
-        if( opencl.loaded() )
-            opencl.clReleaseKernel( krnl );
-    }
-};
+//template<>
+//struct context_wrapper< kernel >
+//{
+//    static void context_attach( context* context_ptr, kernel* kernel_ptr );
+//};
+////-----------------------------------------------------------------------------
+//template<>
+//struct reference_wrapper< cl_kernel >
+//{
+//    //-------------------------------------------------------------------------
+//    static inline void retain( const opencl_library& opencl, cl_kernel krnl )
+//    {
+//        if( opencl.loaded() )
+//            opencl.clRetainKernel( krnl );
+//    }
+//
+//    //-------------------------------------------------------------------------
+//    static inline void release( const opencl_library& opencl, cl_kernel krnl )
+//    {
+//        if( opencl.loaded() )
+//            opencl.clReleaseKernel( krnl );
+//    }
+//};
 //-----------------------------------------------------------------------------
 class kernel :
     public dcl::info::generic_kernel,

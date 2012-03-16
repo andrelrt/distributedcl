@@ -147,6 +147,7 @@ private:
     {
         icd_dispatch_table* table;
         uint32_t dcl_type;
+        uint32_t reference_count;
         void* dcl_object;
     };
 
@@ -163,15 +164,88 @@ private:
 
     icd_object_manager()
     {
-        FILL_DISPATCH_ITEM( clGetPlatformIDs );
-        FILL_DISPATCH_ITEM( clGetPlatformInfo );
-        FILL_DISPATCH_ITEM( clGetDeviceIDs );
-        FILL_DISPATCH_ITEM( clGetDeviceInfo );
+        FILL_DISPATCH_ITEM( clBuildProgram );
+        //FILL_DISPATCH_ITEM( clCreateBuffer );
+        FILL_DISPATCH_ITEM( clCreateCommandQueue );
         FILL_DISPATCH_ITEM( clCreateContext  );
         FILL_DISPATCH_ITEM( clCreateContextFromType );
-        FILL_DISPATCH_ITEM( clRetainContext );
-        FILL_DISPATCH_ITEM( clReleaseContext );
+        //FILL_DISPATCH_ITEM( clCreateFromGLBuffer );
+        //FILL_DISPATCH_ITEM( clCreateFromGLRenderbuffer );
+        //FILL_DISPATCH_ITEM( clCreateFromGLTexture2D );
+        //FILL_DISPATCH_ITEM( clCreateFromGLTexture3D );
+        //FILL_DISPATCH_ITEM( clCreateImage2D );
+        //FILL_DISPATCH_ITEM( clCreateImage3D );
+        FILL_DISPATCH_ITEM( clCreateKernel );
+        //FILL_DISPATCH_ITEM( clCreateKernelsInProgram );
+        //FILL_DISPATCH_ITEM( clCreateProgramWithBinary );
+        FILL_DISPATCH_ITEM( clCreateProgramWithSource );
+        //FILL_DISPATCH_ITEM( clCreateSampler );
+        //FILL_DISPATCH_ITEM( clCreateSubBuffer );
+        //FILL_DISPATCH_ITEM( clCreateUserEvent );
+        //FILL_DISPATCH_ITEM( clEnqueueAcquireGLObjects );
+        //FILL_DISPATCH_ITEM( clEnqueueBarrier );
+        //FILL_DISPATCH_ITEM( clEnqueueCopyBuffer );
+        //FILL_DISPATCH_ITEM( clEnqueueCopyBufferRect );
+        //FILL_DISPATCH_ITEM( clEnqueueCopyBufferToImage );
+        //FILL_DISPATCH_ITEM( clEnqueueCopyImage );
+        //FILL_DISPATCH_ITEM( clEnqueueCopyImageToBuffer );
+        //FILL_DISPATCH_ITEM( clEnqueueMapBuffer );
+        //FILL_DISPATCH_ITEM( clEnqueueMapImage );
+        //FILL_DISPATCH_ITEM( clEnqueueMarker );
+        FILL_DISPATCH_ITEM( clEnqueueNDRangeKernel );
+        //FILL_DISPATCH_ITEM( clEnqueueNativeKernel );
+        //FILL_DISPATCH_ITEM( clEnqueueReadBuffer );
+        //FILL_DISPATCH_ITEM( clEnqueueReadBufferRect );
+        //FILL_DISPATCH_ITEM( clEnqueueReadImage );
+        //FILL_DISPATCH_ITEM( clEnqueueReleaseGLObjects );
+        //FILL_DISPATCH_ITEM( clEnqueueTask );
+        //FILL_DISPATCH_ITEM( clEnqueueUnmapMemObject );
+        //FILL_DISPATCH_ITEM( clEnqueueWaitForEvents );
+        //FILL_DISPATCH_ITEM( clEnqueueWriteBuffer );
+        //FILL_DISPATCH_ITEM( clEnqueueWriteBufferRect );
+        //FILL_DISPATCH_ITEM( clEnqueueWriteImage );
+        FILL_DISPATCH_ITEM( clFinish );
+        //FILL_DISPATCH_ITEM( clFlush );
+        //FILL_DISPATCH_ITEM( clGetCommandQueueInfo );
         FILL_DISPATCH_ITEM( clGetContextInfo );
+        FILL_DISPATCH_ITEM( clGetDeviceIDs );
+        FILL_DISPATCH_ITEM( clGetDeviceInfo );
+        //FILL_DISPATCH_ITEM( clGetEventInfo );
+        //FILL_DISPATCH_ITEM( clGetEventProfilingInfo );
+        //FILL_DISPATCH_ITEM( clGetExtensionFunctionAddress );
+        //FILL_DISPATCH_ITEM( clGetGLObjectInfo );
+        //FILL_DISPATCH_ITEM( clGetGLTextureInfo );
+        //FILL_DISPATCH_ITEM( clGetImageInfo );
+        //FILL_DISPATCH_ITEM( clGetKernelInfo );
+        //FILL_DISPATCH_ITEM( clGetKernelWorkGroupInfo );
+        //FILL_DISPATCH_ITEM( clGetMemObjectInfo );
+        FILL_DISPATCH_ITEM( clGetPlatformIDs );
+        FILL_DISPATCH_ITEM( clGetPlatformInfo );
+        FILL_DISPATCH_ITEM( clGetProgramBuildInfo );
+        //FILL_DISPATCH_ITEM( clGetProgramInfo );
+        //FILL_DISPATCH_ITEM( clGetSamplerInfo );
+        //FILL_DISPATCH_ITEM( clGetSupportedImageFormats );
+        FILL_DISPATCH_ITEM( clReleaseCommandQueue );
+        FILL_DISPATCH_ITEM( clReleaseContext );
+        //FILL_DISPATCH_ITEM( clReleaseEvent );
+        FILL_DISPATCH_ITEM( clReleaseKernel );
+        //FILL_DISPATCH_ITEM( clReleaseMemObject );
+        FILL_DISPATCH_ITEM( clReleaseProgram );
+        //FILL_DISPATCH_ITEM( clReleaseSampler );
+        FILL_DISPATCH_ITEM( clRetainCommandQueue );
+        FILL_DISPATCH_ITEM( clRetainContext );
+        //FILL_DISPATCH_ITEM( clRetainEvent );
+        FILL_DISPATCH_ITEM( clRetainKernel );
+        //FILL_DISPATCH_ITEM( clRetainMemObject );
+        FILL_DISPATCH_ITEM( clRetainProgram );
+        //FILL_DISPATCH_ITEM( clRetainSampler );
+        //FILL_DISPATCH_ITEM( clSetCommandQueueProperty );
+        //FILL_DISPATCH_ITEM( clSetEventCallback );
+        //FILL_DISPATCH_ITEM( clSetKernelArg );
+        //FILL_DISPATCH_ITEM( clSetMemObjectDestructorCallback );
+        //FILL_DISPATCH_ITEM( clSetUserEventStatus );
+        //FILL_DISPATCH_ITEM( clUnloadCompiler );
+        //FILL_DISPATCH_ITEM( clWaitForEvents );
     }
 
 #undef FILL_DISPATCH_ITEM
@@ -248,6 +322,7 @@ public:
             newObj->table = &dispatch_table_;
             newObj->dcl_type = DCL_TYPE_T::type_id;
             newObj->dcl_object = reinterpret_cast< void* >( cl_object_ptr );
+            newObj->reference_count = 1;
 
             object_map_.insert( dcl_object_map_t::value_type( reinterpret_cast< void* >( cl_object_ptr ), newObj ) );
             object_set_.insert( newObj );
@@ -257,6 +332,33 @@ public:
             cl_object_ptr->set_icd_obj( cl_ret );
 
             return( cl_ret );
+        }
+    }
+
+    template< typename DCL_TYPE_T >
+    inline void retain( typename DCL_TYPE_T::cl_type_t cl_ptr )
+    {
+        cl_object* cl_object_ptr = *get_internal_object< DCL_TYPE_T >( cl_ptr );
+
+        cl_object_ptr->reference_count++;
+    }
+
+    template< typename DCL_TYPE_T >
+    inline void release( typename DCL_TYPE_T::cl_type_t cl_ptr )
+    {
+        cl_object* cl_object_ptr = *get_internal_object< DCL_TYPE_T >( cl_ptr );
+
+        cl_object_ptr->reference_count--;
+
+        if( cl_object_ptr->reference_count == 0 )
+        {
+            object_set_.erase( cl_object_ptr );
+            object_map_.erase( cl_object_ptr->dcl_object );
+
+            DCL_TYPE_T* dcl_object_ptr = reinterpret_cast<DCL_TYPE_T*>( cl_object_ptr->dcl_object );
+
+            delete dcl_object_ptr;
+            delete cl_object_ptr;
         }
     }
 };

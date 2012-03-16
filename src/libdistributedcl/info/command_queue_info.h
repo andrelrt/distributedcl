@@ -55,6 +55,7 @@ class generic_command_queue :
     public dcl_object< command_queue_info >
 {
 public:
+    virtual ~generic_command_queue(){}
     generic_command_queue( const generic_context* context_ptr, const generic_device* device_ptr,
                            cl_command_queue_properties properties )
     {
