@@ -278,7 +278,11 @@ void opencl_library::load()
 
     if( clLib_ == null_library_handle )
     {
-	    throw library_exception( dlerror() );
+#if defined(WIN32)
+	    throw dcl::library_exception( "LoadLibrary error", GetLastError() );
+#else
+        throw dcl::library_exception( dlerror() );
+#endif // WIN32
     }
 
     LOAD_FUNCTION(clGetPlatformIDs);

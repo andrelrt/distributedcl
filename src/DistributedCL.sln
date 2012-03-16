@@ -134,7 +134,7 @@ Global
 		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|Win32.Build.0 = Debug|Win32
-		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|x64.ActiveCfg = Debug|Win32
+		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Debug|x64.ActiveCfg = Debug|x64
 		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Any CPU.ActiveCfg = Release|Win32
 		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{AC455AA7-AC6C-43D5-87BB-8C33D2DB0B73}.Release|Mixed Platforms.Build.0 = Release|Win32

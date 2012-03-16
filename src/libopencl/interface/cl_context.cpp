@@ -203,7 +203,8 @@ clGetContextInfo( cl_context context, cl_context_info param_name, size_t param_v
 
             if( param_value != NULL )
             {
-                *(reinterpret_cast< cl_uint* >( param_value )) = context_ptr->get_devices().size();
+                *(reinterpret_cast< cl_uint* >( param_value )) =
+                    static_cast<cl_uint>( context_ptr->get_devices().size() );
             }
         }
         else if( param_name == CL_CONTEXT_DEVICES )

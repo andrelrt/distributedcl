@@ -54,8 +54,9 @@ void kernel::execute( const generic_command_queue* queue_ptr,
     const command_queue* queue = reinterpret_cast<const command_queue*>( queue_ptr );
 
     cl_int error_code = 
-        opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(), global.get_dimensions(), 
-                                        offset.get_pointer(), global.get_pointer(), 
+        opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
+                                        static_cast<cl_uint>( global.get_dimensions() ),
+                                        offset.get_pointer(), global.get_pointer(),
                                         local.get_pointer(), 0, NULL, NULL );
     if( error_code != CL_SUCCESS )
     {
