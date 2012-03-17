@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <boost/scoped_array.hpp>
 #include "device.h"
 #include "platform.h"
 //-----------------------------------------------------------------------------
@@ -96,6 +97,37 @@ bool device::load_device_info()
     load_info_string( CL_DEVICE_EXTENSIONS, local_info_.extensions_ );
 
     return true;
+}
+//-----------------------------------------------------------------------------
+void device::load_info_data( cl_device_info info )
+{
+    cl_int cl_error = opencl_.clGetDeviceInfo( id_, info, local_info_.get_info_size( info ), 
+                                               const_cast<void*>( local_info_.get_info_pointer( info ) ), NULL );
+
+    if( cl_error != CL_SUCCESS )
+        throw dcl::library_exception( cl_error );
+}
+//-----------------------------------------------------------------------------
+void device::load_info_string( cl_device_info info, std::string& str )
+{
+    size_t value_size;
+    cl_int cl_error = opencl_.clGetDeviceInfo( id_, info, 0, NULL, &value_size );
+
+    if( cl_error == CL_SUCCESS )
+    {
+        boost::scoped_array<char> param_value( new char[ value_size +1 ] );
+
+        cl_error = opencl_.clGetDeviceInfo( id_, info, value_size, param_value.get(), &value_size );
+
+        if( cl_error == CL_SUCCESS )
+        {
+            param_value[ value_size ] = 0;
+            str.assign( param_value.get() );
+        }
+    }
+
+    if( cl_error != CL_SUCCESS )
+        throw dcl::library_exception( cl_error );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

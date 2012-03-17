@@ -27,6 +27,7 @@
 #include "server/server_program.h"
 #include "server/server_kernel.h"
 #include "server/server_command_queue.h"
+#include "server/server_memory.h"
 using namespace dcl::network::message;
 using namespace dcl::server;
 //-----------------------------------------------------------------------------
@@ -109,8 +110,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgReleaseCommandQueue:
             case msgGetCommandQueueInfo:
             case msgSetCommandQueueProperty:
+                throw dcl::library_exception( "Not implemented" );
+                break;
 
             case msgCreateBuffer:
+            {
+                CreateBuffer_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgCreateImage2D:
             case msgCreateImage3D:
             case msgRetainMemObject:

@@ -20,32 +20,38 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_H_
-#define _DCL_DEVICE_H_
-
-#include "distributedcl_internal.h"
-#include "opencl_single.h"
-#include "info/device_info.h"
-#include "opencl_library.h"
+#include "server_memory.h"
+#include "server_platform.h"
+#include "message/msg_memory.h"
+#include "composite/composite_device.h"
+#include "composite/composite_context.h"
+#include "composite/composite_memory.h"
+using dcl::composite::composite_context;
+using dcl::composite::composite_memory;
+using dcl::composite::composite_device;
+using dcl::info::generic_memory;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace server {
 //-----------------------------------------------------------------------------
-class device :
-    public dcl::info::generic_device,
-    public opencl_object< cl_device_id >
+void CreateBuffer_command::execute()
 {
-public:
-    device( const platform* platform_ptr, cl_device_id id );
-    virtual ~device(){}
+    server_platform& server = server_platform::get_instance();
 
-private:
-    virtual bool load_device_info();
+    remote_id_t context_id = message_.get_context_id();
 
-    void load_info_data( cl_device_info info );
-    void load_info_string( cl_device_info info, std::string& str );
-};
+    composite_context* context_ptr = server.get_context_manager().get( context_id );
+
+    generic_memory* ptr = context_ptr->create_buffer( message_.get_buffer().data(), 
+                                                      message_.get_buffer().size(), 
+                                                      message_.get_flags() );
+
+    composite_memory* memory_ptr = reinterpret_cast<composite_memory*>( ptr );
+
+    remote_id_t id = server.get_memory_manager().add( memory_ptr );
+
+    message_.set_remote_id( id );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_H_

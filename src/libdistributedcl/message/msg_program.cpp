@@ -168,7 +168,7 @@ void dcl_message< msgGetProgramBuildInfo >::create_response( uint8_t* payload_pt
     }
     else if( build_info_ == CL_PROGRAM_BUILD_LOG )
     {
-        *response_ptr = host_to_network( build_log_.length() );
+        *response_ptr = host_to_network( static_cast<uint32_t>( build_log_.length() ) );
 
         memcpy( response_ptr+1, build_log_.data(), build_log_.length() );
     }

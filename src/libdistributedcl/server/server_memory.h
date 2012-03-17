@@ -20,32 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_DEVICE_H_
-#define _DCL_DEVICE_H_
+#ifndef _DCL_SERVER_MEMORY_H_
+#define _DCL_SERVER_MEMORY_H_
 
 #include "distributedcl_internal.h"
-#include "opencl_single.h"
-#include "info/device_info.h"
-#include "opencl_library.h"
+#include "server_command.h"
+#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace server {
 //-----------------------------------------------------------------------------
-class device :
-    public dcl::info::generic_device,
-    public opencl_object< cl_device_id >
+class CreateBuffer_command : 
+    public server_command< dcl::network::message::msgCreateBuffer >
 {
 public:
-    device( const platform* platform_ptr, cl_device_id id );
-    virtual ~device(){}
+    CreateBuffer_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgCreateBuffer >( message_ptr ) {}
 
-private:
-    virtual bool load_device_info();
-
-    void load_info_data( cl_device_info info );
-    void load_info_string( cl_device_info info, std::string& str );
+    void execute();
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_DEVICE_H_
+#endif // _DCL_SERVER_MEMORY_H_

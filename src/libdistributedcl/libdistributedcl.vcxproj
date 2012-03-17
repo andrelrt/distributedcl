@@ -70,6 +70,7 @@
     <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_command_queue.h" />
     <ClInclude Include="server\server_kernel.h" />
+    <ClInclude Include="server\server_memory.h" />
     <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_context.h" />
     <ClInclude Include="server\server_program.h" />
@@ -109,6 +110,7 @@
     <ClCompile Include="remote\remote_program.cpp" />
     <ClCompile Include="server\server_command_queue.cpp" />
     <ClCompile Include="server\server_kernel.cpp" />
+    <ClCompile Include="server\server_memory.cpp" />
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="server\server_context.cpp" />
     <ClCompile Include="server\server_program.cpp" />
