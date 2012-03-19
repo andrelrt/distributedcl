@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,33 +20,21 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_COMPOSITE_MEMORY_H_
-#define _DCL_COMPOSITE_MEMORY_H_
-
-#include "distributedcl_internal.h"
-#include "composite_object.h"
-#include "info/memory_info.h"
+#include "composite_memory.h"
+#include "composite_command_queue.h"
+using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-class composite_context;
-//-----------------------------------------------------------------------------
-class composite_memory :
-    public dcl::info::generic_memory,
-    public composite_object< dcl::info::generic_memory >
+void composite_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
+                              size_t size, size_t offset, cl_bool blocking )
 {
-public:
-    composite_memory( const composite_context& context_ref ) :
-        dcl::info::generic_memory(),
-        composite_object< dcl::info::generic_memory >( context_ref ){}
+    const dcl::info::generic_context* ctx = queue_ptr->get_context();
+    generic_memory* memory_ptr = find( ctx );
 
-    ~composite_memory(){}
-
-    virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
-                        size_t size, size_t offset, cl_bool blocking = CL_TRUE );
-};
+    memory_ptr->write( queue_ptr, data_ptr, size, offset, blocking );
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif //_DCL_COMPOSITE_MEMORY_H_

@@ -165,7 +165,7 @@ private:
     icd_object_manager()
     {
         FILL_DISPATCH_ITEM( clBuildProgram );
-        //FILL_DISPATCH_ITEM( clCreateBuffer );
+        FILL_DISPATCH_ITEM( clCreateBuffer );
         FILL_DISPATCH_ITEM( clCreateCommandQueue );
         FILL_DISPATCH_ITEM( clCreateContext  );
         FILL_DISPATCH_ITEM( clCreateContextFromType );
@@ -201,7 +201,7 @@ private:
         //FILL_DISPATCH_ITEM( clEnqueueTask );
         //FILL_DISPATCH_ITEM( clEnqueueUnmapMemObject );
         //FILL_DISPATCH_ITEM( clEnqueueWaitForEvents );
-        //FILL_DISPATCH_ITEM( clEnqueueWriteBuffer );
+        FILL_DISPATCH_ITEM( clEnqueueWriteBuffer );
         //FILL_DISPATCH_ITEM( clEnqueueWriteBufferRect );
         //FILL_DISPATCH_ITEM( clEnqueueWriteImage );
         FILL_DISPATCH_ITEM( clFinish );
@@ -229,14 +229,14 @@ private:
         FILL_DISPATCH_ITEM( clReleaseContext );
         //FILL_DISPATCH_ITEM( clReleaseEvent );
         FILL_DISPATCH_ITEM( clReleaseKernel );
-        //FILL_DISPATCH_ITEM( clReleaseMemObject );
+        FILL_DISPATCH_ITEM( clReleaseMemObject );
         FILL_DISPATCH_ITEM( clReleaseProgram );
         //FILL_DISPATCH_ITEM( clReleaseSampler );
         FILL_DISPATCH_ITEM( clRetainCommandQueue );
         FILL_DISPATCH_ITEM( clRetainContext );
         //FILL_DISPATCH_ITEM( clRetainEvent );
         FILL_DISPATCH_ITEM( clRetainKernel );
-        //FILL_DISPATCH_ITEM( clRetainMemObject );
+        FILL_DISPATCH_ITEM( clRetainMemObject );
         FILL_DISPATCH_ITEM( clRetainProgram );
         //FILL_DISPATCH_ITEM( clRetainSampler );
         //FILL_DISPATCH_ITEM( clSetCommandQueueProperty );
@@ -244,7 +244,7 @@ private:
         //FILL_DISPATCH_ITEM( clSetKernelArg );
         //FILL_DISPATCH_ITEM( clSetMemObjectDestructorCallback );
         //FILL_DISPATCH_ITEM( clSetUserEventStatus );
-        //FILL_DISPATCH_ITEM( clUnloadCompiler );
+        FILL_DISPATCH_ITEM( clUnloadCompiler );
         //FILL_DISPATCH_ITEM( clWaitForEvents );
     }
 

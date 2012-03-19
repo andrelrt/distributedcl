@@ -300,12 +300,12 @@ int
 MatrixMulDouble::setupCL(void)
 {
     cl_int status = 0;
-    cl_device_type dType;
+    cl_device_type dType = CL_DEVICE_TYPE_ALL;
     
-    if(deviceType.compare("cpu") == 0)
-        dType = CL_DEVICE_TYPE_CPU;
-    else //deviceType = "gpu" 
-        dType = CL_DEVICE_TYPE_GPU;
+    //if(deviceType.compare("cpu") == 0)
+    //    dType = CL_DEVICE_TYPE_CPU;
+    //else //deviceType = "gpu" 
+    //    dType = CL_DEVICE_TYPE_GPU;
 
     /*
      * Have a look at the available platforms and pick either
@@ -367,8 +367,8 @@ MatrixMulDouble::setupCL(void)
     }
 
     std::string extensions = devices[deviceId].getInfo<CL_DEVICE_EXTENSIONS>();
-    if(!strstr(extensions.c_str(), "cl_amd_fp64") || 
-       !strstr(extensions.c_str(), "cl_khr_fp64") )
+    if( !strstr(extensions.c_str(), "cl_amd_fp64") &&
+        !strstr(extensions.c_str(), "cl_khr_fp64") )
     {
         sampleCommon->error("Device does not support double precision extension!");
         exit(SDK_SUCCESS);

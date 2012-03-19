@@ -183,11 +183,12 @@ clBuildProgram( cl_program program, cl_uint num_devices,
     return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_1
-//{
-//    return CL_INVALID_VALUE;
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_1
+{
+    // Nothing to do
+    return CL_SUCCESS;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clGetProgramInfo( cl_program program, cl_program_info param_name,

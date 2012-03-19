@@ -48,6 +48,9 @@ public:
     virtual ~memory(){}
 
     memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags );
+
+    virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
+                        size_t size, size_t offset, cl_bool blocking = CL_TRUE );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

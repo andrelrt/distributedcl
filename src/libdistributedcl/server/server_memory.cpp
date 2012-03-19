@@ -23,12 +23,12 @@
 #include "server_memory.h"
 #include "server_platform.h"
 #include "message/msg_memory.h"
-#include "composite/composite_device.h"
+#include "composite/composite_command_queue.h"
 #include "composite/composite_context.h"
 #include "composite/composite_memory.h"
 using dcl::composite::composite_context;
 using dcl::composite::composite_memory;
-using dcl::composite::composite_device;
+using dcl::composite::composite_command_queue;
 using dcl::info::generic_memory;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -42,15 +42,28 @@ void CreateBuffer_command::execute()
 
     composite_context* context_ptr = server.get_context_manager().get( context_id );
 
-    generic_memory* ptr = context_ptr->create_buffer( message_.get_buffer().data(), 
-                                                      message_.get_buffer().size(), 
+    generic_memory* ptr = context_ptr->create_buffer( message_.get_buffer_pointer(),
+                                                      message_.get_buffer_size(),
                                                       message_.get_flags() );
 
-    composite_memory* memory_ptr = reinterpret_cast<composite_memory*>( ptr );
+    composite_memory* buffer_ptr = reinterpret_cast<composite_memory*>( ptr );
 
-    remote_id_t id = server.get_memory_manager().add( memory_ptr );
+    remote_id_t id = server.get_memory_manager().add( buffer_ptr );
 
     message_.set_remote_id( id );
+}
+//-----------------------------------------------------------------------------
+void EnqueueWriteBuffer_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    remote_id_t id = message_.get_remote_id();
+    remote_id_t command_queue_id = message_.get_command_queue_id();
+
+    composite_memory* buffer_ptr = server.get_memory_manager().get( id );
+    composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
+
+    buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(), message_.get_buffer_size(), 0 );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

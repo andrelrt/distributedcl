@@ -205,7 +205,17 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             }
 
             case msgEnqueueReadBuffer:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgEnqueueWriteBuffer:
+            {
+                EnqueueWriteBuffer_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgEnqueueCopyBuffer:
             case msgEnqueueReadImage:
             case msgEnqueueWriteImage:

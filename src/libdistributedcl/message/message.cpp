@@ -28,6 +28,7 @@
 #include "msg_kernel.h"
 #include "msg_internal.h"
 #include "msg_command_queue.h"
+#include "msg_memory.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -99,8 +100,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgReleaseCommandQueue:
         case msgGetCommandQueueInfo:
         case msgSetCommandQueueProperty:
+            throw dcl::library_exception( "Not implemented" );
+            break;
 
         case msgCreateBuffer:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateBuffer >() );
+            break;
+
         case msgCreateImage2D:
         case msgCreateImage3D:
         case msgRetainMemObject:
@@ -165,7 +171,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
             break;
 
         case msgEnqueueReadBuffer:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgEnqueueWriteBuffer:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgEnqueueWriteBuffer >() );
+            break;
+
         case msgEnqueueCopyBuffer:
         case msgEnqueueReadImage:
         case msgEnqueueWriteImage:

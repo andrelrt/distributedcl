@@ -33,7 +33,7 @@ EXPORTS
 ;    clEnqueueTask                   @31
 ;    clEnqueueUnmapMemObject         @32
 ;    clEnqueueWaitForEvents          @33
-;    clEnqueueWriteBuffer            @34
+    clEnqueueWriteBuffer            @34
 ;    clEnqueueWriteImage             @35
     clFinish                        @36
 ;    clFlush                         @37
@@ -72,5 +72,5 @@ EXPORTS
 ;    clRetainSampler                 @70
 ;    clSetCommandQueueProperty       @71
 ;    clSetKernelArg                  @72
-;    clUnloadCompiler                @73
+    clUnloadCompiler                @73
 ;    clWaitForEvents                 @74

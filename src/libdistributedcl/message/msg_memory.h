@@ -55,7 +55,7 @@ template<>
 class dcl_message< msgCreateBuffer > : public base_message
 {
 public:
-    dcl_message< msgCreateBuffer >() : 
+    dcl_message< msgCreateBuffer >() :
         base_message( msgCreateBuffer, true, 0, sizeof( dcl::remote_id_t ) ) {}
 
     typedef std::vector<uint8_t> buffer_t;
@@ -71,14 +71,21 @@ public:
         context_id_ = id;
     }
 
-    inline const buffer_t& get_buffer() const
+    inline const uint8_t* get_buffer_pointer() const
     {
-        return buffer_;
+        return buffer_ptr_;
+    }
+
+    inline size_t get_buffer_size() const
+    {
+        return buffer_len_;
     }
 
     inline void set_buffer( const uint8_t* ptr, size_t size )
     {
-        buffer_.assign( ptr, ptr + size );
+        buffer_ptr_ = ptr;
+        buffer_len_ = size;
+
         update_request_size();
     }
 
@@ -105,8 +112,10 @@ public:
 
 private:
     dcl::remote_id_t context_id_;
-    buffer_t buffer_;
+    const uint8_t* buffer_ptr_;
+    size_t buffer_len_;
     cl_mem_flags flags_;
+    buffer_t buffer_;
 
     dcl::remote_id_t id_;
 
@@ -117,7 +126,7 @@ private:
 
     inline void update_request_size()
     {
-        set_size( buffer_.size() + sizeof(msgCreateBuffer_request) - 1 );
+        set_size( (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) + sizeof(msgCreateBuffer_request) - 1 );
     }
 
     #pragma pack( push, 1 )
@@ -125,7 +134,87 @@ private:
     struct msgCreateBuffer_request
     {
         dcl::remote_id_t context_id_;
-        uint16_t flags_;
+        uint16_t message_buffer_:1;
+        uint16_t flags_:15;
+        uint32_t buffer_len_;
+
+        uint8_t buffer_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+// msgEnqueueWriteBuffer
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgEnqueueWriteBuffer > : public base_message
+{
+public:
+    dcl_message< msgEnqueueWriteBuffer >() :
+        base_message( msgEnqueueWriteBuffer, true, 0, 0 ) {}
+
+    typedef std::vector<uint8_t> buffer_t;
+
+    // Request
+    inline const dcl::remote_id_t get_remote_id() const
+    {
+        return id_;
+    }
+
+    inline void set_remote_id( dcl::remote_id_t id )
+    {
+        id_ = id;
+    }
+
+    inline const dcl::remote_id_t get_command_queue_id() const
+    {
+        return 7;
+    }
+
+    inline void set_command_queue_id( dcl::remote_id_t id )
+    {
+        command_queue_id_ = id;
+    }
+
+    inline const uint8_t* get_buffer_pointer() const
+    {
+        return buffer_ptr_;
+    }
+
+    inline size_t get_buffer_size() const
+    {
+        return buffer_len_;
+    }
+
+    inline void set_buffer( const uint8_t* ptr, size_t size, size_t offset )
+    {
+        buffer_ptr_ = ptr + offset;
+        buffer_len_ = size;
+
+        update_request_size();
+    }
+
+private:
+    dcl::remote_id_t id_;
+    dcl::remote_id_t command_queue_id_;
+    const uint8_t* buffer_ptr_;
+    size_t buffer_len_;
+    buffer_t buffer_;
+
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+
+    inline void update_request_size()
+    {
+        set_size( buffer_len_ + sizeof(msgEnqueueWriteBuffer_request) - 1 );
+    }
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgEnqueueWriteBuffer_request
+    {
+        dcl::remote_id_t id_;
+        dcl::remote_id_t command_queue_id_;
         uint32_t buffer_len_;
 
         uint8_t buffer_[1];

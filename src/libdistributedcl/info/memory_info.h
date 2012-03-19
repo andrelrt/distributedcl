@@ -31,6 +31,8 @@
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
+class generic_command_queue;
+//-----------------------------------------------------------------------------
 struct memory_info
 {
 };
@@ -46,6 +48,9 @@ public:
     }
 
     virtual ~generic_memory(){}
+
+    virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
+                        size_t size, size_t offset, cl_bool blocking = CL_TRUE ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

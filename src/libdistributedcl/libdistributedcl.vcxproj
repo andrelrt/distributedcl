@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="composite\composite_context.cpp" />
     <ClCompile Include="composite\composite_kernel.cpp" />
+    <ClCompile Include="composite\composite_memory.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
     <ClCompile Include="composite\composite_program.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
@@ -106,6 +107,7 @@
     <ClCompile Include="remote\remote_context.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
     <ClCompile Include="remote\remote_kernel.cpp" />
+    <ClCompile Include="remote\remote_memory.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
     <ClCompile Include="server\server_command_queue.cpp" />

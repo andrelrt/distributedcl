@@ -328,5 +328,11 @@
     <ClCompile Include="server\server_memory.cpp">
       <Filter>server</Filter>
     </ClCompile>
+    <ClCompile Include="composite\composite_memory.cpp">
+      <Filter>composite</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_memory.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

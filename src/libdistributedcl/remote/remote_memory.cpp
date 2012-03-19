@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,33 +20,28 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_COMPOSITE_MEMORY_H_
-#define _DCL_COMPOSITE_MEMORY_H_
-
-#include "distributedcl_internal.h"
-#include "composite_object.h"
-#include "info/memory_info.h"
+#include "remote_memory.h"
+#include "remote_command_queue.h"
+#include "message/msg_memory.h"
+using dcl::info::generic_command_queue;
+using dcl::network::message::dcl_message;
+using dcl::network::message::base_message;
+using dcl::network::message::msgEnqueueWriteBuffer;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace composite {
+namespace remote {
 //-----------------------------------------------------------------------------
-class composite_context;
-//-----------------------------------------------------------------------------
-class composite_memory :
-    public dcl::info::generic_memory,
-    public composite_object< dcl::info::generic_memory >
+void remote_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
+                           size_t size, size_t offset, cl_bool blocking )
 {
-public:
-    composite_memory( const composite_context& context_ref ) :
-        dcl::info::generic_memory(),
-        composite_object< dcl::info::generic_memory >( context_ref ){}
+    dcl_message< msgEnqueueWriteBuffer > msg;
 
-    ~composite_memory(){}
+    msg.set_remote_id( get_remote_id() );
+    msg.set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg.set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
 
-    virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
-                        size_t size, size_t offset, cl_bool blocking = CL_TRUE );
-};
+    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::composite
+}} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif //_DCL_COMPOSITE_MEMORY_H_

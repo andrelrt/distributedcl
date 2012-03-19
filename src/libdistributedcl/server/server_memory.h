@@ -40,6 +40,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class EnqueueWriteBuffer_command : 
+    public server_command< dcl::network::message::msgEnqueueWriteBuffer >
+{
+public:
+    EnqueueWriteBuffer_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_MEMORY_H_

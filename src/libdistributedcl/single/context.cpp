@@ -47,6 +47,9 @@ context::context( const platform& platform_ref, const devices_t& devices_ref ) :
     generic_context( platform_ref, devices_ref ), 
     opencl_object( reinterpret_cast<device*>( devices_ref[ 0 ] )->get_opencl() )
 {
+    //FIXME: Not implemented
+    throw library_exception( "Not implemented" );
+
     //if( devices_ref.empty() )
     //    throw library_exception( CL_INVALID_VALUE );
 

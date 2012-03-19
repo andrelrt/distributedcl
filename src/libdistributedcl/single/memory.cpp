@@ -22,6 +22,8 @@
 //-----------------------------------------------------------------------------
 #include "memory.h"
 #include "context.h"
+#include "command_queue.h"
+using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -48,6 +50,26 @@ memory::memory( const context& context_ref, const void* host_ptr, size_t size, c
         }
 
         set_id( mem );
+    }
+}
+//-----------------------------------------------------------------------------
+void memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
+                    size_t size, size_t offset, cl_bool blocking )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+
+        error_code = opencl_.clEnqueueWriteBuffer( queue->get_id(), get_id(),
+                                                   blocking, offset, size,
+                                                   data_ptr, 0, NULL, NULL );
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
     }
 }
 //-----------------------------------------------------------------------------
