@@ -263,7 +263,7 @@ public:
      * Override from SDKSample
      * Run OpenCL Matrix Multiplication
      */
-    int run(){ return 0; }
+    int run();
 
     /**
      * Override from SDKSample

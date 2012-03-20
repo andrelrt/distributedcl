@@ -84,7 +84,6 @@ void packet::parse_messages()
 //-----------------------------------------------------------------------------
 void packet::add( base_message* message_ptr )
 {
-    header_ptr_->message_count++;
     length_ += message_ptr->get_size();
 
     messages_.push_back( message_ptr );
@@ -109,6 +108,7 @@ void packet::create_packet()
         }
 
         header_ptr_->length = static_cast< uint16_t >( host_to_network( static_cast< u_short >( length_ ) ) );
+        header_ptr_->message_count = messages_.size();
     }
 }
 //-----------------------------------------------------------------------------

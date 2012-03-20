@@ -132,8 +132,6 @@ private:
                 ret_packet->add( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
             }
 
-            ret_packet->create_packet();
-
             if( boost::this_thread::interruption_requested() )
                 break;
 

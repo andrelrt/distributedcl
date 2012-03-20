@@ -155,7 +155,13 @@ public:
 
         if( total_size > buffer_size_ )
         {
-            throw dcl::library_exception( "Buffer overflow" );
+            boost::scoped_array<uint8_t> header( new uint8_t[ dcl::network::message::packet::get_header_size() ] );
+
+            memcpy( header.get(), base_message_buffer_ptr_, dcl::network::message::packet::get_header_size() );
+
+            get_message_buffer( &total_size );
+
+            memcpy( base_message_buffer_ptr_, header.get(), dcl::network::message::packet::get_header_size() );
         }
 
         receive_size( base_message_buffer_ptr_ + dcl::network::message::packet::get_header_size(),

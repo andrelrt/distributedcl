@@ -43,20 +43,9 @@ public:
         header_ptr_ = reinterpret_cast< packet_header* >( buffer_ptr );
     }
 
-    inline packet( uint8_t* buffer_ptr, std::size_t buffer_size, 
-                   dcl::network::platform::session_id_t session_id, 
-                   dcl::network::platform::session_sequence_t sequence ) :
-        buffer_size_( buffer_size ), buffer_ptr_( buffer_ptr )
-    {
-        header_ptr_ = reinterpret_cast< packet_header* >( buffer_ptr );
-
-        length_ = sizeof( packet_header );
-
-        header_ptr_->version = packet_v1_0;
-        header_ptr_->message_count = 0;
-        header_ptr_->session_id = session_id;
-        header_ptr_->sequence_number = sequence;
-    }
+    inline packet() :
+        buffer_size_( 0 ), buffer_ptr_( NULL ),
+        header_ptr_( NULL ), length_( sizeof( packet_header ) ){}
 
     inline ~packet(){}
 
@@ -68,9 +57,9 @@ public:
         return header_ptr_->message_count;
     }
 
-    inline uint16_t get_length() const
+    inline std::size_t get_length() const
     {
-        return static_cast< uint16_t >( length_ );
+        return length_;
     }
 
     inline uint16_t get_session_id() const
@@ -112,6 +101,20 @@ public:
 
     void add( base_message* base_message_ptr );
     void create_packet();
+
+    inline void setup( uint8_t* buffer_ptr, std::size_t buffer_size,
+                       dcl::network::platform::session_id_t session_id, 
+                       dcl::network::platform::session_sequence_t sequence )
+    {
+        buffer_size_ = buffer_size;
+        buffer_ptr_ = buffer_ptr;
+        header_ptr_ = reinterpret_cast< packet_header* >( buffer_ptr );
+
+        header_ptr_->version = packet_v1_0;
+        header_ptr_->message_count = 0;
+        header_ptr_->session_id = session_id;
+        header_ptr_->sequence_number = sequence;
+    }
 
 private:
     enum{ packet_v1_0 = 0x10 };

@@ -75,6 +75,11 @@ clCreateProgramWithSource( cl_context context, cl_uint count,
         composite_context* context_ptr = icd.get_object_ptr< composite_context >( context );
         composite_program* program_ptr = reinterpret_cast< composite_program* >( context_ptr->create_program( source_code ) );
 
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_SUCCESS;
+        }
+
         return icd.get_cl_id< composite_program >( program_ptr );
     }
     catch( dcl::library_exception& ex )

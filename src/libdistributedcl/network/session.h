@@ -99,27 +99,33 @@ protected:
 	    	throw dcl::library_exception( "Invalid session" );
     	}
 
-		if( packet_ptr->get_sequence_number() != get_remote_sequence_number() )
-		{
+        if( packet_ptr->get_sequence_number() != get_remote_sequence_number() )
+        {
             remote_sequence_number_--;
-			throw dcl::library_exception( "Invalid sequence number" );
-    	}
+            throw dcl::library_exception( "Invalid sequence number" );
+        }
 
         return( packet_ptr );
     }
 
     inline dcl::network::message::packet* create_packet()
     {
-        std::size_t max_length = 0;
+        return( new dcl::network::message::packet() );
+    }
+
+    inline void setup_packet( dcl::network::message::packet* packet_ptr )
+    {
+        std::size_t max_length = packet_ptr->get_length();
         uint8_t* buffer_ptr = communication_.get_message_buffer( &max_length );
 
-        return( new dcl::network::message::packet( buffer_ptr, max_length, get_session_id(),
-                                                   get_sequence_number() ) );
+        packet_ptr->setup( buffer_ptr, max_length, get_session_id(), get_sequence_number() );
     }
 
     inline void send_packet( dcl::network::message::packet* packet_ptr )
     {
+        setup_packet( packet_ptr );
         packet_ptr->create_packet();
+
         communication_.send_message( packet_ptr->get_length() );
     }
 
