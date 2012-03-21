@@ -126,6 +126,10 @@ private:
 
                     ret_packet->add( ref );
                 }
+                else
+                {
+                    ret_packet->add( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( CL_SUCCESS ) );
+                }
             }
             catch( dcl::library_exception& ex )
             {

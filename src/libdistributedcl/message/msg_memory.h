@@ -150,7 +150,7 @@ class dcl_message< msgEnqueueWriteBuffer > : public base_message
 {
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
-        base_message( msgEnqueueWriteBuffer, true, 0, 0 ) {}
+        base_message( msgEnqueueWriteBuffer, false, 0, 0 ) {}
 
     typedef std::vector<uint8_t> buffer_t;
 

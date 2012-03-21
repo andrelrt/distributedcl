@@ -108,7 +108,7 @@ class dcl_message< msgBuildProgram > : public base_message
 {
 public:
     dcl_message< msgBuildProgram >() : 
-        base_message( msgBuildProgram, true, 0, 0 ) {}
+        base_message( msgBuildProgram, false, 0, 0 ) {}
 
     inline const dcl::remote_id_t get_program_id() const
     {
