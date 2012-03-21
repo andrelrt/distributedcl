@@ -63,5 +63,27 @@ void EnqueueNDRangeKernel_command::execute()
                          message_.get_global(), message_.get_local() );
 }
 //-----------------------------------------------------------------------------
+void SetKernelArg_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    composite_kernel* kernel_ptr = 
+        server.get_kernel_manager().get( message_.get_kernel_id() );
+
+    if( message_.is_memory_object() )
+    {
+        composite_memory* memory_ptr =
+            server.get_memory_manager().get( message_.get_memory_id() );
+
+        kernel_ptr->set_argument( message_.get_index(), memory_ptr );
+    }
+    else
+    {
+        kernel_ptr->set_argument( message_.get_index(), 
+                                  message_.get_buffer().size(), 
+                                  message_.get_buffer().data() );
+    }
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------

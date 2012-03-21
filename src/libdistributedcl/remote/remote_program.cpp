@@ -43,54 +43,54 @@ void remote_program::build( const std::string& build_options, cl_bool blocking )
 //-----------------------------------------------------------------------------
 void remote_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
 {
-    dcl_message< msgBuildProgram > msg;
+    dcl_message< msgBuildProgram >* msg_ptr = new dcl_message< msgBuildProgram >();
 
-    msg.set_devices( devices );
-    msg.set_program_id( get_remote_id() );
-    msg.set_build_options( build_options );
+    msg_ptr->set_devices( devices );
+    msg_ptr->set_program_id( get_remote_id() );
+    msg_ptr->set_build_options( build_options );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 }
 //-----------------------------------------------------------------------------
 generic_kernel* remote_program::create_kernel( const std::string& kernel_name )
 {
-    dcl_message< msgCreateKernel > msg;
+    dcl_message< msgCreateKernel >* msg_ptr = new dcl_message< msgCreateKernel >();
 
-    msg.set_name( kernel_name );
-    msg.set_program_id( get_remote_id() );
+    msg_ptr->set_name( kernel_name );
+    msg_ptr->set_program_id( get_remote_id() );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 
     remote_kernel* kernel_ptr = new remote_kernel( context_, kernel_name );
-    kernel_ptr->set_remote_id( msg.get_remote_id() );
+    kernel_ptr->set_remote_id( msg_ptr->get_remote_id() );
 
     return reinterpret_cast< generic_kernel* >( kernel_ptr );
 }
 //-----------------------------------------------------------------------------
 cl_build_status remote_program::get_build_status( const generic_device* device_ptr ) const
 {
-    dcl_message< msgGetProgramBuildInfo > msg;
+    dcl_message< msgGetProgramBuildInfo >* msg_ptr = new dcl_message< msgGetProgramBuildInfo >();
 
-    msg.set_remote_id( get_remote_id() );
-    msg.set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
-    msg.set_build_info( CL_PROGRAM_BUILD_STATUS );
+    msg_ptr->set_remote_id( get_remote_id() );
+    msg_ptr->set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
+    msg_ptr->set_build_info( CL_PROGRAM_BUILD_STATUS );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 
-    return msg.get_build_status();
+    return msg_ptr->get_build_status();
 }
 //-----------------------------------------------------------------------------
 void remote_program::get_build_log( const generic_device* device_ptr, std::string& build_log ) const
 {
-    dcl_message< msgGetProgramBuildInfo > msg;
+    dcl_message< msgGetProgramBuildInfo >* msg_ptr = new dcl_message< msgGetProgramBuildInfo >();
 
-    msg.set_remote_id( get_remote_id() );
-    msg.set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
-    msg.set_build_info( CL_PROGRAM_BUILD_LOG );
+    msg_ptr->set_remote_id( get_remote_id() );
+    msg_ptr->set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
+    msg_ptr->set_build_info( CL_PROGRAM_BUILD_LOG );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 
-    build_log.assign( msg.get_build_log() );
+    build_log.assign( msg_ptr->get_build_log() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

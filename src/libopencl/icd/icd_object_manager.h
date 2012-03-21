@@ -241,7 +241,7 @@ private:
         //FILL_DISPATCH_ITEM( clRetainSampler );
         //FILL_DISPATCH_ITEM( clSetCommandQueueProperty );
         //FILL_DISPATCH_ITEM( clSetEventCallback );
-        //FILL_DISPATCH_ITEM( clSetKernelArg );
+        FILL_DISPATCH_ITEM( clSetKernelArg );
         //FILL_DISPATCH_ITEM( clSetMemObjectDestructorCallback );
         //FILL_DISPATCH_ITEM( clSetUserEventStatus );
         FILL_DISPATCH_ITEM( clUnloadCompiler );
@@ -284,6 +284,27 @@ public:
             instance_ptr_ = new icd_object_manager();
         }
         return *instance_ptr_;
+    }
+
+    template< typename DCL_TYPE_T >
+    bool has_object( typename DCL_TYPE_T::cl_type_t cl_ptr )
+    {
+        if( cl_ptr == NULL )
+        {
+            return false;
+        }
+
+        cl_object_set_t::iterator it = object_set_.find( reinterpret_cast< cl_object* >( cl_ptr ) );
+
+        if( it == object_set_.end() )
+        {
+            return false;
+        }
+
+        uint32_t type = (*it)->dcl_type;
+        uint32_t type_id = DCL_TYPE_T::type_id;
+
+        return ( type == type_id );
     }
 
     template< typename DCL_TYPE_T >

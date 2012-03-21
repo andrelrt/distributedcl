@@ -71,6 +71,6 @@ EXPORTS
     clRetainProgram                 @69
 ;    clRetainSampler                 @70
 ;    clSetCommandQueueProperty       @71
-;    clSetKernelArg                  @72
+    clSetKernelArg                  @72
     clUnloadCompiler                @73
 ;    clWaitForEvents                 @74

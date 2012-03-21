@@ -22,8 +22,10 @@
 //-----------------------------------------------------------------------------
 #include "kernel.h"
 #include "command_queue.h"
+#include "memory.h"
 using dcl::info::ndrange;
 using dcl::info::generic_command_queue;
+using dcl::info::generic_memory;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -58,6 +60,23 @@ void kernel::execute( const generic_command_queue* queue_ptr,
                                         static_cast<cl_uint>( global.get_dimensions() ),
                                         offset.get_pointer(), global.get_pointer(),
                                         local.get_pointer(), 0, NULL, NULL );
+    if( error_code != CL_SUCCESS )
+    {
+        throw dcl::library_exception( error_code );
+    }
+}
+//-----------------------------------------------------------------------------
+void kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
+{
+    cl_mem mem = (reinterpret_cast<const memory*>( memory_ptr ))->get_id();
+
+    set_argument( arg_index, sizeof(cl_mem), &mem );
+}
+//-----------------------------------------------------------------------------
+void kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
+{
+    cl_int error_code = opencl_.clSetKernelArg( get_id(), arg_index, arg_size, arg_value );
+
     if( error_code != CL_SUCCESS )
     {
         throw dcl::library_exception( error_code );

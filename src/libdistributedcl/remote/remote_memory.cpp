@@ -34,13 +34,13 @@ namespace remote {
 void remote_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
                            size_t size, size_t offset, cl_bool blocking )
 {
-    dcl_message< msgEnqueueWriteBuffer > msg;
+    dcl_message< msgEnqueueWriteBuffer >* msg_ptr = new dcl_message< msgEnqueueWriteBuffer >();
 
-    msg.set_remote_id( get_remote_id() );
-    msg.set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
-    msg.set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
+    msg_ptr->set_remote_id( get_remote_id() );
+    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

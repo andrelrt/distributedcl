@@ -26,8 +26,10 @@
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgEnqueueNDRangeKernel;
+using dcl::network::message::msgSetKernelArg;
 using dcl::info::ndrange;
 using dcl::info::generic_kernel;
+using dcl::info::generic_memory;
 using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -37,16 +39,38 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
                              const ndrange& offset, const ndrange& global, 
                              const ndrange& local )
 {
-    dcl_message< msgEnqueueNDRangeKernel > msg;
+    dcl_message< msgEnqueueNDRangeKernel >* msg_ptr = new dcl_message< msgEnqueueNDRangeKernel >();
 
-    msg.set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
-    msg.set_kernel_id( get_remote_id() );
+    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg_ptr->set_kernel_id( get_remote_id() );
 
-    msg.get_offset().copy( offset );
-    msg.get_global().copy( global );
-    msg.get_local().copy( local );
+    msg_ptr->get_offset().copy( offset );
+    msg_ptr->get_global().copy( global );
+    msg_ptr->get_local().copy( local );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+}
+//-----------------------------------------------------------------------------
+void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
+{
+    dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
+
+    msg_ptr->set_index( arg_index );
+    msg_ptr->set_kernel_id( get_remote_id() );
+    msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
+
+    session_ref_.enqueue_message( reinterpret_cast< base_message* >( msg_ptr ) );
+}
+//-----------------------------------------------------------------------------
+void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
+{
+    dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
+
+    msg_ptr->set_index( arg_index );
+    msg_ptr->set_buffer( arg_value, arg_size );
+    msg_ptr->set_kernel_id( get_remote_id() );
+
+    session_ref_.enqueue_message( reinterpret_cast< base_message* >( msg_ptr ) );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

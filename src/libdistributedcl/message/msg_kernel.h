@@ -112,7 +112,7 @@ class dcl_message< msgEnqueueNDRangeKernel > : public base_message
 {
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
-        base_message( msgEnqueueNDRangeKernel, true, sizeof( msgEnqueueNDRangeKernel_request ), 0 ) {}
+        base_message( msgEnqueueNDRangeKernel, false, sizeof( msgEnqueueNDRangeKernel_request ), 0 ) {}
 
     inline const dcl::remote_id_t get_kernel_id() const
     {
@@ -169,6 +169,98 @@ private:
         uint16_t offset_[ 3 ];
         uint16_t global_[ 3 ];
         uint16_t local_[ 3 ];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgSetKernelArg > : public base_message
+{
+public:
+    dcl_message< msgSetKernelArg >() :
+        base_message( msgSetKernelArg, false, sizeof( msgSetKernelArg_request ), 0 ),
+        is_memory_object( false ), memory_id_( 0xffff ){}
+
+    inline const dcl::remote_id_t get_kernel_id() const
+    {
+        return kernel_id_;
+    }
+
+    inline void set_kernel_id( dcl::remote_id_t id )
+    {
+        kernel_id_ = id;
+    }
+
+    inline uint16_t get_index() const
+    {
+        return index_;
+    }
+
+    inline void set_index( uint16_t arg_index )
+    {
+        index_ = index;
+    }
+
+    inline dcl::remote_id_t get_memory_id() const
+    {
+        return memory_id_;
+    }
+
+    inline void set_memory_id( dcl::remote_id_t memory_id )
+    {
+        is_memory_object_ = true;
+        memory_id_ = memory_id;
+
+        set_size( sizeof(msgSetKernelArg_memory_request) );
+    }
+
+    inline const std::vector<uint8_t>& get_buffer() const
+    {
+        return buffer_;
+    }
+
+    inline void set_buffer( const uint8_t* arg_value, size_t arg_size )
+    {
+        is_memory_object = false;
+        buffer_.assign( arg_value, arg_value + arg_size );
+
+        set_size( arg_size + sizeof(msgSetKernelArg_buffer_request) - 1 );
+    }
+
+    inline bool is_memory_object() const
+    {
+        return is_memory_object_;
+    }
+
+private:
+    dcl::remote_id_t kernel_id_;
+    dcl::remote_id_t memory_id_;
+    uint16_t index_;
+    std::vector<uint8_t> buffer_;
+    bool is_memory_object_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+
+    #pragma pack( push, 1 )
+
+    // Better when aligned in 32 bits boundary
+    struct msgSetKernelArg_memory_request
+    {
+        dcl::remote_id_t kernel_id_;
+        uint16_t is_memory_object:1;
+        uint16_t index:15;
+        dcl::remote_id_t memory_id_;
+    };
+
+    struct msgSetKernelArg_buffer_request
+    {
+        dcl::remote_id_t kernel_id_;
+        uint16_t is_memory_object_:1;
+        uint16_t index_:15;
+        uint32_t size_;
+
+        uint8_t buffer_[1];
     };
     #pragma pack( pop )
 };

@@ -50,6 +50,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class SetKernelArg_command : 
+    public server_command< dcl::network::message::msgSetKernelArg >
+{
+public:
+    SetKernelArg_command( recv_ptr_t message_ptr ) :
+        server_command< dcl::network::message::msgSetKernelArg >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_KERNEL_H_

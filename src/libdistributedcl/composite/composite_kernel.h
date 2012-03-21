@@ -45,6 +45,9 @@ public:
                           const dcl::info::ndrange& offset, 
                           const dcl::info::ndrange& global, 
                           const dcl::info::ndrange& local );
+
+    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
+    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

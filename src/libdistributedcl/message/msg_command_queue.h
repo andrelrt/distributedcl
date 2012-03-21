@@ -111,7 +111,7 @@ class dcl_message< msgFinish > : public base_message
 {
 public:
     dcl_message< msgFinish >() : 
-        base_message( msgFinish, true, sizeof(dcl::remote_id_t), 0 ) {}
+        base_message( msgFinish, false, sizeof(dcl::remote_id_t), 0 ) {}
 
     inline const dcl::remote_id_t get_remote_id() const
     {

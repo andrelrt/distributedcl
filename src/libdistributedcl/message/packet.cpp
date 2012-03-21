@@ -27,6 +27,16 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
+packet::~packet()
+{
+    message_vector_t::iterator it;
+
+    for( it = messages_.begin(); it != messages_.end(); it++ )
+    {
+        delete *it;
+    }
+}
+//-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
 
 void packet::parse()

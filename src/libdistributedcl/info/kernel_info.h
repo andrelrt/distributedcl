@@ -33,6 +33,8 @@
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
+class generic_memory;
+//-----------------------------------------------------------------------------
 class ndrange
 {
 private:
@@ -142,6 +144,9 @@ public:
 
     virtual void execute( const generic_command_queue* queue_ptr, const ndrange& offset, 
                           const ndrange& global, const ndrange& local ) = 0;
+
+    virtual void set_argument( uint32_t arg_index, const generic_memory* memory_ptr ) = 0;
+    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

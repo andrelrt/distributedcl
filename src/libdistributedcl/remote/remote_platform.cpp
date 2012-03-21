@@ -46,25 +46,25 @@ generic_context* remote_platform::create_context( const dcl::devices_t& devices 
 //-----------------------------------------------------------------------------
 generic_context* remote_platform::create_context( cl_device_type device_type ) const
 {
-    dcl_message< msgCreateContextFromType > msg;
+    dcl_message< msgCreateContextFromType >* msg_ptr = new dcl_message< msgCreateContextFromType >();
 
-    msg.set_device_type( device_type );
+    msg_ptr->set_device_type( device_type );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 
     remote_context* context_ptr = new remote_context( this );
-    context_ptr->set_remote_id( msg.get_remote_id() );
+    context_ptr->set_remote_id( msg_ptr->get_remote_id() );
 
     return reinterpret_cast<generic_context*>( context_ptr );
 }
 //-----------------------------------------------------------------------------
 void remote_platform::load_devices()
 {
-    dcl_message< msgGetDeviceIDs > msg;
+    dcl_message< msgGetDeviceIDs >* msg_ptr = new dcl_message< msgGetDeviceIDs >();
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( &msg ) );
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 
-    for( std::size_t i = 0; i < msg.get_gpu_count(); i++ )
+    for( std::size_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
     {
         remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
 
@@ -72,7 +72,7 @@ void remote_platform::load_devices()
         add_device( dev_ptr );
     }
 
-    for( std::size_t i = 0; i < msg.get_cpu_count(); i++ )
+    for( std::size_t i = 0; i < msg_ptr->get_cpu_count(); i++ )
     {
         remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_CPU ) );
 
@@ -80,7 +80,7 @@ void remote_platform::load_devices()
         add_device( dev_ptr );
     }
 
-    for( std::size_t i = 0; i < msg.get_accelerator_count(); i++ )
+    for( std::size_t i = 0; i < msg_ptr->get_accelerator_count(); i++ )
     {
         remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_ACCELERATOR ) );
 

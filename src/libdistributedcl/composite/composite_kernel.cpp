@@ -22,8 +22,11 @@
 //-----------------------------------------------------------------------------
 #include "composite_kernel.h"
 #include "composite_command_queue.h"
-using dcl::info::generic_command_queue;
+#include "composite_memory.h"
 using dcl::info::ndrange;
+using dcl::info::generic_kernel;
+using dcl::info::generic_context;
+using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -32,10 +35,29 @@ void composite_kernel::execute( const generic_command_queue* queue_ptr,
                                 const ndrange& offset, const ndrange& global, 
                                 const ndrange& local )
 {
-    const dcl::info::generic_context* ctx = queue_ptr->get_context();
+    const generic_context* ctx = queue_ptr->get_context();
     generic_kernel* kernel_ptr = find( ctx );
 
     kernel_ptr->execute( queue_ptr, offset, global, local );
+}
+//-----------------------------------------------------------------------------
+void composite_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
+{
+    const composite_memory* mem_ptr = 
+        reinterpret_cast<const composite_memory*>( memory_ptr );
+
+    for( iterator it = begin(); it != end(); it++ )
+    {
+        it->second->set_argument( arg_index, mem_ptr->find( it->first ) );
+    }
+}
+//-----------------------------------------------------------------------------
+void composite_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
+{
+    for( iterator it = begin(); it != end(); it++ )
+    {
+        it->second->set_argument( arg_index, arg_size, arg_value );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

@@ -103,11 +103,46 @@ clReleaseKernel( cl_kernel kernel ) CL_API_SUFFIX__VERSION_1_1
     return release_object< composite_kernel >( kernel );
 }
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
-//                const void* arg_value ) CL_API_SUFFIX__VERSION_1_1
-//{
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
+                const void* arg_value ) CL_API_SUFFIX__VERSION_1_1
+{
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_kernel* kernel_ptr = icd.get_object_ptr< composite_kernel >( kernel );
+
+        if( (arg_value != NULL) && 
+            (arg_size == sizeof(void*)) )
+        {
+            cl_mem memory = *(reinterpret_cast<const cl_mem*>( arg_value ));
+
+            if( icd.has_object< composite_memory >( memory ) )
+            {
+                composite_memory* memory_ptr = icd.get_object_ptr< composite_memory >( memory );
+
+                kernel_ptr->set_argument( arg_index, memory_ptr );
+                return CL_SUCCESS;
+            }
+        }
+
+        kernel_ptr->set_argument( arg_index, arg_size, arg_value );
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clGetKernelInfo( cl_kernel kernel, cl_kernel_info param_name,

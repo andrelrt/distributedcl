@@ -116,5 +116,59 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const uint8_t* paylo
     local_.copy( ndrange( dimensions, value ) );
 }
 //-----------------------------------------------------------------------------
+// msgSetKernelArg
+//-----------------------------------------------------------------------------
+void dcl_message< msgSetKernelArg >::create_request( uint8_t* payload_ptr )
+{
+    if( is_memory_object_ )
+    {
+        msgSetKernelArg_memory_request* request_ptr =
+            reinterpret_cast< msgSetKernelArg_memory_request* >( payload_ptr );
+
+        request_ptr->is_memory_object = true;
+        request_ptr->index = host_to_network( index_ );
+        request_ptr->kernel_id_ = host_to_network( kernel_id_ );
+        request_ptr->memory_id_ = host_to_network( memory_id_ );
+    }
+    else
+    {
+        msgSetKernelArg_buffer_request* request_ptr =
+            reinterpret_cast< msgSetKernelArg_buffer_request* >( payload_ptr );
+
+        request_ptr->is_memory_object = false;
+        request_ptr->index = host_to_network( index_ );
+        request_ptr->kernel_id_ = host_to_network( kernel_id_ );
+        request_ptr->size_ = host_to_network( static_cast<uint32_t>( buffer_.size() ) );
+
+        memcpy( request_ptr->buffer_, buffer_.data(), buffer_.size() );
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgSetKernelArg >::parse_request( const uint8_t* payload_ptr )
+{
+    const msgSetKernelArg_memory_request* request_ptr =
+        reinterpret_cast< const msgSetKernelArg_memory_request* >( payload_ptr );
+
+    if( request_ptr->is_memory_object )
+    {
+        is_memory_object_ = true;
+        index_ = network_to_host( request_ptr->index );
+        kernel_id_ = network_to_host( request_ptr->kernel_id_ );
+        memory_id_ = network_to_host( request_ptr->memory_id_ );
+    }
+    else
+    {
+        const msgSetKernelArg_buffer_request* req_ptr =
+            reinterpret_cast< const msgSetKernelArg_buffer_request* >( payload_ptr );
+
+        is_memory_object_ = false;
+
+        index_ = network_to_host( req_ptr->index );
+        kernel_id_ = network_to_host( req_ptr->kernel_id_ );
+
+        buffer_.assign( req_ptr->buffer_, req_ptr->buffer_ + network_to_host( req_ptr->size_ ) );
+    }
+}
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

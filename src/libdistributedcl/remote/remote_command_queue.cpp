@@ -21,14 +21,22 @@
  */
 //-----------------------------------------------------------------------------
 #include "remote_command_queue.h"
+#include "message/message.h"
+#include "message/msg_command_queue.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
+using dcl::network::message::msgFinish;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 void remote_command_queue::finish()
 {
+    dcl_message< msgFinish >* msg_ptr = new dcl_message< msgFinish >();
+
+    msg_ptr->set_command_queue_id( get_remote_id() );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

@@ -33,32 +33,6 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class program;
-//-----------------------------------------------------------------------------
-template<>
-struct context_wrapper< program >
-{
-    static void context_attach( context* context_ptr, program* program_ptr );
-};
-//-----------------------------------------------------------------------------
-template<>
-struct reference_wrapper< cl_program >
-{
-    //-------------------------------------------------------------------------
-    static inline void retain( const opencl_library& opencl, cl_program prog )
-    {
-        if( opencl.loaded() )
-            opencl.clRetainProgram( prog );
-    }
-
-    //-------------------------------------------------------------------------
-    static inline void release( const opencl_library& opencl, cl_program prog )
-    {
-        if( opencl.loaded() )
-            opencl.clReleaseProgram( prog );
-    }
-};
-//-----------------------------------------------------------------------------
 class program :
     public dcl::info::generic_program,
     public opencl_object< cl_program >,

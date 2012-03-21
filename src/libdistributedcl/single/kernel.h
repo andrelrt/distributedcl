@@ -34,32 +34,6 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class kernel;
-//-----------------------------------------------------------------------------
-//template<>
-//struct context_wrapper< kernel >
-//{
-//    static void context_attach( context* context_ptr, kernel* kernel_ptr );
-//};
-////-----------------------------------------------------------------------------
-//template<>
-//struct reference_wrapper< cl_kernel >
-//{
-//    //-------------------------------------------------------------------------
-//    static inline void retain( const opencl_library& opencl, cl_kernel krnl )
-//    {
-//        if( opencl.loaded() )
-//            opencl.clRetainKernel( krnl );
-//    }
-//
-//    //-------------------------------------------------------------------------
-//    static inline void release( const opencl_library& opencl, cl_kernel krnl )
-//    {
-//        if( opencl.loaded() )
-//            opencl.clReleaseKernel( krnl );
-//    }
-//};
-//-----------------------------------------------------------------------------
 class kernel :
     public dcl::info::generic_kernel,
     public opencl_object< cl_kernel >,
@@ -73,6 +47,9 @@ public:
                           const dcl::info::ndrange& offset, 
                           const dcl::info::ndrange& global, 
                           const dcl::info::ndrange& local );
+
+    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
+    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

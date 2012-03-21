@@ -47,7 +47,7 @@ public:
         buffer_size_( 0 ), buffer_ptr_( NULL ),
         header_ptr_( NULL ), length_( sizeof( packet_header ) ){}
 
-    inline ~packet(){}
+    ~packet();
 
     void parse();
     void parse_messages();

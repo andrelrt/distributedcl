@@ -176,6 +176,12 @@ protected:
         request_size_( request_size ), response_size_( response_size ), response_( false )
     {}
 
+    base_message( const base_message& copy ) : 
+        wait_response_( copy.wait_response_ ), buffer_ptr_( copy.buffer_ptr_ ),
+        size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ), 
+        response_size_( copy.response_size_ ), response_( copy.response_ )
+    {}
+
     virtual void create_request( uint8_t* payload_ptr ){}
     virtual void create_response( uint8_t* payload_ptr ){}
     virtual void parse_request( const uint8_t* payload_ptr ){}
