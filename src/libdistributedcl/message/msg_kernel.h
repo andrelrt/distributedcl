@@ -178,7 +178,7 @@ class dcl_message< msgSetKernelArg > : public base_message
 {
 public:
     dcl_message< msgSetKernelArg >() :
-        base_message( msgSetKernelArg, false, sizeof( msgSetKernelArg_request ), 0 ),
+        base_message( msgSetKernelArg, false, 0, 0 ),
         is_memory_object( false ), memory_id_( 0xffff ){}
 
     inline const dcl::remote_id_t get_kernel_id() const

@@ -43,7 +43,7 @@ class remote_platform :
 {
 public:
     remote_platform( dcl::network::client::session_manager::session_t& session_ref ) : 
-        remote_object( session_ref ) 
+        remote_object< remote_platform >( session_ref )
     {
         load_devices();
     }

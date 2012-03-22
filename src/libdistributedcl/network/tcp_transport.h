@@ -24,6 +24,7 @@
 #define _DCL_TCP_TRANSPORT_H_
 
 #include <boost/thread.hpp>
+#include <boost/scoped_array.hpp>
 #include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {

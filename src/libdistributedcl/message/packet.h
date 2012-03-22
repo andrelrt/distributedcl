@@ -44,8 +44,8 @@ public:
     }
 
     inline packet() :
-        buffer_size_( 0 ), buffer_ptr_( NULL ),
-        header_ptr_( NULL ), length_( sizeof( packet_header ) ){}
+        length_( sizeof( packet_header ) ), buffer_size_( 0 ), 
+        header_ptr_( NULL ), buffer_ptr_( NULL ){}
 
     ~packet();
 

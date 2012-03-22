@@ -10,6 +10,8 @@ composite/composite_context.h \
 composite/composite_device.h \
 composite/composite_kernel.cpp \
 composite/composite_kernel.h \
+composite/composite_memory.cpp \
+composite/composite_memory.h \
 composite/composite_object.h \
 composite/composite_platform.cpp \
 composite/composite_platform.h \
@@ -23,6 +25,7 @@ info/dcl_objects.h \
 info/device_info.h \
 info/icd_object.h \
 info/kernel_info.h \
+info/memory_info.h \
 info/object_manager.h \
 info/opencl_functions.h \
 info/platform_info.h \
@@ -39,6 +42,8 @@ message/msg_internal.cpp \
 message/msg_internal.h \
 message/msg_kernel.cpp \
 message/msg_kernel.h \
+message/msg_memory.cpp \
+message/msg_memory.h \
 message/msg_program.cpp \
 message/msg_program.h \
 message/packet.cpp \
@@ -61,6 +66,8 @@ remote/remote_device.cpp \
 remote/remote_device.h \
 remote/remote_kernel.cpp \
 remote/remote_kernel.h \
+remote/remote_memory.cpp \
+remote/remote_memory.h \
 remote/remote_object.h \
 remote/remote_opencl.h \
 remote/remote_platform.cpp \
@@ -74,6 +81,8 @@ server/server_context.cpp \
 server/server_context.h \
 server/server_kernel.cpp \
 server/server_kernel.h \
+server/server_memory.cpp \
+server/server_memory.h \
 server/server_platform.cpp \
 server/server_platform.h \
 server/server_program.cpp \
@@ -86,6 +95,8 @@ single/device.cpp \
 single/device.h \
 single/kernel.cpp \
 single/kernel.h \
+single/memory.cpp \
+single/memory.h \
 single/opencl_library.cpp \
 single/opencl_library.h \
 single/opencl_single.cpp \

@@ -25,6 +25,7 @@
 #include "composite_memory.h"
 using dcl::info::ndrange;
 using dcl::info::generic_kernel;
+using dcl::info::generic_memory;
 using dcl::info::generic_context;
 using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
