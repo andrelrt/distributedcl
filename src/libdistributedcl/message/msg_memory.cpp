@@ -113,5 +113,47 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const uint8_t* payload
     buffer_ptr_ = buffer_.data();
 }
 //-----------------------------------------------------------------------------
+// msgEnqueueReadBuffer
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueReadBuffer >::create_request( uint8_t* payload_ptr )
+{
+    msgEnqueueReadBuffer_request* request_ptr = 
+        reinterpret_cast< msgEnqueueReadBuffer_request* >( payload_ptr );
+
+    request_ptr->id_ = host_to_network( id_ );
+    request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
+    request_ptr->size_ = host_to_network( size_ );
+    request_ptr->offset_ = host_to_network( offset_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueReadBuffer >::parse_request( const uint8_t* payload_ptr )
+{
+    const msgEnqueueReadBuffer_request* request_ptr = 
+        reinterpret_cast< const msgEnqueueReadBuffer_request* >( payload_ptr );
+
+    id_ = network_to_host( request_ptr->id_ );
+    command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
+    size_ = network_to_host( request_ptr->size_ );
+    offset_ = network_to_host( request_ptr->offset_ );
+
+    set_response_size( size_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueReadBuffer >::create_response( uint8_t* payload_ptr )
+{
+    memcpy( payload_ptr, buffer_.data(), size_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueReadBuffer >::parse_response( const base_message* message_ptr )
+{
+    const dcl_message< msgEnqueueReadBuffer >* msg_response_ptr = 
+        reinterpret_cast< const dcl_message< msgEnqueueReadBuffer >* >( message_ptr );
+
+    const uint8_t* payload_ptr = msg_response_ptr->get_payload();
+    size_ = msg_response_ptr->get_payload_size();
+
+    buffer_.assign( payload_ptr, payload_ptr + size_ );
+}
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

@@ -27,7 +27,7 @@ EXPORTS
 ;    clEnqueueMarker                 @25
     clEnqueueNDRangeKernel          @26
 ;    clEnqueueNativeKernel           @27
-;    clEnqueueReadBuffer             @28
+    clEnqueueReadBuffer             @28
 ;    clEnqueueReadImage              @29
 ;    clEnqueueReleaseGLObjects       @30
 ;    clEnqueueTask                   @31
@@ -48,7 +48,7 @@ EXPORTS
 ;    clGetGLTextureInfo              @46
 ;    clGetImageInfo                  @47
 ;    clGetKernelInfo                 @48
-;    clGetKernelWorkGroupInfo        @49
+    clGetKernelWorkGroupInfo        @49
 ;    clGetMemObjectInfo              @50
     clGetPlatformIDs                @51
     clGetPlatformInfo               @52

@@ -66,5 +66,21 @@ void EnqueueWriteBuffer_command::execute()
     buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(), message_.get_buffer_size(), 0 );
 }
 //-----------------------------------------------------------------------------
+void EnqueueReadBuffer_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    remote_id_t id = message_.get_remote_id();
+    remote_id_t command_queue_id = message_.get_command_queue_id();
+
+    composite_memory* buffer_ptr = server.get_memory_manager().get( id );
+    composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
+
+    message_.allocate_buffer();
+
+    buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
+                      message_.get_buffer_size(), message_.get_offset() );
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------

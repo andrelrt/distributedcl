@@ -43,14 +43,14 @@ class generic_memory :
     public dcl_object< memory_info >
 {
 public:
-    generic_memory()
-    {
-    }
-
+    generic_memory(){}
     virtual ~generic_memory(){}
 
     virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking = CL_TRUE ) = 0;
+
+    virtual void read( generic_command_queue* queue_ptr, void* data_ptr,
+                       size_t size, size_t offset, cl_bool blocking = CL_TRUE ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

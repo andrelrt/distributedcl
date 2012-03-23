@@ -27,6 +27,7 @@ using dcl::info::generic_command_queue;
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgEnqueueWriteBuffer;
+using dcl::network::message::msgEnqueueReadBuffer;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -41,6 +42,21 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
 
     session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+}
+//-----------------------------------------------------------------------------
+void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
+                          size_t size, size_t offset, cl_bool blocking )
+{
+    dcl_message< msgEnqueueReadBuffer >* msg_ptr = new dcl_message< msgEnqueueReadBuffer >();
+
+    msg_ptr->set_remote_id( get_remote_id() );
+    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg_ptr->set_buffer_size( size );
+    msg_ptr->set_offset( offset );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+
+    memcpy( data_ptr, msg_ptr->get_buffer().data(), size );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

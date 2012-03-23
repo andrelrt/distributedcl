@@ -34,6 +34,7 @@ namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
 class generic_memory;
+class generic_device;
 //-----------------------------------------------------------------------------
 class ndrange
 {
@@ -124,6 +125,21 @@ public:
     inline kernel_info( const std::string& name ) : name_( name ) {}
 };
 //-----------------------------------------------------------------------------
+struct kernel_group_info
+{
+public:
+    size_t work_group_size_;
+    cl_ulong local_mem_size_;
+    cl_ulong private_mem_size_;
+    size_t compile_work_group_size_[ 3 ];
+    size_t preferred_work_group_size_multiple_;
+
+    kernel_group_info()
+    {
+        memset( this, 0, sizeof(kernel_group_info) );
+    }
+};
+//-----------------------------------------------------------------------------
 class generic_kernel :
     public cl_object< cl_kernel, cl_kernel_info, CL_INVALID_KERNEL >,
     public icd_object< cl_kernel, dcl_kernel_id >,
@@ -147,6 +163,12 @@ public:
 
     virtual void set_argument( uint32_t arg_index, const generic_memory* memory_ptr ) = 0;
     virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value ) = 0;
+    virtual const kernel_group_info& get_group_info( const generic_device* device_ptr ) = 0;
+
+protected:
+    typedef std::map<const generic_device*, kernel_group_info> kernel_group_info_map_t;
+
+    kernel_group_info_map_t kernel_group_info_map_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

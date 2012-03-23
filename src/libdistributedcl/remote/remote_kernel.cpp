@@ -20,14 +20,20 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <boost/shared_ptr.hpp>
 #include "remote_kernel.h"
 #include "remote_command_queue.h"
+#include "remote_memory.h"
+#include "remote_device.h"
 #include "message/msg_kernel.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgEnqueueNDRangeKernel;
 using dcl::network::message::msgSetKernelArg;
+using dcl::network::message::msgGetKernelWorkGroupInfo;
 using dcl::info::ndrange;
+using dcl::info::kernel_group_info;
+using dcl::info::generic_device;
 using dcl::info::generic_kernel;
 using dcl::info::generic_memory;
 using dcl::info::generic_command_queue;
@@ -67,10 +73,31 @@ void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const voi
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
     msg_ptr->set_index( arg_index );
-    msg_ptr->set_buffer( arg_value, arg_size );
+    msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( arg_value ), arg_size );
     msg_ptr->set_kernel_id( get_remote_id() );
 
     session_ref_.enqueue_message( reinterpret_cast< base_message* >( msg_ptr ) );
+}
+//-----------------------------------------------------------------------------
+const kernel_group_info& remote_kernel::get_group_info( const generic_device* device_ptr )
+{
+    kernel_group_info_map_t::iterator it = kernel_group_info_map_.find( device_ptr );
+
+    if( it != kernel_group_info_map_.end() )
+    {
+        return it->second;
+    }
+
+    dcl_message< msgGetKernelWorkGroupInfo >* msg_ptr = new dcl_message< msgGetKernelWorkGroupInfo >();
+
+    msg_ptr->set_kernel_id( get_remote_id() );
+    msg_ptr->set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
+
+    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+
+    kernel_group_info_map_.insert( kernel_group_info_map_t::value_type( device_ptr, msg_ptr->get_info() ) );
+
+    return kernel_group_info_map_[ device_ptr ];
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

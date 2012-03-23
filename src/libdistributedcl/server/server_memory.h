@@ -34,7 +34,7 @@ class CreateBuffer_command :
     public server_command< dcl::network::message::msgCreateBuffer >
 {
 public:
-    CreateBuffer_command( recv_ptr_t message_ptr ) : 
+    CreateBuffer_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgCreateBuffer >( message_ptr ) {}
 
     void execute();
@@ -44,8 +44,18 @@ class EnqueueWriteBuffer_command :
     public server_command< dcl::network::message::msgEnqueueWriteBuffer >
 {
 public:
-    EnqueueWriteBuffer_command( recv_ptr_t message_ptr ) : 
+    EnqueueWriteBuffer_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
+class EnqueueReadBuffer_command : 
+    public server_command< dcl::network::message::msgEnqueueReadBuffer >
+{
+public:
+    EnqueueReadBuffer_command( recv_ptr_t message_ptr ) :
+        server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr ) {}
 
     void execute();
 };

@@ -73,5 +73,25 @@ void memory::write( generic_command_queue* queue_ptr, const void* data_ptr,
     }
 }
 //-----------------------------------------------------------------------------
+void memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
+                   size_t size, size_t offset, cl_bool blocking )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+
+        error_code = opencl_.clEnqueueReadBuffer( queue->get_id(), get_id(),
+                                                  blocking, offset, size,
+                                                  data_ptr, 0, NULL, NULL );
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::single
 //-----------------------------------------------------------------------------

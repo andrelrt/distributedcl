@@ -125,8 +125,8 @@ void dcl_message< msgSetKernelArg >::create_request( uint8_t* payload_ptr )
         msgSetKernelArg_memory_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_memory_request* >( payload_ptr );
 
-        request_ptr->is_memory_object = true;
-        request_ptr->index = host_to_network( index_ );
+        request_ptr->is_memory_object_ = true;
+        request_ptr->index_ = host_to_network( index_ );
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->memory_id_ = host_to_network( memory_id_ );
     }
@@ -135,8 +135,8 @@ void dcl_message< msgSetKernelArg >::create_request( uint8_t* payload_ptr )
         msgSetKernelArg_buffer_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_buffer_request* >( payload_ptr );
 
-        request_ptr->is_memory_object = false;
-        request_ptr->index = host_to_network( index_ );
+        request_ptr->is_memory_object_ = false;
+        request_ptr->index_ = host_to_network( index_ );
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->size_ = host_to_network( static_cast<uint32_t>( buffer_.size() ) );
 
@@ -149,10 +149,10 @@ void dcl_message< msgSetKernelArg >::parse_request( const uint8_t* payload_ptr )
     const msgSetKernelArg_memory_request* request_ptr =
         reinterpret_cast< const msgSetKernelArg_memory_request* >( payload_ptr );
 
-    if( request_ptr->is_memory_object )
+    if( request_ptr->is_memory_object_ )
     {
         is_memory_object_ = true;
-        index_ = network_to_host( request_ptr->index );
+        index_ = network_to_host( request_ptr->index_ );
         kernel_id_ = network_to_host( request_ptr->kernel_id_ );
         memory_id_ = network_to_host( request_ptr->memory_id_ );
     }
@@ -163,11 +163,62 @@ void dcl_message< msgSetKernelArg >::parse_request( const uint8_t* payload_ptr )
 
         is_memory_object_ = false;
 
-        index_ = network_to_host( req_ptr->index );
+        index_ = network_to_host( req_ptr->index_ );
         kernel_id_ = network_to_host( req_ptr->kernel_id_ );
 
         buffer_.assign( req_ptr->buffer_, req_ptr->buffer_ + network_to_host( req_ptr->size_ ) );
     }
+}
+//-----------------------------------------------------------------------------
+// msgGetKernelWorkGroupInfo
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetKernelWorkGroupInfo >::create_request( uint8_t* payload_ptr )
+{
+    remote_id_t* request_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    request_ptr[ 0 ] = host_to_network( kernel_id_ );
+    request_ptr[ 1 ] = host_to_network( device_id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetKernelWorkGroupInfo >::parse_request( const uint8_t* payload_ptr )
+{
+    const remote_id_t* request_ptr = reinterpret_cast< const remote_id_t* >( payload_ptr );
+
+    kernel_id_ = network_to_host( request_ptr[ 0 ] );
+    device_id_ = network_to_host( request_ptr[ 1 ] );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetKernelWorkGroupInfo >::create_response( uint8_t* payload_ptr )
+{
+    msgGetKernelWorkGroupInfo_response* response_ptr =
+        reinterpret_cast< msgGetKernelWorkGroupInfo_response* >( payload_ptr );
+
+    response_ptr->local_mem_size_ = host_to_network( info_.local_mem_size_ );
+    response_ptr->work_group_size_ = host_to_network( info_.work_group_size_ );
+    response_ptr->private_mem_size_ = host_to_network( info_.private_mem_size_ );
+    response_ptr->preferred_work_group_size_multiple_ = host_to_network( info_.preferred_work_group_size_multiple_ );
+
+    response_ptr->compile_work_group_size_[ 0 ] = host_to_network( static_cast<uint32_t>( info_.compile_work_group_size_[ 0 ] ) );
+    response_ptr->compile_work_group_size_[ 1 ] = host_to_network( static_cast<uint32_t>( info_.compile_work_group_size_[ 1 ] ) );
+    response_ptr->compile_work_group_size_[ 2 ] = host_to_network( static_cast<uint32_t>( info_.compile_work_group_size_[ 2 ] ) );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetKernelWorkGroupInfo >::parse_response( const base_message* message_ptr )
+{
+    const dcl_message< msgGetKernelWorkGroupInfo >* msg_response_ptr = 
+        reinterpret_cast< const dcl_message< msgGetKernelWorkGroupInfo >* >( message_ptr );
+
+    const msgGetKernelWorkGroupInfo_response* response_ptr =
+        reinterpret_cast< const msgGetKernelWorkGroupInfo_response* >( msg_response_ptr->get_payload() );
+
+    info_.local_mem_size_ = network_to_host( response_ptr->local_mem_size_ );
+    info_.work_group_size_ = network_to_host( response_ptr->work_group_size_ );
+    info_.private_mem_size_ = network_to_host( response_ptr->private_mem_size_ );
+    info_.preferred_work_group_size_multiple_ = network_to_host( response_ptr->preferred_work_group_size_multiple_ );
+
+    info_.compile_work_group_size_[ 0 ] = network_to_host( response_ptr->compile_work_group_size_[ 0 ] );
+    info_.compile_work_group_size_[ 1 ] = network_to_host( response_ptr->compile_work_group_size_[ 1 ] );
+    info_.compile_work_group_size_[ 2 ] = network_to_host( response_ptr->compile_work_group_size_[ 2 ] );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

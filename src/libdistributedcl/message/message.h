@@ -25,6 +25,16 @@
 
 #include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
+#define MSG_PARAMETER_GET( type_t, var_att, name_m ) \
+    inline const type_t get_##name_m() const{return var_att;}
+
+#define MSG_PARAMETER_SET( type_t, var_att, name_m ) \
+    inline void set_##name_m( const type_t copy_obj ){ var_att = copy_obj; }
+
+#define MSG_PARAMETER_GET_SET( type_t, var_att, name_m ) \
+    MSG_PARAMETER_GET( type_t, var_att, name_m )\
+    MSG_PARAMETER_SET( type_t, var_att, name_m )
+//-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace message {
@@ -196,12 +206,12 @@ protected:
         return buffer_ptr_ + sizeof( message_header );
     }
 
-    inline bool is_request()
+    inline bool is_request() const
     {
         return (reinterpret_cast< message_header* >( buffer_ptr_ )->request == 1);
     }
 
-    inline uint32_t get_payload_size()
+    inline uint32_t get_payload_size() const
     {
         return static_cast< uint32_t >( size_ - sizeof( message_header ) );
     }

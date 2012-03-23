@@ -23,6 +23,7 @@
 #include "composite_memory.h"
 #include "composite_command_queue.h"
 using dcl::info::generic_command_queue;
+using dcl::info::generic_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -30,10 +31,19 @@ namespace composite {
 void composite_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
                               size_t size, size_t offset, cl_bool blocking )
 {
-    const dcl::info::generic_context* ctx = queue_ptr->get_context();
+    const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = find( ctx );
 
     memory_ptr->write( queue_ptr, data_ptr, size, offset, blocking );
+}
+//-----------------------------------------------------------------------------
+void composite_memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
+                             size_t size, size_t offset, cl_bool blocking )
+{
+    const generic_context* ctx = queue_ptr->get_context();
+    generic_memory* memory_ptr = find( ctx );
+
+    memory_ptr->read( queue_ptr, data_ptr, size, offset, blocking );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

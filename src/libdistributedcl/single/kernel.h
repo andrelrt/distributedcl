@@ -50,6 +50,7 @@ public:
 
     virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
     virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
+    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

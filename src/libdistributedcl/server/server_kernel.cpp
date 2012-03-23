@@ -26,9 +26,11 @@
 #include "composite/composite_program.h"
 #include "composite/composite_kernel.h"
 #include "composite/composite_command_queue.h"
+#include "composite/composite_memory.h"
 using dcl::composite::composite_program;
 using dcl::composite::composite_kernel;
 using dcl::composite::composite_command_queue;
+using dcl::composite::composite_memory;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {

@@ -89,9 +89,9 @@ public:
         return buffer_ptr;
     }
 
-    inline const generic_platform& get_platform() const
+    inline const generic_platform* get_platform() const
     {
-        return platform_;
+        return &platform_;
     }
 
 protected:

@@ -23,9 +23,12 @@
 #include "composite_kernel.h"
 #include "composite_command_queue.h"
 #include "composite_memory.h"
+#include "composite_device.h"
 using dcl::info::ndrange;
+using dcl::info::kernel_group_info;
 using dcl::info::generic_kernel;
 using dcl::info::generic_memory;
+using dcl::info::generic_device;
 using dcl::info::generic_context;
 using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
@@ -59,6 +62,22 @@ void composite_kernel::set_argument( uint32_t arg_index, size_t arg_size, const 
     {
         it->second->set_argument( arg_index, arg_size, arg_value );
     }
+}
+//-----------------------------------------------------------------------------
+const kernel_group_info& composite_kernel::get_group_info( const generic_device* device_ptr )
+{
+    const composite_device* dev_ptr =
+        reinterpret_cast<const composite_device*>( device_ptr );
+
+    for( iterator it = begin(); it != end(); it++ )
+    {
+        if( it->first->get_platform() == dev_ptr->get_platform() )
+        {
+            return it->second->get_group_info( device_ptr );
+        }
+    }
+
+    throw dcl::library_exception( CL_INVALID_DEVICE );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

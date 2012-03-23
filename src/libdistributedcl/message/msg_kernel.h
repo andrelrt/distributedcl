@@ -40,37 +40,19 @@ namespace message {
     //msgEnqueueNDRangeKernel     = 80,
     //msgEnqueueTask              = 81,
 //-----------------------------------------------------------------------------
+// msgCreateKernel
+//-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgCreateKernel > : public base_message
 {
 public:
-    dcl_message< msgCreateKernel >() : 
-        base_message( msgCreateKernel, true, 0, sizeof(dcl::remote_id_t) ) {}
+    dcl_message< msgCreateKernel >() :
+        base_message( msgCreateKernel, true, 0, sizeof(dcl::remote_id_t) ),
+        id_( 0xffff ), program_id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
-
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
-
-    inline const dcl::remote_id_t get_program_id() const
-    {
-        return program_id_;
-    }
-
-    inline void set_program_id( dcl::remote_id_t id )
-    {
-        program_id_ = id;
-    }
-
-    inline const std::string& get_name() const
-    {
-        return name_;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, program_id_, program_id )
+    MSG_PARAMETER_GET( std::string&, name_, name )
 
     inline void set_name( const std::string& name )
     {
@@ -78,6 +60,9 @@ public:
 
         update_request_size();
     }
+
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
 
 private:
     std::string name_;
@@ -107,32 +92,19 @@ private:
     #pragma pack( pop )
 };
 //-----------------------------------------------------------------------------
+// msgEnqueueNDRangeKernel
+//-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgEnqueueNDRangeKernel > : public base_message
 {
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
-        base_message( msgEnqueueNDRangeKernel, false, sizeof( msgEnqueueNDRangeKernel_request ), 0 ) {}
+        base_message( msgEnqueueNDRangeKernel, false, sizeof( msgEnqueueNDRangeKernel_request ), 0 ),
+        kernel_id_( 0xffff ), command_queue_id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_kernel_id() const
-    {
-        return kernel_id_;
-    }
-
-    inline void set_kernel_id( dcl::remote_id_t id )
-    {
-        kernel_id_ = id;
-    }
-
-    inline const dcl::remote_id_t get_command_queue_id() const
-    {
-        return command_queue_id_;
-    }
-
-    inline void set_command_queue_id( dcl::remote_id_t id )
-    {
-        command_queue_id_ = id;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
     inline dcl::info::ndrange& get_offset()
     {
@@ -173,38 +145,21 @@ private:
     #pragma pack( pop )
 };
 //-----------------------------------------------------------------------------
+// msgSetKernelArg
+//-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgSetKernelArg > : public base_message
 {
 public:
     dcl_message< msgSetKernelArg >() :
         base_message( msgSetKernelArg, false, 0, 0 ),
-        is_memory_object( false ), memory_id_( 0xffff ){}
+        is_memory_object_( false ), memory_id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_kernel_id() const
-    {
-        return kernel_id_;
-    }
-
-    inline void set_kernel_id( dcl::remote_id_t id )
-    {
-        kernel_id_ = id;
-    }
-
-    inline uint16_t get_index() const
-    {
-        return index_;
-    }
-
-    inline void set_index( uint16_t arg_index )
-    {
-        index_ = index;
-    }
-
-    inline dcl::remote_id_t get_memory_id() const
-    {
-        return memory_id_;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
+    MSG_PARAMETER_GET_SET( uint16_t, index_, index )
+    MSG_PARAMETER_GET( dcl::remote_id_t, memory_id_, memory_id )
+    MSG_PARAMETER_GET( std::vector<uint8_t>&, buffer_, buffer )
 
     inline void set_memory_id( dcl::remote_id_t memory_id )
     {
@@ -214,14 +169,9 @@ public:
         set_size( sizeof(msgSetKernelArg_memory_request) );
     }
 
-    inline const std::vector<uint8_t>& get_buffer() const
-    {
-        return buffer_;
-    }
-
     inline void set_buffer( const uint8_t* arg_value, size_t arg_size )
     {
-        is_memory_object = false;
+        is_memory_object_ = false;
         buffer_.assign( arg_value, arg_value + arg_size );
 
         set_size( arg_size + sizeof(msgSetKernelArg_buffer_request) - 1 );
@@ -248,8 +198,8 @@ private:
     struct msgSetKernelArg_memory_request
     {
         dcl::remote_id_t kernel_id_;
-        uint16_t is_memory_object:1;
-        uint16_t index:15;
+        uint16_t is_memory_object_:1;
+        uint16_t index_:15;
         dcl::remote_id_t memory_id_;
     };
 
@@ -261,6 +211,50 @@ private:
         uint32_t size_;
 
         uint8_t buffer_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+// msgGetKernelWorkGroupInfo
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgGetKernelWorkGroupInfo > : public base_message
+{
+public:
+    dcl_message< msgGetKernelWorkGroupInfo >() :
+        base_message( msgGetKernelWorkGroupInfo, true, 2*sizeof(dcl::remote_id_t), 
+                      sizeof(msgGetKernelWorkGroupInfo_response) ),
+        kernel_id_( 0xffff ), device_id_( 0xffff ){}
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, device_id_, device_id )
+
+    // Response
+    inline dcl::info::kernel_group_info& get_info()
+    {
+        return info_;
+    }
+
+private:
+    dcl::remote_id_t kernel_id_;
+    dcl::remote_id_t device_id_;
+    dcl::info::kernel_group_info info_;
+
+    virtual void create_request( uint8_t* payload_ptr );
+    virtual void create_response( uint8_t* payload_ptr );
+    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void parse_response( const base_message* message_ptr );
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgGetKernelWorkGroupInfo_response
+    {
+        uint64_t local_mem_size_;
+        uint64_t private_mem_size_;
+        uint32_t work_group_size_;
+        uint32_t compile_work_group_size_[ 3 ];
+        uint32_t preferred_work_group_size_multiple_;
     };
     #pragma pack( pop )
 };

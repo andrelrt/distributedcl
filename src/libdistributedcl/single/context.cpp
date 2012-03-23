@@ -147,8 +147,8 @@ void context::load_devices()
 
     for( int i = 0; i < (int) ret_count; i++ )
     {
-        const generic_platform& platform_ref = get_platform();
-        devices_.push_back( new device( reinterpret_cast<const platform*>( &platform_ref ), device_ids[ i ] ) );
+        const generic_platform* platform_ptr = get_platform();
+        devices_.push_back( new device( reinterpret_cast<const platform*>( platform_ptr ), device_ids[ i ] ) );
     }
 }
 //-----------------------------------------------------------------------------

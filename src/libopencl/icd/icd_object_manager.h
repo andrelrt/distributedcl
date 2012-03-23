@@ -194,7 +194,7 @@ private:
         //FILL_DISPATCH_ITEM( clEnqueueMarker );
         FILL_DISPATCH_ITEM( clEnqueueNDRangeKernel );
         //FILL_DISPATCH_ITEM( clEnqueueNativeKernel );
-        //FILL_DISPATCH_ITEM( clEnqueueReadBuffer );
+        FILL_DISPATCH_ITEM( clEnqueueReadBuffer );
         //FILL_DISPATCH_ITEM( clEnqueueReadBufferRect );
         //FILL_DISPATCH_ITEM( clEnqueueReadImage );
         //FILL_DISPATCH_ITEM( clEnqueueReleaseGLObjects );
@@ -217,7 +217,7 @@ private:
         //FILL_DISPATCH_ITEM( clGetGLTextureInfo );
         //FILL_DISPATCH_ITEM( clGetImageInfo );
         //FILL_DISPATCH_ITEM( clGetKernelInfo );
-        //FILL_DISPATCH_ITEM( clGetKernelWorkGroupInfo );
+        FILL_DISPATCH_ITEM( clGetKernelWorkGroupInfo );
         //FILL_DISPATCH_ITEM( clGetMemObjectInfo );
         FILL_DISPATCH_ITEM( clGetPlatformIDs );
         FILL_DISPATCH_ITEM( clGetPlatformInfo );

@@ -182,13 +182,46 @@ clReleaseMemObject( cl_mem memobj ) CL_API_SUFFIX__VERSION_1_1
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clEnqueueReadBuffer( cl_command_queue command_queue, cl_mem buffer,
-//                     cl_bool blocking_read, size_t offset, size_t cb, 
-//                     void* ptr, cl_uint num_events_in_wait_list,
-//                     const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_0
-//{
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clEnqueueReadBuffer( cl_command_queue command_queue, cl_mem buffer,
+                     cl_bool blocking_read, size_t offset, size_t cb, 
+                     void* ptr, cl_uint num_events_in_wait_list,
+                     const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_0
+{
+    if( ptr == NULL )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    if( ((event_wait_list == NULL) && (num_events_in_wait_list != 0)) ||
+        ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
+    {
+        return CL_INVALID_EVENT_WAIT_LIST;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
+        composite_memory* buffer_ptr = icd.get_object_ptr< composite_memory >( buffer );
+
+        buffer_ptr->read( queue_ptr, ptr, cb, offset, blocking_read );
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clEnqueueReadBufferRect( cl_command_queue command_queue, cl_mem buffer,

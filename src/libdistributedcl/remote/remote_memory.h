@@ -46,6 +46,9 @@ public:
     virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking = CL_TRUE );
 
+    virtual void read( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
+                       size_t size, size_t offset, cl_bool blocking = CL_TRUE );
+
 private:
     const remote_context& context_;
 };
