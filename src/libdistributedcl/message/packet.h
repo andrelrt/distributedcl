@@ -24,6 +24,7 @@
 #define _DCL_NETWORK_MESSAGE_PACKET_H_
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "network/platform.h"
 //-----------------------------------------------------------------------------
@@ -32,7 +33,7 @@ namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
 class base_message;
-typedef std::vector< base_message* > message_vector_t;
+typedef std::vector< boost::shared_ptr<base_message> > message_vector_t;
 //-----------------------------------------------------------------------------
 class packet
 {
@@ -47,7 +48,7 @@ public:
         length_( sizeof( packet_header ) ), buffer_size_( 0 ), 
         header_ptr_( NULL ), buffer_ptr_( NULL ){}
 
-    ~packet();
+    ~packet(){}
 
     void parse();
     void parse_messages();
@@ -99,7 +100,7 @@ public:
         return network_to_host( header_ptr->length );
     }
 
-    void add( base_message* base_message_ptr );
+    void add( boost::shared_ptr<base_message> message_sp );
     void create_packet();
 
     inline void setup( uint8_t* buffer_ptr, std::size_t buffer_size,

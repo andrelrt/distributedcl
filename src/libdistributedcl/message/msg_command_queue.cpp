@@ -29,7 +29,7 @@ namespace message {
 //-----------------------------------------------------------------------------
 // msgCreateCommandQueue
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateCommandQueue >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgCreateCommandQueue >::create_request( void* payload_ptr )
 {
     msgCreateCommandQueue_request* request_ptr = 
         reinterpret_cast< msgCreateCommandQueue_request* >( payload_ptr );
@@ -39,7 +39,7 @@ void dcl_message< msgCreateCommandQueue >::create_request( uint8_t* payload_ptr 
     request_ptr->properties_ = host_to_network( properties_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateCommandQueue >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgCreateCommandQueue >::parse_request( const void* payload_ptr )
 {
     const msgCreateCommandQueue_request* request_ptr = 
         reinterpret_cast< const msgCreateCommandQueue_request* >( payload_ptr );
@@ -49,34 +49,31 @@ void dcl_message< msgCreateCommandQueue >::parse_request( const uint8_t* payload
     properties_ = network_to_host( request_ptr->properties_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateCommandQueue >::create_response( uint8_t* payload_ptr )
+void dcl_message< msgCreateCommandQueue >::create_response( void* payload_ptr )
 {
     remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
     *response_ptr = host_to_network( id_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateCommandQueue >::parse_response( const base_message* message_ptr )
+void dcl_message< msgCreateCommandQueue >::parse_response( const void* payload_ptr )
 {
-    const dcl_message< msgCreateCommandQueue >* msg_response_ptr = 
-        reinterpret_cast< const dcl_message< msgCreateCommandQueue >* >( message_ptr );
-
     const remote_id_t* response_ptr = 
-        reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
+        reinterpret_cast< const remote_id_t* >( payload_ptr );
 
     id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgFinish
 //-----------------------------------------------------------------------------
-void dcl_message< msgFinish >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgFinish >::create_request( void* payload_ptr )
 {
     remote_id_t* request_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
     *request_ptr = host_to_network( id_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgFinish >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgFinish >::parse_request( const void* payload_ptr )
 {
     const remote_id_t* request_ptr = reinterpret_cast<const remote_id_t*>( payload_ptr );
 

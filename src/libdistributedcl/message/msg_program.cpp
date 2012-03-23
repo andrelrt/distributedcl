@@ -32,7 +32,7 @@ namespace message {
 //-----------------------------------------------------------------------------
 // msgCreateProgramWithSource
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateProgramWithSource >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgCreateProgramWithSource >::create_request( void* payload_ptr )
 {
     msgCreateProgramWithSource_request* request_ptr = 
         reinterpret_cast< msgCreateProgramWithSource_request* >( payload_ptr );
@@ -43,7 +43,7 @@ void dcl_message< msgCreateProgramWithSource >::create_request( uint8_t* payload
     memcpy( request_ptr->source_code_, source_code_.data(), source_code_.length() );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateProgramWithSource >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgCreateProgramWithSource >::parse_request( const void* payload_ptr )
 {
     const msgCreateProgramWithSource_request* request_ptr = 
         reinterpret_cast< const msgCreateProgramWithSource_request* >( payload_ptr );
@@ -54,27 +54,24 @@ void dcl_message< msgCreateProgramWithSource >::parse_request( const uint8_t* pa
                          network_to_host( request_ptr->source_code_len_ ) );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateProgramWithSource >::create_response( uint8_t* payload_ptr )
+void dcl_message< msgCreateProgramWithSource >::create_response( void* payload_ptr )
 {
     dcl::remote_id_t* response_ptr = reinterpret_cast< dcl::remote_id_t* >( payload_ptr );
 
     *response_ptr = host_to_network( id_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateProgramWithSource >::parse_response( const base_message* message_ptr )
+void dcl_message< msgCreateProgramWithSource >::parse_response( const void* payload_ptr )
 {
-    const dcl_message< msgCreateProgramWithSource >* msg_response_ptr = 
-        reinterpret_cast< const dcl_message< msgCreateProgramWithSource >* >( message_ptr );
-
-    const dcl::remote_id_t* response_ptr = 
-        reinterpret_cast< const dcl::remote_id_t* >( msg_response_ptr->get_payload() );
+    const dcl::remote_id_t* response_ptr =
+        reinterpret_cast< const dcl::remote_id_t* >( payload_ptr );
 
     id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgBuildProgram
 //-----------------------------------------------------------------------------
-void dcl_message< msgBuildProgram >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgBuildProgram >::create_request( void* payload_ptr )
 {
     msgBuildProgram_request* request_ptr = 
         reinterpret_cast< msgBuildProgram_request* >( payload_ptr );
@@ -96,7 +93,7 @@ void dcl_message< msgBuildProgram >::create_request( uint8_t* payload_ptr )
     memcpy( build_options_ptr, build_options_.data(), build_options_.length() );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgBuildProgram >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgBuildProgram >::parse_request( const void* payload_ptr )
 {
     const msgBuildProgram_request* request_ptr = 
         reinterpret_cast< const msgBuildProgram_request* >( payload_ptr );
@@ -140,7 +137,7 @@ void dcl_message< msgBuildProgram >::set_devices( const devices_t& devices )
 //-----------------------------------------------------------------------------
 // msgGetProgramBuildInfo
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetProgramBuildInfo >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgGetProgramBuildInfo >::create_request( void* payload_ptr )
 {
     msgGetProgramBuildInfo_request* request_ptr = 
         reinterpret_cast< msgGetProgramBuildInfo_request* >( payload_ptr );
@@ -149,7 +146,7 @@ void dcl_message< msgGetProgramBuildInfo >::create_request( uint8_t* payload_ptr
     request_ptr->build_info_ = host_to_network( static_cast<uint16_t>( build_info_ ) );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetProgramBuildInfo >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgGetProgramBuildInfo >::parse_request( const void* payload_ptr )
 {
     const msgGetProgramBuildInfo_request* request_ptr = 
         reinterpret_cast< const msgGetProgramBuildInfo_request* >( payload_ptr );
@@ -158,7 +155,7 @@ void dcl_message< msgGetProgramBuildInfo >::parse_request( const uint8_t* payloa
     build_info_ = static_cast<cl_program_build_info>( network_to_host( request_ptr->build_info_ ) );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetProgramBuildInfo >::create_response( uint8_t* payload_ptr )
+void dcl_message< msgGetProgramBuildInfo >::create_response( void* payload_ptr )
 {
     uint32_t* response_ptr = reinterpret_cast< uint32_t* >( payload_ptr );
 
@@ -174,13 +171,10 @@ void dcl_message< msgGetProgramBuildInfo >::create_response( uint8_t* payload_pt
     }
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetProgramBuildInfo >::parse_response( const base_message* message_ptr )
+void dcl_message< msgGetProgramBuildInfo >::parse_response( const void* payload_ptr )
 {
-    const dcl_message< msgGetProgramBuildInfo >* msg_response_ptr = 
-        reinterpret_cast< const dcl_message< msgGetProgramBuildInfo >* >( message_ptr );
-
     const uint32_t* response_ptr = 
-        reinterpret_cast< const uint32_t* >( msg_response_ptr->get_payload() );
+        reinterpret_cast< const uint32_t* >( payload_ptr );
 
     if( build_info_ == CL_PROGRAM_BUILD_STATUS )
     {

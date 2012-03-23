@@ -49,7 +49,8 @@ void remote_context::load_devices()
 
     msg_ptr->set_remote_id( get_remote_id() );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     for( uint32_t i = 0; i < msg_ptr->get_device_count(); i++ )
     {
@@ -64,7 +65,8 @@ generic_program* remote_context::do_create_program( const std::string& source_co
     msg_ptr->set_source_code( source_code );
     msg_ptr->set_context_id( get_remote_id() );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     remote_program* program_ptr = new remote_program( *this, source_code );
     program_ptr->set_remote_id( msg_ptr->get_remote_id() );
@@ -84,7 +86,8 @@ generic_command_queue*
     msg_ptr->set_device_id( device->get_remote_id() );
     msg_ptr->set_properties( properties );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     remote_command_queue* command_queue_ptr = new remote_command_queue( *this, *device, properties );
     command_queue_ptr->set_remote_id( msg_ptr->get_remote_id() );
@@ -100,7 +103,8 @@ generic_memory* remote_context::do_create_buffer( const void* host_ptr, size_t s
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( host_ptr ), size );
     msg_ptr->set_flags( flags );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     remote_memory* memory_ptr = new remote_memory( *this );
     memory_ptr->set_remote_id( msg_ptr->get_remote_id() );

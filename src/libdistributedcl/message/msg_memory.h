@@ -89,10 +89,10 @@ private:
 
     dcl::remote_id_t id_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     inline void update_request_size()
     {
@@ -147,8 +147,8 @@ private:
     size_t buffer_len_;
     buffer_t buffer_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
 
     inline void update_request_size()
     {
@@ -215,10 +215,10 @@ private:
 
     buffer_t buffer_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary

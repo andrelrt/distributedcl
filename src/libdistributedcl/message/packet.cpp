@@ -27,16 +27,6 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-packet::~packet()
-{
-    message_vector_t::iterator it;
-
-    for( it = messages_.begin(); it != messages_.end(); it++ )
-    {
-        delete *it;
-    }
-}
-//-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
 
 void packet::parse()
@@ -56,12 +46,12 @@ void packet::parse()
 
     while( length != 0 )
     {
-        base_message* message_ptr = base_message::parse_message( it, length );
+        boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length ) );
 
-        messages_.push_back( message_ptr );
+        messages_.push_back( message_sp );
 
-        it += message_ptr->get_size();
-        length -= static_cast< uint32_t >( message_ptr->get_size() );
+        it += message_sp->get_size();
+        length -= static_cast< uint32_t >( message_sp->get_size() );
 
         THROW_IF( length < 0, "Message parse error" );
     }
@@ -79,12 +69,12 @@ void packet::parse_messages()
 
     while( length != 0 )
     {
-        base_message* message_ptr = base_message::parse_message( it, length );
+        boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length ) );
 
-        messages_.push_back( message_ptr );
+        messages_.push_back( message_sp );
 
-        it += message_ptr->get_size();
-        length -= static_cast< uint32_t >( message_ptr->get_size() );
+        it += message_sp->get_size();
+        length -= static_cast< uint32_t >( message_sp->get_size() );
 
         THROW_IF( length < 0, "Message parse error" );
     }
@@ -92,11 +82,11 @@ void packet::parse_messages()
 
 #undef THROW_IF
 //-----------------------------------------------------------------------------
-void packet::add( base_message* message_ptr )
+void packet::add( boost::shared_ptr<base_message> message_sp )
 {
-    length_ += message_ptr->get_size();
+    length_ += message_sp->get_size();
 
-    messages_.push_back( message_ptr );
+    messages_.push_back( message_sp );
 }
 //-----------------------------------------------------------------------------
 void packet::create_packet()
@@ -118,7 +108,7 @@ void packet::create_packet()
         }
 
         header_ptr_->length = static_cast< uint16_t >( host_to_network( static_cast< u_short >( length_ ) ) );
-        header_ptr_->message_count = messages_.size();
+        header_ptr_->message_count = static_cast<uint8_t>( messages_.size() );
     }
 }
 //-----------------------------------------------------------------------------

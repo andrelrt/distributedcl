@@ -165,6 +165,7 @@
     <ClCompile Include="interface\cl_command_queue.cpp" />
     <ClCompile Include="interface\cl_context.cpp" />
     <ClCompile Include="interface\cl_device.cpp" />
+    <ClCompile Include="interface\cl_event.cpp" />
     <ClCompile Include="interface\cl_kernel.cpp" />
     <ClCompile Include="interface\cl_memory.cpp" />
     <ClCompile Include="interface\cl_platform.cpp" />

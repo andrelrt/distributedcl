@@ -69,10 +69,10 @@ private:
     dcl::remote_id_t id_;
     dcl::remote_id_t program_id_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     inline void update_request_size()
     {
@@ -128,8 +128,8 @@ private:
     dcl::info::ndrange global_;
     dcl::info::ndrange local_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
@@ -189,8 +189,8 @@ private:
     std::vector<uint8_t> buffer_;
     bool is_memory_object_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
 
     #pragma pack( push, 1 )
 
@@ -241,10 +241,10 @@ private:
     dcl::remote_id_t device_id_;
     dcl::info::kernel_group_info info_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary

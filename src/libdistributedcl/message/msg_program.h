@@ -45,32 +45,12 @@ class dcl_message< msgCreateProgramWithSource > : public base_message
 {
 public:
     dcl_message< msgCreateProgramWithSource >() : 
-        base_message( msgCreateProgramWithSource, true, 0, sizeof( dcl::remote_id_t ) ) {}
+        base_message( msgCreateProgramWithSource, true, 0, sizeof( dcl::remote_id_t ) ),
+    context_id_( 0xffff ), id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
-
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
-
-    inline const dcl::remote_id_t get_context_id() const
-    {
-        return context_id_;
-    }
-
-    inline void set_context_id( dcl::remote_id_t id )
-    {
-        context_id_ = id;
-    }
-
-    inline const std::string& get_source_code() const
-    {
-        return source_code_;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
+    MSG_PARAMETER_GET( std::string&, source_code_, source_code )
 
     inline void set_source_code( const std::string& source_code )
     {
@@ -79,15 +59,19 @@ public:
         set_size( source_code.length() +  sizeof( msgCreateProgramWithSource_request ) - 1 );
     }
 
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+
 private:
-    dcl::remote_id_t id_;
     dcl::remote_id_t context_id_;
     std::string source_code_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    dcl::remote_id_t id_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
@@ -108,33 +92,17 @@ class dcl_message< msgBuildProgram > : public base_message
 {
 public:
     dcl_message< msgBuildProgram >() : 
-        base_message( msgBuildProgram, false, 0, 0 ) {}
+        base_message( msgBuildProgram, false, 0, 0 ), program_id_( 0xffff ) {}
 
-    inline const dcl::remote_id_t get_program_id() const
-    {
-        return program_id_;
-    }
-
-    inline void set_program_id( dcl::remote_id_t id )
-    {
-        program_id_ = id;
-    }
-
-    inline const std::string& get_build_options() const
-    {
-        return build_options_;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, program_id_, program_id )
+    MSG_PARAMETER_GET( std::string&, build_options_, build_options )
+    MSG_PARAMETER_GET( dcl::remote_ids_t&, devices_, devices )
 
     inline void set_build_options( const std::string& build_options )
     {
         build_options_.assign( build_options );
-
         update_request_size();
-    }
-
-    inline const dcl::remote_ids_t& get_devices() const
-    {
-        return devices_;
     }
 
     void set_devices( const devices_t& devices );
@@ -144,8 +112,8 @@ private:
     dcl::remote_id_t program_id_;
     dcl::remote_ids_t devices_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
 
     inline void update_request_size()
     {
@@ -241,10 +209,10 @@ private:
     std::string build_log_;
     cl_build_status build_status_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     inline void update_response_size()
     {

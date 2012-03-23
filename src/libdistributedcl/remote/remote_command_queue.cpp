@@ -36,7 +36,8 @@ void remote_command_queue::finish()
 
     msg_ptr->set_remote_id( get_remote_id() );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

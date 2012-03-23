@@ -44,6 +44,7 @@
 namespace dcl { namespace info {
 class generic_platform;
 class generic_device;
+class generic_event;
 }}
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -53,6 +54,7 @@ typedef std::vector< remote_id_t > remote_ids_t;
 typedef std::vector< cl_image_format > image_formats_t;
 typedef std::vector< dcl::info::generic_platform* > platforms_t;
 typedef std::vector< dcl::info::generic_device* > devices_t;
+typedef std::vector< dcl::info::generic_event* > events_t;
 //-----------------------------------------------------------------------------
 static const union { long one; char little; } is_endian = {1};
 //-----------------------------------------------------------------------------

@@ -20,7 +20,6 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <boost/shared_ptr.hpp>
 #include "remote_kernel.h"
 #include "remote_command_queue.h"
 #include "remote_memory.h"
@@ -54,7 +53,8 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     msg_ptr->get_global().copy( global );
     msg_ptr->get_local().copy( local );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
@@ -65,7 +65,8 @@ void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memo
     msg_ptr->set_kernel_id( get_remote_id() );
     msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
 
-    session_ref_.enqueue_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
@@ -76,7 +77,8 @@ void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const voi
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( arg_value ), arg_size );
     msg_ptr->set_kernel_id( get_remote_id() );
 
-    session_ref_.enqueue_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 const kernel_group_info& remote_kernel::get_group_info( const generic_device* device_ptr )
@@ -93,7 +95,8 @@ const kernel_group_info& remote_kernel::get_group_info( const generic_device* de
     msg_ptr->set_kernel_id( get_remote_id() );
     msg_ptr->set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr<base_message> message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     kernel_group_info_map_.insert( kernel_group_info_map_t::value_type( device_ptr, msg_ptr->get_info() ) );
 

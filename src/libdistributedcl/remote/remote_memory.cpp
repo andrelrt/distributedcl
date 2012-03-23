@@ -41,7 +41,8 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
     msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
@@ -54,7 +55,8 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
     msg_ptr->set_buffer_size( size );
     msg_ptr->set_offset( offset );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     memcpy( data_ptr, msg_ptr->get_buffer().data(), size );
 }

@@ -23,6 +23,7 @@
 #ifndef _DCL_SERVER_SERVER_COMMAND_H_
 #define _DCL_SERVER_SERVER_COMMAND_H_
 
+#include <boost/shared_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "message/packet.h"
 #include "message/message.h"
@@ -34,11 +35,11 @@ template< dcl::network::message::message_type TYPE >
 class server_command
 {
 protected:
-    typedef typename dcl::network::message::base_message* recv_ptr_t;
+    typedef typename boost::shared_ptr<dcl::network::message::base_message> recv_ptr_t;
     typedef typename dcl::network::message::dcl_message< TYPE > message_t;
 
-    server_command( recv_ptr_t message_ptr ) : 
-        message_( *(reinterpret_cast< message_t* >( message_ptr )) ){}
+    server_command( recv_ptr_t message_ptr ) :
+        message_( *(reinterpret_cast< message_t* >( message_ptr.get() )) ){}
 
     message_t& message_;
 };

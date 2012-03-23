@@ -33,7 +33,9 @@ namespace remote {
 bool remote_device::load_device_info()
 {
     dcl_message< msgGetDeviceInfo >* msg_ptr = new dcl_message< msgGetDeviceInfo >( get_remote_id() );
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     local_info_ = msg_ptr->get_info();
 

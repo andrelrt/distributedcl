@@ -31,7 +31,7 @@ namespace message {
 //-----------------------------------------------------------------------------
 // msgCreateKernel
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateKernel >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgCreateKernel >::create_request( void* payload_ptr )
 {
     msgCreateKernel_request* request_ptr = 
         reinterpret_cast< msgCreateKernel_request* >( payload_ptr );
@@ -42,7 +42,7 @@ void dcl_message< msgCreateKernel >::create_request( uint8_t* payload_ptr )
     memcpy( request_ptr->name_, name_.data(), name_.length() );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateKernel >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgCreateKernel >::parse_request( const void* payload_ptr )
 {
     const msgCreateKernel_request* request_ptr = 
         reinterpret_cast< const msgCreateKernel_request* >( payload_ptr );
@@ -53,27 +53,24 @@ void dcl_message< msgCreateKernel >::parse_request( const uint8_t* payload_ptr )
                   network_to_host( request_ptr->name_len_ ) );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateKernel >::create_response( uint8_t* payload_ptr )
+void dcl_message< msgCreateKernel >::create_response( void* payload_ptr )
 {
     remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
     *response_ptr = host_to_network( id_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgCreateKernel >::parse_response( const base_message* message_ptr )
+void dcl_message< msgCreateKernel >::parse_response( const void* payload_ptr )
 {
-    const dcl_message< msgCreateKernel >* msg_response_ptr = 
-        reinterpret_cast< const dcl_message< msgCreateKernel >* >( message_ptr );
-
     const remote_id_t* response_ptr = 
-        reinterpret_cast< const remote_id_t* >( msg_response_ptr->get_payload() );
+        reinterpret_cast< const remote_id_t* >( payload_ptr );
 
     id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgEnqueueNDRangeKernel
 //-----------------------------------------------------------------------------
-void dcl_message< msgEnqueueNDRangeKernel >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
 {
     msgEnqueueNDRangeKernel_request* request_ptr = 
         reinterpret_cast< msgEnqueueNDRangeKernel_request* >( payload_ptr );
@@ -90,7 +87,7 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( uint8_t* payload_pt
     }
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_ptr )
 {
     const msgEnqueueNDRangeKernel_request* request_ptr = 
         reinterpret_cast< const msgEnqueueNDRangeKernel_request* >( payload_ptr );
@@ -118,7 +115,7 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const uint8_t* paylo
 //-----------------------------------------------------------------------------
 // msgSetKernelArg
 //-----------------------------------------------------------------------------
-void dcl_message< msgSetKernelArg >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
 {
     if( is_memory_object_ )
     {
@@ -144,7 +141,7 @@ void dcl_message< msgSetKernelArg >::create_request( uint8_t* payload_ptr )
     }
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgSetKernelArg >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
 {
     const msgSetKernelArg_memory_request* request_ptr =
         reinterpret_cast< const msgSetKernelArg_memory_request* >( payload_ptr );
@@ -172,7 +169,7 @@ void dcl_message< msgSetKernelArg >::parse_request( const uint8_t* payload_ptr )
 //-----------------------------------------------------------------------------
 // msgGetKernelWorkGroupInfo
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetKernelWorkGroupInfo >::create_request( uint8_t* payload_ptr )
+void dcl_message< msgGetKernelWorkGroupInfo >::create_request( void* payload_ptr )
 {
     remote_id_t* request_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
@@ -180,7 +177,7 @@ void dcl_message< msgGetKernelWorkGroupInfo >::create_request( uint8_t* payload_
     request_ptr[ 1 ] = host_to_network( device_id_ );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetKernelWorkGroupInfo >::parse_request( const uint8_t* payload_ptr )
+void dcl_message< msgGetKernelWorkGroupInfo >::parse_request( const void* payload_ptr )
 {
     const remote_id_t* request_ptr = reinterpret_cast< const remote_id_t* >( payload_ptr );
 
@@ -188,7 +185,7 @@ void dcl_message< msgGetKernelWorkGroupInfo >::parse_request( const uint8_t* pay
     device_id_ = network_to_host( request_ptr[ 1 ] );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetKernelWorkGroupInfo >::create_response( uint8_t* payload_ptr )
+void dcl_message< msgGetKernelWorkGroupInfo >::create_response( void* payload_ptr )
 {
     msgGetKernelWorkGroupInfo_response* response_ptr =
         reinterpret_cast< msgGetKernelWorkGroupInfo_response* >( payload_ptr );
@@ -203,13 +200,10 @@ void dcl_message< msgGetKernelWorkGroupInfo >::create_response( uint8_t* payload
     response_ptr->compile_work_group_size_[ 2 ] = host_to_network( static_cast<uint32_t>( info_.compile_work_group_size_[ 2 ] ) );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgGetKernelWorkGroupInfo >::parse_response( const base_message* message_ptr )
+void dcl_message< msgGetKernelWorkGroupInfo >::parse_response( const void* payload_ptr )
 {
-    const dcl_message< msgGetKernelWorkGroupInfo >* msg_response_ptr = 
-        reinterpret_cast< const dcl_message< msgGetKernelWorkGroupInfo >* >( message_ptr );
-
     const msgGetKernelWorkGroupInfo_response* response_ptr =
-        reinterpret_cast< const msgGetKernelWorkGroupInfo_response* >( msg_response_ptr->get_payload() );
+        reinterpret_cast< const msgGetKernelWorkGroupInfo_response* >( payload_ptr );
 
     info_.local_mem_size_ = network_to_host( response_ptr->local_mem_size_ );
     info_.work_group_size_ = network_to_host( response_ptr->work_group_size_ );

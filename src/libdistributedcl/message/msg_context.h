@@ -66,10 +66,10 @@ protected:
     dcl::remote_id_t id_;
     cl_device_type device_type_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 };
 //-----------------------------------------------------------------------------
 template<>
@@ -128,10 +128,10 @@ protected:
     dcl::remote_id_t id_;
     dcl::remote_id_t* devices_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

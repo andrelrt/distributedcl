@@ -42,58 +42,29 @@ class dcl_message< msgCreateCommandQueue > : public base_message
 {
 public:
     dcl_message< msgCreateCommandQueue >() : 
-        base_message( msgCreateCommandQueue, true, sizeof(msgCreateCommandQueue_request), sizeof(dcl::remote_id_t) ) {}
+        base_message( msgCreateCommandQueue, true, 
+                      sizeof(msgCreateCommandQueue_request), sizeof(dcl::remote_id_t) ),
+    device_id_( 0xffff ), context_id_( 0xffff ), properties_( 0 ), id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, device_id_, device_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
+    MSG_PARAMETER_GET_SET( cl_command_queue_properties, properties_, properties )
 
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
-
-    inline const dcl::remote_id_t get_context_id() const
-    {
-        return context_id_;
-    }
-
-    inline void set_context_id( dcl::remote_id_t id )
-    {
-        context_id_ = id;
-    }
-
-    inline const dcl::remote_id_t get_device_id() const
-    {
-        return device_id_;
-    }
-
-    inline void set_device_id( dcl::remote_id_t id )
-    {
-        device_id_ = id;
-    }
-
-    inline cl_command_queue_properties get_properties() const
-    {
-        return properties_;
-    }
-
-    inline void set_properties( cl_command_queue_properties properties )
-    {
-        properties_ = properties;
-    }
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
 
 private:
-    dcl::remote_id_t id_;
     dcl::remote_id_t device_id_;
     dcl::remote_id_t context_id_;
     cl_command_queue_properties properties_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* message_ptr );
+    dcl::remote_id_t id_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
@@ -110,24 +81,18 @@ template<>
 class dcl_message< msgFinish > : public base_message
 {
 public:
-    dcl_message< msgFinish >() : 
-        base_message( msgFinish, false, sizeof(dcl::remote_id_t), 0 ) {}
+    dcl_message< msgFinish >() :
+        base_message( msgFinish, false, sizeof(dcl::remote_id_t), 0 ),
+    id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
-
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
 
 private:
     dcl::remote_id_t id_;
 
-    virtual void create_request( uint8_t* payload_ptr );
-    virtual void parse_request( const uint8_t* payload_ptr );
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

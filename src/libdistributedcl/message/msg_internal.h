@@ -45,8 +45,8 @@ public:
     }
 
 protected:
-    virtual void create_response( uint8_t* payload_ptr );
-    virtual void parse_response( const base_message* );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
 
 private:
     int32_t error_code_;

@@ -27,6 +27,7 @@
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "network/session.h"
 #include "message/message.h"
@@ -70,9 +71,9 @@ public:
 
         while( !message_queue_.empty() )
         {
-            dcl::network::message::base_message* message_ptr = message_queue_.front();
+            message_sp_t message_sp = message_queue_.front();
 
-            packet_ptr->add( message_ptr );
+            packet_ptr->add( message_sp );
             message_queue_.pop();
         }
 
@@ -117,21 +118,23 @@ public:
 
             if( (*sent_message_it)->waiting_response() )
             {
-                (*sent_message_it)->parse_response( (*recv_message_it) );
+                (*sent_message_it)->parse_response( (*recv_message_it)->get_payload() );
             }
         }
     }
 
-    void enqueue_message( dcl::network::message::base_message* message_ptr )
+    typedef boost::shared_ptr<dcl::network::message::base_message> message_sp_t;
+
+    void enqueue_message( message_sp_t message_sp )
     {
         scoped_lock_t lock( mutex_ );
 
-        message_queue_.push( message_ptr );
+        message_queue_.push( message_sp );
     }
 
-    inline void send_message( dcl::network::message::base_message* message_ptr )
+    inline void send_message( message_sp_t message_sp )
     {
-        enqueue_message( message_ptr );
+        enqueue_message( message_sp );
         flush_queue();
     }
 
@@ -141,21 +144,15 @@ public:
     }
 
 private:
-    typedef std::queue< dcl::network::message::base_message* > message_queue_t;
+    typedef std::queue< message_sp_t > message_queue_t;
     typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
 
     message_queue_t message_queue_;
     boost::interprocess::interprocess_mutex mutex_;
     dcl::network::message::message_vector_t received_messages_;
 
-    void clear_received_messages()
+    inline void clear_received_messages()
     {
-        dcl::network::message::message_vector_t::iterator it;
-        for( it = received_messages_.begin(); it != received_messages_.end(); it++ )
-        {
-            delete( *it );
-        }
-
         received_messages_.clear();
     }
 };

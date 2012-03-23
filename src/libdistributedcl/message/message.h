@@ -177,7 +177,12 @@ public:
         return wait_response_;
     }
 
-    virtual void parse_response( const base_message* ){}
+    inline const void* get_payload() const
+    {
+        return buffer_ptr_ + sizeof( message_header );
+    }
+
+    virtual void parse_response( const void* payload_ptr ){}
 
 protected:
     base_message( message_type type, bool wait_response = false, std::size_t request_size = 0, std::size_t response_size = 0 ) : 
@@ -192,18 +197,13 @@ protected:
         response_size_( copy.response_size_ ), response_( copy.response_ )
     {}
 
-    virtual void create_request( uint8_t* payload_ptr ){}
-    virtual void create_response( uint8_t* payload_ptr ){}
-    virtual void parse_request( const uint8_t* payload_ptr ){}
+    virtual void create_request( void* payload_ptr ){}
+    virtual void create_response( void* payload_ptr ){}
+    virtual void parse_request( const void* payload_ptr ){}
 
     inline void set_size( std::size_t size )
     {
         size_ = size + sizeof( message_header );
-    }
-
-    inline const uint8_t* get_payload() const
-    {
-        return buffer_ptr_ + sizeof( message_header );
     }
 
     inline bool is_request() const

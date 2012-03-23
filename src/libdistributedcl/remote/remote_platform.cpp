@@ -50,7 +50,8 @@ generic_context* remote_platform::create_context( cl_device_type device_type ) c
 
     msg_ptr->set_device_type( device_type );
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     remote_context* context_ptr = new remote_context( this );
     context_ptr->set_remote_id( msg_ptr->get_remote_id() );
@@ -62,7 +63,8 @@ void remote_platform::load_devices()
 {
     dcl_message< msgGetDeviceIDs >* msg_ptr = new dcl_message< msgGetDeviceIDs >();
 
-    session_ref_.send_message( reinterpret_cast< base_message* >( msg_ptr ) );
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
 
     for( std::size_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
     {

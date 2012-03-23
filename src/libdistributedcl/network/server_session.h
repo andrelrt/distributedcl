@@ -128,12 +128,18 @@ private:
                 }
                 else
                 {
-                    ret_packet->add( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( CL_SUCCESS ) );
+                    boost::shared_ptr<dcl::network::message::base_message>
+                        ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( CL_SUCCESS ) );
+
+                    ret_packet->add( ret_msg_sp );
                 }
             }
             catch( dcl::library_exception& ex )
             {
-                ret_packet->add( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
+                boost::shared_ptr<dcl::network::message::base_message>
+                    ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
+
+                ret_packet->add( ret_msg_sp );
             }
 
             if( boost::this_thread::interruption_requested() )

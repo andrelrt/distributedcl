@@ -28,19 +28,16 @@ namespace message {
 //-----------------------------------------------------------------------------
 dcl_message< msg_error_message > dcl_message< msg_error_message >::success( CL_SUCCESS );
 //-----------------------------------------------------------------------------
-void dcl_message< msg_error_message >::create_response( uint8_t* payload_ptr )
+void dcl_message< msg_error_message >::create_response( void* payload_ptr )
 {
     int32_t* response_ptr = reinterpret_cast< int32_t* >( payload_ptr );
     *response_ptr = error_code_;
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msg_error_message >::parse_response( const base_message* message_ptr )
+void dcl_message< msg_error_message >::parse_response( const void* payload_ptr )
 {
-    const dcl_message< msg_error_message >* msg_response_ptr = 
-        reinterpret_cast< const dcl_message< msg_error_message >* >( message_ptr );
-
     const int32_t* response_ptr = 
-        reinterpret_cast< const int32_t* >( msg_response_ptr->get_payload() );
+        reinterpret_cast< const int32_t* >( payload_ptr );
 
     error_code_ = *response_ptr;
 }

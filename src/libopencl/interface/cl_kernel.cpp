@@ -39,7 +39,7 @@ using dcl::composite::composite_command_queue;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_kernel CL_API_CALL
 clCreateKernel( cl_program program, const char* kernel_name,
-                cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
+                cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     if( kernel_name == NULL )
     {
