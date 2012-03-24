@@ -7,6 +7,7 @@ icd/icd_object_manager.cpp \
 icd/icd_object_manager.h \
 interface/cl_command_queue.cpp \
 interface/cl_context.cpp \
+interface/cl_event.cpp \
 interface/cl_device.cpp \
 interface/cl_kernel.cpp \
 interface/cl_memory.cpp \

@@ -152,8 +152,8 @@ class dcl_message< msgSetKernelArg > : public base_message
 {
 public:
     dcl_message< msgSetKernelArg >() :
-        base_message( msgSetKernelArg, false, 0, 0 ),
-        is_memory_object_( false ), memory_id_( 0xffff ){}
+        base_message( msgSetKernelArg, false, 0, 0 ), kernel_id_( 0xffff ),
+        memory_id_( 0xffff ), index_( 0 ), is_memory_object_( false ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )

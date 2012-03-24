@@ -33,7 +33,7 @@ cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
 {
     try
     {
-        icd_object_manager::get_instance().retain< DCL_TYPE_T >( id );
+        dcl::icd::icd_object_manager::get_instance().retain< DCL_TYPE_T >( id );
         return CL_SUCCESS;
     }
     catch( dcl::library_exception& ex )
@@ -54,7 +54,7 @@ cl_int release_object( typename DCL_TYPE_T::cl_type_t id )
 {
     try
     {
-        icd_object_manager::get_instance().release< DCL_TYPE_T >( id );
+        dcl::icd::icd_object_manager::get_instance().release< DCL_TYPE_T >( id );
         return CL_SUCCESS;
     }
     catch( dcl::library_exception& ex )

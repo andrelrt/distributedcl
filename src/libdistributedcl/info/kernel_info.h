@@ -23,7 +23,7 @@
 #ifndef _DCL_INFO_KERNEL_H_
 #define _DCL_INFO_KERNEL_H_
 
-#include <string>
+#include <string.h>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "dcl_objects.h"
