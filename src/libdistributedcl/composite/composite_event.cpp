@@ -20,36 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PROGRAM_H_
-#define _DCL_PROGRAM_H_
-
-#include <map>
-#include <string>
-#include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/program_info.h"
+#include "composite_event.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace composite {
 //-----------------------------------------------------------------------------
-class program :
-    public dcl::info::generic_program,
-    public opencl_object< cl_program >,
-    public context_object< program >
+void composite_event::wait()
 {
-public:
-    program( const context& context_ref, const std::string& source_code );
-    ~program();
-
-    // TODO: Create a version of build method using the pfn_notify callback
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-    virtual cl_build_status get_build_status( const dcl::info::generic_device* device_ptr ) const;
-    virtual void get_build_log( const dcl::info::generic_device* device_ptr, std::string& build_log ) const;
-};
+    for( iterator it = begin(); it != end(); it++ )
+    {
+        it->second->wait();
+    }
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+void composite_event::wait( events_t& events )
+{
+    for( events_t::iterator it = events.begin(); it != events.end(); it++ )
+    {
+        (*it)->wait();
+    }
+}
 //-----------------------------------------------------------------------------
-#endif //_DCL_PROGRAM_H_
+}} // namespace dcl::composite
+//-----------------------------------------------------------------------------

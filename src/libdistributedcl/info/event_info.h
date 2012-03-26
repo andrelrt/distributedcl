@@ -20,36 +20,33 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PROGRAM_H_
-#define _DCL_PROGRAM_H_
+#ifndef _DCL_INFO_EVENT_H_
+#define _DCL_INFO_EVENT_H_
 
-#include <map>
-#include <string>
 #include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/program_info.h"
+#include "library_exception.h"
+#include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace info {
 //-----------------------------------------------------------------------------
-class program :
-    public dcl::info::generic_program,
-    public opencl_object< cl_program >,
-    public context_object< program >
+struct event_info
 {
-public:
-    program( const context& context_ref, const std::string& source_code );
-    ~program();
-
-    // TODO: Create a version of build method using the pfn_notify callback
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-    virtual cl_build_status get_build_status( const dcl::info::generic_device* device_ptr ) const;
-    virtual void get_build_log( const dcl::info::generic_device* device_ptr, std::string& build_log ) const;
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+class generic_event :
+    public cl_object< cl_event, cl_event_info, CL_INVALID_EVENT >,
+    public icd_object< cl_event, dcl_event_id >,
+    public dcl_object< event_info >
+{
+public:
+    generic_event(){}
+    virtual ~generic_event(){}
+
+    virtual void wait() = 0;
+};
 //-----------------------------------------------------------------------------
-#endif //_DCL_PROGRAM_H_
+}} // namespace dcl::info
+//-----------------------------------------------------------------------------
+#endif // _DCL_INFO_EVENT_H_

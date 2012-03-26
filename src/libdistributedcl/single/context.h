@@ -42,7 +42,7 @@ public:
     context( const platform& platform_ref, const devices_t& devices_ref );
     context( const platform& platform_ref, cl_device_type device_type );
 
-    virtual ~context(){}
+    virtual ~context();
 
     //void add( command_queue& queue );
 

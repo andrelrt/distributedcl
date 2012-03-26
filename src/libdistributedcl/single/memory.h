@@ -38,7 +38,7 @@ class memory_object :
 {
 protected:
     memory_object( const context& context_ref );
-    virtual ~memory_object(){}
+    virtual ~memory_object();
 };
 //-----------------------------------------------------------------------------
 class memory : 

@@ -41,7 +41,7 @@ class kernel :
 {
 public:
     kernel( const program& program_ref, const std::string& name );
-    ~kernel(){}
+    ~kernel();
 
     virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
                           const dcl::info::ndrange& offset, 

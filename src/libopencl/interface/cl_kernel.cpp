@@ -28,6 +28,7 @@
 #include "composite/composite_memory.h"
 #include "composite/composite_device.h"
 #include "composite/composite_command_queue.h"
+#include "composite/composite_event.h"
 using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::icd::icd_object_manager;
@@ -36,6 +37,7 @@ using dcl::composite::composite_kernel;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_device;
 using dcl::composite::composite_command_queue;
+using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_kernel CL_API_CALL
 clCreateKernel( cl_program program, const char* kernel_name,
@@ -246,6 +248,12 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
         return CL_INVALID_GLOBAL_WORK_SIZE;
     }
 
+    if( ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) ||
+        ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
+    {
+        return CL_INVALID_EVENT_WAIT_LIST;
+    }
+
     try
     {
         icd_object_manager& icd = icd_object_manager::get_instance();
@@ -257,7 +265,24 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
         ndrange global( work_dim, global_work_size );
         ndrange offset( work_dim, global_work_offset );
 
-        kernel_ptr->execute( queue_ptr, offset, global, local );
+        dcl::events_t events;
+
+        if( event_wait_list != NULL )
+        {
+            for( uint32_t i = 0; i < num_events_in_wait_list; i++ )
+            {
+                events.push_back( icd.get_object_ptr< composite_event >( event_wait_list[ i ] ) );
+            }
+        }
+
+        composite_event* event_ptr = NULL;
+
+        kernel_ptr->execute( queue_ptr, offset, global, local, events, (event != NULL) ? &event_ptr : NULL );
+
+        if( event != NULL )
+        {
+            *event = icd.get_cl_id< composite_event >( event_ptr );
+        }
 
         return CL_SUCCESS;
     }

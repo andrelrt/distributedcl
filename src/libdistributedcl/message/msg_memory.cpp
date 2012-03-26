@@ -120,8 +120,8 @@ void dcl_message< msgEnqueueReadBuffer >::create_request( void* payload_ptr )
 
     request_ptr->id_ = host_to_network( id_ );
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
-    request_ptr->size_ = host_to_network( size_ );
-    request_ptr->offset_ = host_to_network( offset_ );
+    request_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
+    request_ptr->offset_ = host_to_network( static_cast<uint32_t>( offset_ ) );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::parse_request( const void* payload_ptr )

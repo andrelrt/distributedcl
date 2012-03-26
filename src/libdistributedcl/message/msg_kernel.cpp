@@ -191,9 +191,9 @@ void dcl_message< msgGetKernelWorkGroupInfo >::create_response( void* payload_pt
         reinterpret_cast< msgGetKernelWorkGroupInfo_response* >( payload_ptr );
 
     response_ptr->local_mem_size_ = host_to_network( info_.local_mem_size_ );
-    response_ptr->work_group_size_ = host_to_network( info_.work_group_size_ );
+    response_ptr->work_group_size_ = host_to_network( static_cast<uint32_t>( info_.work_group_size_ ) );
     response_ptr->private_mem_size_ = host_to_network( info_.private_mem_size_ );
-    response_ptr->preferred_work_group_size_multiple_ = host_to_network( info_.preferred_work_group_size_multiple_ );
+    response_ptr->preferred_work_group_size_multiple_ = host_to_network( static_cast<uint32_t>( info_.preferred_work_group_size_multiple_ ) );
 
     response_ptr->compile_work_group_size_[ 0 ] = host_to_network( static_cast<uint32_t>( info_.compile_work_group_size_[ 0 ] ) );
     response_ptr->compile_work_group_size_[ 1 ] = host_to_network( static_cast<uint32_t>( info_.compile_work_group_size_[ 1 ] ) );

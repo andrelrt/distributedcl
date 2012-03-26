@@ -20,36 +20,30 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PROGRAM_H_
-#define _DCL_PROGRAM_H_
+#ifndef _DCL_EVENT_H_
+#define _DCL_EVENT_H_
 
-#include <map>
-#include <string>
 #include "distributedcl_internal.h"
 #include "single_object.h"
 #include "opencl_library.h"
-#include "info/program_info.h"
+#include "info/event_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class program :
-    public dcl::info::generic_program,
-    public opencl_object< cl_program >,
-    public context_object< program >
+class event :
+    public dcl::info::generic_event,
+    public opencl_object< cl_event >,
+    public context_object< event >
 {
 public:
-    program( const context& context_ref, const std::string& source_code );
-    ~program();
+    event( const opencl_library& opencl, cl_event id ) :
+        opencl_object< cl_event >( opencl, id ){}
 
-    // TODO: Create a version of build method using the pfn_notify callback
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-    virtual cl_build_status get_build_status( const dcl::info::generic_device* device_ptr ) const;
-    virtual void get_build_log( const dcl::info::generic_device* device_ptr, std::string& build_log ) const;
+    virtual ~event();
+    virtual void wait();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif //_DCL_PROGRAM_H_
+#endif //_DCL_EVENT_H_

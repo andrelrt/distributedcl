@@ -33,6 +33,11 @@ memory_object::memory_object( const context& context_ref ) :
 {
 }
 //-----------------------------------------------------------------------------
+memory_object::~memory_object()
+{
+    opencl_.clReleaseMemObject( id_ );
+}
+//-----------------------------------------------------------------------------
 memory::memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags ) :
     memory_object( context_ref )
 {

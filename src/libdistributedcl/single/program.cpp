@@ -33,6 +33,11 @@ using dcl::info::generic_device;
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
+program::~program()
+{
+    opencl_.clReleaseProgram( id_ );
+}
+//-----------------------------------------------------------------------------
 program::program( const context& context_ref, const std::string& source_code ) :
     generic_program( source_code ), opencl_object( context_ref.get_opencl() )
 {

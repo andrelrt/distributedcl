@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,36 +20,30 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_PROGRAM_H_
-#define _DCL_PROGRAM_H_
+#ifndef _DCL_COMPOSITE_EVENT_H_
+#define _DCL_COMPOSITE_EVENT_H_
 
-#include <map>
-#include <string>
 #include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/program_info.h"
+#include "composite_object.h"
+#include "info/event_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace single {
+namespace composite {
 //-----------------------------------------------------------------------------
-class program :
-    public dcl::info::generic_program,
-    public opencl_object< cl_program >,
-    public context_object< program >
+class composite_event :
+    public dcl::info::generic_event,
+    public composite_object< dcl::info::generic_event >
 {
 public:
-    program( const context& context_ref, const std::string& source_code );
-    ~program();
+    composite_event( const composite_context& context_ref ) :
+        composite_object< dcl::info::generic_event >( context_ref ){}
 
-    // TODO: Create a version of build method using the pfn_notify callback
-    virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual void build( const devices_t& devices, const std::string& build_options, cl_bool blocking = CL_TRUE );
-    virtual dcl::info::generic_kernel* create_kernel( const std::string& kernel_name );
-    virtual cl_build_status get_build_status( const dcl::info::generic_device* device_ptr ) const;
-    virtual void get_build_log( const dcl::info::generic_device* device_ptr, std::string& build_log ) const;
+    ~composite_event(){}
+
+    virtual void wait();
+    static void wait( events_t& events );
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif //_DCL_PROGRAM_H_
+#endif //_DCL_COMPOSITE_EVENT_H_

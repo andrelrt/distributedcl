@@ -22,6 +22,7 @@
     <ClInclude Include="composite\composite_command_queue.h" />
     <ClInclude Include="composite\composite_context.h" />
     <ClInclude Include="composite\composite_device.h" />
+    <ClInclude Include="composite\composite_event.h" />
     <ClInclude Include="composite\composite_kernel.h" />
     <ClInclude Include="composite\composite_memory.h" />
     <ClInclude Include="composite\composite_object.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="info\dcl_objects.h" />
     <ClInclude Include="info\device_info.h" />
     <ClInclude Include="distributedcl_internal.h" />
+    <ClInclude Include="info\event_info.h" />
     <ClInclude Include="info\icd_object.h" />
     <ClInclude Include="info\kernel_info.h" />
     <ClInclude Include="info\memory_info.h" />
@@ -77,6 +79,7 @@
     <ClInclude Include="single\command_queue.h" />
     <ClInclude Include="single\context.h" />
     <ClInclude Include="single\device.h" />
+    <ClInclude Include="single\event.h" />
     <ClInclude Include="single\kernel.h" />
     <ClInclude Include="single\memory.h" />
     <ClInclude Include="single\opencl_library.h" />
@@ -87,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="composite\composite_context.cpp" />
+    <ClCompile Include="composite\composite_event.cpp" />
     <ClCompile Include="composite\composite_kernel.cpp" />
     <ClCompile Include="composite\composite_memory.cpp" />
     <ClCompile Include="composite\composite_platform.cpp" />
@@ -119,6 +123,7 @@
     <ClCompile Include="single\command_queue.cpp" />
     <ClCompile Include="single\context.cpp" />
     <ClCompile Include="single\device.cpp" />
+    <ClCompile Include="single\event.cpp" />
     <ClCompile Include="single\kernel.cpp" />
     <ClCompile Include="single\memory.cpp" />
     <ClCompile Include="single\opencl_library.cpp" />

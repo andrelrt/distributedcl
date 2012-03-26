@@ -41,6 +41,7 @@ namespace single {
 context::context( const context& ctx ) : 
     generic_context( ctx.platform_, ctx.devices_ ), opencl_object( ctx.get_opencl(), ctx.get_id() )
 {
+    opencl_.clRetainContext( ctx.get_id() );
 }
 //-----------------------------------------------------------------------------
 context::context( const platform& platform_ref, const devices_t& devices_ref ) : 
@@ -94,6 +95,11 @@ context::context( const platform& platform_ref, cl_device_type device_type ) :
         throw library_exception( error_code );
 
     set_id( ctx );
+}
+//-----------------------------------------------------------------------------
+context::~context()
+{
+    opencl_.clReleaseContext( get_id() );
 }
 //-----------------------------------------------------------------------------
 //void context::add( command_queue& queue )

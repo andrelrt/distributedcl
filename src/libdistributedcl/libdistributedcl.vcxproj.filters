@@ -215,6 +215,15 @@
     <ClInclude Include="server\server_memory.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="info\event_info.h">
+      <Filter>info</Filter>
+    </ClInclude>
+    <ClInclude Include="single\event.h">
+      <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\composite_event.h">
+      <Filter>composite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -333,6 +342,12 @@
     </ClCompile>
     <ClCompile Include="remote\remote_memory.cpp">
       <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="single\event.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="composite\composite_event.cpp">
+      <Filter>composite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

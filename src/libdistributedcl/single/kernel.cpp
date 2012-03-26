@@ -52,6 +52,11 @@ kernel::kernel( const program& program_ref, const std::string& name ) :
     set_id( krnl );
 }
 //-----------------------------------------------------------------------------
+kernel::~kernel()
+{
+    opencl_.clReleaseKernel( id_ );
+}
+//-----------------------------------------------------------------------------
 void kernel::execute( const generic_command_queue* queue_ptr,
                       const ndrange& offset, const ndrange& global,
                       const ndrange& local )
