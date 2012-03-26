@@ -24,6 +24,7 @@
 #include "remote_command_queue.h"
 #include "remote_memory.h"
 #include "remote_device.h"
+#include "remote_event.h"
 #include "message/msg_kernel.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
@@ -36,13 +37,15 @@ using dcl::info::generic_device;
 using dcl::info::generic_kernel;
 using dcl::info::generic_memory;
 using dcl::info::generic_command_queue;
+using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 void remote_kernel::execute( const generic_command_queue* queue_ptr, 
                              const ndrange& offset, const ndrange& global, 
-                             const ndrange& local )
+                             const ndrange& local, events_t& wait_events, 
+                             generic_event** event_ptr )
 {
     dcl_message< msgEnqueueNDRangeKernel >* msg_ptr = new dcl_message< msgEnqueueNDRangeKernel >();
 

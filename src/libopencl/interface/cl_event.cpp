@@ -24,6 +24,7 @@
 #include "cl_utils.h"
 #include "icd/icd_object_manager.h"
 #include "composite/composite_event.h"
+using dcl::icd::icd_object_manager;
 using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -36,7 +37,7 @@ clWaitForEvents( cl_uint num_events, const cl_event* event_list ) CL_API_SUFFIX_
 
     try
     {
-        events_t events;
+        dcl::events_t events;
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         for( uint32_t i = 0; i < num_events; i++ )

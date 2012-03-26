@@ -30,6 +30,7 @@
 #include "composite/composite_command_queue.h"
 #include "composite/composite_event.h"
 using dcl::info::ndrange;
+using dcl::info::generic_event;
 using dcl::info::kernel_group_info;
 using dcl::icd::icd_object_manager;
 using dcl::composite::composite_program;
@@ -277,7 +278,9 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
 
         composite_event* event_ptr = NULL;
 
-        kernel_ptr->execute( queue_ptr, offset, global, local, events, (event != NULL) ? &event_ptr : NULL );
+        kernel_ptr->execute( queue_ptr, offset, global, local, events,
+                             (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                             : NULL );
 
         if( event != NULL )
         {

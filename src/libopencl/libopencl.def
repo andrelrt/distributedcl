@@ -58,14 +58,14 @@ EXPORTS
 ;    clGetSupportedImageFormats      @56
     clReleaseCommandQueue           @57
     clReleaseContext                @58
-;    clReleaseEvent                  @59
+    clReleaseEvent                  @59
     clReleaseKernel                 @60
     clReleaseMemObject              @61
     clReleaseProgram                @62
 ;    clReleaseSampler                @63
     clRetainCommandQueue            @64
     clRetainContext                 @65
-;    clRetainEvent                   @66
+    clRetainEvent                   @66
     clRetainKernel                  @67
     clRetainMemObject               @68
     clRetainProgram                 @69
@@ -73,4 +73,4 @@ EXPORTS
 ;    clSetCommandQueueProperty       @71
     clSetKernelArg                  @72
     clUnloadCompiler                @73
-;    clWaitForEvents                 @74
+    clWaitForEvents                 @74

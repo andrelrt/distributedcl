@@ -24,11 +24,13 @@
 #include "command_queue.h"
 #include "memory.h"
 #include "device.h"
+#include "event.h"
 using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_command_queue;
 using dcl::info::generic_memory;
 using dcl::info::generic_device;
+using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -59,7 +61,8 @@ kernel::~kernel()
 //-----------------------------------------------------------------------------
 void kernel::execute( const generic_command_queue* queue_ptr,
                       const ndrange& offset, const ndrange& global,
-                      const ndrange& local )
+                      const ndrange& local, events_t& wait_events,
+                      generic_event** event_ptr )
 {
     const command_queue* queue = reinterpret_cast<const command_queue*>( queue_ptr );
 

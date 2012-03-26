@@ -45,7 +45,8 @@ public:
     virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
                           const dcl::info::ndrange& offset, 
                           const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local );
+                          const dcl::info::ndrange& local,
+                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
 
     virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
     virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );

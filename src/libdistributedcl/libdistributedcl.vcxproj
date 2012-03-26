@@ -62,6 +62,7 @@
     <ClInclude Include="network\tcp_transport.h" />
     <ClInclude Include="remote\remote_command_queue.h" />
     <ClInclude Include="remote\remote_device.h" />
+    <ClInclude Include="remote\remote_event.h" />
     <ClInclude Include="remote\remote_kernel.h" />
     <ClInclude Include="remote\remote_memory.h" />
     <ClInclude Include="remote\remote_opencl.h" />
