@@ -100,7 +100,7 @@ class dcl_message< msgEnqueueNDRangeKernel > : public base_message
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
         base_message( msgEnqueueNDRangeKernel, false, sizeof( msgEnqueueNDRangeKernel_request ), 0 ),
-        kernel_id_( 0xffff ), command_queue_id_( 0xffff ){}
+        kernel_id_( 0xffff ), command_queue_id_( 0xffff ), event_id_( 0xffff ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
@@ -121,12 +121,23 @@ public:
         return local_;
     }
 
+    inline dcl::events_t& get_events()
+    {
+        return events_;
+    }
+
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
+
 private:
     dcl::remote_id_t kernel_id_;
     dcl::remote_id_t command_queue_id_;
     dcl::info::ndrange offset_;
     dcl::info::ndrange global_;
     dcl::info::ndrange local_;
+    dcl::events_t events_;
+
+    dcl::remote_id_t event_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );

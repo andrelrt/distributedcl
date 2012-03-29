@@ -27,10 +27,13 @@
 #include "composite/composite_kernel.h"
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
+#include "composite/composite_event.h"
+using dcl::info::generic_event;
 using dcl::composite::composite_program;
 using dcl::composite::composite_kernel;
 using dcl::composite::composite_command_queue;
 using dcl::composite::composite_memory;
+using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -61,8 +64,16 @@ void EnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_.get_kernel_id() );
 
+    composite_event* ret_event = NULL;
+
     kernel_ptr->execute( queue_ptr, message_.get_offset(), 
-                         message_.get_global(), message_.get_local() );
+                         message_.get_global(), message_.get_local(),
+                         message_.get_events(), 
+                         reinterpret_cast<generic_event**>( &ret_event ) );
+
+    remote_id_t id = server.get_event_manager().add( ret_event );
+
+    message_.set_event_id( id );
 }
 //-----------------------------------------------------------------------------
 void SetKernelArg_command::execute()

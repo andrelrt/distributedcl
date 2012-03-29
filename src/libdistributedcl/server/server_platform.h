@@ -33,6 +33,7 @@
 #include "composite/composite_kernel.h"
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
+#include "composite/composite_event.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -66,6 +67,7 @@ private:
     typedef dcl::info::object_manager< dcl::composite::composite_kernel > kernel_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_command_queue > command_queue_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_event > event_manager_t;
 
     device_manager_t device_manager_;
     context_manager_t context_manager_;
@@ -73,6 +75,7 @@ private:
     kernel_manager_t kernel_manager_;
     command_queue_manager_t command_queue_manager_;
     memory_manager_t memory_manager_;
+    event_manager_t event_manager_;
     static server_platform instance_;
 
     server_platform(){}
@@ -111,6 +114,11 @@ public:
     inline memory_manager_t& get_memory_manager()
     {
         return memory_manager_;
+    }
+
+    inline event_manager_t& get_event_manager()
+    {
+        return event_manager_;
     }
 };
 //-----------------------------------------------------------------------------
