@@ -38,7 +38,7 @@ class remote_memory :
 public:
     remote_memory( const remote_context& context_ref ) :
         dcl::info::generic_memory(),
-        remote_object( context_ref.get_session() ),
+        remote_object< remote_memory >( context_ref.get_session() ),
         context_( context_ref ){}
 
     ~remote_memory(){}

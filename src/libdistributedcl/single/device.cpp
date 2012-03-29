@@ -27,8 +27,9 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-device::device( const platform* platform_ptr, cl_device_id id )
-    : generic_device( platform_ptr ), opencl_object( platform_ptr->get_opencl(), id ) 
+device::device( const platform* platform_ptr, cl_device_id id ) :
+	generic_device( platform_ptr ),
+    opencl_object< cl_device_id >( platform_ptr->get_opencl(), id ) 
 {
     load_info();
 }

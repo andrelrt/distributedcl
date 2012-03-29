@@ -33,7 +33,7 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 platform::platform( const opencl_library& opencl, cl_platform_id platform_id )
-    : opencl_object( opencl, platform_id )
+    : opencl_object< cl_platform_id >( opencl, platform_id )
 {
 	load();
 }

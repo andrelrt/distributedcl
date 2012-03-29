@@ -36,7 +36,8 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 kernel::kernel( const program& program_ref, const std::string& name ) :
-    generic_kernel( name ), opencl_object( program_ref.get_opencl() )
+    generic_kernel( name ),
+    opencl_object< cl_kernel >( program_ref.get_opencl() )
 {
     if( !opencl_.loaded() )
     {

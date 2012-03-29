@@ -39,14 +39,15 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 context::context( const context& ctx ) : 
-    generic_context( ctx.platform_, ctx.devices_ ), opencl_object( ctx.get_opencl(), ctx.get_id() )
+    generic_context( ctx.platform_, ctx.devices_ ),
+    opencl_object< cl_context >( ctx.get_opencl(), ctx.get_id() )
 {
     opencl_.clRetainContext( ctx.get_id() );
 }
 //-----------------------------------------------------------------------------
 context::context( const platform& platform_ref, const devices_t& devices_ref ) : 
     generic_context( platform_ref, devices_ref ), 
-    opencl_object( reinterpret_cast<device*>( devices_ref[ 0 ] )->get_opencl() )
+    opencl_object< cl_context >( reinterpret_cast<device*>( devices_ref[ 0 ] )->get_opencl() )
 {
     //FIXME: Not implemented
     throw library_exception( "Not implemented" );
@@ -78,7 +79,8 @@ context::context( const platform& platform_ref, const devices_t& devices_ref ) :
 }
 //-----------------------------------------------------------------------------
 context::context( const platform& platform_ref, cl_device_type device_type ) : 
-    generic_context( platform_ref ), opencl_object( platform_ref.get_opencl() )
+    generic_context( platform_ref ),
+    opencl_object< cl_context >( platform_ref.get_opencl() )
 {
     cl_int error_code;
     cl_context ctx;

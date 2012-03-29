@@ -38,7 +38,7 @@ class remote_kernel :
 public:
     remote_kernel( const remote_context& context_ref, const std::string& name ) :
         dcl::info::generic_kernel( name ), 
-        remote_object( context_ref.get_session() ) {}
+        remote_object< remote_kernel >( context_ref.get_session() ) {}
 
     ~remote_kernel(){}
 

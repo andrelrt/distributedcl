@@ -41,7 +41,7 @@ public:
         dcl::info::generic_command_queue( reinterpret_cast<const dcl::info::generic_context*>( &context_ref ), 
                                           reinterpret_cast<const dcl::info::generic_device*>( &device_ref ), 
                                           properties ),
-        remote_object( context_ref.get_session() ) {}
+        remote_object< remote_command_queue >( context_ref.get_session() ) {}
 
     ~remote_command_queue(){}
 

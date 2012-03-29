@@ -39,7 +39,8 @@ program::~program()
 }
 //-----------------------------------------------------------------------------
 program::program( const context& context_ref, const std::string& source_code ) :
-    generic_program( source_code ), opencl_object( context_ref.get_opencl() )
+    generic_program( source_code ),
+    opencl_object< cl_program >( context_ref.get_opencl() )
 {
     if( opencl_.loaded() )
     {

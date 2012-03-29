@@ -37,7 +37,7 @@ class remote_event :
 {
 public:
     remote_event( const remote_context& context_ref ) :
-        remote_object( context_ref.get_session() ){}
+        remote_object< remote_event >( context_ref.get_session() ){}
 
     ~remote_event(){}
 };

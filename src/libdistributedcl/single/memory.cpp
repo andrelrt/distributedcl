@@ -29,7 +29,7 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 memory_object::memory_object( const context& context_ref ) :
-    opencl_object( context_ref.get_opencl() )
+    opencl_object< cl_mem >( context_ref.get_opencl() )
 {
 }
 //-----------------------------------------------------------------------------

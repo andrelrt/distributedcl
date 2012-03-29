@@ -31,7 +31,7 @@ namespace single {
 command_queue::command_queue( const context& context_ref, const device& device_ref, 
                               cl_command_queue_properties properties ) :
     dcl::info::generic_command_queue( &context_ref, &device_ref, properties ), 
-    opencl_object( context_ref.get_opencl() )
+    opencl_object< cl_command_queue >( context_ref.get_opencl() )
 {
     if( !opencl_.loaded() )
     {

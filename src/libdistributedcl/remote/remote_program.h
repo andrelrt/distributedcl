@@ -38,7 +38,7 @@ class remote_program :
 public:
     remote_program( const remote_context& context_ref, const std::string& source_code ) :
         dcl::info::generic_program( source_code ), 
-        remote_object( context_ref.get_session() ),
+        remote_object< remote_program >( context_ref.get_session() ),
         context_( context_ref ){}
 
     ~remote_program(){}
