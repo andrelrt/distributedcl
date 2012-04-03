@@ -23,12 +23,16 @@
 #include "server_kernel.h"
 #include "server_platform.h"
 #include "message/msg_kernel.h"
+#include "composite/composite_device.h"
 #include "composite/composite_program.h"
 #include "composite/composite_kernel.h"
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
 #include "composite/composite_event.h"
 using dcl::info::generic_event;
+using dcl::info::generic_device;
+using dcl::info::kernel_group_info;
+using dcl::composite::composite_device;
 using dcl::composite::composite_program;
 using dcl::composite::composite_kernel;
 using dcl::composite::composite_command_queue;
@@ -64,16 +68,35 @@ void EnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_.get_kernel_id() );
 
-    composite_event* ret_event = NULL;
+    dcl::events_t events;
 
-    kernel_ptr->execute( queue_ptr, message_.get_offset(), 
-                         message_.get_global(), message_.get_local(),
-                         message_.get_events(), 
-                         reinterpret_cast<generic_event**>( &ret_event ) );
+    if( !message_.get_events().empty() )
+    {
+        events.reserve( message_.get_events().size() );
 
-    remote_id_t id = server.get_event_manager().add( ret_event );
+        for( dcl::remote_ids_t::const_iterator it = message_.get_events().begin(); it != message_.get_events().end(); it ++ )
+        {
+            events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
+        }
+    }
 
-    message_.set_event_id( id );
+    if( message_.get_return_event() )
+    {
+        composite_event* ret_event = NULL;
+
+        kernel_ptr->execute( queue_ptr, message_.get_offset(), 
+                             message_.get_global(), message_.get_local(), events,
+                             reinterpret_cast<generic_event**>( &ret_event ) );
+
+        remote_id_t id = server.get_event_manager().add( ret_event );
+        message_.set_event_id( id );
+    }
+    else
+    {
+        kernel_ptr->execute( queue_ptr, message_.get_offset(), 
+                             message_.get_global(), message_.get_local(), events,
+                             NULL );
+    }
 }
 //-----------------------------------------------------------------------------
 void SetKernelArg_command::execute()
@@ -96,6 +119,24 @@ void SetKernelArg_command::execute()
                                   message_.get_buffer().size(), 
                                   message_.get_buffer().data() );
     }
+}
+//-----------------------------------------------------------------------------
+void GetKernelWorkGroupInfo_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    composite_kernel* kernel_ptr = 
+        server.get_kernel_manager().get( message_.get_kernel_id() );
+
+    composite_device* device_ptr = 
+        server.get_device_manager().get( message_.get_device_id() );
+
+    const kernel_group_info& group_info = 
+        kernel_ptr->get_group_info( reinterpret_cast<generic_device*>( device_ptr ) );
+
+    kernel_group_info& ret_info = message_.get_info();
+
+    memcpy( &ret_info, &group_info, sizeof(kernel_group_info) );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

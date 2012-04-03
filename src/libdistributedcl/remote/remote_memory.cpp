@@ -23,6 +23,7 @@
 #include "remote_memory.h"
 #include "remote_command_queue.h"
 #include "message/msg_memory.h"
+using dcl::info::generic_event;
 using dcl::info::generic_command_queue;
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
@@ -33,7 +34,8 @@ namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 void remote_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
-                           size_t size, size_t offset, cl_bool blocking )
+                           size_t size, size_t offset, cl_bool blocking,
+                           events_t& wait_events, generic_event** ret_event_ptr )
 {
     dcl_message< msgEnqueueWriteBuffer >* msg_ptr = new dcl_message< msgEnqueueWriteBuffer >();
 
@@ -46,7 +48,8 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
 }
 //-----------------------------------------------------------------------------
 void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
-                          size_t size, size_t offset, cl_bool blocking )
+                          size_t size, size_t offset, cl_bool blocking,
+                          events_t& wait_events, generic_event** ret_event_ptr )
 {
     dcl_message< msgEnqueueReadBuffer >* msg_ptr = new dcl_message< msgEnqueueReadBuffer >();
 

@@ -44,10 +44,12 @@ public:
     ~composite_memory(){}
 
     virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
-                        size_t size, size_t offset, cl_bool blocking = CL_TRUE );
+                        size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
+                        dcl::info::generic_event** ret_event_ptr );
 
     virtual void read( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
-                       size_t size, size_t offset, cl_bool blocking = CL_TRUE );
+                       size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
+                       dcl::info::generic_event** ret_event_ptr );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

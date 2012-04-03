@@ -268,20 +268,13 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
 
         dcl::events_t events;
 
-        if( event_wait_list != NULL )
-        {
-            for( uint32_t i = 0; i < num_events_in_wait_list; i++ )
-            {
-                events.push_back( icd.get_object_ptr< composite_event >( event_wait_list[ i ] ) );
-            }
-        }
+        load_events( events, num_events_in_wait_list, event_wait_list );
 
         composite_event* event_ptr = NULL;
 
         kernel_ptr->execute( queue_ptr, offset, global, local, events,
                              (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
                                              : NULL );
-
         if( event != NULL )
         {
             *event = icd.get_cl_id< composite_event >( event_ptr );

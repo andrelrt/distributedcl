@@ -32,6 +32,7 @@ namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
 class generic_command_queue;
+class generic_event;
 //-----------------------------------------------------------------------------
 struct memory_info
 {
@@ -47,10 +48,12 @@ public:
     virtual ~generic_memory(){}
 
     virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
-                        size_t size, size_t offset, cl_bool blocking = CL_TRUE ) = 0;
+                        size_t size, size_t offset, cl_bool blocking,
+                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
 
     virtual void read( generic_command_queue* queue_ptr, void* data_ptr,
-                       size_t size, size_t offset, cl_bool blocking = CL_TRUE ) = 0;
+                       size_t size, size_t offset, cl_bool blocking,
+                       events_t& wait_events, generic_event** ret_event_ptr ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

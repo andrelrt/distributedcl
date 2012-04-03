@@ -28,6 +28,9 @@
 #include "library_exception.h"
 #include "icd/icd_object_manager.h"
 //-----------------------------------------------------------------------------
+void load_events( dcl::events_t& events, cl_uint num_events_in_wait_list, 
+                  const cl_event* event_wait_list );
+//-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
 cl_int retain_object( typename DCL_TYPE_T::cl_type_t id )
 {

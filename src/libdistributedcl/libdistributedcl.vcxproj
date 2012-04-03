@@ -46,6 +46,7 @@
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_command_queue.h" />
     <ClInclude Include="message\msg_device.h" />
+    <ClInclude Include="message\msg_event.h" />
     <ClInclude Include="message\msg_internal.h" />
     <ClInclude Include="message\msg_kernel.h" />
     <ClInclude Include="message\msg_memory.h" />
@@ -72,6 +73,7 @@
     <ClInclude Include="remote\remote_program.h" />
     <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_command_queue.h" />
+    <ClInclude Include="server\server_event.h" />
     <ClInclude Include="server\server_kernel.h" />
     <ClInclude Include="server\server_memory.h" />
     <ClInclude Include="server\server_platform.h" />
@@ -100,6 +102,7 @@
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_command_queue.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
+    <ClCompile Include="message\msg_event.cpp" />
     <ClCompile Include="message\msg_internal.cpp" />
     <ClCompile Include="message\msg_kernel.cpp" />
     <ClCompile Include="message\msg_memory.cpp" />
@@ -111,11 +114,13 @@
     <ClCompile Include="remote\remote_command_queue.cpp" />
     <ClCompile Include="remote\remote_context.cpp" />
     <ClCompile Include="remote\remote_device.cpp" />
+    <ClCompile Include="remote\remote_event.cpp" />
     <ClCompile Include="remote\remote_kernel.cpp" />
     <ClCompile Include="remote\remote_memory.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
     <ClCompile Include="server\server_command_queue.cpp" />
+    <ClCompile Include="server\server_event.cpp" />
     <ClCompile Include="server\server_kernel.cpp" />
     <ClCompile Include="server\server_memory.cpp" />
     <ClCompile Include="server\server_platform.cpp" />

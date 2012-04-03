@@ -89,7 +89,7 @@ icd_object_manager::icd_object_manager()
     FILL_DISPATCH_ITEM( clGetPlatformIDs );
     FILL_DISPATCH_ITEM( clGetPlatformInfo );
     FILL_DISPATCH_ITEM( clGetProgramBuildInfo );
-    //FILL_DISPATCH_ITEM( clGetProgramInfo );
+    FILL_DISPATCH_ITEM( clGetProgramInfo );
     //FILL_DISPATCH_ITEM( clGetSamplerInfo );
     //FILL_DISPATCH_ITEM( clGetSupportedImageFormats );
     FILL_DISPATCH_ITEM( clReleaseCommandQueue );

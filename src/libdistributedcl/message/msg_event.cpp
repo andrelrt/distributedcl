@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,43 +20,29 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_KERNEL_H_
-#define _DCL_REMOTE_KERNEL_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/kernel_info.h"
+#include "msg_event.h"
+using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace network {
+namespace message {
 //-----------------------------------------------------------------------------
-class remote_kernel :
-    public dcl::info::generic_kernel,
-    public remote_object< remote_kernel >
+// msgWaitForEvents
+//-----------------------------------------------------------------------------
+void dcl_message< msgWaitForEvents >::create_request( void* payload_ptr )
 {
-public:
-    remote_kernel( const remote_context& context_ref, const std::string& name ) :
-        dcl::info::generic_kernel( name ), 
-        remote_object< remote_kernel >( context_ref.get_session() ),
-        context_ref_( context_ref ){}
+    remote_id_t* response_ptr = reinterpret_cast<remote_id_t*>( payload_ptr );
 
-    ~remote_kernel(){}
-
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
-
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
-
-private:
-    const remote_context& context_ref_;
-};
+    *response_ptr = host_to_network( id_ );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+void dcl_message< msgWaitForEvents >::parse_request( const void* payload_ptr )
+{
+    const remote_id_t* response_ptr =
+        reinterpret_cast<const remote_id_t*>( payload_ptr );
+
+    id_ = network_to_host( *response_ptr );
+}
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_KERNEL_H_
+}}} // namespace dcl::network::message
+//-----------------------------------------------------------------------------

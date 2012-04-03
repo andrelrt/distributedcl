@@ -37,6 +37,9 @@
     <ClCompile Include="interface\cl_event.cpp">
       <Filter>interface</Filter>
     </ClCompile>
+    <ClCompile Include="interface\cl_utils.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="libopencl.def" />

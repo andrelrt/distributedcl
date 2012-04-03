@@ -195,13 +195,34 @@ clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_1
     return CL_SUCCESS;
 }
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clGetProgramInfo( cl_program program, cl_program_info param_name,
-//                  size_t param_value_size, void* param_value,
-//                  size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
-//{
-//    return CL_INVALID_VALUE;
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clGetProgramInfo( cl_program program, cl_program_info param_name,
+                  size_t param_value_size, void* param_value,
+                  size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+{
+    return CL_OUT_OF_RESOURCES;
+
+    // TODO: Not Implemented
+    //try
+    //{
+    //    composite_program* program_ptr = 
+    //        get_info_check_parameters< composite_program >( program, param_value_size, 
+    //                                                        param_value, param_value_size_ret );
+
+    //    return CL_SUCCESS;
+    //}
+    //catch( dcl::library_exception& ex )
+    //{
+    //    return ex.get_error();
+    //}
+    //catch( ... )
+    //{
+    //    return CL_INVALID_VALUE;
+    //}
+
+    //// Dummy
+    //return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetProgramBuildInfo( cl_program program, cl_device_id device,

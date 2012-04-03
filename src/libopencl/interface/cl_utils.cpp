@@ -20,33 +20,27 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_EVENT_H_
-#define _DCL_REMOTE_EVENT_H_
-
 #include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/event_info.h"
+#include "cl_utils.h"
+#include "icd/icd_object_manager.h"
+#include "composite/composite_event.h"
+using dcl::events_t;
+using dcl::icd::icd_object_manager;
+using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace remote {
-//-----------------------------------------------------------------------------
-class remote_event :
-    public dcl::info::generic_event,
-    public remote_object< remote_event >
+void load_events( dcl::events_t& events, cl_uint num_events_in_wait_list, 
+                  const cl_event* event_wait_list )
 {
-public:
-    remote_event( const remote_context& context_ref, dcl::remote_id_t id ) :
-        remote_object< remote_event >( context_ref.get_session() )
+    icd_object_manager& icd = icd_object_manager::get_instance();
+
+    if( event_wait_list != NULL )
     {
-        set_remote_id( id );
+        events.reserve( num_events_in_wait_list );
+
+        for( uint32_t i = 0; i < num_events_in_wait_list; i++ )
+        {
+            events.push_back( icd.get_object_ptr< composite_event >( event_wait_list[ i ] ) );
+        }
     }
-
-    ~remote_event(){}
-
-    virtual void wait();
-};
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
-//-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_EVENT_H_

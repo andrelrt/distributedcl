@@ -29,6 +29,7 @@
 #include "msg_internal.h"
 #include "msg_command_queue.h"
 #include "msg_memory.h"
+#include "msg_event.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -152,11 +153,25 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         case msgCreateKernelsInProgram:
         case msgRetainKernel:
         case msgReleaseKernel:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgSetKernelArg:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgSetKernelArg >() );
+            break;
+
         case msgGetKernelInfo:
+            throw dcl::library_exception( "Not implemented" );
+            break;
+
         case msgGetKernelWorkGroupInfo:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetKernelWorkGroupInfo >() );
+            break;
 
         case msgWaitForEvents:
+            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgWaitForEvents >() );
+            break;
+
         case msgGetEventInfo:
         case msgRetainEvent:
         case msgReleaseEvent:
@@ -210,7 +225,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
             throw dcl::library_exception( "Not implemented" );
     }
 
-    ret_ptr->set_buffer( msg_buffer_ptr, length );
+    ret_ptr->set_buffer( msg_buffer_ptr, message_len );
 
     return ret_ptr;
 }

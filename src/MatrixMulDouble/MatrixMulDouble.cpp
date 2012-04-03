@@ -161,7 +161,6 @@ MatrixMulDouble::setupMatrixMulDouble()
     return SDK_SUCCESS;
 }
 
-#if 0
 int 
 MatrixMulDouble::genBinaryImage()
 {
@@ -293,8 +292,6 @@ MatrixMulDouble::genBinaryImage()
 
     return SDK_SUCCESS;
 }
-#endif 
-
 
 int
 MatrixMulDouble::setupCL(void)
@@ -1036,7 +1033,6 @@ main(int argc, char * argv[])
         if(clMatrixMulDouble.run() == SDK_FAILURE)
             return SDK_FAILURE;
 
-        /*
         if(clMatrixMulDouble.verifyResults() == SDK_FAILURE)
             return SDK_FAILURE;
 
@@ -1044,7 +1040,6 @@ main(int argc, char * argv[])
             return SDK_FAILURE;
 
         clMatrixMulDouble.printStats();
-        */
     }
 
     return SDK_SUCCESS;

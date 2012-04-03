@@ -53,7 +53,7 @@ EXPORTS
     clGetPlatformIDs                @51
     clGetPlatformInfo               @52
     clGetProgramBuildInfo           @53
-;    clGetProgramInfo                @54
+    clGetProgramInfo                @54
 ;    clGetSamplerInfo                @55
 ;    clGetSupportedImageFormats      @56
     clReleaseCommandQueue           @57

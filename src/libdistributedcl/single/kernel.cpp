@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <boost/scoped_array.hpp>
 #include "kernel.h"
 #include "command_queue.h"
 #include "memory.h"
@@ -67,14 +68,43 @@ void kernel::execute( const generic_command_queue* queue_ptr,
 {
     const command_queue* queue = reinterpret_cast<const command_queue*>( queue_ptr );
 
-    cl_int error_code = 
-        opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
-                                        static_cast<cl_uint>( global.get_dimensions() ),
-                                        offset.get_pointer(), global.get_pointer(),
-                                        local.get_pointer(), 0, NULL, NULL );
+    cl_int error_code;
+    cl_event evnt;
+
+    if( wait_events.empty() )
+    {
+        error_code = 
+            opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
+                                            static_cast<cl_uint>( global.get_dimensions() ),
+                                            offset.get_pointer(), global.get_pointer(),
+                                            local.get_pointer(), 0, NULL,
+                                            (event_ptr == NULL) ? NULL : &evnt );
+    }
+    else
+    {
+        boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+        for( uint32_t i = 0; i < wait_events.size(); i++ )
+        {
+            events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+        }
+
+        error_code = 
+            opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
+                                            static_cast<cl_uint>( global.get_dimensions() ),
+                                            offset.get_pointer(), global.get_pointer(),
+                                            local.get_pointer(), wait_events.size(), events.get(), 
+                                            (event_ptr == NULL) ? NULL : &evnt );
+    }
+
     if( error_code != CL_SUCCESS )
     {
         throw dcl::library_exception( error_code );
+    }
+
+    if( (event_ptr != NULL) && (evnt != NULL) )
+    {
+        *event_ptr = new event( opencl_, evnt );
     }
 }
 //-----------------------------------------------------------------------------
@@ -118,31 +148,31 @@ const kernel_group_info& kernel::get_group_info( const generic_device* device_pt
     {
         // CL_KERNEL_COMPILE_WORK_GROUP_SIZE
         error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(),
-                                                       CL_KERNEL_COMPILE_WORK_GROUP_SIZE, sizeof(size_t),
+                                                       CL_KERNEL_COMPILE_WORK_GROUP_SIZE, 3*sizeof(size_t),
                                                        info.compile_work_group_size_, NULL );
     }
 
     if( error_code == CL_SUCCESS )
     {
         // CL_KERNEL_LOCAL_MEM_SIZE
-        error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(), 
-                                                       CL_KERNEL_LOCAL_MEM_SIZE, sizeof(size_t), 
+        error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(),
+                                                       CL_KERNEL_LOCAL_MEM_SIZE, sizeof(cl_ulong),
                                                        &(info.local_mem_size_), NULL );
     }
 
     if( error_code == CL_SUCCESS )
     {
         // CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE
-        error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(), 
-                                                       CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(size_t), 
+        error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(),
+                                                       CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(size_t),
                                                        &(info.preferred_work_group_size_multiple_), NULL );
     }
 
     if( error_code == CL_SUCCESS )
     {
         // CL_KERNEL_PRIVATE_MEM_SIZE
-        error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(), 
-                                                       CL_KERNEL_PRIVATE_MEM_SIZE, sizeof(size_t), 
+        error_code = opencl_.clGetKernelWorkGroupInfo( get_id(), dev_ptr->get_id(),
+                                                       CL_KERNEL_PRIVATE_MEM_SIZE, sizeof(cl_ulong),
                                                        &(info.private_mem_size_), NULL );
     }
 

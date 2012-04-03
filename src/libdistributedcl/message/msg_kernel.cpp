@@ -85,6 +85,15 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
         request_ptr->global_[ i ] = host_to_network( static_cast<uint16_t>( global_.get_range()[ i ] ) );
         request_ptr->local_[ i ]  = host_to_network( static_cast<uint16_t>( local_.get_range()[ i ] ) );
     }
+
+    request_ptr->return_event_ = return_event_ ? 1 : 0;
+
+    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
+
+    for( uint32_t i = 0; i < events_.size(); i++ )
+    {
+        request_ptr->events_[ i ] = host_to_network( events_[ i ] );
+    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_ptr )
@@ -111,6 +120,38 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
     value[ 1 ] = network_to_host( request_ptr->local_[ 1 ] );
     value[ 2 ] = network_to_host( request_ptr->local_[ 2 ] );
     local_.copy( ndrange( dimensions, value ) );
+
+    return_event_ = (request_ptr->return_event_ == 1) ? true : false;
+
+    set_response_size( return_event_? sizeof(dcl::remote_id_t) : 0 );
+
+    events_.clear();
+    uint32_t event_count = network_to_host( request_ptr->event_count_ );
+
+    if( event_count != 0 )
+    {
+        events_.reserve( event_count );
+
+        for( uint32_t i = 0; i < events_.size(); i++ )
+        {
+            events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueNDRangeKernel >::create_response( void* payload_ptr )
+{
+    remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    *response_ptr = host_to_network( event_id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueNDRangeKernel >::parse_response( const void* payload_ptr )
+{
+    const remote_id_t* response_ptr = 
+        reinterpret_cast< const remote_id_t* >( payload_ptr );
+
+    event_id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgSetKernelArg

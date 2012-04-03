@@ -60,6 +60,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class GetKernelWorkGroupInfo_command :
+    public server_command< dcl::network::message::msgGetKernelWorkGroupInfo >
+{
+public:
+    GetKernelWorkGroupInfo_command( recv_ptr_t message_ptr ) :
+        server_command< dcl::network::message::msgGetKernelWorkGroupInfo >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_KERNEL_H_

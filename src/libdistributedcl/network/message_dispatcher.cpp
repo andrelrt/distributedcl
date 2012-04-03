@@ -28,6 +28,7 @@
 #include "server/server_kernel.h"
 #include "server/server_command_queue.h"
 #include "server/server_memory.h"
+#include "server/server_event.h"
 using namespace dcl::network::message;
 using namespace dcl::server;
 //-----------------------------------------------------------------------------
@@ -182,11 +183,37 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             case msgCreateKernelsInProgram:
             case msgRetainKernel:
             case msgReleaseKernel:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgSetKernelArg:
+            {
+                SetKernelArg_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgGetKernelInfo:
+                throw dcl::library_exception( "Not implemented" );
+                break;
+
             case msgGetKernelWorkGroupInfo:
+            {
+                GetKernelWorkGroupInfo_command command( *it );
+
+                command.execute();
+                break;
+            }
 
             case msgWaitForEvents:
+            {
+                WaitForEvents_command command( *it );
+
+                command.execute();
+                break;
+            }
+
             case msgGetEventInfo:
             case msgRetainEvent:
             case msgReleaseEvent:

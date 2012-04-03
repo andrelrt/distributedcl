@@ -227,6 +227,12 @@
     <ClInclude Include="remote\remote_event.h">
       <Filter>remote</Filter>
     </ClInclude>
+    <ClInclude Include="message\msg_event.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_event.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -351,6 +357,15 @@
     </ClCompile>
     <ClCompile Include="composite\composite_event.cpp">
       <Filter>composite</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\remote_event.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="message\msg_event.cpp">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_event.cpp">
+      <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

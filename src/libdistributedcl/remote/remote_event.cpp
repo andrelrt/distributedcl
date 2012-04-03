@@ -20,43 +20,24 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_KERNEL_H_
-#define _DCL_REMOTE_KERNEL_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/kernel_info.h"
+#include "remote_event.h"
+#include "message/msg_event.h"
+using dcl::network::message::dcl_message;
+using dcl::network::message::base_message;
+using dcl::network::message::msgWaitForEvents;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-class remote_kernel :
-    public dcl::info::generic_kernel,
-    public remote_object< remote_kernel >
+void remote_event::wait()
 {
-public:
-    remote_kernel( const remote_context& context_ref, const std::string& name ) :
-        dcl::info::generic_kernel( name ), 
-        remote_object< remote_kernel >( context_ref.get_session() ),
-        context_ref_( context_ref ){}
+    dcl_message< msgWaitForEvents >* msg_ptr = new dcl_message< msgWaitForEvents >();
 
-    ~remote_kernel(){}
+    msg_ptr->set_event_id( get_remote_id() );
 
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
-
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
-
-private:
-    const remote_context& context_ref_;
-};
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_KERNEL_H_

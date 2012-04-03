@@ -21,29 +21,35 @@
  */
 //-----------------------------------------------------------------------------
 #include "composite_memory.h"
+#include "composite_event.h"
 #include "composite_command_queue.h"
-using dcl::info::generic_command_queue;
+using dcl::info::generic_event;
 using dcl::info::generic_context;
+using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
 void composite_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
-                              size_t size, size_t offset, cl_bool blocking )
+                              size_t size, size_t offset, cl_bool blocking,
+                              events_t& wait_events, generic_event** ret_event_ptr )
 {
     const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = find( ctx );
 
-    memory_ptr->write( queue_ptr, data_ptr, size, offset, blocking );
+    memory_ptr->write( queue_ptr, data_ptr, size, offset,
+                       blocking, wait_events, ret_event_ptr );
 }
 //-----------------------------------------------------------------------------
 void composite_memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
-                             size_t size, size_t offset, cl_bool blocking )
+                             size_t size, size_t offset, cl_bool blocking,
+                             events_t& wait_events, generic_event** ret_event_ptr )
 {
     const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = find( ctx );
 
-    memory_ptr->read( queue_ptr, data_ptr, size, offset, blocking );
+    memory_ptr->read( queue_ptr, data_ptr, size, offset,
+                      blocking, wait_events, ret_event_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

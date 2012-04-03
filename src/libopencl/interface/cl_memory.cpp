@@ -26,10 +26,13 @@
 #include "composite/composite_memory.h"
 #include "composite/composite_context.h"
 #include "composite/composite_command_queue.h"
+#include "composite/composite_event.h"
 using dcl::icd::icd_object_manager;
+using dcl::info::generic_event;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_context;
 using dcl::composite::composite_command_queue;
+using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_mem CL_API_CALL
 clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
@@ -206,7 +209,19 @@ clEnqueueReadBuffer( cl_command_queue command_queue, cl_mem buffer,
         composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
         composite_memory* buffer_ptr = icd.get_object_ptr< composite_memory >( buffer );
 
-        buffer_ptr->read( queue_ptr, ptr, cb, offset, blocking_read );
+        dcl::events_t events;
+        load_events( events, num_events_in_wait_list, event_wait_list );
+
+        composite_event* event_ptr = NULL;
+
+        buffer_ptr->read( queue_ptr, ptr, cb, offset, blocking_read, events,
+                          (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                          : NULL );
+
+        if( event != NULL )
+        {
+            *event = icd.get_cl_id< composite_event >( event_ptr );
+        }
 
         return CL_SUCCESS;
     }
@@ -258,7 +273,19 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
         composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
         composite_memory* buffer_ptr = icd.get_object_ptr< composite_memory >( buffer );
 
-        buffer_ptr->write( queue_ptr, ptr, cb, offset, blocking_write );
+        dcl::events_t events;
+        load_events( events, num_events_in_wait_list, event_wait_list );
+
+        composite_event* event_ptr = NULL;
+
+        buffer_ptr->write( queue_ptr, ptr, cb, offset, blocking_write, events,
+                           (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                           : NULL );
+
+        if( event != NULL )
+        {
+            *event = icd.get_cl_id< composite_event >( event_ptr );
+        }
 
         return CL_SUCCESS;
     }

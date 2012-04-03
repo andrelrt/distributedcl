@@ -208,7 +208,7 @@ public:
      * Override from SDKSample, Generate binary image of given kernel 
      * and exit application
      */
-    int genBinaryImage(){ return 0; }
+    int genBinaryImage();
 
     /**
      * OpenCL related initialisations. 

@@ -20,43 +20,25 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_KERNEL_H_
-#define _DCL_REMOTE_KERNEL_H_
-
-#include "distributedcl_internal.h"
-#include "remote_object.h"
-#include "remote_context.h"
-#include "info/kernel_info.h"
+#include "server_event.h"
+#include "server_platform.h"
+#include "message/msg_event.h"
+#include "composite/composite_event.h"
+using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace remote {
+namespace server {
 //-----------------------------------------------------------------------------
-class remote_kernel :
-    public dcl::info::generic_kernel,
-    public remote_object< remote_kernel >
+void WaitForEvents_command::execute()
 {
-public:
-    remote_kernel( const remote_context& context_ref, const std::string& name ) :
-        dcl::info::generic_kernel( name ), 
-        remote_object< remote_kernel >( context_ref.get_session() ),
-        context_ref_( context_ref ){}
+    server_platform& server = server_platform::get_instance();
 
-    ~remote_kernel(){}
+    remote_id_t event_id = message_.get_event_id();
 
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
+    composite_event* event_ptr = server.get_event_manager().get( event_id );
 
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
-
-private:
-    const remote_context& context_ref_;
-};
+    event_ptr->wait();
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::remote
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_KERNEL_H_

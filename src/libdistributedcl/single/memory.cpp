@@ -23,6 +23,8 @@
 #include "memory.h"
 #include "context.h"
 #include "command_queue.h"
+#include "event.h"
+using dcl::info::generic_event;
 using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -59,7 +61,8 @@ memory::memory( const context& context_ref, const void* host_ptr, size_t size, c
 }
 //-----------------------------------------------------------------------------
 void memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
-                    size_t size, size_t offset, cl_bool blocking )
+                    size_t size, size_t offset, cl_bool blocking,
+                    events_t& wait_events, generic_event** ret_event_ptr )
 {
     if( opencl_.loaded() )
     {
@@ -79,7 +82,8 @@ void memory::write( generic_command_queue* queue_ptr, const void* data_ptr,
 }
 //-----------------------------------------------------------------------------
 void memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
-                   size_t size, size_t offset, cl_bool blocking )
+                   size_t size, size_t offset, cl_bool blocking,
+                   events_t& wait_events, generic_event** ret_event_ptr )
 {
     if( opencl_.loaded() )
     {
