@@ -26,10 +26,13 @@
 #include "composite/composite_command_queue.h"
 #include "composite/composite_context.h"
 #include "composite/composite_memory.h"
+#include "composite/composite_event.h"
+using dcl::composite::composite_event;
 using dcl::composite::composite_context;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_command_queue;
 using dcl::info::generic_memory;
+using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -63,7 +66,36 @@ void EnqueueWriteBuffer_command::execute()
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
-    buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(), message_.get_buffer_size(), 0 );
+    dcl::events_t events;
+
+    if( !message_.get_events().empty() )
+    {
+        events.reserve( message_.get_events().size() );
+
+        for( dcl::remote_ids_t::const_iterator it = message_.get_events().begin(); it != message_.get_events().end(); it ++ )
+        {
+            events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
+        }
+    }
+
+    if( message_.get_return_event() )
+    {
+        composite_event* ret_event = NULL;
+
+        buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(),
+                           message_.get_buffer_size(), 0,
+                           message_.get_blocking(), events,
+                           reinterpret_cast<generic_event**>( &ret_event ) );
+
+        remote_id_t id = server.get_event_manager().add( ret_event );
+        message_.set_event_id( id );
+    }
+    else
+    {
+        buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(),
+                           message_.get_buffer_size(), 0, 
+                           message_.get_blocking(), events, NULL );
+    }
 }
 //-----------------------------------------------------------------------------
 void EnqueueReadBuffer_command::execute()
@@ -78,8 +110,36 @@ void EnqueueReadBuffer_command::execute()
 
     message_.allocate_buffer();
 
-    buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
-                      message_.get_buffer_size(), message_.get_offset() );
+    dcl::events_t events;
+
+    if( !message_.get_events().empty() )
+    {
+        events.reserve( message_.get_events().size() );
+
+        for( dcl::remote_ids_t::const_iterator it = message_.get_events().begin(); it != message_.get_events().end(); it ++ )
+        {
+            events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
+        }
+    }
+
+    if( message_.get_return_event() )
+    {
+        composite_event* ret_event = NULL;
+
+        buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
+                          message_.get_buffer_size(), message_.get_offset(),
+                          message_.get_blocking(), events,
+                          reinterpret_cast<generic_event**>( &ret_event ) );
+
+        remote_id_t id = server.get_event_manager().add( ret_event );
+        message_.set_event_id( id );
+    }
+    else
+    {
+        buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
+                          message_.get_buffer_size(), message_.get_offset(),
+                          message_.get_blocking(), events, NULL );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

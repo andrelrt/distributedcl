@@ -86,8 +86,7 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
         request_ptr->local_[ i ]  = host_to_network( static_cast<uint16_t>( local_.get_range()[ i ] ) );
     }
 
-    request_ptr->return_event_ = return_event_ ? 1 : 0;
-
+    request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );
     request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
 
     for( uint32_t i = 0; i < events_.size(); i++ )
@@ -121,7 +120,7 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
     value[ 2 ] = network_to_host( request_ptr->local_[ 2 ] );
     local_.copy( ndrange( dimensions, value ) );
 
-    return_event_ = (request_ptr->return_event_ == 1) ? true : false;
+    return_event_ = (network_to_host( request_ptr->return_event_ ) == 1) ? true : false;
 
     set_response_size( return_event_? sizeof(dcl::remote_id_t) : 0 );
 

@@ -92,9 +92,9 @@ void kernel::execute( const generic_command_queue* queue_ptr,
         error_code = 
             opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
                                             static_cast<cl_uint>( global.get_dimensions() ),
-                                            offset.get_pointer(), global.get_pointer(),
-                                            local.get_pointer(), wait_events.size(), events.get(), 
-                                            (event_ptr == NULL) ? NULL : &evnt );
+                                            offset.get_pointer(), global.get_pointer(), local.get_pointer(),
+                                            static_cast<cl_uint>( wait_events.size() ), 
+                                            events.get(), (event_ptr == NULL) ? NULL : &evnt );
     }
 
     if( error_code != CL_SUCCESS )

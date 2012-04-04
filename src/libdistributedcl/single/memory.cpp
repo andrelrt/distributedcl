@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <boost/scoped_array.hpp>
 #include "memory.h"
 #include "context.h"
 #include "command_queue.h"
@@ -69,14 +70,39 @@ void memory::write( generic_command_queue* queue_ptr, const void* data_ptr,
         cl_int error_code;
 
         command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        cl_event evnt;
 
-        error_code = opencl_.clEnqueueWriteBuffer( queue->get_id(), get_id(),
-                                                   blocking, offset, size,
-                                                   data_ptr, 0, NULL, NULL );
+        if( wait_events.empty() )
+        {
+            error_code =
+                opencl_.clEnqueueWriteBuffer( queue->get_id(), get_id(),
+                                              blocking, offset, size,
+                                              data_ptr, 0, NULL,
+                                              (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            error_code =
+                opencl_.clEnqueueWriteBuffer( queue->get_id(), get_id(), blocking, offset, size,
+                                              data_ptr, static_cast<cl_uint>( wait_events.size() ),
+                                              events.get(), (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
 
         if( error_code != CL_SUCCESS )
         {
             throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, evnt );
         }
     }
 }
@@ -90,14 +116,39 @@ void memory::read( generic_command_queue* queue_ptr, void* data_ptr,
         cl_int error_code;
 
         command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        cl_event evnt;
 
-        error_code = opencl_.clEnqueueReadBuffer( queue->get_id(), get_id(),
-                                                  blocking, offset, size,
-                                                  data_ptr, 0, NULL, NULL );
+        if( wait_events.empty() )
+        {
+            error_code =
+                opencl_.clEnqueueReadBuffer( queue->get_id(), get_id(),
+                                             blocking, offset, size,
+                                             data_ptr, 0, NULL,
+                                             (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            error_code =
+                opencl_.clEnqueueReadBuffer( queue->get_id(), get_id(), blocking, offset, size,
+                                             data_ptr, static_cast<cl_uint>( wait_events.size() ),
+                                             events.get(), (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
 
         if( error_code != CL_SUCCESS )
         {
             throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, evnt );
         }
     }
 }

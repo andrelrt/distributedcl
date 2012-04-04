@@ -91,8 +91,20 @@ void dcl_message< msgEnqueueWriteBuffer >::create_request( void* payload_ptr )
     request_ptr->id_ = host_to_network( id_ );
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
+    request_ptr->blocking_ = host_to_network( static_cast<uint32_t>( blocking_? 1 : 0 ) );
+    request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );
+    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
 
-    memcpy( request_ptr->buffer_, buffer_ptr_, buffer_len_ );
+    dcl::remote_id_t* events_ptr = reinterpret_cast<dcl::remote_id_t*>( request_ptr->buffer_ );
+
+    for( uint32_t i = 0; i < events_.size(); i++ )
+    {
+        events_ptr[ i ] = host_to_network( events_[ i ] );
+    }
+
+    uint8_t* buffer_ptr = reinterpret_cast<uint8_t*>( events_ptr + events_.size() );
+
+    memcpy( buffer_ptr, buffer_ptr_, buffer_len_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_ptr )
@@ -103,12 +115,47 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_pt
     id_ = network_to_host( request_ptr->id_ );
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     buffer_len_ = network_to_host( request_ptr->buffer_len_ );
+    blocking_ = (network_to_host( request_ptr->blocking_ ) == 1) ? true : false;
+    return_event_ = (network_to_host( request_ptr->return_event_ ) == 1) ? true : false;
 
-    const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
+    events_.clear();
+    uint32_t event_count = network_to_host( request_ptr->event_count_ );
+
+    const dcl::remote_id_t* events_ptr =
+        reinterpret_cast<const dcl::remote_id_t*>( request_ptr->buffer_ );
+
+    if( event_count != 0 )
+    {
+        events_.reserve( event_count );
+
+        for( uint32_t i = 0; i < event_count; i++ )
+        {
+            events_.push_back( network_to_host( events_ptr[ i ] ) );
+        }
+    }
+
+    const uint8_t* begin =
+        reinterpret_cast<const uint8_t*>( events_ptr + event_count );
 
     buffer_.assign( begin, begin + buffer_len_ );
 
     buffer_ptr_ = buffer_.data();
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueWriteBuffer >::create_response( void* payload_ptr )
+{
+    dcl::remote_id_t* response_ptr =
+        reinterpret_cast<dcl::remote_id_t*>( payload_ptr );
+
+    *response_ptr = host_to_network( event_id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueWriteBuffer >::parse_response( const void* payload_ptr )
+{
+    const dcl::remote_id_t* response_ptr =
+        reinterpret_cast<const dcl::remote_id_t*>( payload_ptr );
+
+    event_id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgEnqueueReadBuffer
@@ -122,6 +169,15 @@ void dcl_message< msgEnqueueReadBuffer >::create_request( void* payload_ptr )
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
     request_ptr->offset_ = host_to_network( static_cast<uint32_t>( offset_ ) );
+    request_ptr->blocking_ = host_to_network( static_cast<uint32_t>( blocking_? 1 : 0 ) );
+
+    request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );
+    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
+
+    for( uint32_t i = 0; i < events_.size(); i++ )
+    {
+        request_ptr->events_[ i ] = host_to_network( events_[ i ] );
+    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::parse_request( const void* payload_ptr )
@@ -133,27 +189,45 @@ void dcl_message< msgEnqueueReadBuffer >::parse_request( const void* payload_ptr
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     size_ = network_to_host( request_ptr->size_ );
     offset_ = network_to_host( request_ptr->offset_ );
+    blocking_ = (network_to_host( request_ptr->blocking_ ) == 1) ? true : false;
+    return_event_ = (network_to_host( request_ptr->return_event_ ) == 1) ? true : false;
 
-    set_response_size( size_ );
+    set_response_size( size_ + sizeof(msgEnqueueReadBuffer_response) - 1 );
+
+    events_.clear();
+    uint32_t event_count = network_to_host( request_ptr->event_count_ );
+
+    if( event_count != 0 )
+    {
+        events_.reserve( event_count );
+
+        for( uint32_t i = 0; i < event_count; i++ )
+        {
+            events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::create_response( void* payload_ptr )
 {
-    uint32_t* size_ptr = reinterpret_cast<uint32_t*>( payload_ptr );
+    msgEnqueueReadBuffer_response* response_ptr =
+        reinterpret_cast<msgEnqueueReadBuffer_response*>( payload_ptr );
 
-    *size_ptr = host_to_network( static_cast<uint32_t>( size_ ) );
+    response_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
+    response_ptr->event_id_ = host_to_network( event_id_ );
 
-    memcpy( size_ptr + 1, buffer_.data(), size_ );
+    memcpy( response_ptr->buffer_, buffer_.data(), size_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::parse_response( const void* payload_ptr )
 {
-    const uint32_t* size_ptr = reinterpret_cast<const uint32_t*>( payload_ptr );
-    const uint8_t* buffer_ptr = reinterpret_cast<const uint8_t*>( size_ptr + 1 );
+    const msgEnqueueReadBuffer_response* response_ptr =
+        reinterpret_cast<const msgEnqueueReadBuffer_response*>( payload_ptr );
 
-    size_ = network_to_host( *size_ptr );
+    size_ = network_to_host( response_ptr->size_ );
+    event_id_ = network_to_host( response_ptr->event_id_ );
 
-    buffer_.assign( buffer_ptr, buffer_ptr + size_ );
+    buffer_.assign( response_ptr->buffer_, response_ptr->buffer_ + size_ );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
