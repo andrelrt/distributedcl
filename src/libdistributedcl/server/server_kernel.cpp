@@ -115,9 +115,9 @@ void SetKernelArg_command::execute()
     }
     else
     {
-        kernel_ptr->set_argument( message_.get_index(), 
-                                  message_.get_buffer().size(), 
-                                  message_.get_buffer().data() );
+        kernel_ptr->set_argument( message_.get_index(),
+                                  message_.get_buffer_size(),
+                                  message_.get_buffer_pointer() );
     }
 }
 //-----------------------------------------------------------------------------

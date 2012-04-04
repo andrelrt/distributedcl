@@ -177,13 +177,19 @@ class dcl_message< msgSetKernelArg > : public base_message
 public:
     dcl_message< msgSetKernelArg >() :
         base_message( msgSetKernelArg, false, 0, 0 ), kernel_id_( 0xffff ),
-        memory_id_( 0xffff ), index_( 0 ), is_memory_object_( false ){}
+        memory_id_( 0xffff ), index_( 0 ), is_memory_object_( false ),
+        size_( 0 ), is_null_( false ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
     MSG_PARAMETER_GET_SET( uint16_t, index_, index )
     MSG_PARAMETER_GET( dcl::remote_id_t, memory_id_, memory_id )
-    MSG_PARAMETER_GET( std::vector<uint8_t>&, buffer_, buffer )
+    MSG_PARAMETER_GET( uint32_t, size_, buffer_size )
+
+    inline const uint8_t* get_buffer_pointer() const
+    {
+        return is_null_ ? NULL : buffer_.data();
+    }
 
     inline void set_memory_id( dcl::remote_id_t memory_id )
     {
@@ -196,9 +202,19 @@ public:
     inline void set_buffer( const uint8_t* arg_value, size_t arg_size )
     {
         is_memory_object_ = false;
-        buffer_.assign( arg_value, arg_value + arg_size );
+        is_null_ = (arg_value == NULL);
+        size_ = static_cast<uint32_t>( arg_size );
 
-        set_size( arg_size + sizeof(msgSetKernelArg_buffer_request) - 1 );
+        if( !is_null_ )
+        {
+            buffer_.assign( arg_value, arg_value + arg_size );
+
+            set_size( arg_size + sizeof(msgSetKernelArg_buffer_request) - 1 );
+        }
+        else
+        {
+            set_size( sizeof(msgSetKernelArg_buffer_request) - 1 );
+        }
     }
 
     inline bool is_memory_object() const
@@ -212,6 +228,8 @@ private:
     uint16_t index_;
     std::vector<uint8_t> buffer_;
     bool is_memory_object_;
+    uint32_t size_;
+    bool is_null_;
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
@@ -231,7 +249,8 @@ private:
     {
         dcl::remote_id_t kernel_id_;
         uint16_t is_memory_object_:1;
-        uint16_t index_:15;
+        uint16_t is_null_:1;
+        uint16_t index_:14;
         uint32_t size_;
 
         uint8_t buffer_[1];

@@ -956,7 +956,7 @@ MatrixMulDouble::verifyResults()
         MatrixMulDoubleCPUReference(refOutput, inputA, inputB, heightA, widthA,  widthB);
 
         /* compare the results and see if they match */
-        if(sampleCommon->compare(output, refOutput, heightA * widthB))
+        if(sampleCommon->compare(refOutput, output, heightA * widthB))
         {
             std::cout<<"Passed!\n";
             return SDK_SUCCESS;

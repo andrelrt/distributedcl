@@ -162,7 +162,7 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
         msgSetKernelArg_memory_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_memory_request* >( payload_ptr );
 
-        request_ptr->is_memory_object_ = true;
+        request_ptr->is_memory_object_ = host_to_network( static_cast<uint16_t>( 1 ) );
         request_ptr->index_ = host_to_network( index_ );
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->memory_id_ = host_to_network( memory_id_ );
@@ -172,12 +172,16 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
         msgSetKernelArg_buffer_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_buffer_request* >( payload_ptr );
 
-        request_ptr->is_memory_object_ = false;
+        request_ptr->is_memory_object_ = host_to_network( static_cast<uint16_t>( 0 ) );
         request_ptr->index_ = host_to_network( index_ );
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
-        request_ptr->size_ = host_to_network( static_cast<uint32_t>( buffer_.size() ) );
+        request_ptr->size_ = host_to_network( size_ );
+        request_ptr->is_null_ = host_to_network( static_cast<uint16_t>( is_null_? 1 : 0 ) );
 
-        memcpy( request_ptr->buffer_, buffer_.data(), buffer_.size() );
+        if( !is_null_ )
+        {
+            memcpy( request_ptr->buffer_, buffer_.data(), buffer_.size() );
+        }
     }
 }
 //-----------------------------------------------------------------------------
@@ -200,10 +204,15 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
 
         is_memory_object_ = false;
 
+        size_ = network_to_host( req_ptr->size_ );
         index_ = network_to_host( req_ptr->index_ );
         kernel_id_ = network_to_host( req_ptr->kernel_id_ );
+        is_null_ = network_to_host( req_ptr->is_null_ ) ? true : false;
 
-        buffer_.assign( req_ptr->buffer_, req_ptr->buffer_ + network_to_host( req_ptr->size_ ) );
+        if( !is_null_ )
+        {
+            buffer_.assign( req_ptr->buffer_, req_ptr->buffer_ + network_to_host( req_ptr->size_ ) );
+        }
     }
 }
 //-----------------------------------------------------------------------------
