@@ -13,4 +13,5 @@ interface/cl_kernel.cpp \
 interface/cl_memory.cpp \
 interface/cl_platform.cpp \
 interface/cl_program.cpp \
+interface/cl_utils.cpp \
 interface/cl_utils.h

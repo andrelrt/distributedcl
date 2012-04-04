@@ -15,6 +15,7 @@ message/message.cpp \
 message/msg_command_queue.cpp \
 message/msg_context.cpp \
 message/msg_device.cpp \
+message/msg_event.cpp \
 message/msg_internal.cpp \
 message/msg_kernel.cpp \
 message/msg_memory.cpp \
@@ -25,12 +26,14 @@ network/session_manager.cpp \
 remote/remote_command_queue.cpp \
 remote/remote_context.cpp \
 remote/remote_device.cpp \
+remote/remote_event.cpp \
 remote/remote_kernel.cpp \
 remote/remote_memory.cpp \
 remote/remote_platform.cpp \
 remote/remote_program.cpp \
 server/server_command_queue.cpp \
 server/server_context.cpp \
+server/server_event.cpp \
 server/server_kernel.cpp \
 server/server_memory.cpp \
 server/server_platform.cpp \
@@ -71,6 +74,7 @@ message/message.h \
 message/msg_command_queue.h \
 message/msg_context.h \
 message/msg_device.h \
+message/msg_event.h \
 message/msg_internal.h \
 message/msg_kernel.h \
 message/msg_memory.h \
@@ -97,6 +101,7 @@ remote/remote_program.h \
 server/server_command.h \
 server/server_command_queue.h \
 server/server_context.h \
+server/server_event.h \
 server/server_kernel.h \
 server/server_memory.h \
 server/server_platform.h \
