@@ -126,19 +126,20 @@ void EnqueueReadBuffer_command::execute()
     {
         composite_event* ret_event = NULL;
 
+        // Always blocking
         buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
-                          message_.get_buffer_size(), message_.get_offset(),
-                          message_.get_blocking(), events,
-                          reinterpret_cast<generic_event**>( &ret_event ) );
+                          message_.get_buffer_size(), message_.get_offset(), true,
+                          events, reinterpret_cast<generic_event**>( &ret_event ) );
 
         remote_id_t id = server.get_event_manager().add( ret_event );
         message_.set_event_id( id );
     }
     else
     {
-        buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
+        // Always blocking
+        buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(),
                           message_.get_buffer_size(), message_.get_offset(),
-                          message_.get_blocking(), events, NULL );
+                          true, events, NULL );
     }
 }
 //-----------------------------------------------------------------------------

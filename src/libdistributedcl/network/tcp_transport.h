@@ -76,8 +76,9 @@ public:
 
     inline ~tcp_transport()
     {
-        delete accept_thread_ptr_;
-        delete base_message_buffer_ptr_;
+        //FIXME: Delete buffers
+        //delete accept_thread_ptr_;
+        //delete base_message_buffer_ptr_;
     }
 
     inline void startup( observer_ptr_t observer )

@@ -174,7 +174,7 @@ private:
     inline void update_request_size()
     {
         set_size( buffer_len_ +
-                  (events_.size() - 1) * sizeof(dcl::remote_id_t) +
+                  events_.size() * sizeof(dcl::remote_id_t) +
                   sizeof(msgEnqueueWriteBuffer_request) - 1 );
     }
 
@@ -223,7 +223,7 @@ public:
     {
         size_ = size;
 
-        set_response_size( size );
+        set_response_size( size + sizeof(msgEnqueueReadBuffer_response) - 1 );
     }
 
     inline void add_event( dcl::remote_id_t event_id )
