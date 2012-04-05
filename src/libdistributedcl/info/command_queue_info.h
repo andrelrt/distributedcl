@@ -79,7 +79,7 @@ public:
         return local_info_.properties_;
     }
 
-    //virtual void flush() = 0;
+    virtual void flush() = 0;
     virtual void finish() = 0;
 };
 //-----------------------------------------------------------------------------

@@ -45,6 +45,7 @@ public:
 
     ~remote_command_queue(){}
 
+    virtual void flush();
     virtual void finish();
 };
 //-----------------------------------------------------------------------------

@@ -37,7 +37,7 @@ using dcl::info::generic_event;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-void CreateBuffer_command::execute()
+void msgCreateBuffer_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -56,7 +56,7 @@ void CreateBuffer_command::execute()
     message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
-void EnqueueWriteBuffer_command::execute()
+void msgEnqueueWriteBuffer_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -98,7 +98,7 @@ void EnqueueWriteBuffer_command::execute()
     }
 }
 //-----------------------------------------------------------------------------
-void EnqueueReadBuffer_command::execute()
+void msgEnqueueReadBuffer_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 

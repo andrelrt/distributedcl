@@ -37,9 +37,8 @@ class composite_memory :
     public composite_object< dcl::info::generic_memory >
 {
 public:
-    composite_memory( const composite_context& context_ref ) :
-        dcl::info::generic_memory(),
-        composite_object< dcl::info::generic_memory >( context_ref ){}
+    composite_memory( const composite_context& context_ref, 
+                      const void* host_ptr, size_t size, cl_mem_flags flags );
 
     ~composite_memory(){}
 

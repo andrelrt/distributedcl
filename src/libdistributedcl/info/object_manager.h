@@ -100,7 +100,7 @@ public:
             return it->first;
         }
 
-        throw library_exception( "Invalid object pointer" );
+        throw library_exception( "object_manager<>::get : Invalid object pointer", reinterpret_cast<int>( object_ptr ) );
     }
 
     inline DCL_TYPE_T* get( remote_id_t object_id ) const
@@ -109,7 +109,7 @@ public:
 
         if( it == object_map_.end() )
         {
-            throw library_exception( "Invalid object id" );
+            throw library_exception( "object_manager<>::get : Invalid object id" );
         }
 
         return it->second;

@@ -9,7 +9,7 @@ EXPORTS
 ;    clCreateFromGLRenderbuffer      @7
 ;    clCreateFromGLTexture2D         @8
 ;    clCreateFromGLTexture3D         @9
-;    clCreateImage2D                 @10
+    clCreateImage2D                 @10
 ;    clCreateImage3D                 @11
     clCreateKernel                  @12
 ;    clCreateKernelsInProgram        @13
@@ -36,7 +36,7 @@ EXPORTS
     clEnqueueWriteBuffer            @34
 ;    clEnqueueWriteImage             @35
     clFinish                        @36
-;    clFlush                         @37
+    clFlush                         @37
 ;    clGetCommandQueueInfo           @38
     clGetContextInfo                @39
     clGetDeviceIDs                  @40
@@ -49,7 +49,7 @@ EXPORTS
 ;    clGetImageInfo                  @47
 ;    clGetKernelInfo                 @48
     clGetKernelWorkGroupInfo        @49
-;    clGetMemObjectInfo              @50
+    clGetMemObjectInfo              @50
     clGetPlatformIDs                @51
     clGetPlatformInfo               @52
     clGetProgramBuildInfo           @53

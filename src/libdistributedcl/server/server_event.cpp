@@ -29,7 +29,7 @@ using dcl::composite::composite_event;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-void WaitForEvents_command::execute()
+void msgWaitForEvents_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 

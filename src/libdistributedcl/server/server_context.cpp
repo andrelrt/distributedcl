@@ -27,20 +27,37 @@
 #include "composite/opencl_composite.h"
 #include "composite/composite_device.h"
 #include "composite/composite_context.h"
+using dcl::info::generic_device;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgCreateContextFromType;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_device;
 using dcl::composite::composite_context;
+using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-void CreateContextFromType_command::execute()
+void msgCreateContext_command::execute()
 {
-    cl_device_type device_type = message_.get_device_type();
+    const composite_platform& platform =
+        opencl_composite::get_instance().get_platform();
 
-    composite_context* context_ptr = reinterpret_cast<composite_context*>( opencl_composite::get_instance().get_platform().create_context( device_type ) );
+    server_platform::device_manager_t& device_manager =
+        server_platform::get_instance().get_device_manager();
+
+    const remote_ids_t& device_ids = message_.get_devices();
+    devices_t devices;
+
+    devices.reserve( device_ids.size() );
+
+    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); it++ )
+    {
+        devices.push_back( reinterpret_cast<generic_device*>( device_manager.get( *it ) ) );
+    }
+
+    composite_context* context_ptr =
+        reinterpret_cast<composite_context*>( platform.create_context( devices ) );
 
     remote_id_t id;
     try
@@ -55,7 +72,30 @@ void CreateContextFromType_command::execute()
     message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
-void GetContextInfo_command::execute()
+void msgCreateContextFromType_command::execute()
+{
+    cl_device_type device_type = message_.get_device_type();
+
+    const composite_platform& platform =
+        opencl_composite::get_instance().get_platform();
+
+    composite_context* context_ptr =
+        reinterpret_cast<composite_context*>( platform.create_context( device_type ) );
+
+    remote_id_t id;
+    try
+    {
+        id = server_platform::get_instance().get_context_manager().get( context_ptr );
+    }
+    catch( dcl::library_exception& )
+    {
+        id = server_platform::get_instance().get_context_manager().add( context_ptr );
+    }
+
+    message_.set_remote_id( id );
+}
+//-----------------------------------------------------------------------------
+void msgGetContextInfo_command::execute()
 {
     remote_id_t id = message_.get_remote_id();
 
@@ -66,20 +106,20 @@ void GetContextInfo_command::execute()
     message_.set_device_count( static_cast<uint32_t>( devices_ref.size() ) );
 
     devices_t::const_iterator it;
-    remote_id_t* devices_ptr = message_.get_devices();
+    remote_id_t device_id;
 
     for( it = devices_ref.begin(); it != devices_ref.end(); it++ )
     {
         try
         {
-            *devices_ptr = server_platform::get_instance().get_device_manager().get( *it );
+            device_id = server_platform::get_instance().get_device_manager().get( *it );
         }
         catch( dcl::library_exception& )
         {
-            *devices_ptr = server_platform::get_instance().get_device_manager().add( *it );
+            device_id = server_platform::get_instance().get_device_manager().add( *it );
         }
 
-        devices_ptr++;
+        message_.add_device( device_id );
     }
 }
 //-----------------------------------------------------------------------------

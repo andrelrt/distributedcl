@@ -64,6 +64,22 @@ void dcl_message< msgCreateCommandQueue >::parse_response( const void* payload_p
     id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
+// msgFlush
+//-----------------------------------------------------------------------------
+void dcl_message< msgFlush >::create_request( void* payload_ptr )
+{
+    remote_id_t* request_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    *request_ptr = host_to_network( id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgFlush >::parse_request( const void* payload_ptr )
+{
+    const remote_id_t* request_ptr = reinterpret_cast<const remote_id_t*>( payload_ptr );
+
+    id_ = network_to_host( *request_ptr );
+}
+//-----------------------------------------------------------------------------
 // msgFinish
 //-----------------------------------------------------------------------------
 void dcl_message< msgFinish >::create_request( void* payload_ptr )

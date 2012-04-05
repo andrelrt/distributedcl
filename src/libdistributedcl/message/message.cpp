@@ -36,8 +36,10 @@ namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
+#define MSG( x ) case x: ret_ptr=reinterpret_cast<base_message*>(new dcl_message<x>());break
+#define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("parse_message: " #x " not implemented");break
     
-base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t length )
+base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t length, bool is_request )
 {
     const message_header* header_ptr = reinterpret_cast< const message_header* >( msg_buffer_ptr );
 
@@ -54,182 +56,101 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         // TODO: Create the base_message objects
 
         // Internal base_messages [1-20)
-        case msg_invalid_message:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msg_error_message:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msg_error_message >() );
-            break;
+        MSG_NOT_IMPLEMENTED( msg_invalid_message );
+        MSG( msg_error_message );
 
         // OpenCL base_messages [20-128)
-        case msgGetPlatformIDs:
-        case msgGetPlatformInfo:
-            throw dcl::library_exception( "Not implemented" );
-            break;
+        MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
+        MSG_NOT_IMPLEMENTED( msgGetPlatformInfo );
 
-        case msgGetDeviceIDs:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetDeviceIDs >() );
-            break;
+        MSG( msgGetDeviceIDs );
+        MSG( msgGetDeviceInfo );
 
-        case msgGetDeviceInfo:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetDeviceInfo >() );
-            break;
+        MSG( msgCreateContext );
+        MSG( msgCreateContextFromType );
+        MSG_NOT_IMPLEMENTED( msgRetainContext );
+        MSG_NOT_IMPLEMENTED( msgReleaseContext );
+        MSG( msgGetContextInfo );
 
-        case msgCreateContext:
-            throw dcl::library_exception( "Not implemented" );
-            break;
+        MSG( msgCreateCommandQueue );
+        MSG_NOT_IMPLEMENTED( msgRetainCommandQueue );
+        MSG_NOT_IMPLEMENTED( msgReleaseCommandQueue );
+        MSG_NOT_IMPLEMENTED( msgGetCommandQueueInfo );
+        MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
-        case msgCreateContextFromType:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateContextFromType >() );
-            break;
+        MSG( msgCreateBuffer );
+        MSG_NOT_IMPLEMENTED( msgCreateImage2D );
+        MSG_NOT_IMPLEMENTED( msgCreateImage3D );
+        MSG_NOT_IMPLEMENTED( msgRetainMemObject );
+        MSG_NOT_IMPLEMENTED( msgReleaseMemObject );
+        MSG_NOT_IMPLEMENTED( msgGetSupportedImageFormats );
+        MSG_NOT_IMPLEMENTED( msgGetMemObjectInfo );
+        MSG_NOT_IMPLEMENTED( msgGetImageInfo );
 
-        case msgRetainContext:
-        case msgReleaseContext:
-            throw dcl::library_exception( "Not implemented" );
-            break;
+        MSG_NOT_IMPLEMENTED( msgCreateSampler );
+        MSG_NOT_IMPLEMENTED( msgRetainSampler );
+        MSG_NOT_IMPLEMENTED( msgReleaseSampler );
+        MSG_NOT_IMPLEMENTED( msgGetSamplerInfo );
 
-        case msgGetContextInfo:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetContextInfo >() );
-            break;
+        MSG( msgCreateProgramWithSource );
+        MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
+        MSG_NOT_IMPLEMENTED( msgRetainProgram );
+        MSG_NOT_IMPLEMENTED( msgReleaseProgram );
+        MSG( msgBuildProgram );
+        MSG_NOT_IMPLEMENTED( msgUnloadCompiler );
+        MSG_NOT_IMPLEMENTED( msgGetProgramInfo );
+        MSG( msgGetProgramBuildInfo );
 
-        case msgCreateCommandQueue:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateCommandQueue >() );
-            break;
+        MSG( msgCreateKernel );
+        MSG_NOT_IMPLEMENTED( msgCreateKernelsInProgram );
+        MSG_NOT_IMPLEMENTED( msgRetainKernel );
+        MSG_NOT_IMPLEMENTED( msgReleaseKernel );
+        MSG( msgSetKernelArg );
+        MSG_NOT_IMPLEMENTED( msgGetKernelInfo );
+        MSG( msgGetKernelWorkGroupInfo );
 
-        case msgRetainCommandQueue:
-        case msgReleaseCommandQueue:
-        case msgGetCommandQueueInfo:
-        case msgSetCommandQueueProperty:
-            throw dcl::library_exception( "Not implemented" );
-            break;
+        MSG( msgWaitForEvents );
+        MSG_NOT_IMPLEMENTED( msgGetEventInfo );
+        MSG_NOT_IMPLEMENTED( msgRetainEvent );
+        MSG_NOT_IMPLEMENTED( msgReleaseEvent );
+        MSG_NOT_IMPLEMENTED( msgGetEventProfilingInfo );
 
-        case msgCreateBuffer:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateBuffer >() );
-            break;
+        MSG( msgFlush );
+        MSG( msgFinish );
 
-        case msgCreateImage2D:
-        case msgCreateImage3D:
-        case msgRetainMemObject:
-        case msgReleaseMemObject:
-        case msgGetSupportedImageFormats:
-        case msgGetMemObjectInfo:
-        case msgGetImageInfo:
-
-        case msgCreateSampler:
-        case msgRetainSampler:
-        case msgReleaseSampler:
-        case msgGetSamplerInfo:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgCreateProgramWithSource:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateProgramWithSource >() );
-            break;
-
-        case msgCreateProgramWithBinary:
-        case msgRetainProgram:
-        case msgReleaseProgram:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgBuildProgram:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgBuildProgram >() );
-            break;
-
-        case msgUnloadCompiler:
-        case msgGetProgramInfo:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgGetProgramBuildInfo:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetProgramBuildInfo >() );
-            break;
-
-        case msgCreateKernel:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgCreateKernel >() );
-            break;
-
-        case msgCreateKernelsInProgram:
-        case msgRetainKernel:
-        case msgReleaseKernel:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgSetKernelArg:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgSetKernelArg >() );
-            break;
-
-        case msgGetKernelInfo:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgGetKernelWorkGroupInfo:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgGetKernelWorkGroupInfo >() );
-            break;
-
-        case msgWaitForEvents:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgWaitForEvents >() );
-            break;
-
-        case msgGetEventInfo:
-        case msgRetainEvent:
-        case msgReleaseEvent:
-        case msgGetEventProfilingInfo:
-
-        case msgFlush:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgFinish:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgFinish >() );
-            break;
-
-        case msgEnqueueReadBuffer:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgEnqueueReadBuffer >() );
-            break;
-
-        case msgEnqueueWriteBuffer:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgEnqueueWriteBuffer >() );
-            break;
-
-        case msgEnqueueCopyBuffer:
-        case msgEnqueueReadImage:
-        case msgEnqueueWriteImage:
-        case msgEnqueueCopyImage:
-        case msgEnqueueCopyImageToBuffer:
-        case msgEnqueueCopyBufferToImage:
-        case msgEnqueueMapBuffer:
-        case msgEnqueueMapImage:
-        case msgEnqueueUnmapMemObject:
-            throw dcl::library_exception( "Not implemented" );
-            break;
-
-        case msgEnqueueNDRangeKernel:
-            ret_ptr = reinterpret_cast< base_message* >( new dcl_message< msgEnqueueNDRangeKernel >() );
-            break;
-
-        case msgEnqueueTask:
-        case msgEnqueueNativeKernel:
-        case msgEnqueueMarker:
-        case msgEnqueueWaitForEvents:
-        case msgEnqueueBarrier:
+        MSG( msgEnqueueReadBuffer );
+        MSG( msgEnqueueWriteBuffer );
+        MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );
+        MSG_NOT_IMPLEMENTED( msgEnqueueReadImage );
+        MSG_NOT_IMPLEMENTED( msgEnqueueWriteImage );
+        MSG_NOT_IMPLEMENTED( msgEnqueueCopyImage );
+        MSG_NOT_IMPLEMENTED( msgEnqueueCopyImageToBuffer );
+        MSG_NOT_IMPLEMENTED( msgEnqueueCopyBufferToImage );
+        MSG_NOT_IMPLEMENTED( msgEnqueueMapBuffer );
+        MSG_NOT_IMPLEMENTED( msgEnqueueMapImage );
+        MSG_NOT_IMPLEMENTED( msgEnqueueUnmapMemObject );
+        MSG( msgEnqueueNDRangeKernel );
+        MSG_NOT_IMPLEMENTED( msgEnqueueTask );
+        MSG_NOT_IMPLEMENTED( msgEnqueueNativeKernel );
+        MSG_NOT_IMPLEMENTED( msgEnqueueMarker );
+        MSG_NOT_IMPLEMENTED( msgEnqueueWaitForEvents );
+        MSG_NOT_IMPLEMENTED( msgEnqueueBarrier );
 
         // OpenCL Extension base_messages [128-255]
-        case msgExtension0:
-        case msgExtension1:
-            throw dcl::library_exception( "Not implemented" );
-            break;
+        MSG_NOT_IMPLEMENTED( msgExtension0 );
+        MSG_NOT_IMPLEMENTED( msgExtension1 );
 
         default: 
-            throw dcl::library_exception( "Not implemented" );
+            throw dcl::library_exception( "Unkown message" );
     }
 
-    ret_ptr->set_buffer( msg_buffer_ptr, message_len );
+    ret_ptr->set_received_buffer( msg_buffer_ptr, message_len, is_request );
 
     return ret_ptr;
 }
 
+#undef MSG_NOT_IMPLEMENTED
+#undef MSG
 #undef THROW_IF
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

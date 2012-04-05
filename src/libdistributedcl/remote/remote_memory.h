@@ -36,8 +36,9 @@ class remote_memory :
     public remote_object< remote_memory >
 {
 public:
-    remote_memory( const remote_context& context_ref ) :
-        dcl::info::generic_memory(),
+    remote_memory( const remote_context& context_ref, const void* host_ptr, 
+                   size_t size, cl_mem_flags flags ) :
+        dcl::info::generic_memory( CL_MEM_OBJECT_BUFFER, host_ptr, size, flags ),
         remote_object< remote_memory >( context_ref.get_session() ),
         context_( context_ref ){}
 

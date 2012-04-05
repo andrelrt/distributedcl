@@ -45,37 +45,35 @@ context::context( const context& ctx ) :
     opencl_.clRetainContext( ctx.get_id() );
 }
 //-----------------------------------------------------------------------------
-context::context( const platform& platform_ref, const devices_t& devices_ref ) : 
+context::context( const platform& platform_ref, const devices_t& devices_ref ) :
     generic_context( platform_ref, devices_ref ), 
     opencl_object< cl_context >( reinterpret_cast<device*>( devices_ref[ 0 ] )->get_opencl() )
 {
-    //FIXME: Not implemented
-    throw library_exception( "Not implemented" );
+    if( devices_ref.empty() )
+        throw library_exception( CL_INVALID_VALUE );
 
-    //if( devices_ref.empty() )
-    //    throw library_exception( CL_INVALID_VALUE );
+    boost::scoped_array<cl_device_id> deviceIDs( new cl_device_id[ devices_ref.size() ] );
 
-    //boost::scoped_array<cl_device_id> deviceIDs( new cl_device_id[ devices_ref.size() ] );
+    int i = 0;
+    for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); it++ )
+    {
+        deviceIDs[ i++ ] = reinterpret_cast<device*>( *it )->get_id();
+    }
 
-    //int i = 0;
-    //for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); it++ )
-    //{
-    //    deviceIDs[ i++ ] = (*it)->get_id();
-    //}
+    cl_int error_code;
+    cl_context ctx;
 
-    //cl_int error_code;
+    cl_context_properties properties[3] =
+        { CL_CONTEXT_PLATFORM, reinterpret_cast< cl_context_properties >( platform_ref.get_id() ), 0 };
 
-    ////TODO: Work with context properties and callback function
-    //cl_context context = get_opencl().clCreateContext( NULL,
-    //                                                   static_cast<cl_uint>( devices_ref.size() ),
-    //                                                   deviceIDs.get(),
-    //                                                   static_cast<ocg::logging_fn>( NULL ),
-    //                                                   static_cast<void*>( NULL ),
-    //                                                   &error_code );
-    //if( error_code != CL_SUCCESS )
-    //    throw library_exception( error_code );
+    //TODO: Work with context properties and callback function
+    ctx = get_opencl().clCreateContext( properties, static_cast<cl_uint>( devices_ref.size() ),
+                                        deviceIDs.get(), NULL, static_cast<void*>( NULL ), &error_code );
 
-    //set_id( context );
+    if( error_code != CL_SUCCESS )
+        throw library_exception( error_code );
+
+    set_id( ctx );
 }
 //-----------------------------------------------------------------------------
 context::context( const platform& platform_ref, cl_device_type device_type ) : 
@@ -87,7 +85,7 @@ context::context( const platform& platform_ref, cl_device_type device_type ) :
 
     //TODO: Work with callback function
 
-    cl_context_properties properties[3] = 
+    cl_context_properties properties[3] =
         { CL_CONTEXT_PLATFORM, reinterpret_cast< cl_context_properties >( platform_ref.get_id() ), 0 };
 
     ctx = opencl_.clCreateContextFromType( properties, device_type, NULL, 

@@ -30,11 +30,11 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class WaitForEvents_command :
+class msgWaitForEvents_command :
     public server_command< dcl::network::message::msgWaitForEvents >
 {
 public:
-    WaitForEvents_command( recv_ptr_t message_ptr ) :
+    msgWaitForEvents_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgWaitForEvents >( message_ptr ) {}
 
     void execute();

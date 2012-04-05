@@ -101,7 +101,7 @@ public:
         // Fill internal received base_messages
         clear_received_messages();
 
-        recv_packet_ptr->parse_messages();
+        recv_packet_ptr->parse( false );
 
         dcl::network::message::message_vector_t::iterator recv_message_it = recv_packet_ptr->get_messages().begin();
 

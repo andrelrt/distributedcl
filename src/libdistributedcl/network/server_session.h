@@ -112,7 +112,7 @@ private:
             // Execute packet base_messages
             try
             {
-                recv_packet->parse_messages();
+                recv_packet->parse( true );
 
                 dcl::network::message::message_vector_t messages_ref = recv_packet->get_messages();
 

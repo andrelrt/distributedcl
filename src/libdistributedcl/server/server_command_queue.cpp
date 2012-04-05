@@ -33,7 +33,7 @@ using dcl::composite::composite_command_queue;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-void CreateCommandQueue_command::execute()
+void msgCreateCommandQueue_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -52,7 +52,17 @@ void CreateCommandQueue_command::execute()
     message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
-void Finish_command::execute()
+void msgFlush_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    composite_command_queue* queue_ptr = 
+        server.get_command_queue_manager().get( message_.get_remote_id() );
+
+    queue_ptr->flush();
+}
+//-----------------------------------------------------------------------------
+void msgFinish_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 

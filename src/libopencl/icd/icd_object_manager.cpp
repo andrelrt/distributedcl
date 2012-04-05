@@ -40,7 +40,7 @@ icd_object_manager::icd_object_manager()
     //FILL_DISPATCH_ITEM( clCreateFromGLRenderbuffer );
     //FILL_DISPATCH_ITEM( clCreateFromGLTexture2D );
     //FILL_DISPATCH_ITEM( clCreateFromGLTexture3D );
-    //FILL_DISPATCH_ITEM( clCreateImage2D );
+    FILL_DISPATCH_ITEM( clCreateImage2D );
     //FILL_DISPATCH_ITEM( clCreateImage3D );
     FILL_DISPATCH_ITEM( clCreateKernel );
     //FILL_DISPATCH_ITEM( clCreateKernelsInProgram );
@@ -72,7 +72,7 @@ icd_object_manager::icd_object_manager()
     //FILL_DISPATCH_ITEM( clEnqueueWriteBufferRect );
     //FILL_DISPATCH_ITEM( clEnqueueWriteImage );
     FILL_DISPATCH_ITEM( clFinish );
-    //FILL_DISPATCH_ITEM( clFlush );
+    FILL_DISPATCH_ITEM( clFlush );
     //FILL_DISPATCH_ITEM( clGetCommandQueueInfo );
     FILL_DISPATCH_ITEM( clGetContextInfo );
     FILL_DISPATCH_ITEM( clGetDeviceIDs );
@@ -85,7 +85,7 @@ icd_object_manager::icd_object_manager()
     //FILL_DISPATCH_ITEM( clGetImageInfo );
     //FILL_DISPATCH_ITEM( clGetKernelInfo );
     FILL_DISPATCH_ITEM( clGetKernelWorkGroupInfo );
-    //FILL_DISPATCH_ITEM( clGetMemObjectInfo );
+    FILL_DISPATCH_ITEM( clGetMemObjectInfo );
     FILL_DISPATCH_ITEM( clGetPlatformIDs );
     FILL_DISPATCH_ITEM( clGetPlatformInfo );
     FILL_DISPATCH_ITEM( clGetProgramBuildInfo );

@@ -39,7 +39,7 @@ namespace server {
 //-----------------------------------------------------------------------------
 server_platform server_platform::instance_;
 //-----------------------------------------------------------------------------
-void GetDeviceIDs_command::execute()
+void msgGetDeviceIDs_command::execute()
 {
     const composite_platform& platform = opencl_composite::get_instance().get_platform();
     const devices_t& devs = platform.get_devices();
@@ -72,7 +72,7 @@ void GetDeviceIDs_command::execute()
     message_.update_response_size();
 }
 //-----------------------------------------------------------------------------
-void GetDeviceInfo_command::execute()
+void msgGetDeviceInfo_command::execute()
 {
     remote_id_t remote_id = message_.get_remote_id();
 

@@ -30,21 +30,31 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class CreateContextFromType_command : 
+class msgCreateContext_command : 
+    public server_command< dcl::network::message::msgCreateContext >
+{
+public:
+    msgCreateContext_command( recv_ptr_t message_ptr ) : 
+        server_command< dcl::network::message::msgCreateContext >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
+class msgCreateContextFromType_command : 
     public server_command< dcl::network::message::msgCreateContextFromType >
 {
 public:
-    CreateContextFromType_command( recv_ptr_t message_ptr ) : 
+    msgCreateContextFromType_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgCreateContextFromType >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class GetContextInfo_command :
+class msgGetContextInfo_command :
     public server_command< dcl::network::message::msgGetContextInfo >
 {
 public:
-    GetContextInfo_command( recv_ptr_t message_ptr ) : 
+    msgGetContextInfo_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgGetContextInfo >( message_ptr ) {}
 
     void execute();

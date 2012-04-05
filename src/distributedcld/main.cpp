@@ -31,7 +31,7 @@ using dcl::network::platform::tcp_transport;
 using dcl::composite::opencl_composite;
 
 #if defined( WIN32 )
-#define OPENCL_LIBRARY  "OpenCL.dll"
+#define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
 #else
 #define OPENCL_LIBRARY  "libOpenCL.so"
 #endif

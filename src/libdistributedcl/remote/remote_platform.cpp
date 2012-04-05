@@ -28,20 +28,36 @@
 #include "message/message.h"
 #include "message/msg_device.h"
 #include "message/msg_context.h"
+using dcl::devices_t;
 using dcl::info::generic_context;
 using dcl::network::client::session_manager;
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetDeviceIDs;
+using dcl::network::message::msgCreateContext;
 using dcl::network::message::msgCreateContextFromType;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-generic_context* remote_platform::create_context( const dcl::devices_t& devices ) const
+generic_context* remote_platform::create_context( const devices_t& devices ) const
 {
-    throw library_exception( "Not implemented" );
-    return NULL;
+    dcl_message< msgCreateContext >* msg_ptr = new dcl_message< msgCreateContext >();
+
+    msg_ptr->set_device_count( devices.size() );
+
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+    {
+        msg_ptr->add_device( reinterpret_cast<remote_device*>( *it )->get_remote_id() );
+    }
+
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+
+    remote_context* context_ptr = new remote_context( this );
+    context_ptr->set_remote_id( msg_ptr->get_remote_id() );
+
+    return reinterpret_cast<generic_context*>( context_ptr );
 }
 //-----------------------------------------------------------------------------
 generic_context* remote_platform::create_context( cl_device_type device_type ) const

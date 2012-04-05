@@ -132,7 +132,7 @@ class base_message
 public:
     virtual ~base_message(){}
 
-    static base_message* parse_message( uint8_t* msg_buffer_ptr, std::size_t length );
+    static base_message* parse_message( uint8_t* msg_buffer_ptr, std::size_t length, bool is_request );
 
     inline message_type get_type() const
     {
@@ -249,12 +249,15 @@ private:
     };
     #pragma pack( pop )
 
-    inline void set_buffer( uint8_t* msg_buffer_ptr, std::size_t size )
+    inline void set_received_buffer( uint8_t* msg_buffer_ptr, std::size_t size, bool is_request )
     {
         buffer_ptr_ = msg_buffer_ptr;
         size_ = size;
 
-        parse_request( get_payload() );
+        if( is_request )
+            parse_request( get_payload() );
+        else
+            parse_response( get_payload() );
     }
 };
 //-----------------------------------------------------------------------------

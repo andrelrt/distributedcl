@@ -78,6 +78,24 @@ private:
 };
 //-----------------------------------------------------------------------------
 template<>
+class dcl_message< msgFlush > : public base_message
+{
+public:
+    dcl_message< msgFlush >() :
+        base_message( msgFlush, false, sizeof(dcl::remote_id_t), 0 ),
+    id_( 0xffff ){}
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+
+private:
+    dcl::remote_id_t id_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+};
+//-----------------------------------------------------------------------------
+template<>
 class dcl_message< msgFinish > : public base_message
 {
 public:

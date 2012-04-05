@@ -29,11 +29,11 @@ namespace message {
 //-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
 
-void packet::parse()
+uint32_t packet::parse_header()
 {
     packet_header* header_ptr = reinterpret_cast< packet_header* >( buffer_ptr_ );
 
-    uint16_t packet_len = network_to_host( header_ptr->length );
+    uint32_t packet_len = network_to_host( header_ptr->length );
 
     THROW_IF( buffer_size_ < sizeof( packet_header ), "Invalid packet size" );
     THROW_IF( header_ptr->version != packet_v1_0, "Invalid packet version" );
@@ -41,26 +41,12 @@ void packet::parse()
     THROW_IF( (header_ptr->message_count == 0) && 
               (packet_len != sizeof( packet_header )), "Message count invalid" );
 
-    uint32_t length = packet_len - sizeof( packet_header );
-    uint8_t* it = buffer_ptr_ + sizeof( packet_header );
-
-    while( length != 0 )
-    {
-        boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length ) );
-
-        messages_.push_back( message_sp );
-
-        it += message_sp->get_size();
-        length -= static_cast< uint32_t >( message_sp->get_size() );
-
-        THROW_IF( length < 0, "Message parse error" );
-    }
+    return packet_len;
 }
 //-----------------------------------------------------------------------------
-void packet::parse_messages()
+void packet::parse( bool is_request )
 {
-    packet_header* header_ptr = reinterpret_cast< packet_header* >( buffer_ptr_ );
-    uint16_t packet_len = network_to_host( header_ptr->length );
+    uint32_t packet_len = parse_header();
 
     uint32_t length = packet_len - sizeof( packet_header );
     uint8_t* it = buffer_ptr_ + sizeof( packet_header );
@@ -69,7 +55,7 @@ void packet::parse_messages()
 
     while( length != 0 )
     {
-        boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length ) );
+        boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length, is_request ) );
 
         messages_.push_back( message_sp );
 
@@ -98,16 +84,16 @@ void packet::create_packet()
             throw dcl::library_exception( "buffer overflow" );
         }
 
-        uint16_t offset = sizeof( packet_header );
+        uint32_t offset = sizeof( packet_header );
 
         message_vector_t::iterator it;
         for( it = messages_.begin(); it != messages_.end(); it++ )
         {
             (*it)->get_buffer( buffer_ptr_ + offset );
-            offset += static_cast< uint16_t >( (*it)->get_size() );
+            offset += static_cast< uint32_t >( (*it)->get_size() );
         }
 
-        header_ptr_->length = static_cast< uint16_t >( host_to_network( static_cast< u_short >( length_ ) ) );
+        header_ptr_->length = host_to_network( static_cast< uint32_t >( length_ ) );
         header_ptr_->message_count = static_cast<uint8_t>( messages_.size() );
     }
 }

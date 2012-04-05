@@ -127,13 +127,18 @@ clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_mem CL_API_CALL
-//clCreateImage2D( cl_context context, cl_mem_flags flags,
-//                 const cl_image_format* image_format, size_t image_width,
-//                 size_t image_height, size_t image_row_pitch, void* host_ptr,
-//                 cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
-//{
-//}
+extern "C" CL_API_ENTRY cl_mem CL_API_CALL
+clCreateImage2D( cl_context context, cl_mem_flags flags,
+                 const cl_image_format* image_format, size_t image_width,
+                 size_t image_height, size_t image_row_pitch, void* host_ptr,
+                 cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
+{
+    if( errcode_ret != NULL )
+    {
+        *errcode_ret = CL_INVALID_VALUE;
+    }
+    return NULL;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_mem CL_API_CALL
 //clCreateImage3D( cl_context context, cl_mem_flags flags,
@@ -164,12 +169,88 @@ clReleaseMemObject( cl_mem memobj ) CL_API_SUFFIX__VERSION_1_1
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
-//                    size_t param_value_size, void* param_value,
-//                    size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
-//{
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
+                    size_t param_value_size, void* param_value,
+                    size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+{
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_memory* memory_ptr =
+            get_info_check_parameters< composite_memory >( memobj, param_value_size,
+                                                           param_value, param_value_size_ret );
+
+        size_t param_size = 0;
+
+        if( param_value != NULL )
+        {
+            switch( param_name )
+            {
+                case CL_MEM_OFFSET:
+                    param_size = sizeof(size_t);
+
+                    if( param_value_size < param_size )
+                    {
+                        return CL_INVALID_VALUE;
+                    }
+
+                    *(reinterpret_cast<size_t*>( param_value )) = NULL;
+                    break;
+
+                case CL_MEM_ASSOCIATED_MEMOBJECT:
+                    param_size = sizeof(cl_mem);
+
+                    if( param_value_size < param_size )
+                    {
+                        return CL_INVALID_VALUE;
+                    }
+
+                    *(reinterpret_cast<cl_mem*>( param_value )) = NULL;
+                    break;
+
+                case CL_MEM_CONTEXT:
+                {
+                    param_size = sizeof(cl_context);
+
+                    if( param_value_size < param_size )
+                    {
+                        return CL_INVALID_VALUE;
+                    }
+
+                    composite_context* context_ptr =
+                        const_cast<composite_context*>( &(memory_ptr->get_context()) );
+
+                    *(reinterpret_cast<cl_context*>( param_value )) =
+                        icd.get_cl_id< composite_context >( context_ptr );
+                    break;
+                }
+
+                default:
+                    get_info< composite_memory >( memobj, param_name, param_value_size,
+                                                  param_value, param_value_size_ret );
+
+                    return CL_SUCCESS;
+            }
+        }
+
+        if( param_value_size_ret != NULL )
+        {
+            *param_value_size_ret = param_size;
+        }
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    return CL_SUCCESS;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clGetImageInfo( cl_mem image, cl_image_info param_name,

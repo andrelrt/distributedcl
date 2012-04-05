@@ -36,31 +36,66 @@ namespace message {
     //msgGetContextInfo           = 28,
 //-----------------------------------------------------------------------------
 template<>
+class dcl_message< msgCreateContext > : public base_message
+{
+public:
+    dcl_message< msgCreateContext >() :
+        base_message( msgCreateContext, true, sizeof(msgCreateContext_request), sizeof( remote_id_t ) ) {}
+
+    inline const remote_ids_t& get_devices() const
+    {
+        return devices_;
+    }
+
+    inline void set_device_count( uint32_t count )
+    {
+        devices_.reserve( count );
+    }
+
+    inline void add_device( dcl::remote_id_t device_id )
+    {
+        devices_.push_back( device_id );
+        update_request_size();
+    }
+
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+
+protected:
+    dcl::remote_id_t id_;
+    dcl::remote_ids_t devices_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
+
+    inline void update_request_size()
+    {
+        set_size( sizeof(msgCreateContext_request) - sizeof(dcl::remote_id_t) +
+                  devices_.size() * sizeof(dcl::remote_id_t) );
+    }
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgCreateContext_request
+    {
+        uint32_t device_count_;
+        dcl::remote_id_t devices_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+template<>
 class dcl_message< msgCreateContextFromType > : public base_message
 {
 public:
     dcl_message< msgCreateContextFromType >() : 
         base_message( msgCreateContextFromType, true, sizeof( cl_device_type ), sizeof( remote_id_t ) ) {}
 
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
-
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
-
-    inline cl_device_type get_device_type() const
-    {
-        return device_type_;
-    }
-
-    inline void set_device_type( cl_device_type device_type )
-    {
-        device_type_ = device_type;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( cl_device_type, device_type_, device_type )
 
 protected:
     dcl::remote_id_t id_;
@@ -78,40 +113,30 @@ class dcl_message< msgGetContextInfo > : public base_message
 public:
     dcl_message< msgGetContextInfo >() : 
         base_message( msgGetContextInfo, true, sizeof( remote_id_t ), 0 ),
-        device_count_( 0 ), id_( 0xffff ), devices_( NULL ){}
+        id_( 0xffff ){}
 
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
 
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
-
-    inline dcl::remote_id_t* get_devices()
+    inline dcl::remote_ids_t& get_devices()
     {
         return devices_;
     }
 
     inline uint32_t get_device_count()
     {
-        return device_count_;
+        return devices_.size();
     }
 
     inline void set_device_count( uint32_t count )
     {
-        device_count_ = count;
+        devices_.reserve( count );
+    }
 
-        if( devices_ != NULL )
-        {
-            delete[] devices_;
-        }
-
-        devices_ = new dcl::remote_id_t[ count ];
-
-        set_response_size( sizeof( uint32_t ) + sizeof( dcl::remote_id_t ) * count );
+    inline void add_device( dcl::remote_id_t device_id )
+    {
+        devices_.push_back( device_id );
+        update_response_size();
     }
 
 protected:
@@ -124,9 +149,14 @@ protected:
     };
     #pragma pack( pop )
 
-    uint32_t device_count_;
     dcl::remote_id_t id_;
-    dcl::remote_id_t* devices_;
+    dcl::remote_ids_t devices_;
+
+    inline void update_response_size()
+    {
+        set_size( sizeof(msgGetContextInfo_response) - sizeof(dcl::remote_id_t) +
+                  devices_.size() * sizeof(dcl::remote_id_t) );
+    }
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );

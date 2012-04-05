@@ -30,21 +30,31 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class CreateCommandQueue_command :
+class msgCreateCommandQueue_command :
     public server_command< dcl::network::message::msgCreateCommandQueue >
 {
 public:
-    CreateCommandQueue_command( recv_ptr_t message_ptr ) :
+    msgCreateCommandQueue_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgCreateCommandQueue >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class Finish_command :
+class msgFlush_command :
+    public server_command< dcl::network::message::msgFlush >
+{
+public:
+    msgFlush_command( recv_ptr_t message_ptr ) :
+        server_command< dcl::network::message::msgFlush >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
+class msgFinish_command :
     public server_command< dcl::network::message::msgFinish >
 {
 public:
-    Finish_command( recv_ptr_t message_ptr ) :
+    msgFinish_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgFinish >( message_ptr ) {}
 
     void execute();

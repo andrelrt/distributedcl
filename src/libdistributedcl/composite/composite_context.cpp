@@ -95,7 +95,7 @@ generic_memory* composite_context::do_create_buffer( const void* host_ptr, size_
 {
     contexts_t::iterator it;
 
-    composite_memory* memories = new composite_memory( *this );
+    composite_memory* memories = new composite_memory( *this, host_ptr, size, flags );
 
     for( it = contexts_.begin(); it != contexts_.end(); it++ )
     {

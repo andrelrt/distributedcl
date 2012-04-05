@@ -36,6 +36,41 @@ class generic_event;
 //-----------------------------------------------------------------------------
 struct memory_info
 {
+    cl_mem_object_type type_;
+    cl_mem_flags flags_;
+    size_t size_;
+    const void* host_ptr_;
+    cl_uint map_count_;
+
+    inline size_t get_info_size( cl_device_info info ) const
+    {
+        switch( info )
+        {
+            case CL_MEM_TYPE:       return sizeof(cl_mem_object_type);
+            case CL_MEM_FLAGS:      return sizeof(cl_mem_flags);
+            case CL_MEM_SIZE:       return sizeof(size_t);
+            case CL_MEM_HOST_PTR:   return sizeof(void*);
+            case CL_MEM_MAP_COUNT:  return sizeof(cl_uint);
+
+            default:
+                throw library_exception( CL_INVALID_VALUE );
+        }
+    }
+
+    inline const void* get_info_pointer( cl_device_info info ) const
+    {
+        switch( info )
+        {
+            case CL_MEM_TYPE:       return &type_;
+            case CL_MEM_FLAGS:      return &flags_;
+            case CL_MEM_SIZE:       return &size_;
+            case CL_MEM_HOST_PTR:   return &host_ptr_;
+            case CL_MEM_MAP_COUNT:  return &map_count_;
+
+            default:
+                throw library_exception( CL_INVALID_VALUE );
+        }
+    }
 };
 //-----------------------------------------------------------------------------
 class generic_memory :
@@ -44,8 +79,18 @@ class generic_memory :
     public dcl_object< memory_info >
 {
 public:
-    generic_memory(){}
+    generic_memory( cl_mem_object_type type, const void* host_ptr, 
+                    size_t size, cl_mem_flags flags )
+    {
+        local_info_.type_ = type;
+        local_info_.host_ptr_ = host_ptr;
+        local_info_.size_ = size;
+        local_info_.flags_ = flags;
+        local_info_.map_count_ = 0;
+    }
+
     virtual ~generic_memory(){}
+    inline void load_info(){}
 
     virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking,

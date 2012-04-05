@@ -30,31 +30,31 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class CreateProgramWithSource_command : 
+class msgCreateProgramWithSource_command : 
     public server_command< dcl::network::message::msgCreateProgramWithSource >
 {
 public:
-    CreateProgramWithSource_command( recv_ptr_t message_ptr ) : 
+    msgCreateProgramWithSource_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgCreateProgramWithSource >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class BuildProgram_command : 
+class msgBuildProgram_command : 
     public server_command< dcl::network::message::msgBuildProgram >
 {
 public:
-    BuildProgram_command( recv_ptr_t message_ptr ) : 
+    msgBuildProgram_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgBuildProgram >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class GetProgramBuildInfo_command : 
+class msgGetProgramBuildInfo_command : 
     public server_command< dcl::network::message::msgGetProgramBuildInfo >
 {
 public:
-    GetProgramBuildInfo_command( recv_ptr_t message_ptr ) : 
+    msgGetProgramBuildInfo_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgGetProgramBuildInfo >( message_ptr ) {}
 
     void execute();

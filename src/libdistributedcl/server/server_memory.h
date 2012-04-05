@@ -30,31 +30,31 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class CreateBuffer_command : 
+class msgCreateBuffer_command : 
     public server_command< dcl::network::message::msgCreateBuffer >
 {
 public:
-    CreateBuffer_command( recv_ptr_t message_ptr ) :
+    msgCreateBuffer_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgCreateBuffer >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class EnqueueWriteBuffer_command : 
+class msgEnqueueWriteBuffer_command : 
     public server_command< dcl::network::message::msgEnqueueWriteBuffer >
 {
 public:
-    EnqueueWriteBuffer_command( recv_ptr_t message_ptr ) :
+    msgEnqueueWriteBuffer_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class EnqueueReadBuffer_command : 
+class msgEnqueueReadBuffer_command : 
     public server_command< dcl::network::message::msgEnqueueReadBuffer >
 {
 public:
-    EnqueueReadBuffer_command( recv_ptr_t message_ptr ) :
+    msgEnqueueReadBuffer_command( recv_ptr_t message_ptr ) :
         server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr ) {}
 
     void execute();

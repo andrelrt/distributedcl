@@ -26,12 +26,15 @@
 #include "command_queue.h"
 #include "event.h"
 using dcl::info::generic_event;
+using dcl::info::generic_memory;
 using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-memory_object::memory_object( const context& context_ref ) :
+memory_object::memory_object( const context& context_ref, cl_mem_object_type type, 
+                              const void* host_ptr, size_t size, cl_mem_flags flags ) :
+    generic_memory( type, host_ptr, size, flags ),
     opencl_object< cl_mem >( context_ref.get_opencl() )
 {
 }
@@ -42,7 +45,7 @@ memory_object::~memory_object()
 }
 //-----------------------------------------------------------------------------
 memory::memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags ) :
-    memory_object( context_ref )
+    memory_object( context_ref, CL_MEM_OBJECT_BUFFER, host_ptr, size, flags )
 {
     if( opencl_.loaded() )
     {

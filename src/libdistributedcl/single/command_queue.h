@@ -70,6 +70,7 @@ public:
 
     ~command_queue(){}
 
+    virtual void flush();
     virtual void finish();
 };
 //-----------------------------------------------------------------------------

@@ -51,6 +51,16 @@ command_queue::command_queue( const context& context_ref, const device& device_r
     set_id( queue );
 }
 //-----------------------------------------------------------------------------
+void command_queue::flush()
+{
+    cl_int error_code = opencl_.clFlush( get_id() );
+
+    if( error_code != CL_SUCCESS )
+    {
+        throw library_exception( error_code );
+    }
+}
+//-----------------------------------------------------------------------------
 void command_queue::finish()
 {
     cl_int error_code = opencl_.clFinish( get_id() );

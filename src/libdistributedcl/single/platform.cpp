@@ -93,8 +93,7 @@ void platform::load_string( cl_platform_info info, std::string& out )
 //-----------------------------------------------------------------------------
 generic_context* platform::create_context( const devices_t& devices ) const
 {
-    throw library_exception( "Not implemented" );
-    return NULL;
+    return new context( *this, devices );
 }
 //-----------------------------------------------------------------------------
 generic_context* platform::create_context( cl_device_type device_type ) const

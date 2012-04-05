@@ -38,21 +38,21 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class GetDeviceIDs_command : 
+class msgGetDeviceIDs_command : 
     public server_command< dcl::network::message::msgGetDeviceIDs >
 {
 public:
-    GetDeviceIDs_command( recv_ptr_t message_ptr ) : 
+    msgGetDeviceIDs_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
-class GetDeviceInfo_command : 
+class msgGetDeviceInfo_command : 
     public server_command< dcl::network::message::msgGetDeviceInfo >
 {
 public:
-    GetDeviceInfo_command( recv_ptr_t message_ptr ) : 
+    msgGetDeviceInfo_command( recv_ptr_t message_ptr ) : 
         server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
 
     void execute();
@@ -60,7 +60,7 @@ public:
 //-----------------------------------------------------------------------------
 class server_platform
 {
-private:
+public:
     typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
@@ -69,6 +69,7 @@ private:
     typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_event > event_manager_t;
 
+private:
     device_manager_t device_manager_;
     context_manager_t context_manager_;
     program_manager_t program_manager_;

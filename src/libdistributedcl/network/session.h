@@ -92,7 +92,7 @@ protected:
 
         // Parse packet
         dcl::network::message::packet* packet_ptr = new dcl::network::message::packet( buffer_ptr, recv_len );
-        packet_ptr->parse();
+        packet_ptr->parse_header();
 
         if( packet_ptr->get_session_id() != session_id_ )
         {

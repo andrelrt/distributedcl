@@ -25,10 +25,21 @@
 #include "message/msg_command_queue.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
+using dcl::network::message::msgFlush;
 using dcl::network::message::msgFinish;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
+//-----------------------------------------------------------------------------
+void remote_command_queue::flush()
+{
+    dcl_message< msgFlush >* msg_ptr = new dcl_message< msgFlush >();
+
+    msg_ptr->set_remote_id( get_remote_id() );
+
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+}
 //-----------------------------------------------------------------------------
 void remote_command_queue::finish()
 {

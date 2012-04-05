@@ -33,7 +33,7 @@ using dcl::composite::composite_device;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-void CreateProgramWithSource_command::execute()
+void msgCreateProgramWithSource_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -49,7 +49,7 @@ void CreateProgramWithSource_command::execute()
     message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
-void BuildProgram_command::execute()
+void msgBuildProgram_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -70,7 +70,7 @@ void BuildProgram_command::execute()
     program_ptr->build( devices, message_.get_build_options() );
 }
 //-----------------------------------------------------------------------------
-void GetProgramBuildInfo_command::execute()
+void msgGetProgramBuildInfo_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 

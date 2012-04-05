@@ -30,7 +30,7 @@ namespace dcl {
 namespace network {
 namespace platform {
 //-----------------------------------------------------------------------------
-typedef uint16_t session_id_t;
+typedef uint32_t session_id_t;
 typedef uint16_t session_sequence_t;
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::platform;

@@ -24,11 +24,20 @@
 #include "composite_event.h"
 #include "composite_command_queue.h"
 using dcl::info::generic_event;
+using dcl::info::generic_memory;
 using dcl::info::generic_context;
 using dcl::info::generic_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
+//-----------------------------------------------------------------------------
+composite_memory::composite_memory( const composite_context& context_ref, 
+                                    const void* host_ptr, size_t size, 
+                                    cl_mem_flags flags ) :
+    generic_memory( CL_MEM_OBJECT_BUFFER, host_ptr, size, flags ),
+    composite_object< generic_memory >( context_ref )
+{
+}
 //-----------------------------------------------------------------------------
 void composite_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
                               size_t size, size_t offset, cl_bool blocking,

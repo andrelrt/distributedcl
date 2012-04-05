@@ -42,7 +42,7 @@ using dcl::composite::composite_event;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-void CreateKernel_command::execute()
+void msgCreateKernel_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -58,7 +58,7 @@ void CreateKernel_command::execute()
     message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
-void EnqueueNDRangeKernel_command::execute()
+void msgEnqueueNDRangeKernel_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -99,7 +99,7 @@ void EnqueueNDRangeKernel_command::execute()
     }
 }
 //-----------------------------------------------------------------------------
-void SetKernelArg_command::execute()
+void msgSetKernelArg_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
@@ -121,7 +121,7 @@ void SetKernelArg_command::execute()
     }
 }
 //-----------------------------------------------------------------------------
-void GetKernelWorkGroupInfo_command::execute()
+void msgGetKernelWorkGroupInfo_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 

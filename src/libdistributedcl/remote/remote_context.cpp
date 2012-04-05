@@ -106,7 +106,7 @@ generic_memory* remote_context::do_create_buffer( const void* host_ptr, size_t s
     boost::shared_ptr< base_message > message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
-    remote_memory* memory_ptr = new remote_memory( *this );
+    remote_memory* memory_ptr = new remote_memory( *this, host_ptr, size, flags );
     memory_ptr->set_remote_id( msg_ptr->get_remote_id() );
 
     return reinterpret_cast< generic_memory* >( memory_ptr );

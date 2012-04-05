@@ -36,6 +36,9 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
+#define MSG( x ) case x: {x##_command command(*it);command.execute();}break
+#define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("dispatch_messages: " #x " not implemented");break
+//-----------------------------------------------------------------------------
 void message_dispatcher::dispatch_messages( message_vector_t& messages )
 {
     message_vector_t::iterator it;
@@ -47,243 +50,111 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             // TODO: Create the base_message objects
 
             // Internal base_messages [1-20)
-            case msg_invalid_message:
-            case msg_error_message:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG_NOT_IMPLEMENTED( msg_invalid_message );
+            MSG_NOT_IMPLEMENTED( msg_error_message );
 
             // OpenCL base_messages [20-128)
-            case msgGetPlatformIDs:
-            case msgGetPlatformInfo:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
+            MSG_NOT_IMPLEMENTED( msgGetPlatformInfo );
 
-            case msgGetDeviceIDs:
-            {
-                GetDeviceIDs_command command( *it );
+            MSG( msgGetDeviceIDs );
 
-                command.execute();
-                break;
-            }
+            MSG( msgGetDeviceInfo );
+            MSG( msgCreateContext );
+            MSG( msgCreateContextFromType );
 
-            case msgGetDeviceInfo:
-            {
-                GetDeviceInfo_command command( *it );
+            MSG_NOT_IMPLEMENTED( msgRetainContext );
+            MSG_NOT_IMPLEMENTED( msgReleaseContext );
 
-                command.execute();
-                break;
-            }
+            MSG( msgGetContextInfo );
+            MSG( msgCreateCommandQueue );
 
-            case msgCreateContext:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG_NOT_IMPLEMENTED( msgRetainCommandQueue );
+            MSG_NOT_IMPLEMENTED( msgReleaseCommandQueue );
+            MSG_NOT_IMPLEMENTED( msgGetCommandQueueInfo );
+            MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
-            case msgCreateContextFromType:
-            {
-                CreateContextFromType_command command( *it );
+            MSG( msgCreateBuffer );
 
-                command.execute();
-                break;
-            }
+            MSG_NOT_IMPLEMENTED( msgCreateImage2D );
+            MSG_NOT_IMPLEMENTED( msgCreateImage3D );
+            MSG_NOT_IMPLEMENTED( msgRetainMemObject );
+            MSG_NOT_IMPLEMENTED( msgReleaseMemObject );
+            MSG_NOT_IMPLEMENTED( msgGetSupportedImageFormats );
+            MSG_NOT_IMPLEMENTED( msgGetMemObjectInfo );
+            MSG_NOT_IMPLEMENTED( msgGetImageInfo );
+            MSG_NOT_IMPLEMENTED( msgCreateSampler );
+            MSG_NOT_IMPLEMENTED( msgRetainSampler );
+            MSG_NOT_IMPLEMENTED( msgReleaseSampler );
+            MSG_NOT_IMPLEMENTED( msgGetSamplerInfo );
 
-            case msgRetainContext:
-            case msgReleaseContext:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG( msgCreateProgramWithSource );
 
-            case msgGetContextInfo:
-            {
-                GetContextInfo_command command( *it );
+            MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
+            MSG_NOT_IMPLEMENTED( msgRetainProgram );
+            MSG_NOT_IMPLEMENTED( msgReleaseProgram );
 
-                command.execute();
-                break;
-            }
+            MSG( msgBuildProgram );
 
-            case msgCreateCommandQueue:
-            {
-                CreateCommandQueue_command command( *it );
+            MSG_NOT_IMPLEMENTED( msgUnloadCompiler );
+            MSG_NOT_IMPLEMENTED( msgGetProgramInfo );
 
-                command.execute();
-                break;
-            }
+            MSG( msgGetProgramBuildInfo );
 
-            case msgRetainCommandQueue:
-            case msgReleaseCommandQueue:
-            case msgGetCommandQueueInfo:
-            case msgSetCommandQueueProperty:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG( msgCreateKernel );
 
-            case msgCreateBuffer:
-            {
-                CreateBuffer_command command( *it );
+            MSG_NOT_IMPLEMENTED( msgCreateKernelsInProgram );
+            MSG_NOT_IMPLEMENTED( msgRetainKernel );
+            MSG_NOT_IMPLEMENTED( msgReleaseKernel );
 
-                command.execute();
-                break;
-            }
+            MSG( msgSetKernelArg );
 
-            case msgCreateImage2D:
-            case msgCreateImage3D:
-            case msgRetainMemObject:
-            case msgReleaseMemObject:
-            case msgGetSupportedImageFormats:
-            case msgGetMemObjectInfo:
-            case msgGetImageInfo:
+            MSG_NOT_IMPLEMENTED( msgGetKernelInfo );
 
-            case msgCreateSampler:
-            case msgRetainSampler:
-            case msgReleaseSampler:
-            case msgGetSamplerInfo:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG( msgGetKernelWorkGroupInfo );
 
-            case msgCreateProgramWithSource:
-            {
-                CreateProgramWithSource_command command( *it );
+            MSG( msgWaitForEvents );
 
-                command.execute();
-                break;
-            }
+            MSG_NOT_IMPLEMENTED( msgGetEventInfo );
+            MSG_NOT_IMPLEMENTED( msgRetainEvent );
+            MSG_NOT_IMPLEMENTED( msgReleaseEvent );
+            MSG_NOT_IMPLEMENTED( msgGetEventProfilingInfo );
 
-            case msgCreateProgramWithBinary:
-            case msgRetainProgram:
-            case msgReleaseProgram:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG( msgFlush );
+            MSG( msgFinish );
+            MSG( msgEnqueueReadBuffer );
+            MSG( msgEnqueueWriteBuffer );
 
-            case msgBuildProgram:
-            {
-                BuildProgram_command command( *it );
+            MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );
+            MSG_NOT_IMPLEMENTED( msgEnqueueReadImage );
+            MSG_NOT_IMPLEMENTED( msgEnqueueWriteImage );
+            MSG_NOT_IMPLEMENTED( msgEnqueueCopyImage );
+            MSG_NOT_IMPLEMENTED( msgEnqueueCopyImageToBuffer );
+            MSG_NOT_IMPLEMENTED( msgEnqueueCopyBufferToImage );
+            MSG_NOT_IMPLEMENTED( msgEnqueueMapBuffer );
+            MSG_NOT_IMPLEMENTED( msgEnqueueMapImage );
+            MSG_NOT_IMPLEMENTED( msgEnqueueUnmapMemObject );
 
-                command.execute();
-                break;
-            }
+            MSG( msgEnqueueNDRangeKernel );
 
-            case msgUnloadCompiler:
-            case msgGetProgramInfo:
-                throw dcl::library_exception( "Not implemented" );
-                break;
-
-            case msgGetProgramBuildInfo:
-            {
-                GetProgramBuildInfo_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgCreateKernel:
-            {
-                CreateKernel_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgCreateKernelsInProgram:
-            case msgRetainKernel:
-            case msgReleaseKernel:
-                throw dcl::library_exception( "Not implemented" );
-                break;
-
-            case msgSetKernelArg:
-            {
-                SetKernelArg_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgGetKernelInfo:
-                throw dcl::library_exception( "Not implemented" );
-                break;
-
-            case msgGetKernelWorkGroupInfo:
-            {
-                GetKernelWorkGroupInfo_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgWaitForEvents:
-            {
-                WaitForEvents_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgGetEventInfo:
-            case msgRetainEvent:
-            case msgReleaseEvent:
-            case msgGetEventProfilingInfo:
-
-            case msgFlush:
-                throw dcl::library_exception( "Not implemented" );
-                break;
-
-            case msgFinish:
-            {
-                Finish_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgEnqueueReadBuffer:
-            {
-                EnqueueReadBuffer_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgEnqueueWriteBuffer:
-            {
-                EnqueueWriteBuffer_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgEnqueueCopyBuffer:
-            case msgEnqueueReadImage:
-            case msgEnqueueWriteImage:
-            case msgEnqueueCopyImage:
-            case msgEnqueueCopyImageToBuffer:
-            case msgEnqueueCopyBufferToImage:
-            case msgEnqueueMapBuffer:
-            case msgEnqueueMapImage:
-            case msgEnqueueUnmapMemObject:
-                throw dcl::library_exception( "Not implemented" );
-                break;
-
-            case msgEnqueueNDRangeKernel:
-            {
-                EnqueueNDRangeKernel_command command( *it );
-
-                command.execute();
-                break;
-            }
-
-            case msgEnqueueTask:
-            case msgEnqueueNativeKernel:
-            case msgEnqueueMarker:
-            case msgEnqueueWaitForEvents:
-            case msgEnqueueBarrier:
+            MSG_NOT_IMPLEMENTED( msgEnqueueTask );
+            MSG_NOT_IMPLEMENTED( msgEnqueueNativeKernel );
+            MSG_NOT_IMPLEMENTED( msgEnqueueMarker );
+            MSG_NOT_IMPLEMENTED( msgEnqueueWaitForEvents );
+            MSG_NOT_IMPLEMENTED( msgEnqueueBarrier );
 
             // OpenCL Extension base_messages [128-255]
-            case msgExtension0:
-            case msgExtension1:
-                throw dcl::library_exception( "Not implemented" );
-                break;
+            MSG_NOT_IMPLEMENTED( msgExtension0 );
+            MSG_NOT_IMPLEMENTED( msgExtension1 );
 
             default: 
-                throw dcl::library_exception( "Not implemented" );
+                throw dcl::library_exception( "dispatch_messages: Unkown Message" );
         }
     }
 }
+//-----------------------------------------------------------------------------
+#undef MSG_NOT_IMPLEMENTED
+#undef MSG
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server
 //-----------------------------------------------------------------------------

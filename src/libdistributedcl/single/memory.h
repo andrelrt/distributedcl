@@ -37,7 +37,8 @@ class memory_object :
     public context_object< memory_object >
 {
 protected:
-    memory_object( const context& context_ref );
+    memory_object( const context& context_ref, cl_mem_object_type type, 
+                   const void* host_ptr, size_t size, cl_mem_flags flags );
     virtual ~memory_object();
 };
 //-----------------------------------------------------------------------------

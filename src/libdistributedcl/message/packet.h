@@ -50,8 +50,8 @@ public:
 
     ~packet(){}
 
-    void parse();
-    void parse_messages();
+    uint32_t parse_header();
+    void parse( bool is_request );
 
     inline uint8_t get_message_count() const
     {
@@ -63,7 +63,7 @@ public:
         return length_;
     }
 
-    inline uint16_t get_session_id() const
+    inline uint32_t get_session_id() const
     {
         return header_ptr_->session_id;
     }
@@ -127,9 +127,9 @@ private:
     {
         uint8_t version;
         uint8_t message_count;
-        uint16_t length;
-        dcl::network::platform::session_id_t session_id;
         dcl::network::platform::session_sequence_t sequence_number;
+        dcl::network::platform::session_id_t session_id;
+        uint32_t length;
     };
     #pragma pack( pop )
 
