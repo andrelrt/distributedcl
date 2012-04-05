@@ -23,7 +23,6 @@
 #ifndef _DCL_CLIENT_SESSION_MANAGER_H_
 #define _DCL_CLIENT_SESSION_MANAGER_H_
 
-#include <boost/tokenizer.hpp>
 #include "distributedcl_internal.h"
 #include "client_session.h"
 #include "network/tcp_transport.h"
@@ -41,25 +40,7 @@ public:
     {
         if( instance_.session_ptr_ == NULL )
         {
-            typedef boost::tokenizer<boost::char_separator<char> > tokenizer_t;
-
-            tokenizer_t tokens( connection_string, boost::char_separator<char>( ":" ) );
-
-            tokenizer_t::iterator it = tokens.begin();
-
-            session_t::config_info_t config_info;
-            sockaddr_in* sin = reinterpret_cast< sockaddr_in* >( &(config_info.bind_addr) );
-
-            if( it != tokens.end() )
-            {
-                sin->sin_addr.s_addr = inet_addr( it->c_str() );
-                it++;
-            }
-
-            if( it != tokens.end() )
-            {
-                sin->sin_port = htons( atoi( it->c_str() ) );
-            }
+            session_t::config_info_t config_info( connection_string );
 
             instance_.session_ptr_ = new session_t( config_info );
 

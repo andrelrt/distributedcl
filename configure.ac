@@ -30,6 +30,7 @@ GL/gl.h \
 GL/glu.h \
 boost/scoped_ptr.hpp \
 boost/shared_ptr.hpp \
+boost/tokenizer.hpp \
 boost/random/uniform_int.hpp \
 boost/random/variate_generator.hpp \
 boost/random/mersenne_twister.hpp \

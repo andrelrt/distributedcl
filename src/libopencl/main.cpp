@@ -30,8 +30,7 @@ using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
 void setup_library()
 {
-//    opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
-    opencl_composite::get_instance().add_remote( "152.92.155.199:4791" );
+    opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
 
     const composite_platform& platform_ref = opencl_composite::get_instance().get_platform();
     composite_platform* platform_ptr = const_cast< composite_platform* >( &platform_ref );

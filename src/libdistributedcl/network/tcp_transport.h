@@ -25,6 +25,7 @@
 
 #include <string.h>
 #include <boost/thread.hpp>
+#include <boost/tokenizer.hpp>
 #include <boost/scoped_array.hpp>
 #include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
@@ -63,6 +64,33 @@ public:
 
             sin->sin_family = AF_INET;
             sin->sin_port = htons( 4791 );
+        }
+
+        tcp_info( const std::string& connection_string )
+        {
+            connected_socket = -1;
+
+            memset( &bind_addr, 0, sizeof( sockaddr ) );
+            sockaddr_in* sin = reinterpret_cast< sockaddr_in* >( &bind_addr );
+
+            sin->sin_family = AF_INET;
+            sin->sin_port = htons( 4791 );
+
+            typedef boost::tokenizer<boost::char_separator<char> > tokenizer_t;
+
+            tokenizer_t tokens( connection_string, boost::char_separator<char>( ":" ) );
+
+            tokenizer_t::iterator it = tokens.begin();
+            if( it != tokens.end() )
+            {
+                sin->sin_addr.s_addr = inet_addr( it->c_str() );
+                it++;
+            }
+
+            if( it != tokens.end() )
+            {
+                sin->sin_port = htons( atoi( it->c_str() ) );
+            }
         }
 
     } config_info_t;
@@ -225,7 +253,7 @@ private:
     enum
     {
         default_buffer_size = 32786,
-        max_buffer_size = 65535
+        max_buffer_size = UINT32_MAX
     };
 
     inline void create_socket()
