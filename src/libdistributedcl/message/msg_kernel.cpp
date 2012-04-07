@@ -120,7 +120,7 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
     value[ 2 ] = network_to_host( request_ptr->local_[ 2 ] );
     local_.copy( ndrange( dimensions, value ) );
 
-    return_event_ = (network_to_host( request_ptr->return_event_ ) == 1) ? true : false;
+    return_event_ = (network_to_host( request_ptr->return_event_ ) != 0) ? true : false;
 
     set_response_size( return_event_? sizeof(dcl::remote_id_t) : 0 );
 

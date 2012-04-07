@@ -59,8 +59,8 @@ public:
 
         //TODO: send handshake base_messages
         dcl::network::platform::session< COMM >::set_session_id( 1 );
-        dcl::network::platform::session< COMM >::set_sequence_number( 1 );
-        dcl::network::platform::session< COMM >::set_remote_sequence_number( 1 );
+        dcl::network::platform::session< COMM >::set_sequence_number( 200 );
+        dcl::network::platform::session< COMM >::set_remote_sequence_number( 100 );
     }
 
     void flush_queue()
@@ -103,24 +103,42 @@ public:
 
         recv_packet_ptr->parse( false );
 
-        dcl::network::message::message_vector_t::iterator recv_message_it = recv_packet_ptr->get_messages().begin();
+        dcl::network::message::message_vector_t::iterator recv_message_it;
+        dcl::network::message::message_vector_t& recv_messages = recv_packet_ptr->get_messages();
 
-        if( (*recv_message_it)->get_type() == dcl::network::message::msg_error_message )
+        for( recv_message_it = recv_messages.begin(); recv_message_it != recv_messages.end(); recv_message_it++ )
         {
-            received_messages_.insert( received_messages_.end(),
-                                       recv_packet_ptr->get_messages().begin(),
-                                       recv_packet_ptr->get_messages().end() );
-        }
-        else
-        {
-            dcl::network::message::message_vector_t::iterator sent_message_it = packet_ptr->get_messages().end();
-            sent_message_it--;
-
-            if( (*sent_message_it)->waiting_response() )
+            if( (*recv_message_it)->get_type() == dcl::network::message::msg_error_message )
             {
-                (*sent_message_it)->parse_response( (*recv_message_it)->get_payload() );
+                received_messages_.push_back( *recv_message_it );
+            }
+            else
+            {
+                boost::shared_ptr<base_message> sent_message_sp =
+                    packet_ptr->get_message( (*recv_message_it)->get_id() );
+
+                sent_message_sp->parse_response( (*recv_message_it)->get_payload() );
             }
         }
+
+        //dcl::network::message::message_vector_t::iterator recv_message_it = recv_packet_ptr->get_messages().begin();
+
+        //if( (*recv_message_it)->get_type() == dcl::network::message::msg_error_message )
+        //{
+        //    received_messages_.insert( received_messages_.end(),
+        //                               recv_packet_ptr->get_messages().begin(),
+        //                               recv_packet_ptr->get_messages().end() );
+        //}
+        //else
+        //{
+        //    dcl::network::message::message_vector_t::iterator sent_message_it = packet_ptr->get_messages().end();
+        //    sent_message_it--;
+
+        //    if( (*sent_message_it)->waiting_response() )
+        //    {
+        //        (*sent_message_it)->parse_response( (*recv_message_it)->get_payload() );
+        //    }
+        //}
     }
 
     typedef boost::shared_ptr<dcl::network::message::base_message> message_sp_t;

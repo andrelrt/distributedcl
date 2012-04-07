@@ -52,12 +52,13 @@ void packet::parse( bool is_request )
     uint8_t* it = buffer_ptr_ + sizeof( packet_header );
 
     messages_.clear();
+    message_map_.clear();
 
     while( length != 0 )
     {
         boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length, is_request ) );
 
-        messages_.push_back( message_sp );
+        add_message( message_sp );
 
         it += message_sp->get_size();
         length -= static_cast< uint32_t >( message_sp->get_size() );
@@ -72,7 +73,7 @@ void packet::add( boost::shared_ptr<base_message> message_sp )
 {
     length_ += message_sp->get_size();
 
-    messages_.push_back( message_sp );
+    add_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void packet::create_packet()
@@ -96,6 +97,16 @@ void packet::create_packet()
         header_ptr_->length = host_to_network( static_cast< uint32_t >( length_ ) );
         header_ptr_->message_count = static_cast<uint8_t>( messages_.size() );
     }
+
+    //{
+    //    std::stringstream file;
+
+    //    file << "packet_" << header_ptr_->sequence_number << ".dump";
+
+    //    FILE* fp = fopen( file.str().c_str(), "wb" );
+    //    fwrite( buffer_ptr_, 1, length_, fp );
+    //    fclose( fp );
+    //}
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

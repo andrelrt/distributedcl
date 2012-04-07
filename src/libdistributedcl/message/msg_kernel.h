@@ -99,7 +99,7 @@ class dcl_message< msgEnqueueNDRangeKernel > : public base_message
 {
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
-        base_message( msgEnqueueNDRangeKernel, false, 
+        base_message( msgEnqueueNDRangeKernel, true, 
                       sizeof( msgEnqueueNDRangeKernel_request ) - sizeof( dcl::remote_id_t ), 
                       sizeof( dcl::remote_id_t ) ),
         return_event_( false ), kernel_id_( 0xffff ), command_queue_id_( 0xffff ), event_id_( 0xffff ){}

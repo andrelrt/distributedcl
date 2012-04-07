@@ -47,14 +47,27 @@ clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
         return NULL;
     }
 
-    if( ((flags & (CL_MEM_USE_HOST_PTR|CL_MEM_COPY_HOST_PTR)) && (host_ptr == NULL)) ||
-        ((flags & ~(CL_MEM_USE_HOST_PTR|CL_MEM_COPY_HOST_PTR)) && (host_ptr != NULL)) )
+    if( flags & (CL_MEM_USE_HOST_PTR|CL_MEM_COPY_HOST_PTR) )
     {
-        if( errcode_ret != NULL )
+        if( host_ptr == NULL )
         {
-            *errcode_ret = CL_INVALID_HOST_PTR;
+            if( errcode_ret != NULL )
+            {
+                *errcode_ret = CL_INVALID_HOST_PTR;
+            }
+            return NULL;
         }
-        return NULL;
+    }
+    else
+    {
+        if( host_ptr != NULL )
+        {
+            if( errcode_ret != NULL )
+            {
+                *errcode_ret = CL_INVALID_HOST_PTR;
+            }
+            return NULL;
+        }
     }
 
     if( ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_READ_WRITE) &&

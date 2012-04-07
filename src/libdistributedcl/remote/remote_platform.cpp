@@ -44,7 +44,7 @@ generic_context* remote_platform::create_context( const devices_t& devices ) con
 {
     dcl_message< msgCreateContext >* msg_ptr = new dcl_message< msgCreateContext >();
 
-    msg_ptr->set_device_count( devices.size() );
+    msg_ptr->set_device_count( static_cast<uint32_t>( devices.size() ) );
 
     for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
     {

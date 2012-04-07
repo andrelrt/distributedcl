@@ -30,10 +30,37 @@
 #include "msg_command_queue.h"
 #include "msg_memory.h"
 #include "msg_event.h"
+#include <boost/interprocess/sync/scoped_lock.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace message {
+//-----------------------------------------------------------------------------
+typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
+
+uint16_t base_message::next_id_ = 0;
+boost::interprocess::interprocess_mutex base_message::mutex_;
+//-----------------------------------------------------------------------------
+base_message::base_message( message_type type, bool wait_response,
+                            std::size_t request_size, std::size_t response_size ) :
+        wait_response_( wait_response ), buffer_ptr_( NULL ),
+        size_( request_size + sizeof( message_header ) ), type_( type ),
+        request_size_( request_size ), response_size_( response_size ), response_( false )
+{
+    scoped_lock_t lock( mutex_ );
+
+    id_ = next_id_++;
+}
+//-----------------------------------------------------------------------------
+base_message::base_message( const base_message& copy ) : 
+        wait_response_( copy.wait_response_ ), buffer_ptr_( copy.buffer_ptr_ ),
+        size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ), 
+        response_size_( copy.response_size_ ), response_( copy.response_ )
+{
+    scoped_lock_t lock( mutex_ );
+
+    id_ = copy.id_;
+}
 //-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
 #define MSG( x ) case x: ret_ptr=reinterpret_cast<base_message*>(new dcl_message<x>());break

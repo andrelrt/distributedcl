@@ -83,7 +83,7 @@ public:
         }
     }
 
-    inline remote_id_t get( const DCL_TYPE_T* object_ptr ) const
+    inline remote_id_t get( DCL_TYPE_T* object_ptr, bool create_new = false )
     {
         typename object_map_t::const_iterator it;
 
@@ -100,7 +100,10 @@ public:
             return it->first;
         }
 
-        throw library_exception( "object_manager<>::get : Invalid object pointer", reinterpret_cast<int>( object_ptr ) );
+        if( !create_new )
+            throw library_exception( "object_manager<>::get : Invalid object pointer", reinterpret_cast<int>( object_ptr ) );
+
+        return add( object_ptr );
     }
 
     inline DCL_TYPE_T* get( remote_id_t object_id ) const

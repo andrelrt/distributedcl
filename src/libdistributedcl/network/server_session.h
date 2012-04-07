@@ -86,8 +86,8 @@ private:
     {
         //TODO: send hankshake base_messages
         session_t::set_session_id( 1 );
-        session_t::set_sequence_number( 1 );
-        session_t::set_remote_sequence_number( 1 );
+        session_t::set_sequence_number( 100 );
+        session_t::set_remote_sequence_number( 200 );
 
         while( !boost::this_thread::interruption_requested() )
         {

@@ -23,16 +23,16 @@
 #ifndef _DCL_NETWORK_MESSAGE_PACKET_H_
 #define _DCL_NETWORK_MESSAGE_PACKET_H_
 
+#include <map>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include "distributedcl_internal.h"
+#include "message.h"
 #include "network/platform.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-class base_message;
 typedef std::vector< boost::shared_ptr<base_message> > message_vector_t;
 //-----------------------------------------------------------------------------
 class packet
@@ -71,6 +71,11 @@ public:
     inline uint16_t get_sequence_number() const
     {
         return header_ptr_->sequence_number;
+    }
+
+    inline boost::shared_ptr<base_message> get_message( uint32_t id )
+    {
+        return message_map_[ id ];
     }
 
     inline message_vector_t& get_messages()
@@ -133,11 +138,20 @@ private:
     };
     #pragma pack( pop )
 
+    typedef std::map< uint32_t, boost::shared_ptr<base_message> > message_map_t;
+
+    inline void add_message( boost::shared_ptr<base_message> message_sp )
+    {
+        messages_.push_back( message_sp );
+        message_map_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+    }
+
     std::size_t length_;
     std::size_t buffer_size_;
     packet_header* header_ptr_;
     uint8_t* buffer_ptr_;
     message_vector_t messages_;
+    message_map_t message_map_;
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

@@ -24,6 +24,7 @@
 #define _DCL_MESSAGE_H_
 
 #include "distributedcl_internal.h"
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 //-----------------------------------------------------------------------------
 #define MSG_PARAMETER_GET( type_t, var_att, name_m ) \
     inline const type_t get_##name_m() const{return var_att;}
@@ -153,9 +154,9 @@ public:
         message_header* header = reinterpret_cast< message_header* >( buffer_ptr_ );
         header->version = message_v1_0;
         header->type = type_;
-        header->request = response_ ? 0 : 1;
-        header->id = 0;
-        header->length = static_cast< uint32_t >( host_to_network( static_cast< uint32_t >( size_ ) ) );
+        header->request = host_to_network( static_cast<uint16_t>( response_ ? 0 : 1 ) );
+        header->id = host_to_network( id_ );
+        header->length = host_to_network( static_cast< uint32_t >( size_ ) );
 
         if( !response_ )
         {
@@ -182,20 +183,18 @@ public:
         return buffer_ptr_ + sizeof( message_header );
     }
 
-    virtual void parse_response( const void* payload_ptr ){}
+    inline uint16_t get_id() const
+    {
+        return id_;
+    }
+
+    virtual void parse_response( const void* payload_ptr ){} //, uint32_t size
 
 protected:
-    base_message( message_type type, bool wait_response = false, std::size_t request_size = 0, std::size_t response_size = 0 ) : 
-        wait_response_( wait_response ), buffer_ptr_( NULL ),
-        size_( request_size + sizeof( message_header ) ), type_( type ),
-        request_size_( request_size ), response_size_( response_size ), response_( false )
-    {}
+    base_message( message_type type, bool wait_response = false,
+                  std::size_t request_size = 0, std::size_t response_size = 0 );
 
-    base_message( const base_message& copy ) : 
-        wait_response_( copy.wait_response_ ), buffer_ptr_( copy.buffer_ptr_ ),
-        size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ), 
-        response_size_( copy.response_size_ ), response_( copy.response_ )
-    {}
+    base_message( const base_message& copy );
 
     virtual void create_request( void* payload_ptr ){}
     virtual void create_response( void* payload_ptr ){}
@@ -227,6 +226,7 @@ protected:
     }
 
 private:
+    uint16_t id_;
     bool wait_response_;
     uint8_t* buffer_ptr_;
     std::size_t size_;
@@ -234,6 +234,9 @@ private:
     std::size_t request_size_;
     std::size_t response_size_;
     bool response_;
+
+    static uint16_t next_id_;
+    static boost::interprocess::interprocess_mutex mutex_;
 
     enum{ message_v1_0 = 0x10 };
 
@@ -254,10 +257,13 @@ private:
         buffer_ptr_ = msg_buffer_ptr;
         size_ = size;
 
+        const message_header* header_ptr = reinterpret_cast< const message_header* >( msg_buffer_ptr );
+        id_ = network_to_host( header_ptr->id );
+
         if( is_request )
             parse_request( get_payload() );
-        else
-            parse_response( get_payload() );
+        //else
+        //    parse_response( get_payload() );
     }
 };
 //-----------------------------------------------------------------------------

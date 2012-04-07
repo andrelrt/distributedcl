@@ -1042,5 +1042,8 @@ main(int argc, char * argv[])
         clMatrixMulDouble.printStats();
     }
 
+    std::string pause;
+    std::cin >> pause;
+
     return SDK_SUCCESS;
 }

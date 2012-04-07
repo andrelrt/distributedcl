@@ -56,7 +56,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     msg_ptr->get_global().copy( global );
     msg_ptr->get_local().copy( local );
 
-    msg_ptr->set_return_event( (event_ptr != NULL) );
+    msg_ptr->set_return_event( (event_ptr != NULL)? true : false );
 
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {

@@ -59,17 +59,7 @@ void msgCreateContext_command::execute()
     composite_context* context_ptr =
         reinterpret_cast<composite_context*>( platform.create_context( devices ) );
 
-    remote_id_t id;
-    try
-    {
-        id = server_platform::get_instance().get_context_manager().get( context_ptr );
-    }
-    catch( dcl::library_exception& )
-    {
-        id = server_platform::get_instance().get_context_manager().add( context_ptr );
-    }
-
-    message_.set_remote_id( id );
+    message_.set_remote_id( server_platform::get_instance().get_context_manager().get( context_ptr, true ) );
 }
 //-----------------------------------------------------------------------------
 void msgCreateContextFromType_command::execute()
@@ -82,17 +72,7 @@ void msgCreateContextFromType_command::execute()
     composite_context* context_ptr =
         reinterpret_cast<composite_context*>( platform.create_context( device_type ) );
 
-    remote_id_t id;
-    try
-    {
-        id = server_platform::get_instance().get_context_manager().get( context_ptr );
-    }
-    catch( dcl::library_exception& )
-    {
-        id = server_platform::get_instance().get_context_manager().add( context_ptr );
-    }
-
-    message_.set_remote_id( id );
+    message_.set_remote_id( server_platform::get_instance().get_context_manager().get( context_ptr, true ) );
 }
 //-----------------------------------------------------------------------------
 void msgGetContextInfo_command::execute()
@@ -106,20 +86,10 @@ void msgGetContextInfo_command::execute()
     message_.set_device_count( static_cast<uint32_t>( devices_ref.size() ) );
 
     devices_t::const_iterator it;
-    remote_id_t device_id;
 
     for( it = devices_ref.begin(); it != devices_ref.end(); it++ )
     {
-        try
-        {
-            device_id = server_platform::get_instance().get_device_manager().get( *it );
-        }
-        catch( dcl::library_exception& )
-        {
-            device_id = server_platform::get_instance().get_device_manager().add( *it );
-        }
-
-        message_.add_device( device_id );
+        message_.add_device( server_platform::get_instance().get_device_manager().get( *it, true ) );
     }
 }
 //-----------------------------------------------------------------------------

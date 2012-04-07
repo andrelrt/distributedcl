@@ -118,14 +118,14 @@ public:
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
 
-    inline dcl::remote_ids_t& get_devices()
+    inline const dcl::remote_ids_t& get_devices() const
     {
         return devices_;
     }
 
     inline uint32_t get_device_count()
     {
-        return devices_.size();
+        return static_cast<uint32_t>( devices_.size() );
     }
 
     inline void set_device_count( uint32_t count )
@@ -154,8 +154,8 @@ protected:
 
     inline void update_response_size()
     {
-        set_size( sizeof(msgGetContextInfo_response) - sizeof(dcl::remote_id_t) +
-                  devices_.size() * sizeof(dcl::remote_id_t) );
+        set_response_size( sizeof(msgGetContextInfo_response) - sizeof(dcl::remote_id_t) +
+                           devices_.size() * sizeof(dcl::remote_id_t) );
     }
 
     virtual void create_request( void* payload_ptr );

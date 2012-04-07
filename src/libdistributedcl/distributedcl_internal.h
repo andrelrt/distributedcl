@@ -37,8 +37,9 @@
 #include <arpa/inet.h>
 #endif
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "library_exception.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace info {
