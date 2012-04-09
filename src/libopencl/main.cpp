@@ -21,25 +21,52 @@
  */
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
+#include <boost/thread.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include "icd/icd_object_manager.h"
 #include "composite/opencl_composite.h"
 #include "composite/composite_platform.h"
 using dcl::icd::icd_object_manager;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
+
+#if defined( WIN32 )
+#define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
+#else
+#define OPENCL_LIBRARY  "libOpenCL.so"
+#endif
+//-----------------------------------------------------------------------------
+static boost::thread* library_thread_ptr = NULL;
+static boost::interprocess::interprocess_semaphore* wait_ptr = NULL;
+void library_thread();
 //-----------------------------------------------------------------------------
 void setup_library()
 {
+    wait_ptr = new boost::interprocess::interprocess_semaphore( 0 );
+    library_thread_ptr = new boost::thread( library_thread );
+}
+//-----------------------------------------------------------------------------
+void free_library()
+{
+    wait_ptr->post();
+    library_thread_ptr->join();
+
+    delete library_thread_ptr;
+    delete wait_ptr;
+}
+//-----------------------------------------------------------------------------
+void library_thread()
+{
+	//opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
     opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
 
     const composite_platform& platform_ref = opencl_composite::get_instance().get_platform();
     composite_platform* platform_ptr = const_cast< composite_platform* >( &platform_ref );
 
     icd_object_manager::get_instance().get_cl_id< composite_platform >( platform_ptr );
-}
-//-----------------------------------------------------------------------------
-void free_library()
-{
+
+    wait_ptr->wait();
+
     opencl_composite::get_instance().free_all();
 }
 //-----------------------------------------------------------------------------
