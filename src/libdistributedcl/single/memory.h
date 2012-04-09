@@ -31,19 +31,10 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class memory_object :
+class memory : 
     public dcl::info::generic_memory,
     public opencl_object< cl_mem >,
-    public context_object< memory_object >
-{
-protected:
-    memory_object( const context& context_ref, cl_mem_object_type type, 
-                   const void* host_ptr, size_t size, cl_mem_flags flags );
-    virtual ~memory_object();
-};
-//-----------------------------------------------------------------------------
-class memory : 
-    public memory_object
+    public context_object< memory >
 {
 public:
     virtual ~memory(){}

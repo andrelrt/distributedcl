@@ -32,20 +32,9 @@ using dcl::info::generic_command_queue;
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-memory_object::memory_object( const context& context_ref, cl_mem_object_type type, 
-                              const void* host_ptr, size_t size, cl_mem_flags flags ) :
-    generic_memory( type, host_ptr, size, flags ),
-    opencl_object< cl_mem >( context_ref.get_opencl() )
-{
-}
-//-----------------------------------------------------------------------------
-memory_object::~memory_object()
-{
-    opencl_.clReleaseMemObject( id_ );
-}
-//-----------------------------------------------------------------------------
 memory::memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags ) :
-    memory_object( context_ref, CL_MEM_OBJECT_BUFFER, host_ptr, size, flags )
+    generic_memory( CL_MEM_OBJECT_BUFFER, host_ptr, size, flags ),
+    opencl_object< cl_mem >( context_ref.get_opencl() )
 {
     if( opencl_.loaded() )
     {

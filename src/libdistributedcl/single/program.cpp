@@ -87,20 +87,28 @@ void program::build( const devices_t& devices, const std::string& build_options,
     {
         cl_int error_code;
         cl_uint device_count = static_cast< cl_uint >( devices.size() );
-        boost::scoped_array< cl_device_id > device_list( new cl_device_id[ device_count ] );
 
         local_info_.build_options_.assign( build_options );
 
-        int i = 0;
-        for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+        if( device_count != 0 )
         {
-            const device* device_ptr = reinterpret_cast<const device*>( *it );
-            device_list[ i++ ] = device_ptr->get_id();
-        }
+            boost::scoped_array< cl_device_id > device_list( new cl_device_id[ device_count ] );
+
+            int i = 0;
+            for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+            {
+                device_list[ i++ ] = reinterpret_cast<const device*>( *it )->get_id();
+            }
         
-        //TODO: Use the callback function
-        error_code = opencl_.clBuildProgram( id_, device_count, device_list.get(), 
-                                             build_options.c_str(), NULL, NULL );
+            //TODO: Use the callback function
+            error_code = opencl_.clBuildProgram( id_, device_count, device_list.get(), 
+                                                 build_options.c_str(), NULL, NULL );
+        }
+        else
+        {
+            //TODO: Use the callback function
+            error_code = opencl_.clBuildProgram( id_, 0, NULL, build_options.c_str(), NULL, NULL );
+        }
 
         if( error_code != CL_SUCCESS )
         {

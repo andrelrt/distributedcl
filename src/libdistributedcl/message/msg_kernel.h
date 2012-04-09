@@ -158,10 +158,10 @@ private:
     {
         dcl::remote_id_t kernel_id_;
         dcl::remote_id_t command_queue_id_;
-        uint16_t dimensions_;
-        uint16_t offset_[ 3 ];
-        uint16_t global_[ 3 ];
-        uint16_t local_[ 3 ];
+        uint32_t dimensions_;
+        uint32_t offset_[ 3 ];
+        uint32_t global_[ 3 ];
+        uint32_t local_[ 3 ];
         uint16_t return_event_:1;
         uint16_t event_count_:15;
         dcl::remote_id_t events_[ 1 ];

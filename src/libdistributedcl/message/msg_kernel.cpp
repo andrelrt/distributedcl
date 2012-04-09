@@ -81,9 +81,9 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
 
     for( size_t i = 0; i < global_.get_dimensions(); i++ )
     {
-        request_ptr->offset_[ i ] = host_to_network( static_cast<uint16_t>( offset_.get_range()[ i ] ) );
-        request_ptr->global_[ i ] = host_to_network( static_cast<uint16_t>( global_.get_range()[ i ] ) );
-        request_ptr->local_[ i ]  = host_to_network( static_cast<uint16_t>( local_.get_range()[ i ] ) );
+        request_ptr->offset_[ i ] = host_to_network( static_cast<uint32_t>( offset_.get_range()[ i ] ) );
+        request_ptr->global_[ i ] = host_to_network( static_cast<uint32_t>( global_.get_range()[ i ] ) );
+        request_ptr->local_[ i ]  = host_to_network( static_cast<uint32_t>( local_.get_range()[ i ] ) );
     }
 
     request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );

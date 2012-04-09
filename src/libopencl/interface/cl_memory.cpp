@@ -34,6 +34,61 @@ using dcl::composite::composite_context;
 using dcl::composite::composite_command_queue;
 using dcl::composite::composite_event;
 //-----------------------------------------------------------------------------
+static bool check_flags( cl_mem_flags flags, void* host_ptr, cl_int* errcode_ret )
+{
+    if( flags & (CL_MEM_USE_HOST_PTR|CL_MEM_COPY_HOST_PTR) )
+    {
+        if( host_ptr == NULL )
+        {
+            if( errcode_ret != NULL )
+            {
+                *errcode_ret = CL_INVALID_HOST_PTR;
+            }
+            return false;
+        }
+    }
+    else
+    {
+        if( host_ptr != NULL )
+        {
+            if( errcode_ret != NULL )
+            {
+                *errcode_ret = CL_INVALID_HOST_PTR;
+            }
+            return false;
+        }
+    }
+
+    if( ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_READ_WRITE) &&
+        ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_WRITE_ONLY) &&
+        ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_READ_ONLY) &&
+        ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != 0) )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return false;
+    }
+
+    if( (flags & CL_MEM_USE_HOST_PTR) && 
+        (flags & (CL_MEM_ALLOC_HOST_PTR|CL_MEM_COPY_HOST_PTR)) )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return false;
+    }
+
+    return true;
+}
+//-----------------------------------------------------------------------------
+static bool check_image_format( const cl_image_format* image_format )
+{
+    return true;
+}
+//-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_mem CL_API_CALL
 clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
                 void* host_ptr, cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
@@ -47,48 +102,8 @@ clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
         return NULL;
     }
 
-    if( flags & (CL_MEM_USE_HOST_PTR|CL_MEM_COPY_HOST_PTR) )
+    if( !check_flags( flags, host_ptr, errcode_ret ) )
     {
-        if( host_ptr == NULL )
-        {
-            if( errcode_ret != NULL )
-            {
-                *errcode_ret = CL_INVALID_HOST_PTR;
-            }
-            return NULL;
-        }
-    }
-    else
-    {
-        if( host_ptr != NULL )
-        {
-            if( errcode_ret != NULL )
-            {
-                *errcode_ret = CL_INVALID_HOST_PTR;
-            }
-            return NULL;
-        }
-    }
-
-    if( ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_READ_WRITE) &&
-        ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_WRITE_ONLY) &&
-        ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != CL_MEM_READ_ONLY) &&
-        ((flags & (CL_MEM_READ_WRITE|CL_MEM_WRITE_ONLY|CL_MEM_READ_ONLY)) != 0) )
-    {
-        if( errcode_ret != NULL )
-        {
-            *errcode_ret = CL_INVALID_VALUE;
-        }
-        return NULL;
-    }
-
-    if( (flags & CL_MEM_USE_HOST_PTR) && 
-        (flags & (CL_MEM_ALLOC_HOST_PTR|CL_MEM_COPY_HOST_PTR)) )
-    {
-        if( errcode_ret != NULL )
-        {
-            *errcode_ret = CL_INVALID_VALUE;
-        }
         return NULL;
     }
 
@@ -146,6 +161,29 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
                  size_t image_height, size_t image_row_pitch, void* host_ptr,
                  cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
+    if( !check_flags( flags, host_ptr, errcode_ret ) )
+    {
+        return NULL;
+    }
+
+    if( !check_image_format( image_format ) )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_IMAGE_FORMAT_DESCRIPTOR;
+        }
+        return NULL;
+    }
+
+    if( (image_width == 0) || (image_height == 0) )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_IMAGE_SIZE;
+        }
+        return NULL;
+    }
+
     if( errcode_ret != NULL )
     {
         *errcode_ret = CL_INVALID_VALUE;
