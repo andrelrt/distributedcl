@@ -25,7 +25,6 @@
 
 #include "message.h"
 #include "info/device_info.h"
-#include "remote/remote_device.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {

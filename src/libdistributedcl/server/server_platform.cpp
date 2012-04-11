@@ -31,7 +31,6 @@ using dcl::network::message::msgGetDeviceIDs;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
 using dcl::composite::composite_device;
-using dcl::remote::remote_device;
 using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {

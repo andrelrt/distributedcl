@@ -45,7 +45,11 @@ void remote_program::build( const devices_t& devices, const std::string& build_o
 {
     dcl_message< msgBuildProgram >* msg_ptr = new dcl_message< msgBuildProgram >();
 
-    msg_ptr->set_devices( devices );
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+    {
+        msg_ptr->add_device( reinterpret_cast<remote_device*>( *it )->get_remote_id() );
+    }
+
     msg_ptr->set_program_id( get_remote_id() );
     msg_ptr->set_build_options( build_options );
 

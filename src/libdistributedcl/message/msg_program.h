@@ -105,7 +105,10 @@ public:
         update_request_size();
     }
 
-    void set_devices( const devices_t& devices );
+    void add_device( dcl::remote_id_t device_id )
+    {
+        devices_.push_back( device_id );
+    }
 
 private:
     std::string build_options_;

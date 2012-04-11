@@ -21,10 +21,8 @@
  */
 //-----------------------------------------------------------------------------
 #include "msg_program.h"
-#include "remote/remote_device.h"
 using dcl::remote_id_t;
 using dcl::remote_ids_t;
-using dcl::remote::remote_device;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -119,20 +117,6 @@ void dcl_message< msgBuildProgram >::parse_request( const void* payload_ptr )
 
     build_options_.assign( reinterpret_cast<const char*>( build_options_ptr ), 
                            network_to_host( request_ptr->build_options_len_ ) );
-}
-//-----------------------------------------------------------------------------
-void dcl_message< msgBuildProgram >::set_devices( const devices_t& devices )
-{
-    devices_.clear();
-    devices_.reserve( devices.size() );
-
-    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
-    {
-        remote_device* remote_device_ptr = reinterpret_cast<remote_device*>( *it );
-        devices_.push_back( remote_device_ptr->get_remote_id() );
-    }
-
-    update_request_size();
 }
 //-----------------------------------------------------------------------------
 // msgGetProgramBuildInfo
