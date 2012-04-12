@@ -22,6 +22,9 @@
     <Filter Include="message">
       <UniqueIdentifier>{b3a2455e-4d8d-4792-8bd6-0bac112e6dd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{08cdab44-450c-4af8-8122-f4e30409f676}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="distributedcl_internal.h" />
@@ -233,6 +236,15 @@
     <ClInclude Include="server\server_event.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="config\common_config.h">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="config\client_config.h">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="config\server_config.h">
+      <Filter>config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -366,6 +378,9 @@
     </ClCompile>
     <ClCompile Include="server\server_event.cpp">
       <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="config\common_config.cpp">
+      <Filter>config</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

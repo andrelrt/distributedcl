@@ -20,15 +20,18 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <iostream>
 #include <stdio.h>
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "network/server.h"
 #include "network/tcp_transport.h"
 #include "composite/opencl_composite.h"
+#include "config/server_config.h"
 using dcl::network::server::server;
 using dcl::network::platform::tcp_transport;
 using dcl::composite::opencl_composite;
+using dcl::config::server_config;
 
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
@@ -48,6 +51,12 @@ int main( int argc, char* argv[] )
 	
 	try
 	{
+        // Load config ------------------------------------------------------------
+        server_config config;
+        config.parse( argc, argv );
+
+        std::cout << config.get_description() << std::endl;
+
 		// Load OpenCL Libraries --------------------------------------------------
 		opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
 

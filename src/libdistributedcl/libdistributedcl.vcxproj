@@ -29,6 +29,9 @@
     <ClInclude Include="composite\composite_platform.h" />
     <ClInclude Include="composite\composite_program.h" />
     <ClInclude Include="composite\opencl_composite.h" />
+    <ClInclude Include="config\client_config.h" />
+    <ClInclude Include="config\common_config.h" />
+    <ClInclude Include="config\server_config.h" />
     <ClInclude Include="info\command_queue_info.h" />
     <ClInclude Include="info\context_info.h" />
     <ClInclude Include="info\dcl_objects.h" />
@@ -99,6 +102,7 @@
     <ClCompile Include="composite\composite_platform.cpp" />
     <ClCompile Include="composite\composite_program.cpp" />
     <ClCompile Include="composite\opencl_composite.cpp" />
+    <ClCompile Include="config\common_config.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\msg_command_queue.cpp" />
     <ClCompile Include="message\msg_device.cpp" />
