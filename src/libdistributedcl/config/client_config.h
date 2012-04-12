@@ -32,7 +32,12 @@ class client_config :
     public common_config
 {
 public:
-    client_config() : common_config( "DistributedCL client library" ){}
+    client_config() :
+        common_config( "DistributedCL client library" )
+    {
+        local_ = false;
+    }
+
     virtual ~client_config(){}
 };
 //-----------------------------------------------------------------------------

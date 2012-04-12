@@ -26,9 +26,11 @@
 #include "icd/icd_object_manager.h"
 #include "composite/opencl_composite.h"
 #include "composite/composite_platform.h"
+#include "config/client_config.h"
 using dcl::icd::icd_object_manager;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
+using dcl::config::client_config;
 
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
@@ -57,13 +59,48 @@ void free_library()
 //-----------------------------------------------------------------------------
 void library_thread()
 {
-	//opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
-    opencl_composite::get_instance().add_remote( "127.0.0.1:4791" );
+    try
+    {
+        // Load config ------------------------------------------------------------
+        std::string filepath;
+        client_config::get_config_path( filepath, "libdcl.conf" );
 
-    const composite_platform& platform_ref = opencl_composite::get_instance().get_platform();
-    composite_platform* platform_ptr = const_cast< composite_platform* >( &platform_ref );
+        client_config config;
 
-    icd_object_manager::get_instance().get_cl_id< composite_platform >( platform_ptr );
+        try
+        {
+            config.parse( filepath );
+        }
+        catch( boost::program_options::error& ex )
+        {
+            std::cerr << ex.what() << std::endl << std::endl;
+            std::cerr << "Error parsing config file. Running with default parameters." << std::endl;
+        }
+
+	    // Load OpenCL Libraries --------------------------------------------------
+        if( config.load_local() )
+        {
+		    opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
+        }
+
+	    // Connect remote DistributedCL servers --------------------------------------
+        const std::vector< std::string >& servers = config.get_servers();
+        std::vector< std::string >::const_iterator it;
+
+        for( it = servers.begin(); it != servers.end(); it++ )
+        {
+            opencl_composite::get_instance().add_remote( *it );
+        }
+
+        const composite_platform& platform_ref = opencl_composite::get_instance().get_platform();
+        composite_platform* platform_ptr = const_cast< composite_platform* >( &platform_ref );
+
+        icd_object_manager::get_instance().get_cl_id< composite_platform >( platform_ptr );
+    }
+	catch( dcl::library_exception& ex )
+	{
+        std::cerr << "Exception: " << ex.text() << " -- " << ex.get_error() << std::endl;
+	}
 
     wait_ptr->wait();
 

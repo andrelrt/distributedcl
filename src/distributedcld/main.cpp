@@ -21,7 +21,6 @@
  */
 //-----------------------------------------------------------------------------
 #include <iostream>
-#include <stdio.h>
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
 #include "network/server.h"
@@ -32,6 +31,8 @@ using dcl::network::server::server;
 using dcl::network::platform::tcp_transport;
 using dcl::composite::opencl_composite;
 using dcl::config::server_config;
+
+#define SERVER_CONFIG_FILE  "dcld.conf"
 
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
@@ -52,13 +53,46 @@ int main( int argc, char* argv[] )
 	try
 	{
         // Load config ------------------------------------------------------------
-        server_config config;
-        config.parse( argc, argv );
+        std::string filepath;
+        server_config::get_config_path( filepath, "dcld.conf" );
 
-        std::cout << config.get_description() << std::endl;
+        server_config config;
+
+        try
+        {
+            config.parse( argc, argv );
+        }
+        catch( boost::program_options::error& ex )
+        {
+            std::cerr << ex.what() << std::endl << std::endl;
+            std::cerr << config.get_description() << std::endl;
+            return -1;
+        }
+
+        try
+        {
+            config.parse( filepath );
+        }
+        catch( boost::program_options::error& ex )
+        {
+            std::cerr << ex.what() << std::endl << std::endl;
+            std::cerr << "Error parsing config file." << std::endl << "Running with default parameters." << std::endl;
+        }
 
 		// Load OpenCL Libraries --------------------------------------------------
-		opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
+        if( config.load_local() )
+        {
+		    opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
+        }
+
+	    // Connect remote DistributedCL servers --------------------------------------
+        const std::vector< std::string >& servers = config.get_servers();
+        std::vector< std::string >::const_iterator it;
+
+        for( it = servers.begin(); it != servers.end(); it++ )
+        {
+            opencl_composite::get_instance().add_remote( *it );
+        }
 
 		// Start TCP Network Server -----------------------------------------------
 		typedef server< tcp_transport > tcp_server_t;
@@ -76,7 +110,7 @@ int main( int argc, char* argv[] )
 	}
 	catch( dcl::library_exception& ex )
 	{
-		printf( "Exception: %s (%d)\n", ex.text().c_str(), ex.get_error() );
+        std::cerr << "Exception: " << ex.text() << " -- " << ex.get_error() << std::endl;
 	}
 
 #if defined( WIN32 )

@@ -20,7 +20,12 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#if defined( WIN32 )
+#include <Shlobj.h>
+#endif
+#include <boost/filesystem.hpp>
 #include "common_config.h"
+using boost::program_options::error;
 using boost::program_options::value;
 using boost::program_options::store;
 using boost::program_options::notify;
@@ -32,13 +37,15 @@ namespace dcl {
 namespace config {
 //-----------------------------------------------------------------------------
 common_config::common_config( const std::string& parameters_name ) :
-    parameters_( parameters_name )
+    cpu_only_( false ), gpu_only_( false ), parameters_( parameters_name )
 {
     parameters_.add_options()
         ( "help,h", "Show this message" )
-        ( "local,l", "Load local OpenCL libraries" )
-        ( "server,s", value<std::string>()->multitoken(),
+        ( "local,l", value< bool >( &local_ ), "Load local OpenCL libraries" )
+        ( "server,s", value< std::vector<std::string> >( &servers_ )->multitoken(),
           "Connect DistributedCL servers (address:port)" )
+        ( "cpu-only,c", value< bool >( &cpu_only_ ), "Use only CPU devices" )
+        ( "gpu-only,g", value< bool >( &gpu_only_ ), "Use only GPU devices" )
         ;
 }
 //-----------------------------------------------------------------------------
@@ -46,12 +53,52 @@ void common_config::parse( int argc, char *argv[] )
 {
     store( parse_command_line( argc, argv, parameters_ ), config_ );
     notify( config_ );
+
+    if( cpu_only_ && gpu_only_ )
+    {
+        throw boost::program_options::error( "Cannot use --cpu-only and --gpu-only together." );
+    }
 }
 //-----------------------------------------------------------------------------
 void common_config::parse( const std::string& filename )
 {
-    store( parse_config_file<char>( filename.c_str(), parameters_ ), config_ );
-    notify( config_ );
+    if( boost::filesystem::exists( filename ) )
+    {
+        store( parse_config_file<char>( filename.c_str(), parameters_ ), config_ );
+        notify( config_ );
+
+        if( cpu_only_ && gpu_only_ )
+        {
+            throw boost::program_options::error( "Cannot use --cpu-only and --gpu-only together." );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+void common_config::get_config_path( std::string& filepath, const std::string& filename, bool user )
+{
+#if defined( WIN32 )
+
+    char path[ MAX_PATH ];
+
+    HRESULT result = SHGetFolderPathA( NULL,
+                                       user ? CSIDL_APPDATA : CSIDL_COMMON_APPDATA,
+                                       NULL, 0, path );
+
+    filepath.clear();
+
+    if( result == S_OK )
+    {
+        filepath.assign( path );
+        filepath.append( "\\DistributedCL\\" );
+        filepath.append( filename );
+    }
+
+#else
+
+    filepath.assign( user ? "~/.dcl/" : "/etc/dcl/" );
+    filepath.append( filename );
+
+#endif
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::config

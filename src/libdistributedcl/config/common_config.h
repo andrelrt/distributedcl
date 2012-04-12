@@ -41,7 +41,24 @@ public:
         return parameters_;
     }
 
+    inline bool load_local() const
+    {
+        return local_;
+    }
+
+    inline const std::vector< std::string > get_servers() const
+    {
+        return servers_;
+    }
+
+    static void get_config_path( std::string& filepath, const std::string& filename, bool user = false );
+
 protected:
+    bool local_;
+    bool cpu_only_;
+    bool gpu_only_;
+    std::vector< std::string > servers_;
+
     common_config( const std::string& parameters_name );
     virtual ~common_config(){}
 

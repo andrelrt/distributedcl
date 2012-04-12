@@ -40,6 +40,8 @@ public:
            boost::program_options::value< uint16_t >( &port_ )->default_value( 4791 ),
           "Connection port" )
         ;
+
+        local_ = true;
     }
 
     virtual ~server_config(){}
