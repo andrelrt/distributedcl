@@ -7,12 +7,12 @@ Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "DCLModel", "DCLModel\DCLMod
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdistributedcl", "libdistributedcl\libdistributedcl.vcxproj", "{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "distributedcld", "distributedcld\distributedcld.vcxproj", "{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dcld", "distributedcld\distributedcld.vcxproj", "{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8} = {5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libopencl", "libopencl\libopencl.vcxproj", "{FA62F5E7-E301-4202-BC5D-D817FC32A823}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdcl", "libopencl\libopencl.vcxproj", "{FA62F5E7-E301-4202-BC5D-D817FC32A823}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8} = {5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}
 	EndProjectSection

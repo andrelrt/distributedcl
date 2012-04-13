@@ -31,7 +31,7 @@ using dcl::composite::composite_event;
 using dcl::composite::composite_context;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_command_queue;
-using dcl::info::generic_memory;
+using dcl::info::generic_memory_object;
 using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -45,9 +45,10 @@ void msgCreateBuffer_command::execute()
 
     composite_context* context_ptr = server.get_context_manager().get( context_id );
 
-    generic_memory* ptr = context_ptr->create_buffer( message_.get_buffer_pointer(),
-                                                      message_.get_buffer_size(),
-                                                      message_.get_flags() );
+    generic_memory_object* ptr =
+        context_ptr->create_buffer( message_.get_buffer_pointer(),
+                                    message_.get_buffer_size(),
+                                    message_.get_flags() );
 
     composite_memory* buffer_ptr = reinterpret_cast<composite_memory*>( ptr );
 

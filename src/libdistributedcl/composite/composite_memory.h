@@ -32,15 +32,31 @@ namespace composite {
 //-----------------------------------------------------------------------------
 class composite_context;
 //-----------------------------------------------------------------------------
+class composite_memory_object :
+    public dcl::info::generic_memory_object,
+    public composite_object< dcl::info::generic_memory_object >
+{
+protected:
+    composite_memory_object( const composite_context& context_ref,
+                             const void* host_ptr, size_t size, cl_mem_flags flags );
+
+    composite_memory_object( const composite_context& context_ref,
+                             const void* host_ptr, cl_mem_flags flags,
+                             const cl_image_format* format, size_t width,
+                             size_t height, size_t row_pitch );
+
+    virtual ~composite_memory_object(){}
+};
+//-----------------------------------------------------------------------------
 class composite_memory :
     public dcl::info::generic_memory,
-    public composite_object< dcl::info::generic_memory >
+    public composite_memory_object
 {
 public:
-    composite_memory( const composite_context& context_ref, 
+    composite_memory( const composite_context& context_ref,
                       const void* host_ptr, size_t size, cl_mem_flags flags );
 
-    ~composite_memory(){}
+    virtual ~composite_memory(){}
 
     virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
@@ -49,6 +65,19 @@ public:
     virtual void read( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
                        size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
                        dcl::info::generic_event** ret_event_ptr );
+};
+//-----------------------------------------------------------------------------
+class composite_image :
+    public dcl::info::generic_image,
+    public composite_memory_object
+{
+public:
+    composite_image( const composite_context& context_ref,
+                     const void* host_ptr, cl_mem_flags flags,
+                     const cl_image_format* format, size_t width,
+                     size_t height, size_t row_pitch );
+
+    virtual ~composite_image(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

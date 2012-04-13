@@ -42,6 +42,7 @@ public:
     std::string name_;
     std::string vendor_;
     std::string extensions_;
+    std::string suffix_;
 
     platform_info()
     {
@@ -50,6 +51,7 @@ public:
 	    name_.assign( "DistributedCL" );
         vendor_.assign( "DistributedCL Project" );
         extensions_.assign( "cl_khr_icd" );
+        suffix_.assign( "DCL" );
     }
 
     platform_info( const platform_info& other ) :
@@ -57,7 +59,8 @@ public:
         version_( other.version_ ),
         name_( other.name_ ),
         vendor_( other.vendor_ ),
-        extensions_( other.extensions_ )
+        extensions_( other.extensions_ ),
+        suffix_( other.suffix_ )
     {}
 
     inline bool operator< ( const platform_info& other ) const
@@ -72,6 +75,7 @@ public:
         name_ = other.name_;
         vendor_ = other.vendor_;
         extensions_ = other.extensions_;
+        suffix_ = other.suffix_;
 
         return *this;
     }
@@ -80,11 +84,12 @@ public:
     {
         switch( info )
         {
-            case CL_PLATFORM_PROFILE:    return profile_.length() + 1;
-            case CL_PLATFORM_VERSION:    return version_.length() + 1;
-            case CL_PLATFORM_NAME:       return name_.length() + 1;
-            case CL_PLATFORM_VENDOR:     return vendor_.length() + 1;
-            case CL_PLATFORM_EXTENSIONS: return extensions_.length() + 1;
+            case CL_PLATFORM_PROFILE:           return profile_.length() + 1;
+            case CL_PLATFORM_VERSION:           return version_.length() + 1;
+            case CL_PLATFORM_NAME:              return name_.length() + 1;
+            case CL_PLATFORM_VENDOR:            return vendor_.length() + 1;
+            case CL_PLATFORM_EXTENSIONS:        return extensions_.length() + 1;
+            case CL_PLATFORM_ICD_SUFFIX_KHR:    return suffix_.length() + 1;
 
             default:
                 throw library_exception( CL_INVALID_VALUE );
@@ -95,11 +100,12 @@ public:
     {
         switch( info )
         {
-            case CL_PLATFORM_PROFILE:    return profile_.c_str();
-            case CL_PLATFORM_VERSION:    return version_.c_str();
-            case CL_PLATFORM_NAME:       return name_.c_str();
-            case CL_PLATFORM_VENDOR:     return vendor_.c_str();
-            case CL_PLATFORM_EXTENSIONS: return extensions_.c_str();
+            case CL_PLATFORM_PROFILE:           return profile_.c_str();
+            case CL_PLATFORM_VERSION:           return version_.c_str();
+            case CL_PLATFORM_NAME:              return name_.c_str();
+            case CL_PLATFORM_VENDOR:            return vendor_.c_str();
+            case CL_PLATFORM_EXTENSIONS:        return extensions_.c_str();
+            case CL_PLATFORM_ICD_SUFFIX_KHR:    return suffix_.c_str();
 
             default:
                 throw library_exception( CL_INVALID_VALUE );

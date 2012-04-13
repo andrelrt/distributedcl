@@ -22,6 +22,7 @@
     <ProjectGuid>{FA62F5E7-E301-4202-BC5D-D817FC32A823}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libopencl</RootNamespace>
+    <ProjectName>libdcl</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -182,6 +183,7 @@
     <ClCompile Include="interface\cl_context.cpp" />
     <ClCompile Include="interface\cl_device.cpp" />
     <ClCompile Include="interface\cl_event.cpp" />
+    <ClCompile Include="interface\cl_extension.cpp" />
     <ClCompile Include="interface\cl_kernel.cpp" />
     <ClCompile Include="interface\cl_memory.cpp" />
     <ClCompile Include="interface\cl_platform.cpp" />

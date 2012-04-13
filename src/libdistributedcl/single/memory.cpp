@@ -33,7 +33,7 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 memory::memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags ) :
-    generic_memory( CL_MEM_OBJECT_BUFFER, host_ptr, size, flags ),
+    generic_memory_object( host_ptr, size, flags ),
     opencl_object< cl_mem >( context_ref.get_opencl() )
 {
     if( opencl_.loaded() )
@@ -142,6 +142,28 @@ void memory::read( generic_command_queue* queue_ptr, void* data_ptr,
         {
             *ret_event_ptr = new event( opencl_, evnt );
         }
+    }
+}
+//-----------------------------------------------------------------------------
+image::image( const context& context_ref, const void* host_ptr, cl_mem_flags flags,
+              const cl_image_format* format, size_t width, size_t height, size_t row_pitch ) :
+    generic_memory_object( host_ptr, flags, format, width, height, row_pitch ),
+    opencl_object< cl_mem >( context_ref.get_opencl() )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+        cl_mem mem;
+
+        mem = opencl_.clCreateImage2D( context_ref.get_id(), flags, format, width, height,
+                                       row_pitch, const_cast<void*>( host_ptr ), &error_code );
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        set_id( mem );
     }
 }
 //-----------------------------------------------------------------------------

@@ -87,8 +87,12 @@ private:
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );
-    virtual dcl::info::generic_memory*
+    virtual dcl::info::generic_memory_object*
         do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags );
+
+    virtual dcl::info::generic_memory_object*
+        do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
+                         size_t width, size_t height, size_t row_pitch );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

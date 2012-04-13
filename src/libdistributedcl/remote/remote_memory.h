@@ -32,17 +32,15 @@ namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 class remote_memory :
+    public dcl::info::generic_memory_object,
     public dcl::info::generic_memory,
     public remote_object< remote_memory >
 {
 public:
     remote_memory( const remote_context& context_ref, const void* host_ptr, 
-                   size_t size, cl_mem_flags flags ) :
-        dcl::info::generic_memory( CL_MEM_OBJECT_BUFFER, host_ptr, size, flags ),
-        remote_object< remote_memory >( context_ref.get_session() ),
-        context_( context_ref ){}
+                   size_t size, cl_mem_flags flags );
 
-    ~remote_memory(){}
+    virtual ~remote_memory(){}
 
     virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
@@ -51,6 +49,21 @@ public:
     virtual void read( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
                        size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
                        dcl::info::generic_event** ret_event_ptr );
+
+private:
+    const remote_context& context_;
+};
+//-----------------------------------------------------------------------------
+class remote_image :
+    public dcl::info::generic_memory_object,
+    public dcl::info::generic_image,
+    public remote_object< remote_image >
+{
+public:
+    remote_image( const remote_context& context_ref, const void* host_ptr, cl_mem_flags flags,
+                  const cl_image_format* format, size_t width, size_t height, size_t row_pitch );
+
+    virtual ~remote_image(){}
 
 private:
     const remote_context& context_;

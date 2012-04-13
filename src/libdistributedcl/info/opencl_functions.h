@@ -323,6 +323,9 @@ typedef cl_int
 typedef cl_int
 (CL_API_CALL *clSetUserEventStatus_t)( cl_event, cl_int );
 
+typedef cl_int
+(CL_API_CALL *clGetGLContextInfoKHR_t)(const cl_context_properties*, cl_gl_context_info, size_t, void*, size_t* );
+
 } // extern "C"
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

@@ -31,11 +31,31 @@ using dcl::info::generic_command_queue;
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-composite_memory::composite_memory( const composite_context& context_ref, 
-                                    const void* host_ptr, size_t size, 
+// composite_memory_object
+//-----------------------------------------------------------------------------
+composite_memory_object::composite_memory_object( const composite_context& context_ref, 
+                                                  const void* host_ptr, size_t size,
+                                                  cl_mem_flags flags ) :
+    generic_memory_object( host_ptr, size, flags ),
+    composite_object< generic_memory_object >( context_ref )
+{
+}
+//-----------------------------------------------------------------------------
+composite_memory_object::composite_memory_object( const composite_context& context_ref,
+                                                  const void* host_ptr, cl_mem_flags flags,
+                                                  const cl_image_format* format, size_t width,
+                                                  size_t height, size_t row_pitch ) :
+    generic_memory_object( host_ptr, flags, format, width, height, row_pitch ),
+    composite_object< generic_memory_object >( context_ref )
+{
+}
+//-----------------------------------------------------------------------------
+// composite_memory
+//-----------------------------------------------------------------------------
+composite_memory::composite_memory( const composite_context& context_ref,
+                                    const void* host_ptr, size_t size,
                                     cl_mem_flags flags ) :
-    generic_memory( CL_MEM_OBJECT_BUFFER, host_ptr, size, flags ),
-    composite_object< generic_memory >( context_ref )
+    composite_memory_object( context_ref, host_ptr, size, flags )
 {
 }
 //-----------------------------------------------------------------------------
@@ -44,7 +64,7 @@ void composite_memory::write( generic_command_queue* queue_ptr, const void* data
                               events_t& wait_events, generic_event** ret_event_ptr )
 {
     const generic_context* ctx = queue_ptr->get_context();
-    generic_memory* memory_ptr = find( ctx );
+    generic_memory* memory_ptr = reinterpret_cast<generic_memory*>( find( ctx ) );
 
     memory_ptr->write( queue_ptr, data_ptr, size, offset,
                        blocking, wait_events, ret_event_ptr );
@@ -55,10 +75,21 @@ void composite_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
                              events_t& wait_events, generic_event** ret_event_ptr )
 {
     const generic_context* ctx = queue_ptr->get_context();
-    generic_memory* memory_ptr = find( ctx );
+    generic_memory* memory_ptr = reinterpret_cast<generic_memory*>( find( ctx ) );
 
     memory_ptr->read( queue_ptr, data_ptr, size, offset,
                       blocking, wait_events, ret_event_ptr );
+}
+//-----------------------------------------------------------------------------
+// composite_image
+//-----------------------------------------------------------------------------
+composite_image::composite_image( const composite_context& context_ref,
+                                  const void* host_ptr, cl_mem_flags flags,
+                                  const cl_image_format* format, size_t width,
+                                  size_t height, size_t row_pitch ) :
+    composite_memory_object( context_ref, host_ptr, flags,
+                             format, width, height, row_pitch )
+{
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

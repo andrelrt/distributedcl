@@ -74,3 +74,5 @@ EXPORTS
     clSetKernelArg                  @72
     clUnloadCompiler                @73
     clWaitForEvents                 @74
+    clIcdGetPlatformIDsKHR          @75
+    clGetExtensionFunctionAddress   @76

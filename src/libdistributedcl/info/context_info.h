@@ -33,7 +33,7 @@ namespace info {
 class generic_program;
 class generic_platform;
 class generic_command_queue;
-class generic_memory;
+class generic_memory_object;
 //-----------------------------------------------------------------------------
 struct context_info
 {
@@ -71,7 +71,8 @@ public:
         return program_ptr;
     }
 
-    inline generic_command_queue* create_command_queue( const generic_device* device_ptr, cl_command_queue_properties properties )
+    inline generic_command_queue* create_command_queue( const generic_device* device_ptr,
+                                                        cl_command_queue_properties properties )
     {
         generic_command_queue* queue_ptr = do_create_command_queue( device_ptr, properties );
 
@@ -80,14 +81,29 @@ public:
         return queue_ptr;
     }
 
-    inline generic_memory* create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+    inline generic_memory_object* create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
     {
-        generic_memory* buffer_ptr = do_create_buffer( host_ptr, size, flags );
+        generic_memory_object* buffer_ptr = do_create_buffer( host_ptr, size, flags );
 
         memory_objects_.push_back( buffer_ptr );
 
         return buffer_ptr;
     }
+
+    // Creates Image2D objects
+    inline generic_memory_object* create_image( const void* host_ptr, cl_mem_flags flags,
+                                                const cl_image_format* format, size_t width,
+                                                size_t height, size_t row_pitch )
+    {
+        generic_memory_object* image_ptr =
+            do_create_image( host_ptr, flags, format, width, height, row_pitch );
+
+        memory_objects_.push_back( image_ptr );
+
+        return image_ptr;
+    }
+
+    // TODO: Create Image3D objects
 
     inline const generic_platform* get_platform() const
     {
@@ -97,7 +113,7 @@ public:
 protected:
     typedef std::vector< generic_program* > programs_t;
     typedef std::vector< generic_command_queue* > queues_t;
-    typedef std::vector< generic_memory* > memory_objects_t;
+    typedef std::vector< generic_memory_object* > memory_objects_t;
 
     queues_t queues_;
     devices_t devices_;
@@ -112,8 +128,13 @@ protected:
         do_create_command_queue( const generic_device* device_ptr, 
                                  cl_command_queue_properties properties ) = 0;
 
-    virtual generic_memory*
+    virtual generic_memory_object*
         do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags ) = 0;
+
+    // Creates Image2D objects
+    virtual generic_memory_object*
+        do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
+                         size_t width, size_t height, size_t row_pitch ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

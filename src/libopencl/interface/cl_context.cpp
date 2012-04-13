@@ -60,7 +60,7 @@ extern "C" CL_API_ENTRY cl_context CL_API_CALL
 clCreateContext( const cl_context_properties* properties, cl_uint num_devices, 
                  const cl_device_id* devices, 
                  void (CL_CALLBACK * pfn_notify)(const char*,const void*,size_t,void*), 
-                 void* user_data, cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
+                 void* user_data, cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     if( (num_devices == 0) || (devices == NULL) ||
         ((pfn_notify == NULL) && (user_data != NULL)) )
@@ -87,7 +87,8 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
             devs.push_back( reinterpret_cast< generic_device* >( dev_ptr ) );
         }
 
-        composite_context* context_ptr = reinterpret_cast< composite_context* >( platform_ptr->create_context( devs ) );
+        composite_context* context_ptr =
+            reinterpret_cast< composite_context* >( platform_ptr->create_context( devs ) );
 
         if( errcode_ret != NULL )
         {
@@ -124,7 +125,7 @@ clCreateContext( const cl_context_properties* properties, cl_uint num_devices,
 extern "C" CL_API_ENTRY cl_context CL_API_CALL
 clCreateContextFromType( const cl_context_properties* properties, cl_device_type device_type, 
                          void (CL_CALLBACK * pfn_notify)(const char*,const void*,size_t,void*), 
-                         void* user_data, cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
+                         void* user_data, cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     if( ((pfn_notify == NULL) && (user_data != NULL)) )
     {
@@ -139,7 +140,8 @@ clCreateContextFromType( const cl_context_properties* properties, cl_device_type
     {
         composite_platform* platform_ptr = find_platform_in_properties( properties );
 
-        composite_context* context_ptr = reinterpret_cast< composite_context* >( platform_ptr->create_context( device_type ) );
+        composite_context* context_ptr =
+            reinterpret_cast< composite_context* >( platform_ptr->create_context( device_type ) );
 
         if( errcode_ret != NULL )
         {
@@ -174,20 +176,20 @@ clCreateContextFromType( const cl_context_properties* properties, cl_device_type
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clRetainContext( cl_context context ) CL_API_SUFFIX__VERSION_1_1
+clRetainContext( cl_context context ) CL_API_SUFFIX__VERSION_1_0
 {
     return retain_object< composite_context >( context );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clReleaseContext( cl_context context ) CL_API_SUFFIX__VERSION_1_1
+clReleaseContext( cl_context context ) CL_API_SUFFIX__VERSION_1_0
 {
     return release_object< composite_context >( context );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetContextInfo( cl_context context, cl_context_info param_name, size_t param_value_size, 
-                  void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+                  void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {

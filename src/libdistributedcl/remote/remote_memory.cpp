@@ -25,6 +25,8 @@
 #include "remote_event.h"
 #include "message/msg_memory.h"
 using dcl::info::generic_event;
+using dcl::info::generic_image;
+using dcl::info::generic_memory_object;
 using dcl::info::generic_command_queue;
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
@@ -33,6 +35,14 @@ using dcl::network::message::msgEnqueueReadBuffer;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
+//-----------------------------------------------------------------------------
+remote_memory::remote_memory( const remote_context& context_ref, const void* host_ptr, 
+                              size_t size, cl_mem_flags flags ) :
+        generic_memory_object( host_ptr, size, flags ),
+        remote_object< remote_memory >( context_ref.get_session() ),
+        context_( context_ref )
+{
+}
 //-----------------------------------------------------------------------------
 void remote_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
                            size_t size, size_t offset, cl_bool blocking,
@@ -91,6 +101,15 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
         *ret_event_ptr =
             reinterpret_cast<generic_event*>( new remote_event( context_, msg_ptr->get_event_id() ) );
     }
+}
+//-----------------------------------------------------------------------------
+remote_image::remote_image( const remote_context& context_ref, const void* host_ptr,
+                            cl_mem_flags flags, const cl_image_format* format,
+                            size_t width, size_t height, size_t row_pitch ) :
+        generic_memory_object( host_ptr, flags, format, width, height, row_pitch ),
+        remote_object< remote_image >( context_ref.get_session() ),
+        context_( context_ref )
+{
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

@@ -21,6 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include "distributedcl_internal.h"
+#include <iostream>
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include "icd/icd_object_manager.h"

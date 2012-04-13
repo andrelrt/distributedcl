@@ -41,6 +41,13 @@ struct memory_info
     size_t size_;
     const void* host_ptr_;
     cl_uint map_count_;
+    cl_image_format format_;
+    size_t element_size_;
+    size_t row_pitch_;
+    size_t slice_pitch_;
+    size_t width_;
+    size_t height_;
+    size_t depth_;
 
     inline size_t get_info_size( cl_device_info info ) const
     {
@@ -48,9 +55,18 @@ struct memory_info
         {
             case CL_MEM_TYPE:       return sizeof(cl_mem_object_type);
             case CL_MEM_FLAGS:      return sizeof(cl_mem_flags);
-            case CL_MEM_SIZE:       return sizeof(size_t);
             case CL_MEM_HOST_PTR:   return sizeof(void*);
             case CL_MEM_MAP_COUNT:  return sizeof(cl_uint);
+            case CL_IMAGE_FORMAT:   return sizeof(cl_image_format);
+
+            case CL_MEM_SIZE:
+            case CL_IMAGE_ELEMENT_SIZE:
+            case CL_IMAGE_ROW_PITCH:
+            case CL_IMAGE_SLICE_PITCH:
+            case CL_IMAGE_WIDTH:
+            case CL_IMAGE_HEIGHT:
+            case CL_IMAGE_DEPTH:
+                return sizeof(size_t);
 
             default:
                 throw library_exception( CL_INVALID_VALUE );
@@ -61,11 +77,18 @@ struct memory_info
     {
         switch( info )
         {
-            case CL_MEM_TYPE:       return &type_;
-            case CL_MEM_FLAGS:      return &flags_;
-            case CL_MEM_SIZE:       return &size_;
-            case CL_MEM_HOST_PTR:   return &host_ptr_;
-            case CL_MEM_MAP_COUNT:  return &map_count_;
+            case CL_MEM_TYPE:           return &type_;
+            case CL_MEM_FLAGS:          return &flags_;
+            case CL_MEM_SIZE:           return &size_;
+            case CL_MEM_HOST_PTR:       return &host_ptr_;
+            case CL_MEM_MAP_COUNT:      return &map_count_;
+            case CL_IMAGE_FORMAT:       return &format_;
+            case CL_IMAGE_ELEMENT_SIZE: return &element_size_;
+            case CL_IMAGE_ROW_PITCH:    return &row_pitch_;
+            case CL_IMAGE_SLICE_PITCH:  return &slice_pitch_;
+            case CL_IMAGE_WIDTH:        return &width_;
+            case CL_IMAGE_HEIGHT:       return &height_;
+            case CL_IMAGE_DEPTH:        return &depth_;
 
             default:
                 throw library_exception( CL_INVALID_VALUE );
@@ -73,24 +96,46 @@ struct memory_info
     }
 };
 //-----------------------------------------------------------------------------
-class generic_memory :
+class generic_memory_object :
     public cl_object< cl_mem, cl_mem_info, CL_INVALID_MEM_OBJECT >,
     public icd_object< cl_mem, dcl_memory_id >,
     public dcl_object< memory_info >
 {
 public:
-    generic_memory( cl_mem_object_type type, const void* host_ptr, 
-                    size_t size, cl_mem_flags flags )
+    virtual ~generic_memory_object(){}
+
+protected:
+    generic_memory_object( const void* host_ptr, size_t size, cl_mem_flags flags )
     {
-        local_info_.type_ = type;
+        local_info_.type_ = CL_MEM_OBJECT_BUFFER;
         local_info_.host_ptr_ = host_ptr;
         local_info_.size_ = size;
         local_info_.flags_ = flags;
         local_info_.map_count_ = 0;
     }
 
-    virtual ~generic_memory(){}
+    generic_memory_object( const void* host_ptr, cl_mem_flags flags,
+                           const cl_image_format* format, size_t width,
+                           size_t height, size_t row_pitch )
+    {
+        local_info_.type_ = CL_MEM_OBJECT_IMAGE2D;
+        local_info_.host_ptr_ = host_ptr;
+        local_info_.flags_ = flags;
+        local_info_.map_count_ = 0;
+        local_info_.format_ = *format;
+        local_info_.width_ = width;
+        local_info_.height_ = height;
+        local_info_.row_pitch_ = row_pitch;
+    }
+
     inline void load_info(){}
+};
+//-----------------------------------------------------------------------------
+class generic_memory
+{
+protected:
+    generic_memory(){}
+    virtual ~generic_memory(){}
 
     virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking,
@@ -99,6 +144,13 @@ public:
     virtual void read( generic_command_queue* queue_ptr, void* data_ptr,
                        size_t size, size_t offset, cl_bool blocking,
                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+};
+//-----------------------------------------------------------------------------
+class generic_image
+{
+protected:
+    generic_image(){}
+    virtual ~generic_image(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

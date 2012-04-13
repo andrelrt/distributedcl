@@ -32,7 +32,7 @@ using dcl::info::generic_platform;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
 using dcl::info::generic_device;
-using dcl::info::generic_memory;
+using dcl::info::generic_memory_object;
 using dcl::info::program_info;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -170,9 +170,16 @@ generic_command_queue*
     return new command_queue( *this, *(reinterpret_cast< const device* >( device_ptr )), properties );
 }
 //-----------------------------------------------------------------------------
-generic_memory* context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+generic_memory_object* context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
 {
     return new memory( *this, host_ptr, size, flags );
+}
+//-----------------------------------------------------------------------------
+generic_memory_object* context::do_create_image( const void* host_ptr, cl_mem_flags flags,
+                                                 const cl_image_format* format, size_t width,
+                                                 size_t height, size_t row_pitch )
+{
+    return new image( *this, host_ptr, flags, format, width, height, row_pitch );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

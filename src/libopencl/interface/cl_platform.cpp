@@ -29,7 +29,7 @@ using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
-                  cl_uint* num_platforms ) CL_API_SUFFIX__VERSION_1_1
+                  cl_uint* num_platforms ) CL_API_SUFFIX__VERSION_1_0
 {
     if( ( (num_entries == 0) && (platforms != NULL) ) ||
         ( (platforms == NULL) && (num_platforms == NULL) ) )
@@ -64,7 +64,7 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetPlatformInfo( cl_platform_id platform, cl_platform_info param_name,
                    size_t param_value_size, void *param_value,
-                   size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+                   size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {
@@ -81,5 +81,12 @@ clGetPlatformInfo( cl_platform_id platform, cl_platform_info param_name,
     }
 
     return CL_SUCCESS;
+}
+//-----------------------------------------------------------------------------
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clIcdGetPlatformIDsKHR( cl_uint num_entries, cl_platform_id* platforms,
+                        cl_uint* num_platforms ) CL_API_SUFFIX__VERSION_1_0
+{
+    return clGetPlatformIDs( num_entries, platforms, num_platforms );
 }
 //-----------------------------------------------------------------------------

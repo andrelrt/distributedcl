@@ -35,8 +35,6 @@ namespace icd {
 
 struct icd_dispatch_table
 {
-    void* dummy;
-
     DECLARE_FUNCTION( clGetPlatformIDs );
     DECLARE_FUNCTION( clGetPlatformInfo );
     DECLARE_FUNCTION( clGetDeviceIDs );
@@ -111,18 +109,16 @@ struct icd_dispatch_table
     DECLARE_FUNCTION( clGetGLTextureInfo );
     DECLARE_FUNCTION( clEnqueueAcquireGLObjects );
     DECLARE_FUNCTION( clEnqueueReleaseGLObjects );
-    void* clUnknow75; //Not Found
-    void* clUnknow76; //Not Found
-    void* clUnknow77; //Not Found
-    void* clUnknow78; //Not Found
-    void* clUnknow79; //Not Found
-    void* clUnknow80; //Not Found
-    void* clUnknow81; //Not Found
-    DECLARE_FUNCTION( clSetEventCallback );
-    DECLARE_FUNCTION( clCreateSubBuffer );
-    DECLARE_FUNCTION( clSetMemObjectDestructorCallback );
+    DECLARE_FUNCTION( clGetGLContextInfoKHR );
+
+    void*   _reservedForD3D10KHR[6];
+    void*   _reservedForDeviceFissionEXT[3];
+
     DECLARE_FUNCTION( clCreateUserEvent );
     DECLARE_FUNCTION( clSetUserEventStatus );
+    DECLARE_FUNCTION( clSetEventCallback );
+    DECLARE_FUNCTION( clSetMemObjectDestructorCallback );
+    DECLARE_FUNCTION( clCreateSubBuffer );
     DECLARE_FUNCTION( clEnqueueReadBufferRect );
     DECLARE_FUNCTION( clEnqueueWriteBufferRect );
     DECLARE_FUNCTION( clEnqueueCopyBufferRect );

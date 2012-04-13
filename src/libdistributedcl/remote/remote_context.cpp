@@ -32,7 +32,7 @@
 using dcl::info::generic_device;
 using dcl::info::generic_program;
 using dcl::info::generic_command_queue;
-using dcl::info::generic_memory;
+using dcl::info::generic_memory_object;
 using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetContextInfo;
@@ -95,7 +95,7 @@ generic_command_queue*
     return reinterpret_cast< generic_command_queue* >( command_queue_ptr );
 }
 //-----------------------------------------------------------------------------
-generic_memory* remote_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+generic_memory_object* remote_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
 {
     dcl_message< msgCreateBuffer >* msg_ptr = new dcl_message< msgCreateBuffer >();
 
@@ -109,7 +109,7 @@ generic_memory* remote_context::do_create_buffer( const void* host_ptr, size_t s
     remote_memory* memory_ptr = new remote_memory( *this, host_ptr, size, flags );
     memory_ptr->set_remote_id( msg_ptr->get_remote_id() );
 
-    return reinterpret_cast< generic_memory* >( memory_ptr );
+    return reinterpret_cast< generic_memory_object* >( memory_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

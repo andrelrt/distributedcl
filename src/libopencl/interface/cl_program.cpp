@@ -37,7 +37,7 @@ using dcl::info::program_info;
 extern "C" CL_API_ENTRY cl_program CL_API_CALL
 clCreateProgramWithSource( cl_context context, cl_uint count,
                            const char** strings, const size_t* lengths,
-                           cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
+                           cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     if( (count == 0) || (strings == NULL) )
     {
@@ -72,8 +72,11 @@ clCreateProgramWithSource( cl_context context, cl_uint count,
 
         icd_object_manager& icd = icd_object_manager::get_instance();
 
-        composite_context* context_ptr = icd.get_object_ptr< composite_context >( context );
-        composite_program* program_ptr = reinterpret_cast< composite_program* >( context_ptr->create_program( source_code ) );
+        composite_context* context_ptr =
+            icd.get_object_ptr< composite_context >( context );
+
+        composite_program* program_ptr =
+            reinterpret_cast< composite_program* >( context_ptr->create_program( source_code ) );
 
         if( errcode_ret != NULL )
         {
@@ -111,7 +114,7 @@ extern "C" CL_API_ENTRY cl_program CL_API_CALL
 clCreateProgramWithBinary( cl_context context, cl_uint num_devices,
                            const cl_device_id* device_list, const size_t* lengths,
                            const unsigned char** binaries, cl_int* binary_status,
-                           cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
+                           cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     // Not supported
     if( errcode_ret != NULL )
@@ -122,13 +125,13 @@ clCreateProgramWithBinary( cl_context context, cl_uint num_devices,
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
+clRetainProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_0
 {
     return retain_object< composite_program >( program );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clReleaseProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_1
+clReleaseProgram( cl_program program ) CL_API_SUFFIX__VERSION_1_0
 {
     return release_object< composite_program >( program );
 }
@@ -137,7 +140,7 @@ extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clBuildProgram( cl_program program, cl_uint num_devices,
                 const cl_device_id* device_list, const char* options,
                 void (CL_CALLBACK* pfn_notify)( cl_program program, void* user_data ),
-                void* user_data ) CL_API_SUFFIX__VERSION_1_1
+                void* user_data ) CL_API_SUFFIX__VERSION_1_0
 {
     if( ((device_list == NULL) && (num_devices != 0)) ||
         ((device_list != NULL) && (num_devices == 0)) ||
@@ -189,7 +192,7 @@ clBuildProgram( cl_program program, cl_uint num_devices,
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_1
+clUnloadCompiler( void ) CL_API_SUFFIX__VERSION_1_0
 {
     // Nothing to do
     return CL_SUCCESS;
@@ -200,9 +203,9 @@ clGetProgramInfo( cl_program program, cl_program_info param_name,
                   size_t param_value_size, void* param_value,
                   size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
+    // TODO: Not Implemented
     return CL_OUT_OF_RESOURCES;
 
-    // TODO: Not Implemented
     //try
     //{
     //    composite_program* program_ptr = 
@@ -227,7 +230,7 @@ clGetProgramInfo( cl_program program, cl_program_info param_name,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetProgramBuildInfo( cl_program program, cl_device_id device,
                        cl_program_build_info param_name, size_t param_value_size,
-                       void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+                       void* param_value, size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {

@@ -22,6 +22,7 @@
     <ProjectGuid>{1DAD0E0F-C38A-4AA2-A84E-4BD12EA2FDF7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>distributedcld</RootNamespace>
+    <ProjectName>dcld</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

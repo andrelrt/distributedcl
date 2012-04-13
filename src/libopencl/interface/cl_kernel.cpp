@@ -95,7 +95,7 @@ clCreateKernel( cl_program program, const char* kernel_name,
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clCreateKernelsInProgram( cl_program program, cl_uint num_kernels, cl_kernel* kernels, 
-//                          cl_uint* num_kernels_ret ) CL_API_SUFFIX__VERSION_1_1
+//                          cl_uint* num_kernels_ret ) CL_API_SUFFIX__VERSION_1_0
 //{
 //}
 //-----------------------------------------------------------------------------
@@ -155,7 +155,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clGetKernelInfo( cl_kernel kernel, cl_kernel_info param_name,
 //                 size_t param_value_size, void* param_value,
-//                 size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+//                 size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 //{
 //}
 //-----------------------------------------------------------------------------
@@ -163,7 +163,7 @@ extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetKernelWorkGroupInfo( cl_kernel kernel, cl_device_id device,
                           cl_kernel_work_group_info param_name,
                           size_t param_value_size, void* param_value,
-                          size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+                          size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {

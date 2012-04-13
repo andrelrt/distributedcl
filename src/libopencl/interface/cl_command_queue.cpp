@@ -34,7 +34,7 @@ using dcl::composite::composite_command_queue;
 extern "C" CL_API_ENTRY cl_command_queue CL_API_CALL
 clCreateCommandQueue( cl_context context, cl_device_id device, 
                       cl_command_queue_properties properties,
-                      cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_1
+                      cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     if( (properties & ~(CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE | CL_QUEUE_PROFILING_ENABLE)) != 0 )
     {
@@ -88,13 +88,13 @@ clCreateCommandQueue( cl_context context, cl_device_id device,
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clRetainCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
+clRetainCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
 {
     return retain_object< composite_command_queue >( command_queue );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
+clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
 {
     return release_object< composite_command_queue >( command_queue );
 }
@@ -102,14 +102,14 @@ clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clGetCommandQueueInfo( cl_command_queue command_queue, cl_command_queue_info param_name,
 //                       size_t param_value_size, void* param_value,
-//                       size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+//                       size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 //{
 //    //FIXME: Not implemented
 //    return CL_INVALID_COMMAND_QUEUE;
 //}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clFlush( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
+clFlush( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {
@@ -136,7 +136,7 @@ clFlush( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
-clFinish( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_1
+clFinish( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {

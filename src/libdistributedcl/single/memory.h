@@ -31,15 +31,16 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class memory : 
+class memory :
+    public dcl::info::generic_memory_object,
     public dcl::info::generic_memory,
     public opencl_object< cl_mem >,
     public context_object< memory >
 {
 public:
-    virtual ~memory(){}
-
     memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags );
+
+    virtual ~memory(){}
 
     virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
                         size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
@@ -48,6 +49,19 @@ public:
     virtual void read( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
                        size_t size, size_t offset, cl_bool blocking, events_t& wait_events,
                        dcl::info::generic_event** ret_event_ptr );
+};
+//-----------------------------------------------------------------------------
+class image :
+    public dcl::info::generic_memory_object,
+    public dcl::info::generic_image,
+    public opencl_object< cl_mem >,
+    public context_object< image >
+{
+public:
+    image( const context& context_ref, const void* host_ptr, cl_mem_flags flags,
+           const cl_image_format* format, size_t width, size_t height, size_t row_pitch );
+
+    virtual ~image(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

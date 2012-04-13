@@ -36,7 +36,7 @@ using dcl::composite::composite_device;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num_entries,
-                cl_device_id *devices, cl_uint *num_devices ) CL_API_SUFFIX__VERSION_1_1
+                cl_device_id *devices, cl_uint *num_devices ) CL_API_SUFFIX__VERSION_1_0
 {
     if( ( (num_entries == 0) && (devices != NULL) ) ||
         ( (devices == NULL) && (num_devices == NULL) ) )
@@ -69,7 +69,8 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 
             for( cl_uint i = 0; i < count; i++ )
             {
-                devices[ i ] = icd.get_cl_id< composite_device >( reinterpret_cast< composite_device* >( devs[ i ] ) ); 
+                devices[ i ] =
+                    icd.get_cl_id<composite_device>( reinterpret_cast<composite_device*>( devs[ i ] ) );
             }
         }
     }
@@ -87,17 +88,19 @@ clGetDeviceIDs( cl_platform_id platform, cl_device_type device_type, cl_uint num
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clGetDeviceInfo( cl_device_id device, cl_device_info param_name, size_t param_value_size,
-                 void *param_value, size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_1
+                 void *param_value, size_t *param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     try
     {
         if( param_name != CL_DEVICE_PLATFORM )
         {
-            get_info< composite_device >( device, param_name, param_value_size, param_value, param_value_size_ret );
+            get_info< composite_device >( device, param_name, param_value_size,
+                                          param_value, param_value_size_ret );
         }
         else
         {
-            get_info_check_parameters< composite_device >( device, param_value_size, param_value, param_value_size_ret );
+            get_info_check_parameters< composite_device >( device, param_value_size,
+                                                           param_value, param_value_size_ret );
 
             if( param_value != NULL )
             {
@@ -106,7 +109,8 @@ clGetDeviceInfo( cl_device_id device, cl_device_info param_name, size_t param_va
                     throw dcl::library_exception( CL_INVALID_VALUE );
                 }
 
-                *(reinterpret_cast< cl_platform_id* >( param_value )) = opencl_composite::get_instance().get_platform().get_icd_obj();
+                *(reinterpret_cast< cl_platform_id* >( param_value )) =
+                    opencl_composite::get_instance().get_platform().get_icd_obj();
             }
         }
     }
