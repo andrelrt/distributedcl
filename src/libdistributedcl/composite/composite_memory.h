@@ -32,25 +32,9 @@ namespace composite {
 //-----------------------------------------------------------------------------
 class composite_context;
 //-----------------------------------------------------------------------------
-class composite_memory_object :
-    public dcl::info::generic_memory_object,
-    public composite_object< dcl::info::generic_memory_object >
-{
-protected:
-    composite_memory_object( const composite_context& context_ref,
-                             const void* host_ptr, size_t size, cl_mem_flags flags );
-
-    composite_memory_object( const composite_context& context_ref,
-                             const void* host_ptr, cl_mem_flags flags,
-                             const cl_image_format* format, size_t width,
-                             size_t height, size_t row_pitch );
-
-    virtual ~composite_memory_object(){}
-};
-//-----------------------------------------------------------------------------
 class composite_memory :
     public dcl::info::generic_memory,
-    public composite_memory_object
+    public composite_object< dcl::info::generic_memory >
 {
 public:
     composite_memory( const composite_context& context_ref,
@@ -69,7 +53,7 @@ public:
 //-----------------------------------------------------------------------------
 class composite_image :
     public dcl::info::generic_image,
-    public composite_memory_object
+    public composite_object< dcl::info::generic_image >
 {
 public:
     composite_image( const composite_context& context_ref,

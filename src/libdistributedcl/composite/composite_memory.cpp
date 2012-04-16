@@ -31,32 +31,14 @@ using dcl::info::generic_command_queue;
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
-// composite_memory_object
-//-----------------------------------------------------------------------------
-composite_memory_object::composite_memory_object( const composite_context& context_ref, 
-                                                  const void* host_ptr, size_t size,
-                                                  cl_mem_flags flags ) :
-    generic_memory_object( host_ptr, size, flags ),
-    composite_object< generic_memory_object >( context_ref )
-{
-}
-//-----------------------------------------------------------------------------
-composite_memory_object::composite_memory_object( const composite_context& context_ref,
-                                                  const void* host_ptr, cl_mem_flags flags,
-                                                  const cl_image_format* format, size_t width,
-                                                  size_t height, size_t row_pitch ) :
-    generic_memory_object( host_ptr, flags, format, width, height, row_pitch ),
-    composite_object< generic_memory_object >( context_ref )
-{
-}
-//-----------------------------------------------------------------------------
 // composite_memory
 //-----------------------------------------------------------------------------
 composite_memory::composite_memory( const composite_context& context_ref,
                                     const void* host_ptr, size_t size,
                                     cl_mem_flags flags ) :
-    composite_memory_object( context_ref, host_ptr, size, flags )
+    composite_object< generic_memory >( context_ref )
 {
+    set_info( host_ptr, size, flags );
 }
 //-----------------------------------------------------------------------------
 void composite_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
@@ -87,9 +69,9 @@ composite_image::composite_image( const composite_context& context_ref,
                                   const void* host_ptr, cl_mem_flags flags,
                                   const cl_image_format* format, size_t width,
                                   size_t height, size_t row_pitch ) :
-    composite_memory_object( context_ref, host_ptr, flags,
-                             format, width, height, row_pitch )
+    composite_object< generic_image >( context_ref )
 {
+    set_info( host_ptr, flags, format, width, height, row_pitch );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

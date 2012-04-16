@@ -33,9 +33,10 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 memory::memory( const context& context_ref, const void* host_ptr, size_t size, cl_mem_flags flags ) :
-    generic_memory_object( host_ptr, size, flags ),
     opencl_object< cl_mem >( context_ref.get_opencl() )
 {
+    set_info( host_ptr, size, flags );
+
     if( opencl_.loaded() )
     {
         cl_int error_code;
@@ -147,9 +148,10 @@ void memory::read( generic_command_queue* queue_ptr, void* data_ptr,
 //-----------------------------------------------------------------------------
 image::image( const context& context_ref, const void* host_ptr, cl_mem_flags flags,
               const cl_image_format* format, size_t width, size_t height, size_t row_pitch ) :
-    generic_memory_object( host_ptr, flags, format, width, height, row_pitch ),
     opencl_object< cl_mem >( context_ref.get_opencl() )
 {
+    set_info( host_ptr, flags, format, width, height, row_pitch );
+
     if( opencl_.loaded() )
     {
         cl_int error_code;

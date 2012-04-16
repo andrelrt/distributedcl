@@ -28,6 +28,7 @@
 #include "opencl_composite.h"
 #include "info/dcl_objects.h"
 #include "info/context_info.h"
+#include "info/memory_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -87,10 +88,10 @@ private:
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );
-    virtual dcl::info::generic_memory_object*
+    virtual dcl::info::generic_memory*
         do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags );
 
-    virtual dcl::info::generic_memory_object*
+    virtual dcl::info::generic_image*
         do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
                          size_t width, size_t height, size_t row_pitch );
 };

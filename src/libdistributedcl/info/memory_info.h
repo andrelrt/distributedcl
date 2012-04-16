@@ -103,9 +103,12 @@ class generic_memory_object :
 {
 public:
     virtual ~generic_memory_object(){}
+    inline void load_info(){}
 
 protected:
-    generic_memory_object( const void* host_ptr, size_t size, cl_mem_flags flags )
+    generic_memory_object(){}
+
+    void set_info( const void* host_ptr, size_t size, cl_mem_flags flags )
     {
         local_info_.type_ = CL_MEM_OBJECT_BUFFER;
         local_info_.host_ptr_ = host_ptr;
@@ -114,12 +117,13 @@ protected:
         local_info_.map_count_ = 0;
     }
 
-    generic_memory_object( const void* host_ptr, cl_mem_flags flags,
-                           const cl_image_format* format, size_t width,
-                           size_t height, size_t row_pitch )
+    void set_info( const void* host_ptr, cl_mem_flags flags,
+                   const cl_image_format* format, size_t width,
+                   size_t height, size_t row_pitch )
     {
         local_info_.type_ = CL_MEM_OBJECT_IMAGE2D;
         local_info_.host_ptr_ = host_ptr;
+        local_info_.size_ = row_pitch * height;
         local_info_.flags_ = flags;
         local_info_.map_count_ = 0;
         local_info_.format_ = *format;
@@ -127,14 +131,12 @@ protected:
         local_info_.height_ = height;
         local_info_.row_pitch_ = row_pitch;
     }
-
-    inline void load_info(){}
 };
 //-----------------------------------------------------------------------------
 class generic_memory
+    : public generic_memory_object
 {
-protected:
-    generic_memory(){}
+public:
     virtual ~generic_memory(){}
 
     virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
@@ -144,13 +146,18 @@ protected:
     virtual void read( generic_command_queue* queue_ptr, void* data_ptr,
                        size_t size, size_t offset, cl_bool blocking,
                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+protected:
+    generic_memory(){}
 };
 //-----------------------------------------------------------------------------
 class generic_image
+    : public generic_memory_object
 {
+public:
+    virtual ~generic_image(){}
+
 protected:
     generic_image(){}
-    virtual ~generic_image(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

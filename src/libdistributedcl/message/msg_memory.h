@@ -288,6 +288,93 @@ private:
     #pragma pack( pop )
 };
 //-----------------------------------------------------------------------------
+// msgCreateImage2D
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgCreateImage2D > : public base_message
+{
+public:
+    dcl_message< msgCreateImage2D >() :
+        base_message( msgCreateImage2D, true, 0, sizeof( dcl::remote_id_t ) ),
+        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ), 
+        flags_( 0 ), channel_order_( 0 ), channel_type_( 0 ), 
+        width_( 0 ), height_( 0 ), row_pitch_( 0 ), id_( 0xffff ){}
+
+    typedef std::vector<uint8_t> buffer_t;
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
+    MSG_PARAMETER_GET_SET( cl_mem_flags, flags_, flags )
+    MSG_PARAMETER_GET_SET( cl_channel_order, channel_order_, channel_order )
+    MSG_PARAMETER_GET_SET( cl_channel_type, channel_type_, channel_type )
+    MSG_PARAMETER_GET_SET( size_t, width_, width )
+    MSG_PARAMETER_GET_SET( uint8_t*, buffer_ptr_, buffer )
+
+    MSG_PARAMETER_GET( size_t, height_, height )
+    MSG_PARAMETER_GET( size_t, row_pitch_, row_pitch )
+    MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
+
+    void set_height( size_t height )
+    {
+        height_ = height;
+
+        update_request_size();
+    }
+
+    void set_row_pitch( size_t row_pitch )
+    {
+        row_pitch_ = row_pitch;
+
+        update_request_size();
+    }
+
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+
+private:
+    dcl::remote_id_t context_id_;
+    const uint8_t* buffer_ptr_;
+    size_t buffer_len_;
+    cl_mem_flags flags_;
+    cl_channel_order channel_order_;
+    cl_channel_type channel_type_;
+    size_t width_;
+    size_t height_;
+    size_t row_pitch_;
+    buffer_t buffer_;
+
+    dcl::remote_id_t id_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
+
+    inline void update_request_size()
+    {
+        buffer_len_ = height_ * row_pitch_;
+
+        set_size( (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) + sizeof(msgCreateImage2D_request) - 1 );
+    }
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgCreateImage2D_request
+    {
+        dcl::remote_id_t context_id_;
+        uint8_t flags_;
+        uint8_t channel_order:4;
+        uint8_t channel_type:4;
+        uint32_t width_;
+        uint32_t height_;
+        uint32_t row_pitch_;
+
+        uint32_t buffer_len_;
+        uint8_t buffer_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
 #endif // _DCL_MEMORY_MESSAGES_H_

@@ -32,7 +32,6 @@ namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
 class memory :
-    public dcl::info::generic_memory_object,
     public dcl::info::generic_memory,
     public opencl_object< cl_mem >,
     public context_object< memory >
@@ -52,7 +51,6 @@ public:
 };
 //-----------------------------------------------------------------------------
 class image :
-    public dcl::info::generic_memory_object,
     public dcl::info::generic_image,
     public opencl_object< cl_mem >,
     public context_object< image >

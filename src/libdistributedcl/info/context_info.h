@@ -34,6 +34,8 @@ class generic_program;
 class generic_platform;
 class generic_command_queue;
 class generic_memory_object;
+class generic_memory;
+class generic_image;
 //-----------------------------------------------------------------------------
 struct context_info
 {
@@ -81,24 +83,24 @@ public:
         return queue_ptr;
     }
 
-    inline generic_memory_object* create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
+    inline generic_memory* create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
     {
-        generic_memory_object* buffer_ptr = do_create_buffer( host_ptr, size, flags );
+        generic_memory* buffer_ptr = do_create_buffer( host_ptr, size, flags );
 
-        memory_objects_.push_back( buffer_ptr );
+        memory_objects_.push_back( reinterpret_cast<generic_memory_object*>( buffer_ptr ) );
 
         return buffer_ptr;
     }
 
     // Creates Image2D objects
-    inline generic_memory_object* create_image( const void* host_ptr, cl_mem_flags flags,
-                                                const cl_image_format* format, size_t width,
-                                                size_t height, size_t row_pitch )
+    inline generic_image* create_image( const void* host_ptr, cl_mem_flags flags,
+                                        const cl_image_format* format, size_t width,
+                                        size_t height, size_t row_pitch )
     {
-        generic_memory_object* image_ptr =
+        generic_image* image_ptr =
             do_create_image( host_ptr, flags, format, width, height, row_pitch );
 
-        memory_objects_.push_back( image_ptr );
+        memory_objects_.push_back(  reinterpret_cast<generic_memory_object*>( image_ptr ) );
 
         return image_ptr;
     }
@@ -128,11 +130,11 @@ protected:
         do_create_command_queue( const generic_device* device_ptr, 
                                  cl_command_queue_properties properties ) = 0;
 
-    virtual generic_memory_object*
+    virtual generic_memory*
         do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags ) = 0;
 
     // Creates Image2D objects
-    virtual generic_memory_object*
+    virtual generic_image*
         do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
                          size_t width, size_t height, size_t row_pitch ) = 0;
 };

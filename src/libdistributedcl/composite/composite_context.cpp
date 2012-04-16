@@ -92,7 +92,7 @@ generic_command_queue*
     return it->second->create_command_queue( device_ptr, properties );
 }
 //-----------------------------------------------------------------------------
-generic_memory_object*
+generic_memory*
 composite_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
 {
     contexts_t::iterator it;
@@ -106,10 +106,10 @@ composite_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_f
         memories->insert_context_object( *it, memory_ptr );
     }
 
-    return reinterpret_cast< generic_memory_object* >( memories );
+    return reinterpret_cast< generic_memory* >( memories );
 }
 //-----------------------------------------------------------------------------
-generic_memory_object*
+generic_image*
 composite_context::do_create_image( const void* host_ptr, cl_mem_flags flags,
                                     const cl_image_format* format, size_t width,
                                     size_t height, size_t row_pitch )
@@ -121,13 +121,13 @@ composite_context::do_create_image( const void* host_ptr, cl_mem_flags flags,
 
     for( it = contexts_.begin(); it != contexts_.end(); it++ )
     {
-        generic_image* image_ptr = (*it)->create_image( host_ptr, host_ptr, flags, format,
+        generic_image* image_ptr = (*it)->create_image( host_ptr, flags, format,
                                                         width, height, row_pitch );
 
         images->insert_context_object( *it, image_ptr );
     }
 
-    return reinterpret_cast< generic_memory_object* >( images );
+    return reinterpret_cast< generic_image* >( images );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

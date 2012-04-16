@@ -38,10 +38,10 @@ namespace remote {
 //-----------------------------------------------------------------------------
 remote_memory::remote_memory( const remote_context& context_ref, const void* host_ptr, 
                               size_t size, cl_mem_flags flags ) :
-        generic_memory_object( host_ptr, size, flags ),
         remote_object< remote_memory >( context_ref.get_session() ),
         context_( context_ref )
 {
+    set_info( host_ptr, size, flags );
 }
 //-----------------------------------------------------------------------------
 void remote_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
@@ -106,10 +106,10 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
 remote_image::remote_image( const remote_context& context_ref, const void* host_ptr,
                             cl_mem_flags flags, const cl_image_format* format,
                             size_t width, size_t height, size_t row_pitch ) :
-        generic_memory_object( host_ptr, flags, format, width, height, row_pitch ),
         remote_object< remote_image >( context_ref.get_session() ),
         context_( context_ref )
 {
+    set_info( host_ptr, flags, format, width, height, row_pitch );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

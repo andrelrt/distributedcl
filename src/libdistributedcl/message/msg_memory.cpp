@@ -230,5 +230,57 @@ void dcl_message< msgEnqueueReadBuffer >::parse_response( const void* payload_pt
     buffer_.assign( response_ptr->buffer_, response_ptr->buffer_ + size_ );
 }
 //-----------------------------------------------------------------------------
+// msgCreateImage2D
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateImage2D >::create_request( void* payload_ptr )
+{
+    msgCreateImage2D_request* request_ptr = 
+        reinterpret_cast< msgCreateImage2D_request* >( payload_ptr );
+
+    request_ptr->context_id_ = host_to_network( context_id_ );
+    request_ptr->flags_ = host_to_network( static_cast<uint8_t>( flags_ ) );
+    request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
+
+    if( buffer_ptr_ != NULL )
+    {
+        request_ptr->message_buffer_ = host_to_network( static_cast<uint16_t>( 1 ) );
+        memcpy( request_ptr->buffer_, buffer_ptr_, buffer_len_ );
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateImage2D >::parse_request( const void* payload_ptr )
+{
+    const msgCreateImage2D_request* request_ptr = 
+        reinterpret_cast< const msgCreateImage2D_request* >( payload_ptr );
+
+    buffer_ptr_ = NULL;
+    context_id_ = network_to_host( request_ptr->context_id_ );
+    buffer_len_ = network_to_host( request_ptr->buffer_len_ );
+    flags_ = static_cast<cl_mem_flags>( network_to_host( request_ptr->flags_ ) );
+
+    if( network_to_host( request_ptr->message_buffer_ ) != 0 )
+    {
+        const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
+
+        buffer_.assign( begin, begin + buffer_len_ );
+        buffer_ptr_ = buffer_.data();
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateImage2D >::create_response( void* payload_ptr )
+{
+    remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
+
+    *response_ptr = host_to_network( id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateImage2D >::parse_response( const void* payload_ptr )
+{
+    const remote_id_t* response_ptr = 
+        reinterpret_cast< const remote_id_t* >( payload_ptr );
+
+    id_ = network_to_host( *response_ptr );
+}
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

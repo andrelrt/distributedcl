@@ -29,10 +29,13 @@
 #include "composite/composite_event.h"
 using dcl::icd::icd_object_manager;
 using dcl::info::generic_event;
+using dcl::info::generic_image;
+using dcl::info::generic_memory_object;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_context;
 using dcl::composite::composite_command_queue;
 using dcl::composite::composite_event;
+using dcl::composite::composite_image;
 //-----------------------------------------------------------------------------
 static bool check_flags( cl_mem_flags flags, void* host_ptr, cl_int* errcode_ret )
 {
@@ -189,7 +192,7 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_context* context_ptr = icd.get_object_ptr< composite_context >( context );
-        generic_image* image_ptr = 
+        generic_image* image_ptr =
             context_ptr->create_image( host_ptr, flags, image_format, image_width,
                                        image_height, image_row_pitch );
 
@@ -198,7 +201,7 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
             *errcode_ret = CL_SUCCESS;
         }
 
-        return icd.get_cl_id< composite_image >( reinterpret_cast< composite_image* >( image_ptr ) );
+        return icd.get_cl_id< composite_image >( reinterpret_cast< composite_image*> ( image_ptr ) );
     }
     catch( dcl::library_exception& ex )
     {
@@ -236,13 +239,13 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clRetainMemObject( cl_mem memobj ) CL_API_SUFFIX__VERSION_1_0
 {
-    return retain_object< composite_memory_object >( memobj );
+    return retain_object< generic_memory_object >( memobj );
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseMemObject( cl_mem memobj ) CL_API_SUFFIX__VERSION_1_0
 {
-    return release_object< composite_memory_object >( memobj );
+    return release_object< generic_memory_object >( memobj );
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -262,9 +265,9 @@ clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
     {
         icd_object_manager& icd = icd_object_manager::get_instance();
 
-        composite_memory* memory_ptr =
-            get_info_check_parameters< composite_memory_object >( memobj, param_value_size,
-                                                                  param_value, param_value_size_ret );
+        composite_memory* memory_ptr = reinterpret_cast< composite_memory* >(
+            get_info_check_parameters< generic_memory_object >( memobj, param_value_size,
+                                                                param_value, param_value_size_ret ) );
 
         size_t param_size = 0;
 
@@ -312,8 +315,8 @@ clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
                 }
 
                 default:
-                    get_info< composite_memory_object >( memobj, param_name, param_value_size,
-                                                         param_value, param_value_size_ret );
+                    get_info< generic_memory_object >( memobj, param_name, param_value_size,
+                                                       param_value, param_value_size_ret );
 
                     return CL_SUCCESS;
             }

@@ -32,7 +32,6 @@ namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 class remote_memory :
-    public dcl::info::generic_memory_object,
     public dcl::info::generic_memory,
     public remote_object< remote_memory >
 {
@@ -55,7 +54,6 @@ private:
 };
 //-----------------------------------------------------------------------------
 class remote_image :
-    public dcl::info::generic_memory_object,
     public dcl::info::generic_image,
     public remote_object< remote_image >
 {
