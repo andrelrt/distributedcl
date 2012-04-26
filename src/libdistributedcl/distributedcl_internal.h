@@ -23,11 +23,9 @@
 #ifndef _DCL_INTERNAL_H_
 #define _DCL_INTERNAL_H_
 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/opencl.h>
-#endif
+#define __STDC_LIMIT_MACROS
+#include <stdint.h>
+#include <vector>
 
 #if defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -37,8 +35,12 @@
 #include <arpa/inet.h>
 #endif
 
-#include <cstdint>
-#include <vector>
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
+#include <CL/opencl.h>
+#endif
+
 #include <boost/shared_ptr.hpp>
 #include "library_exception.h"
 //-----------------------------------------------------------------------------

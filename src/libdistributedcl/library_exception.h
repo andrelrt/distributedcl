@@ -25,15 +25,29 @@
 
 #include <string>
 #include <exception>
+#include <iostream>
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------
 class library_exception :  public std::exception
 {
 public:
-    library_exception( int error ) throw() : error_( error ) { printf( "Error: %d\n", error ); }
-    library_exception( const char* szText ) throw() : error_( -30 ), text_( szText ) { printf( "Error: %s\n", szText ); }
-    library_exception( const char* szText, int error ) throw() : error_( error ), text_( szText ) { printf( "Error: %s (0x%016x)\n", szText, error ); }
+    library_exception( int error ) throw() : error_( error )
+    {
+		std::cerr << "Error: " << error << std::endl;
+	}
+    
+    library_exception( const char* szText ) throw() :
+		error_( -30 ), text_( szText )
+	{
+		std::cerr << "Error: " << szText << std::endl;
+	}
+	
+    library_exception( const char* szText, int error ) throw() :
+		error_( error ), text_( szText )
+	{
+		std::cerr << "Error: " << szText << ":" << error << std::endl;
+	}
 
 	~library_exception() throw(){};
 

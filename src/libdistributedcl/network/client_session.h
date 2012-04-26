@@ -114,7 +114,7 @@ public:
             }
             else
             {
-                boost::shared_ptr<base_message> sent_message_sp =
+                boost::shared_ptr< dcl::network::message::base_message > sent_message_sp =
                     packet_ptr->get_message( (*recv_message_it)->get_id() );
 
                 sent_message_sp->parse_response( (*recv_message_it)->get_payload() );

@@ -238,7 +238,7 @@ void dcl_message< msgCreateImage2D >::create_request( void* payload_ptr )
         reinterpret_cast< msgCreateImage2D_request* >( payload_ptr );
 
     request_ptr->context_id_ = host_to_network( context_id_ );
-    request_ptr->flags_ = host_to_network( static_cast<uint8_t>( flags_ ) );
+    request_ptr->flags_ = static_cast<uint8_t>( flags_ );
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
 
     if( buffer_ptr_ != NULL )
@@ -256,7 +256,7 @@ void dcl_message< msgCreateImage2D >::parse_request( const void* payload_ptr )
     buffer_ptr_ = NULL;
     context_id_ = network_to_host( request_ptr->context_id_ );
     buffer_len_ = network_to_host( request_ptr->buffer_len_ );
-    flags_ = static_cast<cl_mem_flags>( network_to_host( request_ptr->flags_ ) );
+    flags_ = static_cast<cl_mem_flags>( request_ptr->flags_ );
 
     if( network_to_host( request_ptr->message_buffer_ ) != 0 )
     {
