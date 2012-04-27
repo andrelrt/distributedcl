@@ -31,6 +31,7 @@ using dcl::composite::composite_event;
 using dcl::composite::composite_context;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_command_queue;
+using dcl::composite::composite_image;
 using dcl::info::generic_memory_object;
 using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
@@ -142,6 +143,31 @@ void msgEnqueueReadBuffer_command::execute()
                           message_.get_buffer_size(), message_.get_offset(),
                           true, events, NULL );
     }
+}
+//-----------------------------------------------------------------------------
+void msgCreateImage2D_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    remote_id_t context_id = message_.get_context_id();
+
+    composite_context* context_ptr = server.get_context_manager().get( context_id );
+
+    cl_image_format format;
+    format.image_channel_order = message_.get_channel_order();
+    format.image_channel_data_type = message_.get_channel_type();
+
+    generic_memory_object* ptr =
+        context_ptr->create_image( message_.get_buffer(),
+                                   message_.get_flags(), &format,
+                                   message_.get_width(), message_.get_height(),
+                                   message_.get_row_pitch() );
+
+    composite_image* image_ptr = reinterpret_cast<composite_image*>( ptr );
+
+    remote_id_t id = server.get_image_manager().add( image_ptr );
+
+    message_.set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

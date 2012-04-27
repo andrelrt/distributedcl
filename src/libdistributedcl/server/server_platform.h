@@ -68,6 +68,7 @@ public:
     typedef dcl::info::object_manager< dcl::composite::composite_command_queue > command_queue_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_event > event_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_image > image_manager_t;
 
 private:
     device_manager_t device_manager_;
@@ -77,6 +78,7 @@ private:
     command_queue_manager_t command_queue_manager_;
     memory_manager_t memory_manager_;
     event_manager_t event_manager_;
+    image_manager_t image_manager_;
     static server_platform instance_;
 
     server_platform(){}
@@ -120,6 +122,11 @@ public:
     inline event_manager_t& get_event_manager()
     {
         return event_manager_;
+    }
+
+    inline image_manager_t& get_image_manager()
+    {
+        return image_manager_;
     }
 };
 //-----------------------------------------------------------------------------

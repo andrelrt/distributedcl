@@ -60,6 +60,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class msgCreateImage2D_command : 
+    public server_command< dcl::network::message::msgCreateImage2D >
+{
+public:
+    msgCreateImage2D_command( recv_ptr_t message_ptr ) :
+        server_command< dcl::network::message::msgCreateImage2D >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_MEMORY_H_

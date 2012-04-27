@@ -201,7 +201,7 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
             *errcode_ret = CL_SUCCESS;
         }
 
-        return icd.get_cl_id< composite_image >( reinterpret_cast< composite_image*> ( image_ptr ) );
+        return icd.get_cl_id< composite_image >( reinterpret_cast< composite_image*>( image_ptr ) );
     }
     catch( dcl::library_exception& ex )
     {

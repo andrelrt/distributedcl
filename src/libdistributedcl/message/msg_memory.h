@@ -308,7 +308,7 @@ public:
     MSG_PARAMETER_GET_SET( cl_channel_order, channel_order_, channel_order )
     MSG_PARAMETER_GET_SET( cl_channel_type, channel_type_, channel_type )
     MSG_PARAMETER_GET_SET( size_t, width_, width )
-    MSG_PARAMETER_GET_SET( uint8_t*, buffer_ptr_, buffer )
+    MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer )
 
     MSG_PARAMETER_GET( size_t, height_, height )
     MSG_PARAMETER_GET( size_t, row_pitch_, row_pitch )
@@ -324,6 +324,13 @@ public:
     void set_row_pitch( size_t row_pitch )
     {
         row_pitch_ = row_pitch;
+
+        update_request_size();
+    }
+
+    void set_buffer( const uint8_t* buffer_ptr )
+    {
+        buffer_ptr_ = buffer_ptr;
 
         update_request_size();
     }
@@ -357,12 +364,34 @@ private:
         set_size( (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) + sizeof(msgCreateImage2D_request) - 1 );
     }
 
+    inline uint8_t channel_order_to_network()
+    {
+        return channel_order_ & 0xf;
+    }
+
+    inline uint8_t channel_type_to_network()
+    {
+        return channel_type_ & 0xf;
+    }
+
+    inline void network_to_channel_order( uint8_t channel_order )
+    {
+        channel_order_ = channel_order + CL_R; // 0x10B0
+    }
+
+    inline void network_to_channel_type( uint8_t channel_type )
+    {
+        channel_type_ = channel_type + CL_SNORM_INT8; // 0x10D0
+    }
+
+
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
     struct msgCreateImage2D_request
     {
         dcl::remote_id_t context_id_;
-        uint8_t flags_;
+        uint8_t message_buffer_:1;
+        uint8_t flags_:7;
         uint8_t channel_order:4;
         uint8_t channel_type:4;
         uint32_t width_;

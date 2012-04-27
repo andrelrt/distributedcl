@@ -239,6 +239,12 @@ void dcl_message< msgCreateImage2D >::create_request( void* payload_ptr )
 
     request_ptr->context_id_ = host_to_network( context_id_ );
     request_ptr->flags_ = static_cast<uint8_t>( flags_ );
+    request_ptr->channel_order = channel_order_to_network();
+    request_ptr->channel_type = channel_type_to_network();
+    request_ptr->width_ = host_to_network( static_cast<uint32_t>( width_ ) );
+    request_ptr->height_ = host_to_network( static_cast<uint32_t>( height_ ) );
+    request_ptr->row_pitch_ = host_to_network( static_cast<uint32_t>( row_pitch_ ) );
+
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
 
     if( buffer_ptr_ != NULL )
@@ -253,12 +259,18 @@ void dcl_message< msgCreateImage2D >::parse_request( const void* payload_ptr )
     const msgCreateImage2D_request* request_ptr = 
         reinterpret_cast< const msgCreateImage2D_request* >( payload_ptr );
 
-    buffer_ptr_ = NULL;
     context_id_ = network_to_host( request_ptr->context_id_ );
-    buffer_len_ = network_to_host( request_ptr->buffer_len_ );
     flags_ = static_cast<cl_mem_flags>( request_ptr->flags_ );
+    network_to_channel_order( request_ptr->channel_order );
+    network_to_channel_type( request_ptr->channel_type );
+    width_ = network_to_host( request_ptr->width_ );
+    height_ = network_to_host( request_ptr->height_ );
+    row_pitch_ = network_to_host( request_ptr->row_pitch_ );
 
-    if( network_to_host( request_ptr->message_buffer_ ) != 0 )
+    buffer_len_ = network_to_host( request_ptr->buffer_len_ );
+    buffer_ptr_ = NULL;
+
+    if( request_ptr->message_buffer_ != 0 )
     {
         const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
 

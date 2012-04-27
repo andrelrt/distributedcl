@@ -75,8 +75,8 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
             MSG( msgCreateBuffer );
+            MSG( msgCreateImage2D );
 
-            MSG_NOT_IMPLEMENTED( msgCreateImage2D );
             MSG_NOT_IMPLEMENTED( msgCreateImage3D );
             MSG_NOT_IMPLEMENTED( msgRetainMemObject );
             MSG_NOT_IMPLEMENTED( msgReleaseMemObject );
