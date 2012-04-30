@@ -256,12 +256,27 @@ private:
         max_buffer_size = UINT32_MAX
     };
 
+    inline void set_socket_options( connection_t sock )
+    {
+        int flag_true = 1;
+        setsockopt( sock, SOL_SOCKET, SO_REUSEADDR,
+                    reinterpret_cast< const char* >( &flag_true ),
+                    sizeof( int ) );
+
+        //setsockopt( sock, SOL_SOCKET, SO_KEEPALIVE,
+        //            reinterpret_cast< const char* >( &flag_true ),
+        //            sizeof( int ) );
+
+        setsockopt( sock, IPPROTO_TCP, TCP_NODELAY, 
+                    reinterpret_cast< const char* >( &flag_true ),
+                    sizeof( int ) );
+    }
+
     inline void create_socket()
     {
         socket_ = socket( AF_INET, SOCK_STREAM, 0 );
 
-        int reuse_addr = 1;
-        setsockopt( socket_, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>( &reuse_addr ), sizeof( int ) );
+        set_socket_options( socket_ );
     }
 
     inline void receive_size( uint8_t* buffer_ptr, std::size_t size )
@@ -318,6 +333,8 @@ private:
             {
                 break;
             }
+
+            set_socket_options( client_socket );
 
             observer_->on_accept( client_socket, client_addr );
         }
