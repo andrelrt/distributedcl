@@ -126,8 +126,9 @@ void dcl_message< msgGetProgramBuildInfo >::create_request( void* payload_ptr )
     msgGetProgramBuildInfo_request* request_ptr = 
         reinterpret_cast< msgGetProgramBuildInfo_request* >( payload_ptr );
 
+    request_ptr->id_ = host_to_network( id_ );
     request_ptr->device_id_ = host_to_network( device_id_ );
-    request_ptr->build_info_ = host_to_network( static_cast<uint16_t>( build_info_ ) );
+    request_ptr->build_info_ = host_to_network( static_cast<uint32_t>( build_info_ ) );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetProgramBuildInfo >::parse_request( const void* payload_ptr )
@@ -135,6 +136,7 @@ void dcl_message< msgGetProgramBuildInfo >::parse_request( const void* payload_p
     const msgGetProgramBuildInfo_request* request_ptr = 
         reinterpret_cast< const msgGetProgramBuildInfo_request* >( payload_ptr );
 
+    id_ = network_to_host( request_ptr->id_ );
     device_id_ = network_to_host( request_ptr->device_id_ );
     build_info_ = static_cast<cl_program_build_info>( network_to_host( request_ptr->build_info_ ) );
 }
@@ -151,7 +153,10 @@ void dcl_message< msgGetProgramBuildInfo >::create_response( void* payload_ptr )
     {
         *response_ptr = host_to_network( static_cast<uint32_t>( build_log_.length() ) );
 
-        memcpy( response_ptr+1, build_log_.data(), build_log_.length() );
+        if( *response_ptr != 0 )
+        {
+            memcpy( response_ptr+1, build_log_.data(), build_log_.length() );
+        }
     }
 }
 //-----------------------------------------------------------------------------
@@ -166,10 +171,16 @@ void dcl_message< msgGetProgramBuildInfo >::parse_response( const void* payload_
     }
     else if( build_info_ == CL_PROGRAM_BUILD_LOG )
     {
-        uint32_t len = network_to_host( *response_ptr );
-        const uint8_t* begin = reinterpret_cast<const uint8_t*>( response_ptr + 1 );
+        build_log_.clear();
 
-        build_log_.assign( begin, begin + len );
+        uint32_t len = network_to_host( *response_ptr );
+
+        if( len != 0 )
+        {
+            const uint8_t* begin = reinterpret_cast<const uint8_t*>( response_ptr + 1 );
+
+            build_log_.assign( begin, begin + len );
+        }
     }
 }
 //-----------------------------------------------------------------------------

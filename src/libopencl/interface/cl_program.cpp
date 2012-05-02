@@ -264,13 +264,13 @@ clGetProgramBuildInfo( cl_program program, cl_device_id device,
 
                 if( param_value_size_ret != NULL )
                 {
-                    *param_value_size_ret = build_log.length();
+                    *param_value_size_ret = build_log.length() + 1;
                 }
 
                 if( (param_value != NULL) &&
-                    (param_value_size >= build_log.length()) )
+                    (param_value_size > build_log.length()) )
                 {
-                    memcpy( param_value, build_log.data(), build_log.length() );
+                    memcpy( param_value, build_log.c_str(), build_log.length() + 1 );
                 }
                 break;
             }

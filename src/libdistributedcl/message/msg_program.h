@@ -148,53 +148,19 @@ public:
         base_message( msgGetProgramBuildInfo, true, sizeof(msgGetProgramBuildInfo_request), 0 ) {}
 
     // Request
-    inline const dcl::remote_id_t get_remote_id() const
-    {
-        return id_;
-    }
-
-    inline void set_remote_id( dcl::remote_id_t id )
-    {
-        id_ = id;
-    }
-
-    inline const dcl::remote_id_t get_device_id() const
-    {
-        return device_id_;
-    }
-
-    inline void set_device_id( dcl::remote_id_t id )
-    {
-        device_id_ = id;
-    }
-
-    inline cl_program_build_info get_build_info() const
-    {
-        return build_info_;
-    }
-
-    inline void set_build_info( cl_program_build_info build_info )
-    {
-        build_info_ = build_info;
-    }
-
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, device_id_, device_id )
+    MSG_PARAMETER_GET_SET( cl_program_build_info, build_info_, build_info )
 
     // Response
-    inline const std::string& get_build_log() const
-    {
-        return build_log_;
-    }
+    MSG_PARAMETER_GET( std::string&, build_log_, build_log )
+    MSG_PARAMETER_GET( cl_build_status, build_status_, build_status )
 
     inline void set_build_log( const std::string& build_log )
     {
         build_log_.assign( build_log );
 
         update_response_size();
-    }
-
-    inline cl_build_status get_build_status() const
-    {
-        return build_status_;
     }
 
     inline void set_build_status( cl_build_status build_status )
@@ -233,8 +199,9 @@ private:
     // Better when aligned in 32 bits boundary
     struct msgGetProgramBuildInfo_request
     {
+        dcl::remote_id_t id_;
         dcl::remote_id_t device_id_;
-        uint16_t build_info_;
+        uint32_t build_info_;
     };
     #pragma pack( pop )
 };

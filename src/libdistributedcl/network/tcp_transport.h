@@ -23,7 +23,9 @@
 #ifndef _DCL_TCP_TRANSPORT_H_
 #define _DCL_TCP_TRANSPORT_H_
 
+#if !defined( WIN32 )
 #include <netinet/tcp.h>
+#endif
 #include <string.h>
 #include <boost/thread.hpp>
 #include <boost/tokenizer.hpp>
