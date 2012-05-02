@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <iostream>
 #include "remote_context.h"
 #include "remote_program.h"
 #include "remote_device.h"
@@ -40,6 +41,7 @@ using dcl::network::message::msgGetContextInfo;
 using dcl::network::message::msgCreateProgramWithSource;
 using dcl::network::message::msgCreateCommandQueue;
 using dcl::network::message::msgCreateBuffer;
+using dcl::network::message::msgCreateImage2D;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -118,8 +120,25 @@ remote_context::do_create_image( const void* host_ptr, cl_mem_flags flags,
                                  const cl_image_format* format, size_t width,
                                  size_t height, size_t row_pitch )
 {
-    //TODO
-    return NULL;
+    dcl_message< msgCreateImage2D >* msg_ptr = new dcl_message< msgCreateImage2D >();
+
+    msg_ptr->set_context_id( get_remote_id() );
+    msg_ptr->set_flags( flags );
+    msg_ptr->set_channel_order( format->image_channel_order );
+    msg_ptr->set_channel_type( format->image_channel_data_type );
+    msg_ptr->set_width( width );
+    msg_ptr->set_height( height );
+    msg_ptr->set_row_pitch( row_pitch );
+    msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( host_ptr ) );
+
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+
+    remote_image* image_ptr = new remote_image( *this, host_ptr, flags, format,
+                                                width, height, row_pitch );
+    image_ptr->set_remote_id( msg_ptr->get_remote_id() );
+
+    return reinterpret_cast< generic_image* >( image_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

@@ -117,34 +117,26 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
 {
     try
     {
-        std::cout << "clSetKernelArg 1" << std::endl;
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_kernel* kernel_ptr = icd.get_object_ptr< composite_kernel >( kernel );
 
-        std::cout << "clSetKernelArg 2" << std::endl;
         if( (arg_value != NULL) && 
             (arg_size == sizeof(void*)) )
         {
-            std::cout << "clSetKernelArg 3" << std::endl;
             cl_mem memory = *(reinterpret_cast<const cl_mem*>( arg_value ));
 
             if( icd.has_object< composite_memory >( memory ) )
             {
-                std::cout << "clSetKernelArg 4" << std::endl;
                 composite_memory* memory_ptr = icd.get_object_ptr< composite_memory >( memory );
 
-                std::cout << "clSetKernelArg 5 - " << memory_ptr << std::endl;
                 kernel_ptr->set_argument( arg_index, memory_ptr );
-                std::cout << "clSetKernelArg 6" << std::endl;
                 return CL_SUCCESS;
             }
         }
 
-        std::cout << "clSetKernelArg 7" << std::endl;
         kernel_ptr->set_argument( arg_index, arg_size, arg_value );
 
-        std::cout << "clSetKernelArg 8" << std::endl;
         return CL_SUCCESS;
     }
     catch( dcl::library_exception& ex )

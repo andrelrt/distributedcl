@@ -208,6 +208,7 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
         if( errcode_ret != NULL )
         {
             *errcode_ret = ex.get_error();
+            std::cerr << "Exception!!: " << ex.get_error() << std::endl;
         }
         return NULL;
     }

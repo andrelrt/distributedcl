@@ -23,6 +23,7 @@
 #ifndef _DCL_TCP_TRANSPORT_H_
 #define _DCL_TCP_TRANSPORT_H_
 
+#include <netinet/tcp.h>
 #include <string.h>
 #include <boost/thread.hpp>
 #include <boost/tokenizer.hpp>

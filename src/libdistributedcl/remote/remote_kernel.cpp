@@ -76,21 +76,14 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
 {
-    std::cout << "remote_kernel::set_argument 1" << std::endl;
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
-    std::cout << "remote_kernel::set_argument 2" << std::endl;
     msg_ptr->set_index( arg_index );
-    std::cout << "remote_kernel::set_argument 3" << std::endl;
     msg_ptr->set_kernel_id( get_remote_id() );
-    std::cout << "remote_kernel::set_argument 4 - " << memory_ptr << std::endl;
     msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
 
-    std::cout << "remote_kernel::set_argument 5" << std::endl;
     boost::shared_ptr< base_message > message_sp( msg_ptr );
-    std::cout << "remote_kernel::set_argument 6" << std::endl;
     session_ref_.enqueue_message( message_sp );
-    std::cout << "remote_kernel::set_argument 7" << std::endl;
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )

@@ -23,6 +23,7 @@
 #ifndef _DCL_NETWORK_SERVER_SESSION_H_
 #define _DCL_NETWORK_SERVER_SESSION_H_
 
+#include <iostream>
 #include <boost/thread.hpp>
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
@@ -136,6 +137,7 @@ private:
             }
             catch( dcl::library_exception& ex )
             {
+                std::cerr << "- exception in dispacher: " << ex.get_error() << std::endl;
                 boost::shared_ptr<dcl::network::message::base_message>
                     ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
 

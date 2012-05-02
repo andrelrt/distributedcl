@@ -106,7 +106,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
         MSG( msgCreateBuffer );
-        MSG_NOT_IMPLEMENTED( msgCreateImage2D );
+        MSG( msgCreateImage2D );
         MSG_NOT_IMPLEMENTED( msgCreateImage3D );
         MSG_NOT_IMPLEMENTED( msgRetainMemObject );
         MSG_NOT_IMPLEMENTED( msgReleaseMemObject );

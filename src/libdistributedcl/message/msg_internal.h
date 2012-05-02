@@ -44,7 +44,6 @@ public:
         return error_code_;
     }
 
-protected:
     virtual void create_response( void* payload_ptr );
     virtual void parse_response( const void* payload_ptr );
 

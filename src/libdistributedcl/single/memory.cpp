@@ -162,7 +162,7 @@ image::image( const context& context_ref, const void* host_ptr, cl_mem_flags fla
 
         if( error_code != CL_SUCCESS )
         {
-            throw dcl::library_exception( error_code );
+            throw dcl::library_exception( "opencl_.clCreateImage2D returns an error", error_code );
         }
 
         set_id( mem );

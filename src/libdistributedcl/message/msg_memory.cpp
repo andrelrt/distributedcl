@@ -246,10 +246,11 @@ void dcl_message< msgCreateImage2D >::create_request( void* payload_ptr )
     request_ptr->row_pitch_ = host_to_network( static_cast<uint32_t>( row_pitch_ ) );
 
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
+    request_ptr->message_buffer_ = 0;
 
     if( buffer_ptr_ != NULL )
     {
-        request_ptr->message_buffer_ = host_to_network( static_cast<uint16_t>( 1 ) );
+        request_ptr->message_buffer_ = 1;
         memcpy( request_ptr->buffer_, buffer_ptr_, buffer_len_ );
     }
 }

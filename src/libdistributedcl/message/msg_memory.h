@@ -308,8 +308,8 @@ public:
     MSG_PARAMETER_GET_SET( cl_channel_order, channel_order_, channel_order )
     MSG_PARAMETER_GET_SET( cl_channel_type, channel_type_, channel_type )
     MSG_PARAMETER_GET_SET( size_t, width_, width )
-    MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer )
 
+    MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer )
     MSG_PARAMETER_GET( size_t, height_, height )
     MSG_PARAMETER_GET( size_t, row_pitch_, row_pitch )
     MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
