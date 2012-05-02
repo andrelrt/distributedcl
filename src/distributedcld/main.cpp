@@ -37,7 +37,7 @@ using dcl::config::server_config;
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
 #else
-#define OPENCL_LIBRARY  "libOpenCL.so"
+#define OPENCL_LIBRARY  "/usr/lib/libOpenCL.so"
 #endif
 //-----------------------------------------------------------------------------
 int main( int argc, char* argv[] )
@@ -58,6 +58,8 @@ int main( int argc, char* argv[] )
 
         server_config config;
 
+		std::cout << "DistributedCL Server 0.1" << std::endl;
+
         try
         {
             config.parse( argc, argv );
@@ -71,6 +73,7 @@ int main( int argc, char* argv[] )
 
         try
         {
+			std::cout << "Loading config file: " << filepath << std::endl;
             config.parse( filepath );
         }
         catch( boost::program_options::error& ex )
@@ -82,6 +85,7 @@ int main( int argc, char* argv[] )
 		// Load OpenCL Libraries --------------------------------------------------
         if( config.load_local() )
         {
+			std::cout << "Loading OpenCL library: " << OPENCL_LIBRARY << std::endl;
 		    opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
         }
 
@@ -91,6 +95,7 @@ int main( int argc, char* argv[] )
 
         for( it = servers.begin(); it != servers.end(); it++ )
         {
+			std::cout << "Connecting remote DistributedCL server: " << *it << std::endl;
             opencl_composite::get_instance().add_remote( *it );
         }
 
@@ -102,6 +107,8 @@ int main( int argc, char* argv[] )
 
 		boost::scoped_ptr< tcp_server_t > tcp_server_ptr( new tcp_server_t( tcp_config ) );
 		tcp_server_ptr->start_accept_thread();
+
+		std::cout << "DistributedCL server started." << std::endl;
 
 		tcp_server_ptr->wait();
 

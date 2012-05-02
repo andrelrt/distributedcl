@@ -23,6 +23,7 @@
 #if defined( WIN32 )
 #include <Shlobj.h>
 #endif
+#include <boost/system/error_code.hpp>
 #include <boost/filesystem.hpp>
 #include "common_config.h"
 using boost::program_options::error;

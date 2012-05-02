@@ -101,7 +101,7 @@ public:
         }
 
         if( !create_new )
-            throw library_exception( "object_manager<>::get : Invalid object pointer", reinterpret_cast<int>( object_ptr ) );
+            throw library_exception( "object_manager<>::get : Invalid object pointer" );
 
         return add( object_ptr );
     }

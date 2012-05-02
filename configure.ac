@@ -18,8 +18,11 @@ AC_HEADER_RESOLV
 AX_BOOST_BASE([1.40.0])
 AX_BOOST_THREAD
 AX_BOOST_PROGRAM_OPTIONS
+AX_BOOST_FILESYSTEM
+AX_BOOST_SYSTEM
+AX_BOOST_DATE_TIME
 
-CXXFLAGS=" -g -O3 -Wall -fno-strict-aliasing "
+CXXFLAGS=" -g -O3 -Wall -fno-strict-aliasing"
 
 # check for include files
 AC_CHECK_HEADERS([\

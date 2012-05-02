@@ -46,7 +46,7 @@ public:
     library_exception( const char* szText, int error ) throw() :
 		error_( error ), text_( szText )
 	{
-		std::cerr << "Error: " << szText << ":" << error << std::endl;
+		std::cerr << "Error: " << szText << " (" << error << ")" << std::endl;
 	}
 
 	~library_exception() throw(){};

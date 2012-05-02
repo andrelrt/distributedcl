@@ -80,13 +80,13 @@ DCL_TYPE_T* get_info_check_parameters( const typename DCL_TYPE_T::cl_type_t cl_o
 {
     if( cl_obj == NULL )
     {
-        throw dcl::library_exception( DCL_TYPE_T::invalid_error_value );
+        throw dcl::library_exception( "cl_obj == NULL", DCL_TYPE_T::invalid_error_value );
     }
 
     if( ( (param_value_size == 0) && (param_value != NULL) ) ||
         ( (param_value == NULL) && (param_value_size_ret == NULL) ) )
     {
-        throw dcl::library_exception( CL_INVALID_VALUE );
+        throw dcl::library_exception( "Invalid param_value and param_value_size values.", CL_INVALID_VALUE );
     }
 
     return dcl::icd::icd_object_manager::get_instance().get_object_ptr< DCL_TYPE_T >( cl_obj );

@@ -39,26 +39,7 @@ using dcl::config::client_config;
 #define OPENCL_LIBRARY  "libOpenCL.so"
 #endif
 //-----------------------------------------------------------------------------
-static boost::thread* library_thread_ptr = NULL;
-static boost::interprocess::interprocess_semaphore* wait_ptr = NULL;
-void library_thread();
-//-----------------------------------------------------------------------------
 void setup_library()
-{
-    wait_ptr = new boost::interprocess::interprocess_semaphore( 0 );
-    library_thread_ptr = new boost::thread( library_thread );
-}
-//-----------------------------------------------------------------------------
-void free_library()
-{
-    wait_ptr->post();
-    library_thread_ptr->join();
-
-    delete library_thread_ptr;
-    delete wait_ptr;
-}
-//-----------------------------------------------------------------------------
-void library_thread()
 {
     try
     {
@@ -66,10 +47,13 @@ void library_thread()
         std::string filepath;
         client_config::get_config_path( filepath, "libdcl.conf" );
 
+		std::cout << "DistributedCL Client 0.1" << std::endl;
+
         client_config config;
 
         try
         {
+			std::cout << "Loading config file: " << filepath << std::endl;
             config.parse( filepath );
         }
         catch( boost::program_options::error& ex )
@@ -81,6 +65,7 @@ void library_thread()
 	    // Load OpenCL Libraries --------------------------------------------------
         if( config.load_local() )
         {
+			std::cout << "Loading OpenCL library: " << OPENCL_LIBRARY << std::endl;
 		    opencl_composite::get_instance().add_library( OPENCL_LIBRARY );
         }
 
@@ -90,6 +75,7 @@ void library_thread()
 
         for( it = servers.begin(); it != servers.end(); it++ )
         {
+			std::cout << "Connecting remote DistributedCL server: " << *it << std::endl;
             opencl_composite::get_instance().add_remote( *it );
         }
 
@@ -97,14 +83,17 @@ void library_thread()
         composite_platform* platform_ptr = const_cast< composite_platform* >( &platform_ref );
 
         icd_object_manager::get_instance().get_cl_id< composite_platform >( platform_ptr );
+
+		std::cout << "DistributedCL client ready." << std::endl;
     }
 	catch( dcl::library_exception& ex )
 	{
         std::cerr << "Exception: " << ex.text() << " -- " << ex.get_error() << std::endl;
 	}
-
-    wait_ptr->wait();
-
+}
+//-----------------------------------------------------------------------------
+void free_library()
+{
     opencl_composite::get_instance().free_all();
 }
 //-----------------------------------------------------------------------------
