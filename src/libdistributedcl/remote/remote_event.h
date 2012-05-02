@@ -27,9 +27,18 @@
 #include "remote_object.h"
 #include "remote_context.h"
 #include "info/event_info.h"
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
+//-----------------------------------------------------------------------------
+//namespace dcl {
+//namespace network {
+//namespace message {
+//class enqueue_message;
+//}}}
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
+//-----------------------------------------------------------------------------
+class remote_command_queue;
 //-----------------------------------------------------------------------------
 class remote_event :
     public dcl::info::generic_event,
@@ -37,14 +46,24 @@ class remote_event :
 {
 public:
     remote_event( const remote_context& context_ref, dcl::remote_id_t id ) :
-        remote_object< remote_event >( context_ref.get_session() )
+        remote_object< remote_event >( context_ref.get_session() ),
+        queue_ptr_( NULL ), message_ptr_( NULL )
     {
         set_remote_id( id );
     }
 
+    remote_event( const remote_context& context_ref, const remote_command_queue* queue_ptr,
+                  dcl::network::message::enqueue_message* message_ptr ) :
+        remote_object< remote_event >( context_ref.get_session() ),
+        queue_ptr_( queue_ptr ), message_ptr_( message_ptr ) {}
+
     ~remote_event(){}
 
     virtual void wait();
+
+private:
+    const remote_command_queue* queue_ptr_;
+    dcl::network::message::enqueue_message* message_ptr_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

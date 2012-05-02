@@ -33,7 +33,7 @@ namespace message {
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateKernel >::create_request( void* payload_ptr )
 {
-    msgCreateKernel_request* request_ptr = 
+    msgCreateKernel_request* request_ptr =
         reinterpret_cast< msgCreateKernel_request* >( payload_ptr );
 
     request_ptr->program_id_ = host_to_network( program_id_ );
@@ -44,7 +44,7 @@ void dcl_message< msgCreateKernel >::create_request( void* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateKernel >::parse_request( const void* payload_ptr )
 {
-    const msgCreateKernel_request* request_ptr = 
+    const msgCreateKernel_request* request_ptr =
         reinterpret_cast< const msgCreateKernel_request* >( payload_ptr );
 
     program_id_ = network_to_host( request_ptr->program_id_ );
@@ -62,7 +62,7 @@ void dcl_message< msgCreateKernel >::create_response( void* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateKernel >::parse_response( const void* payload_ptr )
 {
-    const remote_id_t* response_ptr = 
+    const remote_id_t* response_ptr =
         reinterpret_cast< const remote_id_t* >( payload_ptr );
 
     id_ = network_to_host( *response_ptr );
@@ -72,8 +72,10 @@ void dcl_message< msgCreateKernel >::parse_response( const void* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
 {
-    msgEnqueueNDRangeKernel_request* request_ptr = 
-        reinterpret_cast< msgEnqueueNDRangeKernel_request* >( payload_ptr );
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
+
+    msgEnqueueNDRangeKernel_request* request_ptr =
+        reinterpret_cast< msgEnqueueNDRangeKernel_request* >( enqueue_ptr );
 
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->kernel_id_ = host_to_network( kernel_id_ );
@@ -85,20 +87,14 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
         request_ptr->global_[ i ] = host_to_network( static_cast<uint32_t>( global_.get_range()[ i ] ) );
         request_ptr->local_[ i ]  = host_to_network( static_cast<uint32_t>( local_.get_range()[ i ] ) );
     }
-
-    request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );
-    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
-
-    for( uint32_t i = 0; i < events_.size(); i++ )
-    {
-        request_ptr->events_[ i ] = host_to_network( events_[ i ] );
-    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_ptr )
 {
-    const msgEnqueueNDRangeKernel_request* request_ptr = 
-        reinterpret_cast< const msgEnqueueNDRangeKernel_request* >( payload_ptr );
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
+
+    const msgEnqueueNDRangeKernel_request* request_ptr =
+        reinterpret_cast< const msgEnqueueNDRangeKernel_request* >( enqueue_ptr );
 
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     kernel_id_ = network_to_host( request_ptr->kernel_id_ );
@@ -119,38 +115,16 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
     value[ 1 ] = network_to_host( request_ptr->local_[ 1 ] );
     value[ 2 ] = network_to_host( request_ptr->local_[ 2 ] );
     local_.copy( ndrange( dimensions, value ) );
-
-    return_event_ = (network_to_host( request_ptr->return_event_ ) != 0) ? true : false;
-
-    set_response_size( return_event_? sizeof(dcl::remote_id_t) : 0 );
-
-    events_.clear();
-    uint32_t event_count = network_to_host( request_ptr->event_count_ );
-
-    if( event_count != 0 )
-    {
-        events_.reserve( event_count );
-
-        for( uint32_t i = 0; i < events_.size(); i++ )
-        {
-            events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
-        }
-    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueNDRangeKernel >::create_response( void* payload_ptr )
 {
-    remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
-
-    *response_ptr = host_to_network( event_id_ );
+    enqueue_message::create_enqueue_response( payload_ptr );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueNDRangeKernel >::parse_response( const void* payload_ptr )
 {
-    const remote_id_t* response_ptr = 
-        reinterpret_cast< const remote_id_t* >( payload_ptr );
-
-    event_id_ = network_to_host( *response_ptr );
+    enqueue_message::parse_enqueue_response( payload_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgSetKernelArg

@@ -70,8 +70,8 @@ public:
 
     ~command_queue(){}
 
-    virtual void flush();
-    virtual void finish();
+    virtual void flush() const;
+    virtual void finish() const;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

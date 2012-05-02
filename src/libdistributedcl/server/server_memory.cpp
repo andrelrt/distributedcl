@@ -84,9 +84,10 @@ void msgEnqueueWriteBuffer_command::execute()
     {
         composite_event* ret_event = NULL;
 
+        // Always no blocking
         buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(),
                            message_.get_buffer_size(), 0,
-                           message_.get_blocking(), events,
+                           false, events,
                            reinterpret_cast<generic_event**>( &ret_event ) );
 
         remote_id_t id = server.get_event_manager().add( ret_event );
@@ -94,10 +95,13 @@ void msgEnqueueWriteBuffer_command::execute()
     }
     else
     {
+        // Always no blocking
         buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(),
                            message_.get_buffer_size(), 0, 
-                           message_.get_blocking(), events, NULL );
+                           false, events, NULL );
     }
+
+    queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
@@ -143,6 +147,8 @@ void msgEnqueueReadBuffer_command::execute()
                           message_.get_buffer_size(), message_.get_offset(),
                           true, events, NULL );
     }
+
+    queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()

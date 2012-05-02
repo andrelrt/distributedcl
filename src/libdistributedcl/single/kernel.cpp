@@ -77,8 +77,7 @@ void kernel::execute( const generic_command_queue* queue_ptr,
             opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
                                             static_cast<cl_uint>( global.get_dimensions() ),
                                             offset.get_pointer(), global.get_pointer(),
-                                            local.get_pointer(), 0, NULL,
-                                            (event_ptr == NULL) ? NULL : &evnt );
+                                            local.get_pointer(), 0, NULL, &evnt );
     }
     else
     {
@@ -93,8 +92,7 @@ void kernel::execute( const generic_command_queue* queue_ptr,
             opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
                                             static_cast<cl_uint>( global.get_dimensions() ),
                                             offset.get_pointer(), global.get_pointer(), local.get_pointer(),
-                                            static_cast<cl_uint>( wait_events.size() ), 
-                                            events.get(), (event_ptr == NULL) ? NULL : &evnt );
+                                            static_cast<cl_uint>( wait_events.size() ), events.get(), &evnt );
     }
 
     if( error_code != CL_SUCCESS )
@@ -105,6 +103,10 @@ void kernel::execute( const generic_command_queue* queue_ptr,
     if( (event_ptr != NULL) && (evnt != NULL) )
     {
         *event_ptr = new event( opencl_, evnt );
+    }
+    else if( evnt != NULL )
+    {
+        opencl_.clReleaseEvent( evnt );
     }
 }
 //-----------------------------------------------------------------------------

@@ -31,7 +31,7 @@ using dcl::network::message::msgFinish;
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-void remote_command_queue::flush()
+void remote_command_queue::flush() const
 {
     dcl_message< msgFlush >* msg_ptr = new dcl_message< msgFlush >();
 
@@ -41,7 +41,7 @@ void remote_command_queue::flush()
     session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
-void remote_command_queue::finish()
+void remote_command_queue::finish() const
 {
     dcl_message< msgFinish >* msg_ptr = new dcl_message< msgFinish >();
 

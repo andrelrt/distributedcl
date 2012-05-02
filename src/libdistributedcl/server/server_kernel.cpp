@@ -97,6 +97,8 @@ void msgEnqueueNDRangeKernel_command::execute()
                              message_.get_global(), message_.get_local(), events,
                              NULL );
     }
+
+    queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 void msgSetKernelArg_command::execute()

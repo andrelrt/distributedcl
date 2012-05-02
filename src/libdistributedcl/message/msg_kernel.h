@@ -95,20 +95,22 @@ private:
 // msgEnqueueNDRangeKernel
 //-----------------------------------------------------------------------------
 template<>
-class dcl_message< msgEnqueueNDRangeKernel > : public base_message
+class dcl_message< msgEnqueueNDRangeKernel > :
+    public base_message,
+    public enqueue_message
 {
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
         base_message( msgEnqueueNDRangeKernel, true, 
-                      sizeof( msgEnqueueNDRangeKernel_request ) - sizeof( dcl::remote_id_t ), 
-                      sizeof( dcl::remote_id_t ) ),
-        return_event_( false ), kernel_id_( 0xffff ), command_queue_id_( 0xffff ), event_id_( 0xffff ){}
+                      sizeof( msgEnqueueNDRangeKernel_request ) ),
+        kernel_id_( 0xffff ), command_queue_id_( 0xffff )
+    {
+        set_response_size( get_enqueue_response_size() );
+    }
 
     // Request
-    MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
-    MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
 
     inline dcl::info::ndrange& get_offset()
     {
@@ -125,27 +127,17 @@ public:
         return local_;
     }
 
-    inline void add_event( dcl::remote_id_t event_id )
-    {
-        events_.push_back( event_id );
-
-        set_size( (events_.size() - 1) * sizeof(dcl::remote_id_t) +
-                  sizeof( msgEnqueueNDRangeKernel_request ) );
-    }
-
-    // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
-
 private:
-    bool return_event_;
     dcl::remote_id_t kernel_id_;
     dcl::remote_id_t command_queue_id_;
     dcl::info::ndrange offset_;
     dcl::info::ndrange global_;
     dcl::info::ndrange local_;
-    dcl::remote_ids_t events_;
 
-    dcl::remote_id_t event_id_;
+    inline virtual void update_request_size()
+    {
+        set_size( get_enqueue_request_size() + sizeof(msgEnqueueNDRangeKernel_request) );
+    }
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );
@@ -162,9 +154,6 @@ private:
         uint32_t offset_[ 3 ];
         uint32_t global_[ 3 ];
         uint32_t local_[ 3 ];
-        uint16_t return_event_:1;
-        uint16_t event_count_:15;
-        dcl::remote_id_t events_[ 1 ];
     };
     #pragma pack( pop )
 };

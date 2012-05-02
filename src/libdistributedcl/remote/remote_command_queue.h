@@ -45,8 +45,8 @@ public:
 
     ~remote_command_queue(){}
 
-    virtual void flush();
-    virtual void finish();
+    virtual void flush() const;
+    virtual void finish() const;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

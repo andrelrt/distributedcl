@@ -31,7 +31,9 @@ dcl_message< msg_error_message > dcl_message< msg_error_message >::success( CL_S
 void dcl_message< msg_error_message >::create_response( void* payload_ptr )
 {
     uint32_t* response_ptr = reinterpret_cast< uint32_t* >( payload_ptr );
-    *response_ptr = host_to_network( static_cast<uint32_t>( error_code_ ) );
+    uint32_t* error_code_ptr = reinterpret_cast< uint32_t* >( &error_code_ );
+
+    *response_ptr = host_to_network( *error_code_ptr );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msg_error_message >::parse_response( const void* payload_ptr )
@@ -39,7 +41,9 @@ void dcl_message< msg_error_message >::parse_response( const void* payload_ptr )
     const uint32_t* response_ptr = 
         reinterpret_cast< const uint32_t* >( payload_ptr );
 
-    error_code_ = static_cast<int32_t>( network_to_host( *response_ptr ) );
+    uint32_t* error_code_ptr = reinterpret_cast< uint32_t* >( &error_code_ );
+
+    *error_code_ptr = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

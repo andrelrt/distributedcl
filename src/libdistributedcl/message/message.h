@@ -25,6 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 //-----------------------------------------------------------------------------
 #define MSG_PARAMETER_GET( type_t, var_att, name_m ) \
     inline const type_t get_##name_m() const{return var_att;}
@@ -200,7 +201,7 @@ protected:
     virtual void create_response( void* payload_ptr ){}
     virtual void parse_request( const void* payload_ptr ){}
 
-    inline void set_size( std::size_t size )
+    inline virtual void set_size( std::size_t size )
     {
         size_ = size + sizeof( message_header );
     }
@@ -220,7 +221,7 @@ protected:
         wait_response_ = true;
     }
 
-    inline void set_response_size( std::size_t size )
+    inline virtual void set_response_size( std::size_t size )
     {
         response_size_ = size;
     }
@@ -267,8 +268,75 @@ private:
     }
 };
 //-----------------------------------------------------------------------------
-template< message_type MESSAGE_NUMBER > 
-class dcl_message : public base_message {};
+class enqueue_message
+{
+public:
+    // Request
+    MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
+    MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
+
+    inline void add_event( dcl::remote_id_t event_id )
+    {
+        events_.push_back( event_id );
+
+        update_request_size();
+    }
+
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
+
+
+    inline void wait()
+    {
+        received_.wait();
+    }
+
+protected:
+    bool return_event_;
+    dcl::remote_ids_t events_;
+
+    dcl::remote_id_t event_id_;
+
+    boost::interprocess::interprocess_semaphore received_;
+
+    enqueue_message() :
+        return_event_( false ), event_id_( 0xffff ), received_( 0 ){}
+
+    inline std::size_t get_enqueue_request_size()
+    {
+        return( sizeof(enqueue_message_request) + 
+                (events_.size() - 1) * sizeof(dcl::remote_id_t) );
+    }
+
+    inline std::size_t get_enqueue_response_size()
+    {
+        return( sizeof(enqueue_message_response) );
+    }
+
+    inline virtual void update_request_size() = 0;
+
+    virtual void* create_enqueue_request( void* payload_ptr );
+    virtual void* create_enqueue_response( void* payload_ptr );
+    virtual const void* parse_enqueue_request( const void* payload_ptr );
+    virtual const void* parse_enqueue_response( const void* payload_ptr );
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct enqueue_message_request
+    {
+        uint16_t event_count_;
+        dcl::remote_id_t events_[ 1 ];
+    };
+
+    struct enqueue_message_response
+    {
+        dcl::remote_id_t event_;
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+template< message_type MESSAGE_NUMBER >
+class dcl_message : public base_message{};
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

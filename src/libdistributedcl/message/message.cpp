@@ -180,5 +180,67 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 #undef MSG
 #undef THROW_IF
 //-----------------------------------------------------------------------------
+// enqueue_message
+//-----------------------------------------------------------------------------
+void* enqueue_message::create_enqueue_request( void* payload_ptr )
+{
+    enqueue_message_request* request_ptr =
+        reinterpret_cast< enqueue_message_request* >( payload_ptr );
+
+    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
+
+    for( uint32_t i = 0; i < events_.size(); i++ )
+    {
+        request_ptr->events_[ i ] = host_to_network( events_[ i ] );
+    }
+
+    return( reinterpret_cast<uint8_t*>( payload_ptr ) + get_enqueue_request_size() );
+}
+//-----------------------------------------------------------------------------
+const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
+{
+    const enqueue_message_request* request_ptr =
+        reinterpret_cast< const enqueue_message_request* >( payload_ptr );
+
+    return_event_ = true;
+
+    events_.clear();
+    uint32_t event_count = network_to_host( request_ptr->event_count_ );
+
+    if( event_count != 0 )
+    {
+        events_.reserve( event_count );
+
+        for( uint32_t i = 0; i < events_.size(); i++ )
+        {
+            events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
+        }
+    }
+
+    return( reinterpret_cast<const uint8_t*>( payload_ptr ) + get_enqueue_request_size() );
+}
+//-----------------------------------------------------------------------------
+void* enqueue_message::create_enqueue_response( void* payload_ptr )
+{
+    enqueue_message_response* response_ptr =
+        reinterpret_cast< enqueue_message_response* >( payload_ptr );
+
+    response_ptr->event_ = host_to_network( event_id_ );
+
+    return( reinterpret_cast<uint8_t*>( payload_ptr ) + get_enqueue_response_size() );
+}
+//-----------------------------------------------------------------------------
+const void* enqueue_message::parse_enqueue_response( const void* payload_ptr )
+{
+    const enqueue_message_response* response_ptr =
+        reinterpret_cast< const enqueue_message_response* >( payload_ptr );
+
+    event_id_ = network_to_host( response_ptr->event_ );
+
+    received_.post();
+
+    return( reinterpret_cast<const uint8_t*>( payload_ptr ) + get_enqueue_response_size() );
+}
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

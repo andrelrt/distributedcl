@@ -111,28 +111,29 @@ clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clFlush( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
 {
-    try
-    {
-        icd_object_manager& icd = icd_object_manager::get_instance();
+    return CL_SUCCESS;
+    //try
+    //{
+    //    icd_object_manager& icd = icd_object_manager::get_instance();
 
-        composite_command_queue* command_queue_ptr =
-            icd.get_object_ptr< composite_command_queue >( command_queue );
+    //    composite_command_queue* command_queue_ptr =
+    //        icd.get_object_ptr< composite_command_queue >( command_queue );
 
-        command_queue_ptr->flush();
+    //    command_queue_ptr->flush();
 
-        return CL_SUCCESS;
-    }
-    catch( dcl::library_exception& ex )
-    {
-        return ex.get_error();
-    }
-    catch( ... )
-    {
-        return CL_INVALID_COMMAND_QUEUE;
-    }
+    //    return CL_SUCCESS;
+    //}
+    //catch( dcl::library_exception& ex )
+    //{
+    //    return ex.get_error();
+    //}
+    //catch( ... )
+    //{
+    //    return CL_INVALID_COMMAND_QUEUE;
+    //}
 
-    // Dummy
-    return CL_INVALID_COMMAND_QUEUE;
+    //// Dummy
+    //return CL_INVALID_COMMAND_QUEUE;
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL

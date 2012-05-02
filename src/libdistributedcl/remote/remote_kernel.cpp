@@ -57,20 +57,27 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     msg_ptr->get_global().copy( global );
     msg_ptr->get_local().copy( local );
 
-    msg_ptr->set_return_event( (event_ptr != NULL)? true : false );
-
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
         msg_ptr->add_event( reinterpret_cast<const remote_event*>( *it )->get_remote_id() );
     }
 
     boost::shared_ptr< base_message > message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
 
     if( event_ptr != NULL )
     {
-        *event_ptr =
-            reinterpret_cast<generic_event*>( new remote_event( context_ref_, msg_ptr->get_event_id() ) );
+        remote_event* ptr =
+            new remote_event( context_ref_, 
+                              reinterpret_cast<const remote_command_queue*>( queue_ptr ),
+                              msg_ptr );
+
+        *event_ptr = reinterpret_cast<generic_event*>( ptr );
+
+        session_ref_.enqueue_message( message_sp );
+    }
+    else
+    {
+        session_ref_.send_message( message_sp );
     }
 }
 //-----------------------------------------------------------------------------

@@ -51,7 +51,7 @@ command_queue::command_queue( const context& context_ref, const device& device_r
     set_id( queue );
 }
 //-----------------------------------------------------------------------------
-void command_queue::flush()
+void command_queue::flush() const
 {
     cl_int error_code = opencl_.clFlush( get_id() );
 
@@ -61,7 +61,7 @@ void command_queue::flush()
     }
 }
 //-----------------------------------------------------------------------------
-void command_queue::finish()
+void command_queue::finish() const
 {
     cl_int error_code = opencl_.clFinish( get_id() );
 

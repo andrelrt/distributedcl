@@ -21,6 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include "remote_event.h"
+#include "remote_command_queue.h"
 #include "message/msg_event.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
@@ -31,12 +32,20 @@ namespace remote {
 //-----------------------------------------------------------------------------
 void remote_event::wait()
 {
-    dcl_message< msgWaitForEvents >* msg_ptr = new dcl_message< msgWaitForEvents >();
+    if( queue_ptr_ == NULL )
+    {
+        dcl_message< msgWaitForEvents >* msg_ptr = new dcl_message< msgWaitForEvents >();
 
-    msg_ptr->set_event_id( get_remote_id() );
+        msg_ptr->set_event_id( get_remote_id() );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
+        boost::shared_ptr< base_message > message_sp( msg_ptr );
+        session_ref_.send_message( message_sp );
+    }
+    else
+    {
+        queue_ptr_->flush();
+        message_ptr_->wait();
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

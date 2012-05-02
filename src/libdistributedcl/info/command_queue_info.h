@@ -79,8 +79,8 @@ public:
         return local_info_.properties_;
     }
 
-    virtual void flush() = 0;
-    virtual void finish() = 0;
+    virtual void flush() const = 0;
+    virtual void finish() const = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info
