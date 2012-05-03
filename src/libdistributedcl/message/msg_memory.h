@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,7 +57,7 @@ class dcl_message< msgCreateBuffer > : public base_message
 public:
     dcl_message< msgCreateBuffer >() :
         base_message( msgCreateBuffer, true, 0, sizeof( dcl::remote_id_t ) ),
-        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ), 
+        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
         flags_( 0 ), id_( 0xffff ){}
 
     typedef std::vector<uint8_t> buffer_t;
@@ -296,8 +296,8 @@ class dcl_message< msgCreateImage2D > : public base_message
 public:
     dcl_message< msgCreateImage2D >() :
         base_message( msgCreateImage2D, true, 0, sizeof( dcl::remote_id_t ) ),
-        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ), 
-        flags_( 0 ), channel_order_( 0 ), channel_type_( 0 ), 
+        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
+        flags_( 0 ), channel_order_( 0 ), channel_type_( 0 ),
         width_( 0 ), height_( 0 ), row_pitch_( 0 ), id_( 0xffff ){}
 
     typedef std::vector<uint8_t> buffer_t;
@@ -306,13 +306,20 @@ public:
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
     MSG_PARAMETER_GET_SET( cl_mem_flags, flags_, flags )
     MSG_PARAMETER_GET_SET( cl_channel_order, channel_order_, channel_order )
-    MSG_PARAMETER_GET_SET( cl_channel_type, channel_type_, channel_type )
-    MSG_PARAMETER_GET_SET( size_t, width_, width )
 
     MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer )
+    MSG_PARAMETER_GET( size_t, width_, width )
     MSG_PARAMETER_GET( size_t, height_, height )
     MSG_PARAMETER_GET( size_t, row_pitch_, row_pitch )
     MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
+    MSG_PARAMETER_GET( cl_channel_type, channel_type_, channel_type )
+
+    void set_width( size_t width )
+    {
+        width_ = width;
+
+        update_request_size();
+    }
 
     void set_height( size_t height )
     {
@@ -324,6 +331,13 @@ public:
     void set_row_pitch( size_t row_pitch )
     {
         row_pitch_ = row_pitch;
+
+        update_request_size();
+    }
+
+    void set_channel_type( cl_channel_type channel_type )
+    {
+        channel_type_ = channel_type;
 
         update_request_size();
     }
@@ -359,7 +373,13 @@ private:
 
     inline void update_request_size()
     {
-        buffer_len_ = height_ * row_pitch_;
+        size_t row_pitch = row_pitch_;
+        if( row_pitch == 0 )
+        {
+            row_pitch = width_ * channel_type_size();
+        }
+
+        buffer_len_ = height_ * row_pitch;
 
         set_size( (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) + sizeof(msgCreateImage2D_request) - 1 );
     }
@@ -384,6 +404,35 @@ private:
         channel_type_ = channel_type + CL_SNORM_INT8; // 0x10D0
     }
 
+    inline size_t channel_type_size()
+    {
+        switch( channel_type_ )
+        {
+            case CL_SNORM_INT8:
+            case CL_UNORM_INT8:
+            case CL_SIGNED_INT8:
+            case CL_UNSIGNED_INT8:
+                return 1;
+
+            case CL_SNORM_INT16:
+            case CL_UNORM_INT16:
+            case CL_UNORM_SHORT_565:
+            case CL_UNORM_SHORT_555:
+            case CL_SIGNED_INT16:
+            case CL_UNSIGNED_INT16:
+            case CL_HALF_FLOAT:
+                return 2;
+
+            case CL_UNORM_INT_101010:
+            case CL_SIGNED_INT32:
+            case CL_UNSIGNED_INT32:
+            case CL_FLOAT:
+                return 4;
+
+            default:
+                return 0;
+        }
+    }
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary

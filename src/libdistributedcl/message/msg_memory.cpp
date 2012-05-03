@@ -275,6 +275,12 @@ void dcl_message< msgCreateImage2D >::parse_request( const void* payload_ptr )
     {
         const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
 
+        std::cout << "request_ptr->message_buffer_ != 0, buffer_len_ = " << buffer_len_
+                     << " width = " << width_
+                     << " height = " << height_
+                     << " row_pitch = " << row_pitch_
+                     << " request_ptr->buffer_ = " << (void*)begin
+                     << std::endl;
         buffer_.assign( begin, begin + buffer_len_ );
         buffer_ptr_ = buffer_.data();
     }
