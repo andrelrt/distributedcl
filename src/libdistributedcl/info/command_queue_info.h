@@ -24,10 +24,16 @@
 #define _DCL_INFO_COMMAND_QUEUE_H_
 
 #include <string>
+#include <queue>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include "dcl_objects.h"
 #include "icd_object.h"
+#include <boost/thread.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -55,13 +61,25 @@ class generic_command_queue :
     public dcl_object< command_queue_info >
 {
 public:
-    virtual ~generic_command_queue(){}
     generic_command_queue( const generic_context* context_ptr, const generic_device* device_ptr,
-                           cl_command_queue_properties properties )
+                           cl_command_queue_properties properties ) :
+        async_semaphore_( 0 )
     {
         local_info_.device_ptr_ = device_ptr;
         local_info_.context_ptr_ = context_ptr;
         local_info_.properties_ = properties;
+
+        async_worker_thread_sp_.reset( new boost::thread( &dcl::info::generic_command_queue::worker_thread, this ) );
+    }
+
+    virtual ~generic_command_queue()
+    {
+        scoped_lock_t( mutex_ );
+
+        async_command_.push( cmd_terminate );
+        async_semaphore_.post();
+
+        async_worker_thread_sp_->join();
     }
 
     inline const generic_device* get_device() const
@@ -81,6 +99,58 @@ public:
 
     virtual void flush() const = 0;
     virtual void finish() const = 0;
+
+    inline void async_flush()
+    {
+        scoped_lock_t( mutex_ );
+
+        async_command_.push( cmd_flush );
+        async_semaphore_.post();
+    }
+
+protected:
+    std::queue<uint32_t> async_command_;
+    boost::scoped_ptr< boost::thread > async_worker_thread_sp_;
+    boost::interprocess::interprocess_mutex queue_mutex_;
+    boost::interprocess::interprocess_semaphore async_semaphore_;
+
+    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
+
+    enum queue_commands
+    {
+        cmd_invalid = 0,
+        cmd_terminate = 1,
+        cmd_flush = 2,
+    };
+
+    void worker_thread()
+    {
+        while( 1 )
+        {
+            async_semaphore_.wait();
+            queue_commands command = cmd_invalid;
+
+            {
+                scoped_lock_t( mutex_ );
+
+                command = static_cast<queue_commands>( async_command_.front() );
+                async_command_.pop();
+            }
+
+            if( command == cmd_terminate )
+                break;
+
+            switch( command )
+            {
+                case cmd_flush:
+                    flush();
+                    break;
+
+                default:
+                    dcl::library_exception( "Invalid queue_command" );
+            }
+        }
+    }
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

@@ -53,22 +53,39 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
     msg_ptr->set_remote_id( get_remote_id() );
     msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
-    msg_ptr->set_blocking( (blocking == CL_TRUE)? true : false );
 
     msg_ptr->set_return_event( (ret_event_ptr != NULL) );
 
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
-        msg_ptr->add_event( reinterpret_cast<const remote_event*>( *it )->get_remote_id() );
+        reinterpret_cast<remote_event*>( *it )->wait_remote_id();
+
+        msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
 
     boost::shared_ptr< base_message > message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
 
-    if( ret_event_ptr != NULL )
+    if( blocking == CL_TRUE )
     {
-        *ret_event_ptr =
-            reinterpret_cast<generic_event*>( new remote_event( context_, msg_ptr->get_event_id() ) );
+        session_ref_.send_message( message_sp );
+
+        if( ret_event_ptr != NULL )
+        {
+            *ret_event_ptr =
+                reinterpret_cast<generic_event*>( new remote_event( context_, msg_ptr->get_event_id() ) );
+        }
+    }
+    else
+    {
+        if( ret_event_ptr != NULL )
+        {
+            *ret_event_ptr =
+                reinterpret_cast<generic_event*>( new remote_event( context_, message_sp ) );
+
+            msg_ptr->set_return_event( true );
+        }
+
+        session_ref_.enqueue_message( message_sp );
     }
 }
 //-----------------------------------------------------------------------------
@@ -82,24 +99,41 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
     msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
     msg_ptr->set_buffer_size( size );
     msg_ptr->set_offset( offset );
-    msg_ptr->set_blocking( (blocking == CL_TRUE)? true : false );
 
     msg_ptr->set_return_event( (ret_event_ptr != NULL) );
+    msg_ptr->set_data_pointer( data_ptr );
 
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
-        msg_ptr->add_event( reinterpret_cast<const remote_event*>( *it )->get_remote_id() );
+        reinterpret_cast<remote_event*>( *it )->wait_remote_id();
+
+        msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
 
     boost::shared_ptr< base_message > message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
 
-    memcpy( data_ptr, msg_ptr->get_buffer().data(), size );
 
-    if( ret_event_ptr != NULL )
+    if( blocking == CL_TRUE )
     {
-        *ret_event_ptr =
-            reinterpret_cast<generic_event*>( new remote_event( context_, msg_ptr->get_event_id() ) );
+        session_ref_.send_message( message_sp );
+
+        if( ret_event_ptr != NULL )
+        {
+            *ret_event_ptr =
+                reinterpret_cast<generic_event*>( new remote_event( context_, msg_ptr->get_event_id() ) );
+        }
+    }
+    else
+    {
+        if( ret_event_ptr != NULL )
+        {
+            *ret_event_ptr =
+                reinterpret_cast<generic_event*>( new remote_event( context_, message_sp ) );
+
+            msg_ptr->set_return_event( true );
+        }
+
+        session_ref_.enqueue_message( message_sp );
     }
 }
 //-----------------------------------------------------------------------------

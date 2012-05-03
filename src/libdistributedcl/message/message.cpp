@@ -187,7 +187,8 @@ void* enqueue_message::create_enqueue_request( void* payload_ptr )
     enqueue_message_request* request_ptr =
         reinterpret_cast< enqueue_message_request* >( payload_ptr );
 
-    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
+    request_ptr->return_event_ = static_cast<uint16_t>( return_event_? 1 : 0 );
+    request_ptr->event_count_ = static_cast<uint16_t>( events_.size() );
 
     for( uint32_t i = 0; i < events_.size(); i++ )
     {
@@ -202,10 +203,10 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
     const enqueue_message_request* request_ptr =
         reinterpret_cast< const enqueue_message_request* >( payload_ptr );
 
-    return_event_ = true;
+    return_event_ = (request_ptr->return_event_ == 1)? true : false;
 
     events_.clear();
-    uint32_t event_count = network_to_host( request_ptr->event_count_ );
+    uint32_t event_count = request_ptr->event_count_;
 
     if( event_count != 0 )
     {

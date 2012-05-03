@@ -101,7 +101,8 @@ private:
             catch( dcl::library_exception& )
             {
                 // Connection reset, close session
-                break;
+                std::cout << "Connection reset, close session" << std::endl;
+                return;
             }
 
             if( boost::this_thread::interruption_requested() )
@@ -119,15 +120,19 @@ private:
 
                 dispatcher_.dispatch_messages( messages_ref );
 
-                if( messages_ref.back()->waiting_response() )
+                dcl::network::message::message_vector_t::iterator it;
+
+                for( it = messages_ref.begin(); it != messages_ref.end(); it++ )
                 {
-                    dcl::network::message::message_vector_t::reference ref = messages_ref.back();
+                    if( (*it)->waiting_response() )
+                    {
+                        (*it)->set_response_mode();
 
-                    ref->set_response_mode();
-
-                    ret_packet->add( ref );
+                        ret_packet->add( *it );
+                    }
                 }
-                else
+
+                if( ret_packet->get_messages().empty() )
                 {
                     boost::shared_ptr<dcl::network::message::base_message>
                         ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( CL_SUCCESS ) );
@@ -155,7 +160,8 @@ private:
             catch( dcl::library_exception& )
             {
                 // Connection reset, close session
-                break;
+                std::cout << "Connection reset, close session" << std::endl;
+                return;
             }
         }
     }

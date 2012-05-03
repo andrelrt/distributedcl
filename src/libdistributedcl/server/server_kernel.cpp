@@ -98,7 +98,7 @@ void msgEnqueueNDRangeKernel_command::execute()
                              NULL );
     }
 
-    queue_ptr->flush();
+    queue_ptr->async_flush();
 }
 //-----------------------------------------------------------------------------
 void msgSetKernelArg_command::execute()

@@ -79,28 +79,34 @@ public:
 //        }
 //
 //        wait_message_.post();
-        boost::scoped_ptr< dcl::network::message::packet > packet_ptr( dcl::network::platform::session< COMM >::create_packet() );
+
+        boost::scoped_ptr< dcl::network::message::packet > packet_sp;
 
         {
             scoped_lock_t lock( mutex_ );
+
+            if( message_queue_.empty() )
+                return;
+
+            packet_sp.reset( dcl::network::platform::session< COMM >::create_packet() );
 
             while( !message_queue_.empty() )
             {
                 message_sp_t message_sp = message_queue_.front();
 
-                packet_ptr->add( message_sp );
+                packet_sp->add( message_sp );
                 message_queue_.pop();
             }
         }
 
         // Send data
-        dcl::network::platform::session< COMM >::send_packet( packet_ptr.get() );
-        boost::scoped_ptr< dcl::network::message::packet > recv_packet_ptr;
+        dcl::network::platform::session< COMM >::send_packet( packet_sp.get() );
+        boost::scoped_ptr< dcl::network::message::packet > recv_packet_sp;
 
         try
         {
             // Wait response
-            recv_packet_ptr.reset( dcl::network::platform::session< COMM >::receive_packet() );
+            recv_packet_sp.reset( dcl::network::platform::session< COMM >::receive_packet() );
         }
         catch( dcl::library_exception& )
         {
@@ -108,19 +114,14 @@ public:
             // TODO: Reconnect
             return;
         }
-
-        if( recv_packet_ptr->get_message_count() != 1 )
-        {
-            throw new dcl::library_exception( "Invalid received base_message count" );
-        }
-
+       
         // Fill internal received base_messages
         clear_received_messages();
 
-        recv_packet_ptr->parse( false );
+        recv_packet_sp->parse( false );
 
         dcl::network::message::message_vector_t::iterator recv_message_it;
-        dcl::network::message::message_vector_t& recv_messages = recv_packet_ptr->get_messages();
+        dcl::network::message::message_vector_t& recv_messages = recv_packet_sp->get_messages();
 
         for( recv_message_it = recv_messages.begin(); recv_message_it != recv_messages.end(); recv_message_it++ )
         {
@@ -141,7 +142,7 @@ public:
             else
             {
                 boost::shared_ptr< dcl::network::message::base_message > sent_message_sp =
-                    packet_ptr->get_message( (*recv_message_it)->get_id() );
+                    packet_sp->get_message( (*recv_message_it)->get_id() );
 
                 sent_message_sp->parse_response( (*recv_message_it)->get_payload() );
             }

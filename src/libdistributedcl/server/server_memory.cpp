@@ -101,7 +101,7 @@ void msgEnqueueWriteBuffer_command::execute()
                            false, events, NULL );
     }
 
-    queue_ptr->flush();
+    queue_ptr->async_flush();
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
@@ -148,7 +148,7 @@ void msgEnqueueReadBuffer_command::execute()
                           true, events, NULL );
     }
 
-    queue_ptr->flush();
+    queue_ptr->async_flush();
 }
 //-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()

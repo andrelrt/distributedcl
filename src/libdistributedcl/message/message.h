@@ -269,6 +269,7 @@ private:
 };
 //-----------------------------------------------------------------------------
 class enqueue_message
+    : public base_message
 {
 public:
     // Request
@@ -299,7 +300,11 @@ protected:
 
     boost::interprocess::interprocess_semaphore received_;
 
-    enqueue_message() :
+    enqueue_message( message_type type, std::size_t request_size = 0, 
+                     std::size_t response_size = 0 ) :
+        base_message( type, true,
+                      request_size + sizeof(enqueue_message_request) - sizeof(dcl::remote_id_t),
+                      response_size + sizeof(enqueue_message_response) ),
         return_event_( false ), event_id_( 0xffff ), received_( 0 ){}
 
     inline std::size_t get_enqueue_request_size()
@@ -324,7 +329,8 @@ protected:
     // Better when aligned in 32 bits boundary
     struct enqueue_message_request
     {
-        uint16_t event_count_;
+        uint16_t event_count_:15;
+        uint16_t return_event_:1;
         dcl::remote_id_t events_[ 1 ];
     };
 

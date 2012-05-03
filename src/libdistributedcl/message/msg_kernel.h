@@ -96,13 +96,11 @@ private:
 //-----------------------------------------------------------------------------
 template<>
 class dcl_message< msgEnqueueNDRangeKernel > :
-    public base_message,
     public enqueue_message
 {
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
-        base_message( msgEnqueueNDRangeKernel, true, 
-                      sizeof( msgEnqueueNDRangeKernel_request ) ),
+        enqueue_message( msgEnqueueNDRangeKernel, sizeof( msgEnqueueNDRangeKernel_request ) ),
         kernel_id_( 0xffff ), command_queue_id_( 0xffff )
     {
         set_response_size( get_enqueue_response_size() );

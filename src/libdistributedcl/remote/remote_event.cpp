@@ -25,6 +25,7 @@
 #include "message/msg_event.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
+using dcl::network::message::enqueue_message;
 using dcl::network::message::msgWaitForEvents;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -32,19 +33,27 @@ namespace remote {
 //-----------------------------------------------------------------------------
 void remote_event::wait()
 {
-    if( queue_ptr_ == NULL )
-    {
-        dcl_message< msgWaitForEvents >* msg_ptr = new dcl_message< msgWaitForEvents >();
+    wait_remote_id();
 
-        msg_ptr->set_event_id( get_remote_id() );
+    dcl_message< msgWaitForEvents >* msg_ptr = new dcl_message< msgWaitForEvents >();
 
-        boost::shared_ptr< base_message > message_sp( msg_ptr );
-        session_ref_.send_message( message_sp );
-    }
-    else
+    msg_ptr->set_event_id( get_remote_id() );
+
+    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+}
+//-----------------------------------------------------------------------------
+void remote_event::wait_remote_id()
+{
+    if( get_remote_id() == 0 )
     {
-        queue_ptr_->flush();
-        message_ptr_->wait();
+        get_session().flush_queue();
+
+        enqueue_message* msg_ptr = reinterpret_cast<enqueue_message*>( message_sp_.get() );
+
+        msg_ptr->wait();
+
+        set_remote_id( msg_ptr->get_event_id() );
     }
 }
 //-----------------------------------------------------------------------------

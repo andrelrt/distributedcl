@@ -85,149 +85,101 @@ void dcl_message< msgCreateBuffer >::parse_response( const void* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::create_request( void* payload_ptr )
 {
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
+
     msgEnqueueWriteBuffer_request* request_ptr = 
-        reinterpret_cast< msgEnqueueWriteBuffer_request* >( payload_ptr );
+        reinterpret_cast< msgEnqueueWriteBuffer_request* >( enqueue_ptr );
 
     request_ptr->id_ = host_to_network( id_ );
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
-    request_ptr->blocking_ = host_to_network( static_cast<uint32_t>( blocking_? 1 : 0 ) );
-    request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );
-    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
 
-    dcl::remote_id_t* events_ptr = reinterpret_cast<dcl::remote_id_t*>( request_ptr->buffer_ );
-
-    for( uint32_t i = 0; i < events_.size(); i++ )
-    {
-        events_ptr[ i ] = host_to_network( events_[ i ] );
-    }
-
-    uint8_t* buffer_ptr = reinterpret_cast<uint8_t*>( events_ptr + events_.size() );
-
-    memcpy( buffer_ptr, buffer_ptr_, buffer_len_ );
+    memcpy( request_ptr->buffer_, buffer_ptr_, buffer_len_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_ptr )
 {
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
+
     const msgEnqueueWriteBuffer_request* request_ptr = 
-        reinterpret_cast< const msgEnqueueWriteBuffer_request* >( payload_ptr );
+        reinterpret_cast< const msgEnqueueWriteBuffer_request* >( enqueue_ptr );
 
     id_ = network_to_host( request_ptr->id_ );
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     buffer_len_ = network_to_host( request_ptr->buffer_len_ );
-    blocking_ = (network_to_host( request_ptr->blocking_ ) == 1) ? true : false;
-    return_event_ = (network_to_host( request_ptr->return_event_ ) == 1) ? true : false;
 
-    events_.clear();
-    uint32_t event_count = network_to_host( request_ptr->event_count_ );
-
-    const dcl::remote_id_t* events_ptr =
-        reinterpret_cast<const dcl::remote_id_t*>( request_ptr->buffer_ );
-
-    if( event_count != 0 )
-    {
-        events_.reserve( event_count );
-
-        for( uint32_t i = 0; i < event_count; i++ )
-        {
-            events_.push_back( network_to_host( events_ptr[ i ] ) );
-        }
-    }
-
-    const uint8_t* begin =
-        reinterpret_cast<const uint8_t*>( events_ptr + event_count );
-
-    buffer_.assign( begin, begin + buffer_len_ );
+    buffer_.assign( request_ptr->buffer_, request_ptr->buffer_ + buffer_len_ );
 
     buffer_ptr_ = buffer_.data();
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::create_response( void* payload_ptr )
 {
-    dcl::remote_id_t* response_ptr =
-        reinterpret_cast<dcl::remote_id_t*>( payload_ptr );
-
-    *response_ptr = host_to_network( event_id_ );
+    enqueue_message::create_enqueue_response( payload_ptr );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::parse_response( const void* payload_ptr )
 {
-    const dcl::remote_id_t* response_ptr =
-        reinterpret_cast<const dcl::remote_id_t*>( payload_ptr );
-
-    event_id_ = network_to_host( *response_ptr );
+    enqueue_message::parse_enqueue_response( payload_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgEnqueueReadBuffer
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::create_request( void* payload_ptr )
 {
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
+
     msgEnqueueReadBuffer_request* request_ptr = 
-        reinterpret_cast< msgEnqueueReadBuffer_request* >( payload_ptr );
+        reinterpret_cast< msgEnqueueReadBuffer_request* >( enqueue_ptr );
 
     request_ptr->id_ = host_to_network( id_ );
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
     request_ptr->offset_ = host_to_network( static_cast<uint32_t>( offset_ ) );
-    request_ptr->blocking_ = host_to_network( static_cast<uint32_t>( blocking_? 1 : 0 ) );
-
-    request_ptr->return_event_ = host_to_network( static_cast<uint16_t>( return_event_ ? 1 : 0 ) );
-    request_ptr->event_count_ = host_to_network( static_cast<uint16_t>( events_.size() ) );
-
-    for( uint32_t i = 0; i < events_.size(); i++ )
-    {
-        request_ptr->events_[ i ] = host_to_network( events_[ i ] );
-    }
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::parse_request( const void* payload_ptr )
 {
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
+
     const msgEnqueueReadBuffer_request* request_ptr = 
-        reinterpret_cast< const msgEnqueueReadBuffer_request* >( payload_ptr );
+        reinterpret_cast< const msgEnqueueReadBuffer_request* >( enqueue_ptr );
 
     id_ = network_to_host( request_ptr->id_ );
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     size_ = network_to_host( request_ptr->size_ );
     offset_ = network_to_host( request_ptr->offset_ );
-    blocking_ = (network_to_host( request_ptr->blocking_ ) == 1) ? true : false;
-    return_event_ = (network_to_host( request_ptr->return_event_ ) == 1) ? true : false;
 
-    set_response_size( size_ + sizeof(msgEnqueueReadBuffer_response) - 1 );
-
-    events_.clear();
-    uint32_t event_count = network_to_host( request_ptr->event_count_ );
-
-    if( event_count != 0 )
-    {
-        events_.reserve( event_count );
-
-        for( uint32_t i = 0; i < event_count; i++ )
-        {
-            events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
-        }
-    }
+    set_response_size( size_ +
+                       get_enqueue_response_size() +
+                       sizeof(msgEnqueueReadBuffer_response) - 1 );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::create_response( void* payload_ptr )
 {
+    void* enqueue_ptr = enqueue_message::create_enqueue_response( payload_ptr );
+
     msgEnqueueReadBuffer_response* response_ptr =
-        reinterpret_cast<msgEnqueueReadBuffer_response*>( payload_ptr );
+        reinterpret_cast<msgEnqueueReadBuffer_response*>( enqueue_ptr );
 
     response_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
-    response_ptr->event_id_ = host_to_network( event_id_ );
 
     memcpy( response_ptr->buffer_, buffer_.data(), size_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::parse_response( const void* payload_ptr )
 {
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_response( payload_ptr );
+
     const msgEnqueueReadBuffer_response* response_ptr =
-        reinterpret_cast<const msgEnqueueReadBuffer_response*>( payload_ptr );
+        reinterpret_cast<const msgEnqueueReadBuffer_response*>( enqueue_ptr );
 
     size_ = network_to_host( response_ptr->size_ );
-    event_id_ = network_to_host( response_ptr->event_id_ );
 
-    buffer_.assign( response_ptr->buffer_, response_ptr->buffer_ + size_ );
+    if( data_ptr_ != NULL )
+        memcpy( data_ptr_, response_ptr->buffer_, size_ );
+    else
+        buffer_.assign( response_ptr->buffer_, response_ptr->buffer_ + size_ );
 }
 //-----------------------------------------------------------------------------
 // msgCreateImage2D

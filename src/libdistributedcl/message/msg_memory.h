@@ -116,13 +116,12 @@ private:
 // msgEnqueueWriteBuffer
 //-----------------------------------------------------------------------------
 template<>
-class dcl_message< msgEnqueueWriteBuffer > : public base_message
+class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
-        base_message( msgEnqueueWriteBuffer, false, 0, 0 ), id_( 0xffff ),
-        command_queue_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
-        blocking_( false ), event_id_( 0xffff ){}
+        enqueue_message( msgEnqueueWriteBuffer ), id_( 0xffff ),
+        command_queue_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -130,11 +129,9 @@ public:
     MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
-    MSG_PARAMETER_GET_SET( bool, blocking_, blocking )
 
     MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer_pointer )
     MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
-    MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
 
     inline void set_buffer( const uint8_t* ptr, size_t size, size_t offset )
     {
@@ -144,15 +141,6 @@ public:
         update_request_size();
     }
 
-    inline void add_event( dcl::remote_id_t event_id )
-    {
-        events_.push_back( event_id );
-
-        update_request_size();
-    }
-
-    // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
 
 private:
     dcl::remote_id_t id_;
@@ -160,21 +148,16 @@ private:
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
     buffer_t buffer_;
-    bool blocking_;
-    bool return_event_;
-    dcl::remote_ids_t events_;
-
-    dcl::remote_id_t event_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
     virtual void parse_response( const void* payload_ptr );
 
-    inline void update_request_size()
+    inline virtual void update_request_size()
     {
-        set_size( buffer_len_ +
-                  events_.size() * sizeof(dcl::remote_id_t) +
+        set_size( buffer_len_ + 
+                  get_enqueue_request_size() + 
                   sizeof(msgEnqueueWriteBuffer_request) - 1 );
     }
 
@@ -184,9 +167,6 @@ private:
     {
         dcl::remote_id_t id_;
         dcl::remote_id_t command_queue_id_;
-        uint16_t blocking_:1;
-        uint16_t return_event_:1;
-        uint16_t event_count_:14;
         uint32_t buffer_len_;
 
         uint8_t buffer_[1];
@@ -197,15 +177,13 @@ private:
 // msgEnqueueReadBuffer
 //-----------------------------------------------------------------------------
 template<>
-class dcl_message< msgEnqueueReadBuffer > : public base_message
+class dcl_message< msgEnqueueReadBuffer > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueReadBuffer >() :
-        base_message( msgEnqueueReadBuffer, true,
-                      sizeof( msgEnqueueReadBuffer_request ) - sizeof( dcl::remote_id_t ),
-                      sizeof( dcl::remote_id_t ) ),
-        id_( 0xffff ), command_queue_id_( 0xffff ), size_( 0 ), offset_( 0 ),
-        blocking_( false ), return_event_( false ), event_id_( 0xffff ){}
+        enqueue_message( msgEnqueueReadBuffer, sizeof( msgEnqueueReadBuffer_request ) ),
+        id_( 0xffff ), command_queue_id_( 0xffff ), size_( 0 ),
+        offset_( 0 ), data_ptr_( NULL ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -214,10 +192,13 @@ public:
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
     MSG_PARAMETER_GET_SET( size_t, offset_, offset )
-    MSG_PARAMETER_GET_SET( bool, blocking_, blocking )
 
     MSG_PARAMETER_GET( size_t, size_, buffer_size )
-    MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
+
+    inline void set_data_pointer( void* data_ptr )
+    {
+        data_ptr_ = data_ptr;
+    }
 
     inline void set_buffer_size( size_t size )
     {
@@ -226,17 +207,8 @@ public:
         set_response_size( size + sizeof(msgEnqueueReadBuffer_response) - 1 );
     }
 
-    inline void add_event( dcl::remote_id_t event_id )
-    {
-        events_.push_back( event_id );
-
-        set_size( (events_.size() - 1) * sizeof(dcl::remote_id_t) +
-                  sizeof( msgEnqueueReadBuffer_request ) );
-    }
-
     // Response
     MSG_PARAMETER_GET( buffer_t, buffer_, buffer )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
 
     inline uint8_t* get_buffer_pointer()
     {
@@ -253,17 +225,19 @@ private:
     dcl::remote_id_t command_queue_id_;
     size_t size_;
     size_t offset_;
-    bool blocking_;
-    bool return_event_;
-    dcl::remote_ids_t events_;
+    void* data_ptr_;
 
     buffer_t buffer_;
-    dcl::remote_id_t event_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
     virtual void parse_response( const void* payload_ptr );
+
+    inline virtual void update_request_size()
+    {
+        set_size( get_enqueue_request_size() + sizeof(msgEnqueueReadBuffer_request) );
+    }
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
@@ -272,16 +246,12 @@ private:
         dcl::remote_id_t id_;
         dcl::remote_id_t command_queue_id_;
         uint32_t size_;
-        uint32_t blocking_:1;
         uint32_t offset_:31;
-        uint16_t return_event_:1;
-        uint16_t event_count_:15;
-        dcl::remote_id_t events_[ 1 ];
+        uint32_t blocking_:1;
     };
 
     struct msgEnqueueReadBuffer_response
     {
-        dcl::remote_id_t event_id_;
         uint32_t size_;
         uint8_t buffer_[ 1 ];
     };

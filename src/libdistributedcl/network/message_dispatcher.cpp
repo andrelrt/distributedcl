@@ -37,8 +37,8 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-#define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
-//#define MSG( x ) case x: {x##_command command(*it);command.execute();}break
+//#define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
+#define MSG( x ) case x: {x##_command command(*it);command.execute();}break
 #define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("dispatch_messages: " #x " not implemented");break
 //-----------------------------------------------------------------------------
 void message_dispatcher::dispatch_messages( message_vector_t& messages )

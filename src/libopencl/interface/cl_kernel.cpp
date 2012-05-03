@@ -250,7 +250,7 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
     }
 
     if( ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) ||
-        ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
+        ((event_wait_list == NULL) && (num_events_in_wait_list != 0)) )
     {
         return CL_INVALID_EVENT_WAIT_LIST;
     }
