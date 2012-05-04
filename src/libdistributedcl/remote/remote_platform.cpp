@@ -82,19 +82,21 @@ void remote_platform::load_devices()
     boost::shared_ptr< base_message > message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
-    for( std::size_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
-    {
-        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
-
-        dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
-        add_device( dev_ptr );
-    }
-
     for( std::size_t i = 0; i < msg_ptr->get_cpu_count(); i++ )
     {
         remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_CPU ) );
 
-        dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
+        //dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
+        dev_ptr->set_remote_id( msg_ptr->get_cpu_device( i ) );
+        add_device( dev_ptr );
+    }
+
+    for( std::size_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
+    {
+        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
+
+        //dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
+        dev_ptr->set_remote_id( msg_ptr->get_gpu_device( i ) );
         add_device( dev_ptr );
     }
 
@@ -102,7 +104,8 @@ void remote_platform::load_devices()
     {
         remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_ACCELERATOR ) );
 
-        dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
+        //dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
+        dev_ptr->set_remote_id( msg_ptr->get_accelerator_device( i ) );
         add_device( dev_ptr );
     }
 }

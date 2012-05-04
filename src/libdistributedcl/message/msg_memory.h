@@ -85,7 +85,7 @@ private:
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
     cl_mem_flags flags_;
-    buffer_t buffer_;
+    //buffer_t buffer_;
 
     dcl::remote_id_t id_;
 
@@ -120,7 +120,7 @@ class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
-        enqueue_message( msgEnqueueWriteBuffer ), id_( 0xffff ),
+        enqueue_message( msgEnqueueWriteBuffer, false ), id_( 0xffff ),
         command_queue_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ){}
 
     typedef std::vector<uint8_t> buffer_t;
@@ -147,7 +147,7 @@ private:
     dcl::remote_id_t command_queue_id_;
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
-    buffer_t buffer_;
+    //buffer_t buffer_;
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );
@@ -181,7 +181,7 @@ class dcl_message< msgEnqueueReadBuffer > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueReadBuffer >() :
-        enqueue_message( msgEnqueueReadBuffer, sizeof( msgEnqueueReadBuffer_request ) ),
+        enqueue_message( msgEnqueueReadBuffer, true, sizeof( msgEnqueueReadBuffer_request ) ),
         id_( 0xffff ), command_queue_id_( 0xffff ), size_( 0 ),
         offset_( 0 ), data_ptr_( NULL ){}
 
@@ -208,8 +208,6 @@ public:
     }
 
     // Response
-    MSG_PARAMETER_GET( buffer_t, buffer_, buffer )
-
     inline uint8_t* get_buffer_pointer()
     {
         return buffer_.data();
@@ -339,7 +337,7 @@ private:
     size_t width_;
     size_t height_;
     size_t row_pitch_;
-    buffer_t buffer_;
+    //buffer_t buffer_;
 
     dcl::remote_id_t id_;
 

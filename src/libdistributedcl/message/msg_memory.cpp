@@ -59,10 +59,11 @@ void dcl_message< msgCreateBuffer >::parse_request( const void* payload_ptr )
 
     if( network_to_host( request_ptr->message_buffer_ ) != 0 )
     {
-        const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
+        buffer_ptr_ = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
+        //const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
 
-        buffer_.assign( begin, begin + buffer_len_ );
-        buffer_ptr_ = buffer_.data();
+        //buffer_.assign( begin, begin + buffer_len_ );
+        //buffer_ptr_ = buffer_.data();
     }
 }
 //-----------------------------------------------------------------------------
@@ -108,9 +109,11 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_pt
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     buffer_len_ = network_to_host( request_ptr->buffer_len_ );
 
-    buffer_.assign( request_ptr->buffer_, request_ptr->buffer_ + buffer_len_ );
+    buffer_ptr_ = request_ptr->buffer_;
 
-    buffer_ptr_ = buffer_.data();
+    //buffer_.assign( request_ptr->buffer_, request_ptr->buffer_ + buffer_len_ );
+
+    //buffer_ptr_ = buffer_.data();
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::create_response( void* payload_ptr )
@@ -225,16 +228,11 @@ void dcl_message< msgCreateImage2D >::parse_request( const void* payload_ptr )
 
     if( request_ptr->message_buffer_ != 0 )
     {
-        const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
+        buffer_ptr_ = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
+        //const uint8_t* begin = reinterpret_cast<const uint8_t*>( request_ptr->buffer_ );
 
-        std::cout << "request_ptr->message_buffer_ != 0, buffer_len_ = " << buffer_len_
-                     << " width = " << width_
-                     << " height = " << height_
-                     << " row_pitch = " << row_pitch_
-                     << " request_ptr->buffer_ = " << (void*)begin
-                     << std::endl;
-        buffer_.assign( begin, begin + buffer_len_ );
-        buffer_ptr_ = buffer_.data();
+        //buffer_.assign( begin, begin + buffer_len_ );
+        //buffer_ptr_ = buffer_.data();
     }
 }
 //-----------------------------------------------------------------------------

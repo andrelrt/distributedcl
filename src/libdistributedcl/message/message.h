@@ -300,9 +300,9 @@ protected:
 
     boost::interprocess::interprocess_semaphore received_;
 
-    enqueue_message( message_type type, std::size_t request_size = 0, 
-                     std::size_t response_size = 0 ) :
-        base_message( type, true,
+    enqueue_message( message_type type, bool wait_response = false,
+                     std::size_t request_size = 0, std::size_t response_size = 0 ) :
+        base_message( type, wait_response,
                       request_size + sizeof(enqueue_message_request) - sizeof(dcl::remote_id_t),
                       response_size + sizeof(enqueue_message_response) ),
         return_event_( false ), event_id_( 0xffff ), received_( 0 ){}

@@ -37,6 +37,27 @@ public:
     dcl_message< msgGetDeviceIDs >() : 
         base_message( msgGetDeviceIDs, true, 0, sizeof( msgGetDeviceIDs_response ) ) {}
 
+
+    inline remote_id_t get_cpu_device( uint32_t index ) const
+    {
+        return cpu_devices_[ index ];
+    }
+
+    inline remote_id_t get_gpu_device( uint32_t index ) const
+    {
+        return gpu_devices_[ index ];
+    }
+
+    inline remote_id_t get_accelerator_device( uint32_t index ) const
+    {
+        return accelerator_devices_[ index ];
+    }
+
+    inline remote_id_t get_other_device( uint32_t index ) const
+    {
+        return other_devices_[ index ];
+    }
+
     inline std::size_t get_device_count()
     {
         return get_cpu_count() + get_gpu_count() + get_accelerator_count() + get_other_count();
@@ -84,8 +105,8 @@ public:
 
     inline void update_response_size()
     {
-        set_response_size( sizeof( msgGetDeviceIDs_response ) - sizeof( dcl::remote_id_t ) +
-                           sizeof( dcl::remote_id_t ) * get_device_count() );
+        set_response_size( sizeof( msgGetDeviceIDs_response ) +
+                           sizeof( dcl::remote_id_t ) * (get_device_count() -1) );
     }
 
 protected:

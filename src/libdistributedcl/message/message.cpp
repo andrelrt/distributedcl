@@ -205,6 +205,9 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
 
     return_event_ = (request_ptr->return_event_ == 1)? true : false;
 
+    if( return_event_ )
+        set_wait_response();
+
     events_.clear();
     uint32_t event_count = request_ptr->event_count_;
 

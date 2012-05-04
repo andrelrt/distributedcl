@@ -65,6 +65,9 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
 
     boost::shared_ptr< base_message > message_sp( msg_ptr );
 
+    if( ret_event_ptr != NULL )
+        msg_ptr->set_return_event( true );
+
     if( blocking == CL_TRUE )
     {
         session_ref_.send_message( message_sp );
@@ -81,8 +84,6 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
         {
             *ret_event_ptr =
                 reinterpret_cast<generic_event*>( new remote_event( context_, message_sp ) );
-
-            msg_ptr->set_return_event( true );
         }
 
         session_ref_.enqueue_message( message_sp );
@@ -112,6 +113,8 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
 
     boost::shared_ptr< base_message > message_sp( msg_ptr );
 
+    if( ret_event_ptr != NULL )
+        msg_ptr->set_return_event( true );
 
     if( blocking == CL_TRUE )
     {
@@ -129,8 +132,6 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
         {
             *ret_event_ptr =
                 reinterpret_cast<generic_event*>( new remote_event( context_, message_sp ) );
-
-            msg_ptr->set_return_event( true );
         }
 
         session_ref_.enqueue_message( message_sp );

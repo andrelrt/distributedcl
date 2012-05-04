@@ -100,7 +100,8 @@ class dcl_message< msgEnqueueNDRangeKernel > :
 {
 public:
     dcl_message< msgEnqueueNDRangeKernel >() :
-        enqueue_message( msgEnqueueNDRangeKernel, sizeof( msgEnqueueNDRangeKernel_request ) ),
+        enqueue_message( msgEnqueueNDRangeKernel, false,
+                         sizeof( msgEnqueueNDRangeKernel_request ) ),
         kernel_id_( 0xffff ), command_queue_id_( 0xffff )
     {
         set_response_size( get_enqueue_response_size() );
