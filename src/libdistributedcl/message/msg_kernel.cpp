@@ -136,8 +136,8 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
         msgSetKernelArg_memory_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_memory_request* >( payload_ptr );
 
-        request_ptr->is_memory_object_ = host_to_network( static_cast<uint16_t>( 1 ) );
-        request_ptr->index_ = host_to_network( index_ );
+        request_ptr->is_memory_object_ = 1;
+        request_ptr->index_ = index_;
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->memory_id_ = host_to_network( memory_id_ );
     }
@@ -146,11 +146,11 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
         msgSetKernelArg_buffer_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_buffer_request* >( payload_ptr );
 
-        request_ptr->is_memory_object_ = host_to_network( static_cast<uint16_t>( 0 ) );
-        request_ptr->index_ = host_to_network( index_ );
+        request_ptr->is_memory_object_ = 0;
+        request_ptr->is_null_ = is_null_? 1 : 0;
+        request_ptr->index_ = index_;
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->size_ = host_to_network( size_ );
-        request_ptr->is_null_ = host_to_network( static_cast<uint16_t>( is_null_? 1 : 0 ) );
 
         if( !is_null_ )
         {
@@ -167,7 +167,7 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
     if( request_ptr->is_memory_object_ )
     {
         is_memory_object_ = true;
-        index_ = network_to_host( request_ptr->index_ );
+        index_ = request_ptr->index_;
         kernel_id_ = network_to_host( request_ptr->kernel_id_ );
         memory_id_ = network_to_host( request_ptr->memory_id_ );
     }
@@ -178,10 +178,10 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
 
         is_memory_object_ = false;
 
-        size_ = network_to_host( req_ptr->size_ );
+        size_ = req_ptr->size_;
         index_ = network_to_host( req_ptr->index_ );
         kernel_id_ = network_to_host( req_ptr->kernel_id_ );
-        is_null_ = network_to_host( req_ptr->is_null_ ) ? true : false;
+        is_null_ = req_ptr->is_null_? true : false;
 
         if( !is_null_ )
         {

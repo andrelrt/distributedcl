@@ -275,7 +275,6 @@ public:
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
     MSG_PARAMETER_GET_SET( cl_mem_flags, flags_, flags )
-    MSG_PARAMETER_GET_SET( cl_channel_order, channel_order_, channel_order )
 
     MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer )
     MSG_PARAMETER_GET( size_t, width_, width )
@@ -283,6 +282,7 @@ public:
     MSG_PARAMETER_GET( size_t, row_pitch_, row_pitch )
     MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
     MSG_PARAMETER_GET( cl_channel_type, channel_type_, channel_type )
+    MSG_PARAMETER_GET( cl_channel_order, channel_order_, channel_order )
 
     void set_width( size_t width )
     {
@@ -308,6 +308,13 @@ public:
     void set_channel_type( cl_channel_type channel_type )
     {
         channel_type_ = channel_type;
+
+        update_request_size();
+    }
+
+    void set_channel_order( cl_channel_order channel_order )
+    {
+        channel_order_ = channel_order;
 
         update_request_size();
     }
@@ -346,7 +353,7 @@ private:
         size_t row_pitch = row_pitch_;
         if( row_pitch == 0 )
         {
-            row_pitch = width_ * channel_type_size();
+            row_pitch = width_ * channel_element_size();
         }
 
         buffer_len_ = height_ * row_pitch;
@@ -374,30 +381,68 @@ private:
         channel_type_ = channel_type + CL_SNORM_INT8; // 0x10D0
     }
 
-    inline size_t channel_type_size()
+    inline size_t channel_element_size()
     {
+        size_t type_size = 0;
+
         switch( channel_type_ )
         {
+            case CL_UNORM_SHORT_565:
+            case CL_UNORM_SHORT_555:
+                return 2;
+
+            case CL_UNORM_INT_101010:
+                return 4;
+
             case CL_SNORM_INT8:
             case CL_UNORM_INT8:
             case CL_SIGNED_INT8:
             case CL_UNSIGNED_INT8:
-                return 1;
+                type_size = 1;
+                break;
 
             case CL_SNORM_INT16:
             case CL_UNORM_INT16:
-            case CL_UNORM_SHORT_565:
-            case CL_UNORM_SHORT_555:
             case CL_SIGNED_INT16:
             case CL_UNSIGNED_INT16:
             case CL_HALF_FLOAT:
-                return 2;
+                type_size = 2;
+                break;
 
-            case CL_UNORM_INT_101010:
             case CL_SIGNED_INT32:
             case CL_UNSIGNED_INT32:
             case CL_FLOAT:
-                return 4;
+                type_size = 4;
+                break;
+
+            default:
+                return 0;
+        }
+
+        switch( channel_order_ )
+        {
+            case CL_R:
+            case CL_A:
+                return type_size;
+
+            case CL_RG:
+            case CL_RA:
+            case CL_Rx:
+                return 2 * type_size;
+
+            case CL_RGB:
+            case CL_RGx:
+                return 3 * type_size;
+
+            case CL_RGBA:
+            case CL_BGRA:
+            case CL_ARGB:
+            case CL_RGBx:
+                return 4 * type_size;
+
+            case CL_INTENSITY:
+            case CL_LUMINANCE:
+                return 4 * type_size;
 
             default:
                 return 0;

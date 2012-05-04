@@ -36,7 +36,7 @@ using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_device;
 using dcl::info::generic_kernel;
-using dcl::info::generic_memory;
+using dcl::info::generic_memory_object;
 using dcl::info::generic_command_queue;
 using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     }
 }
 //-----------------------------------------------------------------------------
-void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
+void remote_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
 {
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 

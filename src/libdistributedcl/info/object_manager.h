@@ -39,6 +39,8 @@ public:
     object_manager() :
         rand_(), dist_( 1, 0xFFFF ), random_( rand_, dist_ )
     {
+        rand_.seed( std::clock() );
+        boost::this_thread::sleep( boost::posix_time::milliseconds( 1 ) );
     }
 
     ~object_manager(){}
@@ -116,6 +118,13 @@ public:
         }
 
         return it->second;
+    }
+
+    inline bool has( remote_id_t object_id ) const
+    {
+        typename object_map_t::const_iterator it = object_map_.find( object_id );
+
+        return( it != object_map_.end() );
     }
 
     inline bool empty() const

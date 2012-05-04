@@ -39,6 +39,7 @@ using dcl::composite::composite_memory;
 using dcl::composite::composite_device;
 using dcl::composite::composite_command_queue;
 using dcl::composite::composite_event;
+using dcl::composite::composite_image;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_kernel CL_API_CALL
 clCreateKernel( cl_program program, const char* kernel_name,
@@ -131,6 +132,13 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
                 composite_memory* memory_ptr = icd.get_object_ptr< composite_memory >( memory );
 
                 kernel_ptr->set_argument( arg_index, memory_ptr );
+                return CL_SUCCESS;
+            }
+            else if( icd.has_object< composite_image >( memory ) )
+            {
+                composite_image* image_ptr = icd.get_object_ptr< composite_image >( memory );
+
+                kernel_ptr->set_argument( arg_index, image_ptr );
                 return CL_SUCCESS;
             }
         }

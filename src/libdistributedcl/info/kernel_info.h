@@ -33,7 +33,7 @@
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
-class generic_memory;
+class generic_memory_object;
 class generic_device;
 class generic_event;
 //-----------------------------------------------------------------------------
@@ -163,7 +163,7 @@ public:
                           const ndrange& global, const ndrange& local,
                           events_t& wait_events, generic_event** ret_event_ptr = NULL ) = 0;
 
-    virtual void set_argument( uint32_t arg_index, const generic_memory* memory_ptr ) = 0;
+    virtual void set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr ) = 0;
     virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value ) = 0;
     virtual const kernel_group_info& get_group_info( const generic_device* device_ptr ) = 0;
 

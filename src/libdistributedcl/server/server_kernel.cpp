@@ -38,6 +38,7 @@ using dcl::composite::composite_kernel;
 using dcl::composite::composite_command_queue;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_event;
+using dcl::composite::composite_image;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -110,10 +111,22 @@ void msgSetKernelArg_command::execute()
 
     if( message_.is_memory_object() )
     {
-        composite_memory* memory_ptr =
-            server.get_memory_manager().get( message_.get_memory_id() );
+        dcl::remote_id_t memory_id = message_.get_memory_id();
 
-        kernel_ptr->set_argument( message_.get_index(), memory_ptr );
+        if( server.get_memory_manager().has( memory_id ) )
+        {
+            composite_memory* memory_ptr =
+                server.get_memory_manager().get( memory_id );
+
+            kernel_ptr->set_argument( message_.get_index(), memory_ptr );
+        }
+        else if( server.get_image_manager().has( memory_id ) )
+        {
+            composite_image* image_ptr =
+                server.get_image_manager().get( memory_id );
+
+            kernel_ptr->set_argument( message_.get_index(), image_ptr );
+        }
     }
     else
     {

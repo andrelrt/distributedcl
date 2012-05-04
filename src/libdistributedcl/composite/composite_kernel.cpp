@@ -28,7 +28,7 @@ using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_event;
 using dcl::info::generic_kernel;
-using dcl::info::generic_memory;
+using dcl::info::generic_memory_object;
 using dcl::info::generic_device;
 using dcl::info::generic_context;
 using dcl::info::generic_command_queue;
@@ -47,7 +47,7 @@ void composite_kernel::execute( const generic_command_queue* queue_ptr,
     kernel_ptr->execute( queue_ptr, offset, global, local, wait_events, event_ptr );
 }
 //-----------------------------------------------------------------------------
-void composite_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
+void composite_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
 {
     const composite_memory* mem_ptr =
         reinterpret_cast<const composite_memory*>( memory_ptr );
