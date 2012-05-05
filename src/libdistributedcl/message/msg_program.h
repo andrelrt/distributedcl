@@ -46,7 +46,7 @@ class dcl_message< msgCreateProgramWithSource > : public base_message
 public:
     dcl_message< msgCreateProgramWithSource >() : 
         base_message( msgCreateProgramWithSource, true, 0, sizeof( dcl::remote_id_t ) ),
-    context_id_( 0xffff ), id_( 0xffff ){}
+    context_id_( 0xffff ), remote_id_( 0xffff ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
@@ -60,13 +60,13 @@ public:
     }
 
     // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
 
 private:
     dcl::remote_id_t context_id_;
     std::string source_code_;
 
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );
@@ -148,7 +148,7 @@ public:
         base_message( msgGetProgramBuildInfo, true, sizeof(msgGetProgramBuildInfo_request), 0 ) {}
 
     // Request
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, device_id_, device_id )
     MSG_PARAMETER_GET_SET( cl_program_build_info, build_info_, build_info )
 
@@ -171,7 +171,7 @@ public:
     }
 
 private:
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     dcl::remote_id_t device_id_;
     cl_program_build_info build_info_;
 

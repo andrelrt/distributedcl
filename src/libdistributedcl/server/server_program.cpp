@@ -37,28 +37,28 @@ void msgCreateProgramWithSource_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t context_id = message_.get_context_id();
+    remote_id_t context_id = message_->get_context_id();
 
     composite_context* context_ptr = server.get_context_manager().get( context_id );
 
     composite_program* program_ptr = 
-        reinterpret_cast<composite_program*>( context_ptr->create_program( message_.get_source_code() ) );
+        reinterpret_cast<composite_program*>( context_ptr->create_program( message_->get_source_code() ) );
 
     remote_id_t id = server.get_program_manager().add( program_ptr );
 
-    message_.set_remote_id( id );
+    message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
 void msgBuildProgram_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t program_id = message_.get_program_id();
+    remote_id_t program_id = message_->get_program_id();
 
     composite_program* program_ptr = server.get_program_manager().get( program_id );
 
     devices_t devices;
-    const remote_ids_t& device_ids = message_.get_devices();
+    const remote_ids_t& device_ids = message_->get_devices();
 
     devices.reserve( device_ids.size() );
 
@@ -67,29 +67,29 @@ void msgBuildProgram_command::execute()
         devices.push_back( server.get_device_manager().get( *it ) );
     }
 
-    program_ptr->build( devices, message_.get_build_options() );
+    program_ptr->build( devices, message_->get_build_options() );
 }
 //-----------------------------------------------------------------------------
 void msgGetProgramBuildInfo_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t program_id = message_.get_remote_id();
-    remote_id_t device_id = message_.get_device_id();
+    remote_id_t program_id = message_->get_remote_id();
+    remote_id_t device_id = message_->get_device_id();
 
     composite_program* program_ptr = server.get_program_manager().get( program_id );
     composite_device* device_ptr = server.get_device_manager().get( device_id );
 
-    if( message_.get_build_info() == CL_PROGRAM_BUILD_STATUS )
+    if( message_->get_build_info() == CL_PROGRAM_BUILD_STATUS )
     {
-        message_.set_build_status( program_ptr->get_build_status( device_ptr ) );
+        message_->set_build_status( program_ptr->get_build_status( device_ptr ) );
     }
-    else if( message_.get_build_info() == CL_PROGRAM_BUILD_LOG )
+    else if( message_->get_build_info() == CL_PROGRAM_BUILD_LOG )
     {
         std::string log;
 
         program_ptr->get_build_log( device_ptr, log );
-        message_.set_build_log( log );
+        message_->set_build_log( log );
     }
 }
 //-----------------------------------------------------------------------------

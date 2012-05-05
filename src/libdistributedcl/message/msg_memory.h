@@ -58,7 +58,7 @@ public:
     dcl_message< msgCreateBuffer >() :
         base_message( msgCreateBuffer, true, 0, sizeof( dcl::remote_id_t ) ),
         context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
-        flags_( 0 ), id_( 0xffff ){}
+        flags_( 0 ), remote_id_( 0xffff ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -78,7 +78,7 @@ public:
     }
 
     // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
 
 private:
     dcl::remote_id_t context_id_;
@@ -87,7 +87,7 @@ private:
     cl_mem_flags flags_;
     //buffer_t buffer_;
 
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );
@@ -120,14 +120,14 @@ class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
-        enqueue_message( msgEnqueueWriteBuffer, false ), id_( 0xffff ),
+        enqueue_message( msgEnqueueWriteBuffer, false ), remote_id_( 0xffff ),
         command_queue_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
     // Request
     MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
     MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer_pointer )
@@ -143,7 +143,7 @@ public:
 
 
 private:
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     dcl::remote_id_t command_queue_id_;
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
@@ -182,14 +182,14 @@ class dcl_message< msgEnqueueReadBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueReadBuffer >() :
         enqueue_message( msgEnqueueReadBuffer, true, sizeof( msgEnqueueReadBuffer_request ) ),
-        id_( 0xffff ), command_queue_id_( 0xffff ), size_( 0 ),
+        remote_id_( 0xffff ), command_queue_id_( 0xffff ), size_( 0 ),
         offset_( 0 ), data_ptr_( NULL ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
     // Request
     MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
     MSG_PARAMETER_GET_SET( size_t, offset_, offset )
 
@@ -219,7 +219,7 @@ public:
     }
 
 private:
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     dcl::remote_id_t command_queue_id_;
     size_t size_;
     size_t offset_;
@@ -266,7 +266,7 @@ public:
         base_message( msgCreateImage2D, true, 0, sizeof( dcl::remote_id_t ) ),
         context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
         flags_( 0 ), channel_order_( 0 ), channel_type_( 0 ),
-        width_( 0 ), height_( 0 ), row_pitch_( 0 ), id_( 0xffff ){}
+        width_( 0 ), height_( 0 ), row_pitch_( 0 ), remote_id_( 0xffff ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -325,7 +325,7 @@ public:
     }
 
     // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
 
 private:
     dcl::remote_id_t context_id_;
@@ -339,7 +339,7 @@ private:
     size_t row_pitch_;
     //buffer_t buffer_;
 
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void create_response( void* payload_ptr );

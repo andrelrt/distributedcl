@@ -34,7 +34,7 @@ class msgCreateCommandQueue_command :
     public server_command< dcl::network::message::msgCreateCommandQueue >
 {
 public:
-    msgCreateCommandQueue_command( recv_ptr_t message_ptr ) :
+    msgCreateCommandQueue_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgCreateCommandQueue >( message_ptr ) {}
 
     void execute();
@@ -44,7 +44,7 @@ class msgFlush_command :
     public server_command< dcl::network::message::msgFlush >
 {
 public:
-    msgFlush_command( recv_ptr_t message_ptr ) :
+    msgFlush_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgFlush >( message_ptr ) {}
 
     void execute();
@@ -54,7 +54,7 @@ class msgFinish_command :
     public server_command< dcl::network::message::msgFinish >
 {
 public:
-    msgFinish_command( recv_ptr_t message_ptr ) :
+    msgFinish_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgFinish >( message_ptr ) {}
 
     void execute();

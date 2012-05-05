@@ -116,11 +116,11 @@ private:
             {
                 recv_packet->parse( true );
 
-                dcl::network::message::message_vector_t messages_ref = recv_packet->get_messages();
+                dcl::message_vector_t messages_ref = recv_packet->get_messages();
 
                 dispatcher_.dispatch_messages( messages_ref );
 
-                dcl::network::message::message_vector_t::iterator it;
+                dcl::message_vector_t::iterator it;
 
                 for( it = messages_ref.begin(); it != messages_ref.end(); it++ )
                 {
@@ -134,7 +134,7 @@ private:
 
                 if( ret_packet->get_messages().empty() )
                 {
-                    boost::shared_ptr<dcl::network::message::base_message>
+                    message_sp_t
                         ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( CL_SUCCESS ) );
 
                     ret_packet->add( ret_msg_sp );
@@ -142,8 +142,8 @@ private:
             }
             catch( dcl::library_exception& ex )
             {
-                std::cerr << "- exception in dispacher: " << ex.get_error() << std::endl;
-                boost::shared_ptr<dcl::network::message::base_message>
+                std::cerr << "--- exception in dispacher: " << ex.get_error() << " ---" << std::endl;
+                message_sp_t
                     ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
 
                 ret_packet->add( ret_msg_sp );

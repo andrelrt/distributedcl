@@ -84,28 +84,28 @@ protected:
         return communication_;
     }
 
-    inline dcl::network::message::packet* receive_packet()
+    inline packet_sp_t receive_packet()
     {
         // Receive buffer
         std::size_t recv_len;
         uint8_t* buffer_ptr = communication_.receive_message( &recv_len );
 
         // Parse packet
-        dcl::network::message::packet* packet_ptr = new dcl::network::message::packet( buffer_ptr, recv_len );
-        packet_ptr->parse_header();
+        packet_sp_t packet_sp( new dcl::network::message::packet( buffer_ptr, recv_len ) );
+        packet_sp->parse_header();
 
-        if( packet_ptr->get_session_id() != session_id_ )
+        if( packet_sp->get_session_id() != session_id_ )
         {
 	    	throw dcl::library_exception( "Invalid session" );
     	}
 
-        if( packet_ptr->get_sequence_number() != get_remote_sequence_number() )
+        if( packet_sp->get_sequence_number() != get_remote_sequence_number() )
         {
             remote_sequence_number_--;
             throw dcl::library_exception( "Invalid sequence number" );
         }
 
-        return( packet_ptr );
+        return( packet_sp );
     }
 
     inline dcl::network::message::packet* create_packet()

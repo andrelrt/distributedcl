@@ -34,7 +34,7 @@ class msgCreateKernel_command :
     public server_command< dcl::network::message::msgCreateKernel >
 {
 public:
-    msgCreateKernel_command( recv_ptr_t message_ptr ) :
+    msgCreateKernel_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgCreateKernel >( message_ptr ) {}
 
     void execute();
@@ -44,7 +44,7 @@ class msgEnqueueNDRangeKernel_command :
     public server_command< dcl::network::message::msgEnqueueNDRangeKernel >
 {
 public:
-    msgEnqueueNDRangeKernel_command( recv_ptr_t message_ptr ) :
+    msgEnqueueNDRangeKernel_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgEnqueueNDRangeKernel >( message_ptr ) {}
 
     void execute();
@@ -54,7 +54,7 @@ class msgSetKernelArg_command :
     public server_command< dcl::network::message::msgSetKernelArg >
 {
 public:
-    msgSetKernelArg_command( recv_ptr_t message_ptr ) :
+    msgSetKernelArg_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgSetKernelArg >( message_ptr ) {}
 
     void execute();
@@ -64,7 +64,7 @@ class msgGetKernelWorkGroupInfo_command :
     public server_command< dcl::network::message::msgGetKernelWorkGroupInfo >
 {
 public:
-    msgGetKernelWorkGroupInfo_command( recv_ptr_t message_ptr ) :
+    msgGetKernelWorkGroupInfo_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgGetKernelWorkGroupInfo >( message_ptr ) {}
 
     void execute();

@@ -34,7 +34,7 @@ bool remote_device::load_device_info()
 {
     dcl_message< msgGetDeviceInfo >* msg_ptr = new dcl_message< msgGetDeviceInfo >( get_remote_id() );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     local_info_ = msg_ptr->get_info();

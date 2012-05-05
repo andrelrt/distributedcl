@@ -120,14 +120,14 @@ void dcl_message< msgGetDeviceInfo >::create_request( void* payload_ptr )
 {
     remote_id_t* id_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
-    *id_ptr = host_to_network( id_ );
+    *id_ptr = host_to_network( remote_id_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::parse_request( const void* payload_ptr )
 {
     const remote_id_t* id_ptr = reinterpret_cast< const remote_id_t* >( payload_ptr );
 
-    id_ = network_to_host( *id_ptr );
+    remote_id_ = network_to_host( *id_ptr );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgGetDeviceInfo >::create_response( void* payload_ptr )

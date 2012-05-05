@@ -33,7 +33,7 @@ void msgWaitForEvents_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t event_id = message_.get_event_id();
+    remote_id_t event_id = message_->get_remote_id();
 
     composite_event* event_ptr = server.get_event_manager().get( event_id );
 

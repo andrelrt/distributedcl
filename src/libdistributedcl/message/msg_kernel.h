@@ -48,7 +48,7 @@ class dcl_message< msgCreateKernel > : public base_message
 public:
     dcl_message< msgCreateKernel >() :
         base_message( msgCreateKernel, true, 0, sizeof(dcl::remote_id_t) ),
-        id_( 0xffff ), program_id_( 0xffff ){}
+        remote_id_( 0xffff ), program_id_( 0xffff ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, program_id_, program_id )
@@ -62,11 +62,11 @@ public:
     }
 
     // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
 
 private:
     std::string name_;
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     dcl::remote_id_t program_id_;
 
     virtual void create_request( void* payload_ptr );

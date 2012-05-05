@@ -120,8 +120,8 @@ public:
 
         recv_packet_sp->parse( false );
 
-        dcl::network::message::message_vector_t::iterator recv_message_it;
-        dcl::network::message::message_vector_t& recv_messages = recv_packet_sp->get_messages();
+        dcl::message_vector_t::iterator recv_message_it;
+        dcl::message_vector_t& recv_messages = recv_packet_sp->get_messages();
 
         for( recv_message_it = recv_messages.begin(); recv_message_it != recv_messages.end(); recv_message_it++ )
         {
@@ -141,8 +141,7 @@ public:
             }
             else
             {
-                boost::shared_ptr< dcl::network::message::base_message > sent_message_sp =
-                    packet_sp->get_message( (*recv_message_it)->get_id() );
+                message_sp_t sent_message_sp( packet_sp->get_message( (*recv_message_it)->get_id() ) );
 
                 sent_message_sp->parse_response( (*recv_message_it)->get_payload() );
             }
@@ -153,8 +152,6 @@ public:
 //    {
 //        wait_response_.wait();
 //    }
-
-    typedef boost::shared_ptr<dcl::network::message::base_message> message_sp_t;
 
     void enqueue_message( message_sp_t message_sp )
     {
@@ -169,7 +166,7 @@ public:
         flush_queue();
     }
 
-    inline dcl::network::message::message_vector_t& get_received_messages()
+    inline dcl::message_vector_t& get_received_messages()
     {
         return received_messages_;
     }
@@ -183,7 +180,7 @@ private:
     boost::interprocess::interprocess_mutex mutex_;
 //    boost::interprocess::interprocess_semaphore wait_message_;
 //    boost::interprocess::interprocess_semaphore wait_response_;
-    dcl::network::message::message_vector_t received_messages_;
+    dcl::message_vector_t received_messages_;
 //    boost::thread* send_thread_ptr_;
 
     inline void clear_received_messages()
@@ -249,8 +246,7 @@ private:
                 }
                 else
                 {
-                    boost::shared_ptr< dcl::network::message::base_message > sent_message_sp =
-                        packet_ptr->get_message( (*recv_message_it)->get_id() );
+                    message_sp_t sent_message_sp( packet_ptr->get_message( (*recv_message_it)->get_id() ) );
 
                     sent_message_sp->parse_response( (*recv_message_it)->get_payload() );
                 }

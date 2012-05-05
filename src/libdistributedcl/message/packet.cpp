@@ -56,7 +56,7 @@ void packet::parse( bool is_request )
 
     while( length != 0 )
     {
-        boost::shared_ptr<base_message> message_sp( base_message::parse_message( it, length, is_request ) );
+        message_sp_t message_sp( base_message::parse_message( it, length, is_request ) );
 
         add_message( message_sp );
 
@@ -69,7 +69,7 @@ void packet::parse( bool is_request )
 
 #undef THROW_IF
 //-----------------------------------------------------------------------------
-void packet::add( boost::shared_ptr<base_message> message_sp )
+void packet::add( message_sp_t message_sp )
 {
     length_ += message_sp->get_size();
 

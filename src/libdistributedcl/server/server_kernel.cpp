@@ -47,16 +47,16 @@ void msgCreateKernel_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t program_id = message_.get_program_id();
+    remote_id_t program_id = message_->get_program_id();
 
     composite_program* program_ptr = server.get_program_manager().get( program_id );
 
     composite_kernel* kernel_ptr = 
-        reinterpret_cast< composite_kernel* >( program_ptr->create_kernel( message_.get_name() ) );
+        reinterpret_cast< composite_kernel* >( program_ptr->create_kernel( message_->get_name() ) );
 
     remote_id_t id = server.get_kernel_manager().add( kernel_ptr );
 
-    message_.set_remote_id( id );
+    message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueNDRangeKernel_command::execute()
@@ -64,38 +64,38 @@ void msgEnqueueNDRangeKernel_command::execute()
     server_platform& server = server_platform::get_instance();
 
     composite_command_queue* queue_ptr = 
-        server.get_command_queue_manager().get( message_.get_command_queue_id() );
+        server.get_command_queue_manager().get( message_->get_command_queue_id() );
 
     composite_kernel* kernel_ptr = 
-        server.get_kernel_manager().get( message_.get_kernel_id() );
+        server.get_kernel_manager().get( message_->get_kernel_id() );
 
     dcl::events_t events;
 
-    if( !message_.get_events().empty() )
+    if( !message_->get_events().empty() )
     {
-        events.reserve( message_.get_events().size() );
+        events.reserve( message_->get_events().size() );
 
-        for( dcl::remote_ids_t::const_iterator it = message_.get_events().begin(); it != message_.get_events().end(); it ++ )
+        for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
         {
             events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
         }
     }
 
-    if( message_.get_return_event() )
+    if( message_->get_return_event() )
     {
         composite_event* ret_event = NULL;
 
-        kernel_ptr->execute( queue_ptr, message_.get_offset(), 
-                             message_.get_global(), message_.get_local(), events,
+        kernel_ptr->execute( queue_ptr, message_->get_offset(), 
+                             message_->get_global(), message_->get_local(), events,
                              reinterpret_cast<generic_event**>( &ret_event ) );
 
         remote_id_t id = server.get_event_manager().add( ret_event );
-        message_.set_event_id( id );
+        message_->set_event_id( id );
     }
     else
     {
-        kernel_ptr->execute( queue_ptr, message_.get_offset(), 
-                             message_.get_global(), message_.get_local(), events,
+        kernel_ptr->execute( queue_ptr, message_->get_offset(), 
+                             message_->get_global(), message_->get_local(), events,
                              NULL );
     }
 
@@ -107,32 +107,32 @@ void msgSetKernelArg_command::execute()
     server_platform& server = server_platform::get_instance();
 
     composite_kernel* kernel_ptr = 
-        server.get_kernel_manager().get( message_.get_kernel_id() );
+        server.get_kernel_manager().get( message_->get_kernel_id() );
 
-    if( message_.is_memory_object() )
+    if( message_->is_memory_object() )
     {
-        dcl::remote_id_t memory_id = message_.get_memory_id();
+        dcl::remote_id_t memory_id = message_->get_memory_id();
 
         if( server.get_memory_manager().has( memory_id ) )
         {
             composite_memory* memory_ptr =
                 server.get_memory_manager().get( memory_id );
 
-            kernel_ptr->set_argument( message_.get_index(), memory_ptr );
+            kernel_ptr->set_argument( message_->get_index(), memory_ptr );
         }
         else if( server.get_image_manager().has( memory_id ) )
         {
             composite_image* image_ptr =
                 server.get_image_manager().get( memory_id );
 
-            kernel_ptr->set_argument( message_.get_index(), image_ptr );
+            kernel_ptr->set_argument( message_->get_index(), image_ptr );
         }
     }
     else
     {
-        kernel_ptr->set_argument( message_.get_index(),
-                                  message_.get_buffer_size(),
-                                  message_.get_buffer_pointer() );
+        kernel_ptr->set_argument( message_->get_index(),
+                                  message_->get_buffer_size(),
+                                  message_->get_buffer_pointer() );
     }
 }
 //-----------------------------------------------------------------------------
@@ -141,15 +141,15 @@ void msgGetKernelWorkGroupInfo_command::execute()
     server_platform& server = server_platform::get_instance();
 
     composite_kernel* kernel_ptr = 
-        server.get_kernel_manager().get( message_.get_kernel_id() );
+        server.get_kernel_manager().get( message_->get_kernel_id() );
 
     composite_device* device_ptr = 
-        server.get_device_manager().get( message_.get_device_id() );
+        server.get_device_manager().get( message_->get_device_id() );
 
     const kernel_group_info& group_info = 
         kernel_ptr->get_group_info( reinterpret_cast<generic_device*>( device_ptr ) );
 
-    kernel_group_info& ret_info = message_.get_info();
+    kernel_group_info& ret_info = message_->get_info();
 
     memcpy( &ret_info, &group_info, sizeof(kernel_group_info) );
 }

@@ -49,6 +49,11 @@ class generic_platform;
 class generic_device;
 class generic_event;
 }}
+
+namespace dcl { namespace network { namespace message {
+class base_message;
+class packet;
+}}}
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------
@@ -58,6 +63,11 @@ typedef std::vector< cl_image_format > image_formats_t;
 typedef std::vector< dcl::info::generic_platform* > platforms_t;
 typedef std::vector< dcl::info::generic_device* > devices_t;
 typedef std::vector< dcl::info::generic_event* > events_t;
+
+typedef boost::shared_ptr< dcl::network::message::base_message > message_sp_t;
+typedef boost::shared_ptr< dcl::network::message::packet > packet_sp_t;
+typedef std::vector< message_sp_t > message_vector_t;
+
 //-----------------------------------------------------------------------------
 static const union { long one; char little; } is_endian = {1};
 //-----------------------------------------------------------------------------

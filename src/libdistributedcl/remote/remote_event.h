@@ -52,8 +52,7 @@ public:
         set_remote_id( id );
     }
 
-    remote_event( const remote_context& context_ref,
-                  boost::shared_ptr< dcl::network::message::base_message > message_sp ) :
+    remote_event( const remote_context& context_ref, message_sp_t message_sp ) :
         remote_object< remote_event >( context_ref.get_session() ),
         message_sp_( message_sp ) {}
 
@@ -63,7 +62,7 @@ public:
     void wait_remote_id();
 
 private:
-    boost::shared_ptr< dcl::network::message::base_message > message_sp_;
+    message_sp_t message_sp_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

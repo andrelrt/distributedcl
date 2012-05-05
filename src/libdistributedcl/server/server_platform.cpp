@@ -51,33 +51,33 @@ void msgGetDeviceIDs_command::execute()
         switch( device_ptr->get_type() )
         {
             case CL_DEVICE_TYPE_CPU:
-                message_.add_cpu_device( id );
+                message_->add_cpu_device( id );
                 break;
 
             case CL_DEVICE_TYPE_GPU:
-                message_.add_gpu_device( id );
+                message_->add_gpu_device( id );
                 break;
 
             case CL_DEVICE_TYPE_ACCELERATOR:
-                message_.add_accelerator_device( id );
+                message_->add_accelerator_device( id );
                 break;
 
             default:
-                message_.add_other_device( id );
+                message_->add_other_device( id );
                 break;
         }
     }
 
-    message_.update_response_size();
+    message_->update_response_size();
 }
 //-----------------------------------------------------------------------------
 void msgGetDeviceInfo_command::execute()
 {
-    remote_id_t remote_id = message_.get_remote_id();
+    remote_id_t remote_id = message_->get_remote_id();
 
     const composite_device* device_ptr = server_platform::get_instance().get_device_manager().get( remote_id );
 
-    message_.set_info( device_ptr->get_info() );
+    message_->set_info( device_ptr->get_info() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

@@ -49,7 +49,7 @@ base_message::base_message( message_type type, bool wait_response,
 {
     scoped_lock_t lock( mutex_ );
 
-    id_ = next_id_++;
+    message_id_ = next_id_++;
 }
 //-----------------------------------------------------------------------------
 base_message::base_message( const base_message& copy ) : 
@@ -57,7 +57,7 @@ base_message::base_message( const base_message& copy ) :
         size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ), 
         response_size_( copy.response_size_ ), response_( copy.response_ )
 {
-    id_ = copy.id_;
+    message_id_ = copy.message_id_;
 }
 //-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)

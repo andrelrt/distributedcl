@@ -55,7 +55,7 @@ public:
     typedef contexts_t::const_iterator iterator;
 
     composite_context();
-    ~composite_context(){}
+    ~composite_context();
 
     void add( generic_context* context_ptr, const devices_t& devices );
 

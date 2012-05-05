@@ -56,7 +56,7 @@ void dcl_message< msgCreateProgramWithSource >::create_response( void* payload_p
 {
     dcl::remote_id_t* response_ptr = reinterpret_cast< dcl::remote_id_t* >( payload_ptr );
 
-    *response_ptr = host_to_network( id_ );
+    *response_ptr = host_to_network( remote_id_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateProgramWithSource >::parse_response( const void* payload_ptr )
@@ -64,7 +64,7 @@ void dcl_message< msgCreateProgramWithSource >::parse_response( const void* payl
     const dcl::remote_id_t* response_ptr =
         reinterpret_cast< const dcl::remote_id_t* >( payload_ptr );
 
-    id_ = network_to_host( *response_ptr );
+    remote_id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgBuildProgram
@@ -78,7 +78,6 @@ void dcl_message< msgBuildProgram >::create_request( void* payload_ptr )
     request_ptr->devices_count_ = host_to_network( static_cast<uint16_t>( devices_.size() ) );
     request_ptr->build_options_len_ = host_to_network( static_cast<uint32_t>( build_options_.length() ) );
     
-
     remote_id_t* devices_ptr = reinterpret_cast<dcl::remote_id_t*>( request_ptr->buffer_ );
 
     for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
@@ -126,7 +125,7 @@ void dcl_message< msgGetProgramBuildInfo >::create_request( void* payload_ptr )
     msgGetProgramBuildInfo_request* request_ptr = 
         reinterpret_cast< msgGetProgramBuildInfo_request* >( payload_ptr );
 
-    request_ptr->id_ = host_to_network( id_ );
+    request_ptr->id_ = host_to_network( remote_id_ );
     request_ptr->device_id_ = host_to_network( device_id_ );
     request_ptr->build_info_ = host_to_network( static_cast<uint32_t>( build_info_ ) );
 }
@@ -136,7 +135,7 @@ void dcl_message< msgGetProgramBuildInfo >::parse_request( const void* payload_p
     const msgGetProgramBuildInfo_request* request_ptr = 
         reinterpret_cast< const msgGetProgramBuildInfo_request* >( payload_ptr );
 
-    id_ = network_to_host( request_ptr->id_ );
+    remote_id_ = network_to_host( request_ptr->id_ );
     device_id_ = network_to_host( request_ptr->device_id_ );
     build_info_ = static_cast<cl_program_build_info>( network_to_host( request_ptr->build_info_ ) );
 }

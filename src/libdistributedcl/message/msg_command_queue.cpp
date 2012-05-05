@@ -53,7 +53,7 @@ void dcl_message< msgCreateCommandQueue >::create_response( void* payload_ptr )
 {
     remote_id_t* response_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
-    *response_ptr = host_to_network( id_ );
+    *response_ptr = host_to_network( remote_id_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateCommandQueue >::parse_response( const void* payload_ptr )
@@ -61,7 +61,7 @@ void dcl_message< msgCreateCommandQueue >::parse_response( const void* payload_p
     const remote_id_t* response_ptr = 
         reinterpret_cast< const remote_id_t* >( payload_ptr );
 
-    id_ = network_to_host( *response_ptr );
+    remote_id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgFlush
@@ -70,14 +70,14 @@ void dcl_message< msgFlush >::create_request( void* payload_ptr )
 {
     remote_id_t* request_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
-    *request_ptr = host_to_network( id_ );
+    *request_ptr = host_to_network( remote_id_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgFlush >::parse_request( const void* payload_ptr )
 {
     const remote_id_t* request_ptr = reinterpret_cast<const remote_id_t*>( payload_ptr );
 
-    id_ = network_to_host( *request_ptr );
+    remote_id_ = network_to_host( *request_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgFinish
@@ -86,14 +86,14 @@ void dcl_message< msgFinish >::create_request( void* payload_ptr )
 {
     remote_id_t* request_ptr = reinterpret_cast< remote_id_t* >( payload_ptr );
 
-    *request_ptr = host_to_network( id_ );
+    *request_ptr = host_to_network( remote_id_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgFinish >::parse_request( const void* payload_ptr )
 {
     const remote_id_t* request_ptr = reinterpret_cast<const remote_id_t*>( payload_ptr );
 
-    id_ = network_to_host( *request_ptr );
+    remote_id_ = network_to_host( *request_ptr );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

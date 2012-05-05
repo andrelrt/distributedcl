@@ -53,7 +53,7 @@ void remote_program::build( const devices_t& devices, const std::string& build_o
     msg_ptr->set_program_id( get_remote_id() );
     msg_ptr->set_build_options( build_options );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ generic_kernel* remote_program::create_kernel( const std::string& kernel_name )
     msg_ptr->set_name( kernel_name );
     msg_ptr->set_program_id( get_remote_id() );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     remote_kernel* kernel_ptr = new remote_kernel( context_, kernel_name );
@@ -81,7 +81,7 @@ cl_build_status remote_program::get_build_status( const generic_device* device_p
     msg_ptr->set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
     msg_ptr->set_build_info( CL_PROGRAM_BUILD_STATUS );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     return msg_ptr->get_build_status();
@@ -95,7 +95,7 @@ void remote_program::get_build_log( const generic_device* device_ptr, std::strin
     msg_ptr->set_device_id( reinterpret_cast<const remote_device*>( device_ptr )->get_remote_id() );
     msg_ptr->set_build_info( CL_PROGRAM_BUILD_LOG );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     build_log.assign( msg_ptr->get_build_log() );

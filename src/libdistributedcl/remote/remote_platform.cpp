@@ -51,7 +51,7 @@ generic_context* remote_platform::create_context( const devices_t& devices ) con
         msg_ptr->add_device( reinterpret_cast<remote_device*>( *it )->get_remote_id() );
     }
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     remote_context* context_ptr = new remote_context( this );
@@ -66,7 +66,7 @@ generic_context* remote_platform::create_context( cl_device_type device_type ) c
 
     msg_ptr->set_device_type( device_type );
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     remote_context* context_ptr = new remote_context( this );
@@ -79,7 +79,7 @@ void remote_platform::load_devices()
 {
     dcl_message< msgGetDeviceIDs >* msg_ptr = new dcl_message< msgGetDeviceIDs >();
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
     for( std::size_t i = 0; i < msg_ptr->get_cpu_count(); i++ )

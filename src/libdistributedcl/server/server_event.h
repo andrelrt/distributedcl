@@ -34,7 +34,7 @@ class msgWaitForEvents_command :
     public server_command< dcl::network::message::msgWaitForEvents >
 {
 public:
-    msgWaitForEvents_command( recv_ptr_t message_ptr ) :
+    msgWaitForEvents_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgWaitForEvents >( message_ptr ) {}
 
     void execute();

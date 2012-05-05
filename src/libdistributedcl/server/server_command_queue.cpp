@@ -38,18 +38,18 @@ void msgCreateCommandQueue_command::execute()
     server_platform& server = server_platform::get_instance();
 
     composite_context* context_ptr =
-        server.get_context_manager().get( message_.get_context_id() );
+        server.get_context_manager().get( message_->get_context_id() );
 
     composite_device* device_ptr =
-        server.get_device_manager().get( message_.get_device_id() );
+        server.get_device_manager().get( message_->get_device_id() );
 
     composite_command_queue* command_queue_ptr =
         reinterpret_cast< composite_command_queue* >
-        ( context_ptr->create_command_queue( device_ptr, message_.get_properties() ) );
+        ( context_ptr->create_command_queue( device_ptr, message_->get_properties() ) );
 
     remote_id_t id = server.get_command_queue_manager().add( command_queue_ptr );
 
-    message_.set_remote_id( id );
+    message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
 void msgFlush_command::execute()
@@ -57,7 +57,7 @@ void msgFlush_command::execute()
     server_platform& server = server_platform::get_instance();
 
     composite_command_queue* queue_ptr = 
-        server.get_command_queue_manager().get( message_.get_remote_id() );
+        server.get_command_queue_manager().get( message_->get_remote_id() );
 
     queue_ptr->flush();
 }
@@ -67,7 +67,7 @@ void msgFinish_command::execute()
     server_platform& server = server_platform::get_instance();
 
     composite_command_queue* queue_ptr = 
-        server.get_command_queue_manager().get( message_.get_remote_id() );
+        server.get_command_queue_manager().get( message_->get_remote_id() );
 
     queue_ptr->finish();
 }

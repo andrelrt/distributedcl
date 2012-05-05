@@ -41,6 +41,16 @@ composite_context::composite_context() :
 {
 }
 //-----------------------------------------------------------------------------
+composite_context::~composite_context()
+{
+    for( contexts_t::iterator it = contexts_.begin(); it != contexts_.end(); it++ )
+    {
+        delete *it;
+    }
+    contexts_.clear();
+    context_map_.clear();
+}
+//-----------------------------------------------------------------------------
 void composite_context::add( generic_context* context_ptr, const devices_t& devices )
 {
     contexts_.push_back( context_ptr );

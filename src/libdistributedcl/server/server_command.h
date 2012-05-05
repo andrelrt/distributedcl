@@ -35,13 +35,12 @@ template< dcl::network::message::message_type TYPE >
 class server_command
 {
 protected:
-    typedef typename boost::shared_ptr<dcl::network::message::base_message> recv_ptr_t;
-    typedef typename dcl::network::message::dcl_message< TYPE > message_t;
+    typedef typename boost::shared_ptr< dcl::network::message::dcl_message< TYPE > > dcl_message_sp_t;
 
-    server_command( recv_ptr_t message_ptr ) :
-        message_( *(reinterpret_cast< message_t* >( message_ptr.get() )) ){}
+    server_command( message_sp_t message_sp ) :
+        message_( boost::static_pointer_cast< dcl::network::message::dcl_message< TYPE > >( message_sp ) ){}
 
-    message_t& message_;
+    dcl_message_sp_t message_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

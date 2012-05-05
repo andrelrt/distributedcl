@@ -33,8 +33,6 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-typedef std::vector< boost::shared_ptr<base_message> > message_vector_t;
-//-----------------------------------------------------------------------------
 class packet
 {
 public:
@@ -73,7 +71,7 @@ public:
         return header_ptr_->sequence_number;
     }
 
-    inline boost::shared_ptr<base_message> get_message( uint32_t id )
+    inline message_sp_t get_message( uint32_t id )
     {
         return message_map_[ id ];
     }
@@ -105,7 +103,7 @@ public:
         return network_to_host( header_ptr->length );
     }
 
-    void add( boost::shared_ptr<base_message> message_sp );
+    void add( message_sp_t message_sp );
     void create_packet();
 
     inline void setup( uint8_t* buffer_ptr, std::size_t buffer_size,
@@ -138,9 +136,9 @@ private:
     };
     #pragma pack( pop )
 
-    typedef std::map< uint32_t, boost::shared_ptr<base_message> > message_map_t;
+    typedef std::map< uint32_t, message_sp_t > message_map_t;
 
-    inline void add_message( boost::shared_ptr<base_message> message_sp )
+    inline void add_message( message_sp_t message_sp )
     {
         messages_.push_back( message_sp );
         message_map_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );

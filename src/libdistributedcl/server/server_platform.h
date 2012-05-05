@@ -42,7 +42,7 @@ class msgGetDeviceIDs_command :
     public server_command< dcl::network::message::msgGetDeviceIDs >
 {
 public:
-    msgGetDeviceIDs_command( recv_ptr_t message_ptr ) : 
+    msgGetDeviceIDs_command( message_sp_t message_ptr ) : 
         server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
 
     void execute();
@@ -52,7 +52,7 @@ class msgGetDeviceInfo_command :
     public server_command< dcl::network::message::msgGetDeviceInfo >
 {
 public:
-    msgGetDeviceInfo_command( recv_ptr_t message_ptr ) : 
+    msgGetDeviceInfo_command( message_sp_t message_ptr ) : 
         server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
 
     void execute();

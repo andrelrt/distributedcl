@@ -34,7 +34,7 @@ namespace server {
 class message_dispatcher
 {
 public:
-    void dispatch_messages( dcl::network::message::message_vector_t& messages );
+    void dispatch_messages( dcl::message_vector_t& messages );
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

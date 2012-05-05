@@ -42,62 +42,62 @@ void msgCreateBuffer_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t context_id = message_.get_context_id();
+    remote_id_t context_id = message_->get_context_id();
 
     composite_context* context_ptr = server.get_context_manager().get( context_id );
 
     generic_memory_object* ptr =
-        context_ptr->create_buffer( message_.get_buffer_pointer(),
-                                    message_.get_buffer_size(),
-                                    message_.get_flags() );
+        context_ptr->create_buffer( message_->get_buffer_pointer(),
+                                    message_->get_buffer_size(),
+                                    message_->get_flags() );
 
     composite_memory* buffer_ptr = reinterpret_cast<composite_memory*>( ptr );
 
     remote_id_t id = server.get_memory_manager().add( buffer_ptr );
 
-    message_.set_remote_id( id );
+    message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueWriteBuffer_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t id = message_.get_remote_id();
-    remote_id_t command_queue_id = message_.get_command_queue_id();
+    remote_id_t id = message_->get_remote_id();
+    remote_id_t command_queue_id = message_->get_command_queue_id();
 
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
     dcl::events_t events;
 
-    if( !message_.get_events().empty() )
+    if( !message_->get_events().empty() )
     {
-        events.reserve( message_.get_events().size() );
+        events.reserve( message_->get_events().size() );
 
-        for( dcl::remote_ids_t::const_iterator it = message_.get_events().begin(); it != message_.get_events().end(); it ++ )
+        for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
         {
             events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
         }
     }
 
-    if( message_.get_return_event() )
+    if( message_->get_return_event() )
     {
         composite_event* ret_event = NULL;
 
         // Always no blocking
-        buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(),
-                           message_.get_buffer_size(), 0,
+        buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
+                           message_->get_buffer_size(), 0,
                            true, events,
                            reinterpret_cast<generic_event**>( &ret_event ) );
 
         remote_id_t id = server.get_event_manager().add( ret_event );
-        message_.set_event_id( id );
+        message_->set_event_id( id );
     }
     else
     {
         // Always no blocking
-        buffer_ptr->write( queue_ptr, message_.get_buffer_pointer(),
-                           message_.get_buffer_size(), 0, 
+        buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
+                           message_->get_buffer_size(), 0, 
                            true, events, NULL );
     }
 
@@ -108,43 +108,43 @@ void msgEnqueueReadBuffer_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t id = message_.get_remote_id();
-    remote_id_t command_queue_id = message_.get_command_queue_id();
+    remote_id_t id = message_->get_remote_id();
+    remote_id_t command_queue_id = message_->get_command_queue_id();
 
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
-    message_.allocate_buffer();
+    message_->allocate_buffer();
 
     dcl::events_t events;
 
-    if( !message_.get_events().empty() )
+    if( !message_->get_events().empty() )
     {
-        events.reserve( message_.get_events().size() );
+        events.reserve( message_->get_events().size() );
 
-        for( dcl::remote_ids_t::const_iterator it = message_.get_events().begin(); it != message_.get_events().end(); it ++ )
+        for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
         {
             events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
         }
     }
 
-    if( message_.get_return_event() )
+    if( message_->get_return_event() )
     {
         composite_event* ret_event = NULL;
 
         // Always blocking
-        buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(), 
-                          message_.get_buffer_size(), message_.get_offset(), true,
+        buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(), 
+                          message_->get_buffer_size(), message_->get_offset(), true,
                           events, reinterpret_cast<generic_event**>( &ret_event ) );
 
         remote_id_t id = server.get_event_manager().add( ret_event );
-        message_.set_event_id( id );
+        message_->set_event_id( id );
     }
     else
     {
         // Always blocking
-        buffer_ptr->read( queue_ptr, message_.get_buffer_pointer(),
-                          message_.get_buffer_size(), message_.get_offset(),
+        buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
+                          message_->get_buffer_size(), message_->get_offset(),
                           true, events, NULL );
     }
 
@@ -155,25 +155,25 @@ void msgCreateImage2D_command::execute()
 {
     server_platform& server = server_platform::get_instance();
 
-    remote_id_t context_id = message_.get_context_id();
+    remote_id_t context_id = message_->get_context_id();
 
     composite_context* context_ptr = server.get_context_manager().get( context_id );
 
     cl_image_format format;
-    format.image_channel_order = message_.get_channel_order();
-    format.image_channel_data_type = message_.get_channel_type();
+    format.image_channel_order = message_->get_channel_order();
+    format.image_channel_data_type = message_->get_channel_type();
 
     generic_memory_object* ptr =
-        context_ptr->create_image( message_.get_buffer(),
-                                   message_.get_flags(), &format,
-                                   message_.get_width(), message_.get_height(),
-                                   message_.get_row_pitch() );
+        context_ptr->create_image( message_->get_buffer(),
+                                   message_->get_flags(), &format,
+                                   message_->get_width(), message_->get_height(),
+                                   message_->get_row_pitch() );
 
     composite_image* image_ptr = reinterpret_cast<composite_image*>( ptr );
 
     remote_id_t id = server.get_image_manager().add( image_ptr );
 
-    message_.set_remote_id( id );
+    message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

@@ -59,10 +59,10 @@ public:
     }
 
     // Response
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
 
 protected:
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     dcl::remote_ids_t devices_;
 
     virtual void create_request( void* payload_ptr );
@@ -94,11 +94,11 @@ public:
         base_message( msgCreateContextFromType, true, sizeof( cl_device_type ), sizeof( remote_id_t ) ) {}
 
     // Request
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
     MSG_PARAMETER_GET_SET( cl_device_type, device_type_, device_type )
 
 protected:
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     cl_device_type device_type_;
 
     virtual void create_request( void* payload_ptr );
@@ -113,10 +113,10 @@ class dcl_message< msgGetContextInfo > : public base_message
 public:
     dcl_message< msgGetContextInfo >() : 
         base_message( msgGetContextInfo, true, sizeof( remote_id_t ), 0 ),
-        id_( 0xffff ){}
+        remote_id_( 0xffff ){}
 
     // Request
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
 
     inline const dcl::remote_ids_t& get_devices() const
     {
@@ -149,7 +149,7 @@ protected:
     };
     #pragma pack( pop )
 
-    dcl::remote_id_t id_;
+    dcl::remote_id_t remote_id_;
     dcl::remote_ids_t devices_;
 
     inline void update_response_size()

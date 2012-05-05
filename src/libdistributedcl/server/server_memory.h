@@ -34,7 +34,7 @@ class msgCreateBuffer_command :
     public server_command< dcl::network::message::msgCreateBuffer >
 {
 public:
-    msgCreateBuffer_command( recv_ptr_t message_ptr ) :
+    msgCreateBuffer_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgCreateBuffer >( message_ptr ) {}
 
     void execute();
@@ -44,7 +44,7 @@ class msgEnqueueWriteBuffer_command :
     public server_command< dcl::network::message::msgEnqueueWriteBuffer >
 {
 public:
-    msgEnqueueWriteBuffer_command( recv_ptr_t message_ptr ) :
+    msgEnqueueWriteBuffer_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr ) {}
 
     void execute();
@@ -54,7 +54,7 @@ class msgEnqueueReadBuffer_command :
     public server_command< dcl::network::message::msgEnqueueReadBuffer >
 {
 public:
-    msgEnqueueReadBuffer_command( recv_ptr_t message_ptr ) :
+    msgEnqueueReadBuffer_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr ) {}
 
     void execute();
@@ -64,7 +64,7 @@ class msgCreateImage2D_command :
     public server_command< dcl::network::message::msgCreateImage2D >
 {
 public:
-    msgCreateImage2D_command( recv_ptr_t message_ptr ) :
+    msgCreateImage2D_command( message_sp_t message_ptr ) :
         server_command< dcl::network::message::msgCreateImage2D >( message_ptr ) {}
 
     void execute();

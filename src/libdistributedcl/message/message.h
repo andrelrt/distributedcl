@@ -156,7 +156,7 @@ public:
         header->version = message_v1_0;
         header->type = type_;
         header->request = host_to_network( static_cast<uint16_t>( response_ ? 0 : 1 ) );
-        header->id = host_to_network( id_ );
+        header->id = host_to_network( message_id_ );
         header->length = host_to_network( static_cast< uint32_t >( size_ ) );
 
         if( !response_ )
@@ -186,7 +186,7 @@ public:
 
     inline uint16_t get_id() const
     {
-        return id_;
+        return message_id_;
     }
 
     virtual void parse_response( const void* payload_ptr ){} //, uint32_t size
@@ -227,7 +227,7 @@ protected:
     }
 
 private:
-    uint16_t id_;
+    uint16_t message_id_;
     bool wait_response_;
     uint8_t* buffer_ptr_;
     std::size_t size_;
@@ -259,7 +259,7 @@ private:
         size_ = size;
 
         const message_header* header_ptr = reinterpret_cast< const message_header* >( msg_buffer_ptr );
-        id_ = network_to_host( header_ptr->id );
+        message_id_ = network_to_host( header_ptr->id );
 
         if( is_request )
             parse_request( get_payload() );

@@ -63,7 +63,7 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
 
     if( ret_event_ptr != NULL )
         msg_ptr->set_return_event( true );
@@ -111,7 +111,7 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
 
-    boost::shared_ptr< base_message > message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
 
     if( ret_event_ptr != NULL )
         msg_ptr->set_return_event( true );
