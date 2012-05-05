@@ -74,10 +74,12 @@ public:
 
     virtual ~generic_command_queue()
     {
-        scoped_lock_t( mutex_ );
+        {
+            scoped_lock_t lock( queue_mutex_ );
 
-        async_command_.push( cmd_terminate );
-        async_semaphore_.post();
+            async_command_.push( cmd_terminate );
+            async_semaphore_.post();
+        }
 
         async_worker_thread_sp_->join();
     }
@@ -102,14 +104,14 @@ public:
 
     inline void async_flush()
     {
-        scoped_lock_t( mutex_ );
+        scoped_lock_t lock( queue_mutex_ );
 
         async_command_.push( cmd_flush );
         async_semaphore_.post();
     }
 
 protected:
-    std::queue<uint32_t> async_command_;
+    std::queue<uint8_t> async_command_;
     boost::scoped_ptr< boost::thread > async_worker_thread_sp_;
     boost::interprocess::interprocess_mutex queue_mutex_;
     boost::interprocess::interprocess_semaphore async_semaphore_;
@@ -131,7 +133,7 @@ protected:
             queue_commands command = cmd_invalid;
 
             {
-                scoped_lock_t( mutex_ );
+                scoped_lock_t lock( queue_mutex_ );
 
                 command = static_cast<queue_commands>( async_command_.front() );
                 async_command_.pop();

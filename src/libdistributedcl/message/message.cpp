@@ -57,8 +57,6 @@ base_message::base_message( const base_message& copy ) :
         size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ), 
         response_size_( copy.response_size_ ), response_( copy.response_ )
 {
-    scoped_lock_t lock( mutex_ );
-
     id_ = copy.id_;
 }
 //-----------------------------------------------------------------------------

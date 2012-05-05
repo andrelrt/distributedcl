@@ -30,6 +30,8 @@
 #include <boost/thread.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/scoped_array.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 #include "distributedcl_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -183,6 +185,8 @@ public:
 
     inline uint8_t* receive_message( std::size_t* size_ptr )
     {
+        scoped_lock_t lock( mutex_ );
+
         receive_size( base_message_buffer_ptr_, dcl::network::message::packet::get_header_size() );
 
         std::size_t total_size = dcl::network::message::packet::get_packet_size( base_message_buffer_ptr_ );
@@ -243,6 +247,8 @@ public:
     }
 
 private:
+    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
+
     endpoint_t client_;
     connection_t socket_;
     config_info_t config_;
@@ -252,6 +258,8 @@ private:
 
     std::size_t buffer_size_;
     uint8_t* base_message_buffer_ptr_;
+
+    boost::interprocess::interprocess_mutex mutex_;
 
     enum
     {

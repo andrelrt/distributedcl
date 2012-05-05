@@ -246,9 +246,9 @@ private:
     struct message_header
     {
         uint8_t version;
-        uint8_t type;
-        uint16_t request : 1;
-        uint16_t id : 15;
+        uint8_t type : 7;
+        uint8_t request : 1;
+        uint16_t id;
         uint32_t length;
     };
     #pragma pack( pop )
