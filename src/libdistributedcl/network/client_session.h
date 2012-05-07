@@ -71,7 +71,76 @@ public:
         dcl::network::platform::session< COMM >::set_remote_sequence_number( 100 );
     }
 
-    void flush_queue()
+    inline void flush_queue()
+    {
+        scoped_lock_t lock( mutex_ );
+
+        if( message_queue_.empty() )
+            return;
+
+        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
+
+        while( !message_queue_.empty() )
+        {
+            message_sp_t message_sp = message_queue_.front();
+
+            packet_sp->add( message_sp );
+            message_queue_.pop();
+        }
+
+        flush_packet( packet_sp );
+    }
+
+//    inline void wait()
+//    {
+//        wait_response_.wait();
+//    }
+
+    inline void enqueue_message( message_sp_t message_sp )
+    {
+        scoped_lock_t lock( mutex_ );
+
+        message_queue_.push( message_sp );
+    }
+
+    inline void send_message( message_sp_t message_sp )
+    {
+        scoped_lock_t lock( mutex_ );
+
+        message_queue_.push( message_sp );
+
+        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
+
+        while( !message_queue_.empty() )
+        {
+            message_sp_t message_sp = message_queue_.front();
+
+            packet_sp->add( message_sp );
+            message_queue_.pop();
+        }
+
+        flush_packet( packet_sp );
+    }
+
+    inline dcl::message_vector_t& get_received_messages()
+    {
+        return received_messages_;
+    }
+
+private:
+    typedef std::queue< message_sp_t > message_queue_t;
+    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
+
+//    bool running_;
+    message_queue_t message_queue_;
+    boost::interprocess::interprocess_mutex mutex_;
+//    boost::interprocess::interprocess_semaphore wait_message_;
+//    boost::interprocess::interprocess_semaphore wait_response_;
+    dcl::message_vector_t received_messages_;
+//    boost::thread* send_thread_ptr_;
+
+
+    void flush_packet( packet_sp_t packet_sp )
     {
 //        if( send_thread_ptr_ == NULL )
 //        {
@@ -80,24 +149,6 @@ public:
 //
 //        wait_message_.post();
 
-        packet_sp_t packet_sp;
-
-        {
-            scoped_lock_t lock( mutex_ );
-
-            if( message_queue_.empty() )
-                return;
-
-            packet_sp.reset( dcl::network::platform::session< COMM >::create_packet() );
-
-            while( !message_queue_.empty() )
-            {
-                message_sp_t message_sp = message_queue_.front();
-
-                packet_sp->add( message_sp );
-                message_queue_.pop();
-            }
-        }
 
         // Send data
         dcl::network::platform::session< COMM >::send_packet( packet_sp );
@@ -147,41 +198,6 @@ public:
             }
         }
     }
-
-//    inline void wait()
-//    {
-//        wait_response_.wait();
-//    }
-
-    void enqueue_message( message_sp_t message_sp )
-    {
-        scoped_lock_t lock( mutex_ );
-
-        message_queue_.push( message_sp );
-    }
-
-    inline void send_message( message_sp_t message_sp )
-    {
-        enqueue_message( message_sp );
-        flush_queue();
-    }
-
-    inline dcl::message_vector_t& get_received_messages()
-    {
-        return received_messages_;
-    }
-
-private:
-    typedef std::queue< message_sp_t > message_queue_t;
-    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
-
-//    bool running_;
-    message_queue_t message_queue_;
-    boost::interprocess::interprocess_mutex mutex_;
-//    boost::interprocess::interprocess_semaphore wait_message_;
-//    boost::interprocess::interprocess_semaphore wait_response_;
-    dcl::message_vector_t received_messages_;
-//    boost::thread* send_thread_ptr_;
 
     inline void clear_received_messages()
     {
