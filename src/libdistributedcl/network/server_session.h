@@ -92,11 +92,11 @@ private:
 
         while( !boost::this_thread::interruption_requested() )
         {
-            boost::scoped_ptr< dcl::network::message::packet > recv_packet;
+            packet_sp_t recv_packet_sp;
             try
             {
                 // Receive packet
-                recv_packet.reset( session_t::receive_packet() );
+                recv_packet_sp = session_t::receive_packet();
             }
             catch( dcl::library_exception& )
             {
@@ -109,14 +109,14 @@ private:
                 break;
 
             // Create response packet
-            boost::scoped_ptr< dcl::network::message::packet > ret_packet( session_t::create_packet() );
+            packet_sp_t ret_packet_sp( session_t::create_packet() );
 
             // Execute packet base_messages
             try
             {
-                recv_packet->parse( true );
+                recv_packet_sp->parse( true );
 
-                dcl::message_vector_t messages_ref = recv_packet->get_messages();
+                dcl::message_vector_t messages_ref = recv_packet_sp->get_messages();
 
                 dispatcher_.dispatch_messages( messages_ref );
 
@@ -128,16 +128,16 @@ private:
                     {
                         (*it)->set_response_mode();
 
-                        ret_packet->add( *it );
+                        ret_packet_sp->add( *it );
                     }
                 }
 
-                if( ret_packet->get_messages().empty() )
+                if( ret_packet_sp->get_messages().empty() )
                 {
                     message_sp_t
                         ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( CL_SUCCESS ) );
 
-                    ret_packet->add( ret_msg_sp );
+                    ret_packet_sp->add( ret_msg_sp );
                 }
             }
             catch( dcl::library_exception& ex )
@@ -146,7 +146,7 @@ private:
                 message_sp_t
                     ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
 
-                ret_packet->add( ret_msg_sp );
+                ret_packet_sp->add( ret_msg_sp );
             }
 
             if( boost::this_thread::interruption_requested() )
@@ -155,7 +155,7 @@ private:
             try
             {
                 // Send response
-                session_t::send_packet( ret_packet.get() );
+                session_t::send_packet( ret_packet_sp );
             }
             catch( dcl::library_exception& )
             {

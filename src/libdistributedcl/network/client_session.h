@@ -80,7 +80,7 @@ public:
 //
 //        wait_message_.post();
 
-        boost::scoped_ptr< dcl::network::message::packet > packet_sp;
+        packet_sp_t packet_sp;
 
         {
             scoped_lock_t lock( mutex_ );
@@ -100,13 +100,13 @@ public:
         }
 
         // Send data
-        dcl::network::platform::session< COMM >::send_packet( packet_sp.get() );
-        boost::scoped_ptr< dcl::network::message::packet > recv_packet_sp;
+        dcl::network::platform::session< COMM >::send_packet( packet_sp );
+        packet_sp_t recv_packet_sp;
 
         try
         {
             // Wait response
-            recv_packet_sp.reset( dcl::network::platform::session< COMM >::receive_packet() );
+            recv_packet_sp = dcl::network::platform::session< COMM >::receive_packet();
         }
         catch( dcl::library_exception& )
         {

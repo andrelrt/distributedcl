@@ -278,9 +278,9 @@ private:
         //            reinterpret_cast< const char* >( &flag_true ),
         //            sizeof( int ) );
 
-        setsockopt( sock, IPPROTO_TCP, TCP_NODELAY, 
-                    reinterpret_cast< const char* >( &flag_true ),
-                    sizeof( int ) );
+        //setsockopt( sock, IPPROTO_TCP, TCP_NODELAY, 
+        //            reinterpret_cast< const char* >( &flag_true ),
+        //            sizeof( int ) );
     }
 
     inline void create_socket()

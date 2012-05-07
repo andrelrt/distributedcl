@@ -113,20 +113,20 @@ protected:
         return( new dcl::network::message::packet() );
     }
 
-    inline void setup_packet( dcl::network::message::packet* packet_ptr )
+    inline void setup_packet( packet_sp_t packet_sp )
     {
-        std::size_t max_length = packet_ptr->get_length();
+        std::size_t max_length = packet_sp->get_length();
         uint8_t* buffer_ptr = communication_.get_message_buffer( &max_length );
 
-        packet_ptr->setup( buffer_ptr, max_length, get_session_id(), get_sequence_number() );
+        packet_sp->setup( buffer_ptr, max_length, get_session_id(), get_sequence_number() );
     }
 
-    inline void send_packet( dcl::network::message::packet* packet_ptr )
+    inline void send_packet( packet_sp_t packet_sp )
     {
-        setup_packet( packet_ptr );
-        packet_ptr->create_packet();
+        setup_packet( packet_sp );
+        packet_sp->create_packet();
 
-        communication_.send_message( packet_ptr->get_length() );
+        communication_.send_message( packet_sp->get_length() );
     }
 
 private:
