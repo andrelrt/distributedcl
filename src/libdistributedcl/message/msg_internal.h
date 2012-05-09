@@ -54,6 +54,14 @@ private:
     int32_t error_code_;
 };
 //-----------------------------------------------------------------------------
+template<>
+class dcl_message< msg_flush_server > : public base_message
+{
+public:
+    dcl_message< msg_flush_server >() :
+        base_message( msg_flush_server, true ){}
+};
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
 #endif // _DCL_MESSAGE_INTERNAL_H_

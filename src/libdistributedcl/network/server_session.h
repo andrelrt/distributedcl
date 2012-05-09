@@ -36,8 +36,27 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
+class server_messages
+{
+public:
+    void add( message_sp_t message_sp )
+    {
+        dcl::scoped_lock_t lock( waiting_messages_mutex_ );
+
+        waiting_messages_.push_back( message_sp );
+    }
+
+protected:
+    server_messages(){}
+
+    dcl::mutex_t waiting_messages_mutex_;
+    dcl::message_vector_t waiting_messages_;
+};
+//-----------------------------------------------------------------------------
 template< template< class > class COMM >
-class server_session : public dcl::network::platform::session< COMM >
+class server_session :
+    public dcl::network::platform::session< COMM >,
+    public server_messages
 {
 public:
 	typedef typename dcl::network::platform::session< COMM > session_t;
@@ -116,15 +135,34 @@ private:
             {
                 recv_packet_sp->parse( true );
 
-                dcl::message_vector_t messages_ref = recv_packet_sp->get_messages();
+                dcl::message_vector_t& messages_ref = recv_packet_sp->get_messages();
 
-                dispatcher_.dispatch_messages( messages_ref );
+                // Execute all messages in package
+                dispatcher_.dispatch_messages( messages_ref, this );
 
+                // Create return package
                 dcl::message_vector_t::iterator it;
+
+                {
+                    dcl::scoped_lock_t lock( waiting_messages_mutex_ );
+
+                    for( it = waiting_messages_.begin(); it != waiting_messages_.end(); it++ )
+                    {
+                        if( (*it)->waiting_response() )
+                        {
+                            (*it)->set_response_mode();
+
+                            ret_packet_sp->add( *it );
+                        }
+                    }
+
+                    waiting_messages_.clear();
+                }
 
                 for( it = messages_ref.begin(); it != messages_ref.end(); it++ )
                 {
-                    if( (*it)->waiting_response() )
+                    if( (!(*it)->is_async()) &&
+                        ((*it)->waiting_response()) )
                     {
                         (*it)->set_response_mode();
 

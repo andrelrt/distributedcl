@@ -108,16 +108,6 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_pt
     buffer_ptr_ = request_ptr->buffer_;
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgEnqueueWriteBuffer >::create_response( void* payload_ptr )
-{
-    enqueue_message::create_enqueue_response( payload_ptr );
-}
-//-----------------------------------------------------------------------------
-void dcl_message< msgEnqueueWriteBuffer >::parse_response( const void* payload_ptr )
-{
-    enqueue_message::parse_enqueue_response( payload_ptr );
-}
-//-----------------------------------------------------------------------------
 // msgEnqueueReadBuffer
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::create_request( void* payload_ptr )
@@ -146,16 +136,13 @@ void dcl_message< msgEnqueueReadBuffer >::parse_request( const void* payload_ptr
     offset_ = network_to_host( request_ptr->offset_ );
 
     set_response_size( size_ +
-                       get_enqueue_response_size() +
                        sizeof(msgEnqueueReadBuffer_response) - 1 );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::create_response( void* payload_ptr )
 {
-    void* enqueue_ptr = enqueue_message::create_enqueue_response( payload_ptr );
-
     msgEnqueueReadBuffer_response* response_ptr =
-        reinterpret_cast<msgEnqueueReadBuffer_response*>( enqueue_ptr );
+        reinterpret_cast<msgEnqueueReadBuffer_response*>( payload_ptr );
 
     response_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
 
@@ -164,10 +151,8 @@ void dcl_message< msgEnqueueReadBuffer >::create_response( void* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::parse_response( const void* payload_ptr )
 {
-    const void* enqueue_ptr = enqueue_message::parse_enqueue_response( payload_ptr );
-
     const msgEnqueueReadBuffer_response* response_ptr =
-        reinterpret_cast<const msgEnqueueReadBuffer_response*>( enqueue_ptr );
+        reinterpret_cast<const msgEnqueueReadBuffer_response*>( payload_ptr );
 
     size_ = network_to_host( response_ptr->size_ );
 

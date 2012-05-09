@@ -20,57 +20,17 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_SERVER_KERNEL_H_
-#define _DCL_SERVER_KERNEL_H_
-
-#include "distributedcl_internal.h"
 #include "server_command.h"
-#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-class msgCreateKernel_command : 
-    public server_command< dcl::network::message::msgCreateKernel >
-{
-public:
-    msgCreateKernel_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgCreateKernel >( message_ptr ) {}
-
-    void execute();
-};
+async_server async_server::instance_;
 //-----------------------------------------------------------------------------
-class msgEnqueueNDRangeKernel_command : 
-    public async_server_command< dcl::network::message::msgEnqueueNDRangeKernel >
+void msg_flush_server_command::execute()
 {
-public:
-    msgEnqueueNDRangeKernel_command( message_sp_t message_ptr,
-                                     dcl::network::server::server_messages* waiting_messages_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueNDRangeKernel >( message_ptr, waiting_messages_ptr ) {}
-
-    void execute();
-};
-//-----------------------------------------------------------------------------
-class msgSetKernelArg_command : 
-    public server_command< dcl::network::message::msgSetKernelArg >
-{
-public:
-    msgSetKernelArg_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgSetKernelArg >( message_ptr ) {}
-
-    void execute();
-};
-//-----------------------------------------------------------------------------
-class msgGetKernelWorkGroupInfo_command :
-    public server_command< dcl::network::message::msgGetKernelWorkGroupInfo >
-{
-public:
-    msgGetKernelWorkGroupInfo_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgGetKernelWorkGroupInfo >( message_ptr ) {}
-
-    void execute();
-};
+    async_server::get_instance().wait();
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif // _DCL_SERVER_KERNEL_H_

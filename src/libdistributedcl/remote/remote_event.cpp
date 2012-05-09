@@ -23,9 +23,11 @@
 #include "remote_event.h"
 #include "remote_command_queue.h"
 #include "message/msg_event.h"
+#include "message/msg_internal.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::enqueue_message;
+using dcl::network::message::msg_flush_server;
 using dcl::network::message::msgWaitForEvents;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -47,7 +49,15 @@ void remote_event::wait_remote_id()
 {
     if( get_remote_id() == 0 )
     {
-        get_session().flush_queue();
+        if( session_ref_.queue_empty() )
+        {
+            message_sp_t message_sp( new dcl_message< msg_flush_server >() );
+            session_ref_.send_message( message_sp );
+        }
+        else
+        {
+            session_ref_.flush_queue();
+        }
 
         enqueue_message* msg_ptr = reinterpret_cast<enqueue_message*>( message_sp_.get() );
 

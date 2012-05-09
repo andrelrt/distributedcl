@@ -73,6 +73,8 @@ void msgEnqueueNDRangeKernel_command::execute()
 
     if( !message_->get_events().empty() )
     {
+        async_server::get_instance().wait();
+
         events.reserve( message_->get_events().size() );
 
         for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
@@ -89,8 +91,7 @@ void msgEnqueueNDRangeKernel_command::execute()
                              message_->get_global(), message_->get_local(), events,
                              reinterpret_cast<generic_event**>( &ret_event ) );
 
-        remote_id_t id = server.get_event_manager().add( ret_event );
-        message_->set_event_id( id );
+        server.get_event_manager().add( ret_event, message_->get_event_id() );
     }
     else
     {
@@ -99,7 +100,8 @@ void msgEnqueueNDRangeKernel_command::execute()
                              NULL );
     }
 
-    queue_ptr->async_flush();
+    queue_ptr->flush();
+    //queue_ptr->async_flush();
 }
 //-----------------------------------------------------------------------------
 void msgSetKernelArg_command::execute()

@@ -117,16 +117,6 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
     local_.copy( ndrange( dimensions, value ) );
 }
 //-----------------------------------------------------------------------------
-void dcl_message< msgEnqueueNDRangeKernel >::create_response( void* payload_ptr )
-{
-    enqueue_message::create_enqueue_response( payload_ptr );
-}
-//-----------------------------------------------------------------------------
-void dcl_message< msgEnqueueNDRangeKernel >::parse_response( const void* payload_ptr )
-{
-    enqueue_message::parse_enqueue_response( payload_ptr );
-}
-//-----------------------------------------------------------------------------
 // msgSetKernelArg
 //-----------------------------------------------------------------------------
 void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )

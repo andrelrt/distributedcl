@@ -22,7 +22,9 @@
 //-----------------------------------------------------------------------------
 #include <iostream>
 #include "message_dispatcher.h"
+#include "server_session.h"
 #include "message/message.h"
+#include "server/server_command.h"
 #include "server/server_platform.h"
 #include "server/server_context.h"
 #include "server/server_program.h"
@@ -37,11 +39,19 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-//#define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
+#define MSG_DEBUG
+#if defined MSG_DEBUG
+#define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
+#define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));std::cout<<"async dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
+#define MSG_IGNORE( x ) case x: std::cout<<"ignoring message " #x "..."<<std::endl;break
+#else
 #define MSG( x ) case x: {x##_command command(*it);command.execute();}break
+#define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));command_sp->async_execute(command_sp);}break
+#define MSG_IGNORE( x ) case x: break
+#endif
 #define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("dispatch_messages: " #x " not implemented");break
 //-----------------------------------------------------------------------------
-void message_dispatcher::dispatch_messages( message_vector_t& messages )
+void message_dispatcher::dispatch_messages( message_vector_t& messages, server_messages* waiting_messages_ptr )
 {
     message_vector_t::iterator it;
 
@@ -49,11 +59,10 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
     {
         switch( (*it)->get_type() )
         {
-            // TODO: Create the base_message objects
-
             // Internal base_messages [1-20)
             MSG_NOT_IMPLEMENTED( msg_invalid_message );
-            MSG_NOT_IMPLEMENTED( msg_error_message );
+            MSG_IGNORE( msg_error_message );
+            MSG( msg_flush_server );
 
             // OpenCL base_messages [20-128)
             MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
@@ -124,8 +133,8 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
 
             MSG( msgFlush );
             MSG( msgFinish );
-            MSG( msgEnqueueReadBuffer );
-            MSG( msgEnqueueWriteBuffer );
+            MSG_ASYNC( msgEnqueueReadBuffer );
+            MSG_ASYNC( msgEnqueueWriteBuffer );
 
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );
             MSG_NOT_IMPLEMENTED( msgEnqueueReadImage );
@@ -137,7 +146,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             MSG_NOT_IMPLEMENTED( msgEnqueueMapImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueUnmapMemObject );
 
-            MSG( msgEnqueueNDRangeKernel );
+            MSG_ASYNC( msgEnqueueNDRangeKernel );
 
             MSG_NOT_IMPLEMENTED( msgEnqueueTask );
             MSG_NOT_IMPLEMENTED( msgEnqueueNativeKernel );
@@ -150,12 +159,13 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages )
             MSG_NOT_IMPLEMENTED( msgExtension1 );
 
             default: 
-                throw dcl::library_exception( "dispatch_messages: Unkown Message" );
+                throw dcl::library_exception( "dispatch_messages: Unknow Message" );
         }
     }
 }
 //-----------------------------------------------------------------------------
 #undef MSG_NOT_IMPLEMENTED
+#undef MSG_ASYNC
 #undef MSG
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

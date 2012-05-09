@@ -247,8 +247,6 @@ public:
     }
 
 private:
-    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
-
     endpoint_t client_;
     connection_t socket_;
     config_info_t config_;

@@ -36,8 +36,6 @@ namespace dcl {
 namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
-typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
-
 uint16_t base_message::next_id_ = 0;
 boost::interprocess::interprocess_mutex base_message::mutex_;
 //-----------------------------------------------------------------------------
@@ -83,6 +81,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         // Internal base_messages [1-20)
         MSG_NOT_IMPLEMENTED( msg_invalid_message );
         MSG( msg_error_message );
+        MSG( msg_flush_server );
 
         // OpenCL base_messages [20-128)
         MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
@@ -180,6 +179,11 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 //-----------------------------------------------------------------------------
 // enqueue_message
 //-----------------------------------------------------------------------------
+using dcl::info::object_manager;
+using dcl::info::generic_event;
+//-----------------------------------------------------------------------------
+object_manager< generic_event > enqueue_message::remote_event_ids_;
+//-----------------------------------------------------------------------------
 void* enqueue_message::create_enqueue_request( void* payload_ptr )
 {
     enqueue_message_request* request_ptr =
@@ -188,7 +192,9 @@ void* enqueue_message::create_enqueue_request( void* payload_ptr )
     request_ptr->return_event_ = static_cast<uint16_t>( return_event_? 1 : 0 );
     request_ptr->event_count_ = static_cast<uint16_t>( events_.size() );
 
-    for( uint32_t i = 0; i < events_.size(); i++ )
+    request_ptr->events_[ 0 ] = host_to_network( event_id_ );
+
+    for( uint32_t i = 1; i <= events_.size(); i++ )
     {
         request_ptr->events_[ i ] = host_to_network( events_[ i ] );
     }
@@ -203,8 +209,10 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
 
     return_event_ = (request_ptr->return_event_ == 1)? true : false;
 
-    if( return_event_ )
-        set_wait_response();
+    event_id_ = network_to_host( request_ptr->events_[ 0 ] );
+
+    //if( return_event_ )
+    //    set_wait_response();
 
     events_.clear();
     uint32_t event_count = request_ptr->event_count_;
@@ -213,35 +221,13 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
     {
         events_.reserve( event_count );
 
-        for( uint32_t i = 0; i < events_.size(); i++ )
+        for( uint32_t i = 1; i <= events_.size(); i++ )
         {
             events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
         }
     }
 
     return( reinterpret_cast<const uint8_t*>( payload_ptr ) + get_enqueue_request_size() );
-}
-//-----------------------------------------------------------------------------
-void* enqueue_message::create_enqueue_response( void* payload_ptr )
-{
-    enqueue_message_response* response_ptr =
-        reinterpret_cast< enqueue_message_response* >( payload_ptr );
-
-    response_ptr->event_ = host_to_network( event_id_ );
-
-    return( reinterpret_cast<uint8_t*>( payload_ptr ) + get_enqueue_response_size() );
-}
-//-----------------------------------------------------------------------------
-const void* enqueue_message::parse_enqueue_response( const void* payload_ptr )
-{
-    const enqueue_message_response* response_ptr =
-        reinterpret_cast< const enqueue_message_response* >( payload_ptr );
-
-    event_id_ = network_to_host( response_ptr->event_ );
-
-    received_.post();
-
-    return( reinterpret_cast<const uint8_t*>( payload_ptr ) + get_enqueue_response_size() );
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

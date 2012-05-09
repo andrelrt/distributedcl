@@ -123,6 +123,7 @@
     <ClCompile Include="remote\remote_memory.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
+    <ClCompile Include="server\server_command.cpp" />
     <ClCompile Include="server\server_command_queue.cpp" />
     <ClCompile Include="server\server_event.cpp" />
     <ClCompile Include="server\server_kernel.cpp" />

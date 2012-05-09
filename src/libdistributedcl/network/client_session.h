@@ -71,21 +71,29 @@ public:
         dcl::network::platform::session< COMM >::set_remote_sequence_number( 100 );
     }
 
+    inline bool queue_empty() const
+    {
+        return message_queue_.empty();
+    }
+
     inline void flush_queue()
     {
-        scoped_lock_t lock( mutex_ );
-
-        if( message_queue_.empty() )
-            return;
-
         packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
 
-        while( !message_queue_.empty() )
         {
-            message_sp_t message_sp = message_queue_.front();
+            scoped_lock_t lock( mutex_ );
 
-            packet_sp->add( message_sp );
-            message_queue_.pop();
+            if( message_queue_.empty() )
+                return;
+
+            while( !message_queue_.empty() )
+            {
+                message_sp_t message_sp = message_queue_.front();
+
+                packet_sp->add( message_sp );
+                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+                message_queue_.pop();
+            }
         }
 
         flush_packet( packet_sp );
@@ -105,18 +113,21 @@ public:
 
     inline void send_message( message_sp_t message_sp )
     {
-        scoped_lock_t lock( mutex_ );
-
-        message_queue_.push( message_sp );
-
         packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
 
-        while( !message_queue_.empty() )
         {
-            message_sp_t message_sp = message_queue_.front();
+            scoped_lock_t lock( mutex_ );
 
-            packet_sp->add( message_sp );
-            message_queue_.pop();
+            message_queue_.push( message_sp );
+
+            while( !message_queue_.empty() )
+            {
+                message_sp_t message_sp = message_queue_.front();
+
+                packet_sp->add( message_sp );
+                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+                message_queue_.pop();
+            }
         }
 
         flush_packet( packet_sp );
@@ -129,15 +140,16 @@ public:
 
 private:
     typedef std::queue< message_sp_t > message_queue_t;
-    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
+    typedef std::map< uint16_t, message_sp_t > message_map_t;
 
 //    bool running_;
     message_queue_t message_queue_;
-    boost::interprocess::interprocess_mutex mutex_;
+    dcl::mutex_t mutex_;
 //    boost::interprocess::interprocess_semaphore wait_message_;
 //    boost::interprocess::interprocess_semaphore wait_response_;
     dcl::message_vector_t received_messages_;
 //    boost::thread* send_thread_ptr_;
+    message_map_t pending_messages_;
 
 
     void flush_packet( packet_sp_t packet_sp )
@@ -192,9 +204,16 @@ private:
             }
             else
             {
-                message_sp_t sent_message_sp( packet_sp->get_message( (*recv_message_it)->get_id() ) );
+                scoped_lock_t lock( mutex_ );
 
-                sent_message_sp->parse_response( (*recv_message_it)->get_payload() );
+                message_map_t::iterator it = pending_messages_.find( (*recv_message_it)->get_id() );
+
+                if( it != pending_messages_.end() )
+                {
+                    it->second->parse_response( (*recv_message_it)->get_payload() );
+
+                    pending_messages_.erase( it );
+                }
             }
         }
     }

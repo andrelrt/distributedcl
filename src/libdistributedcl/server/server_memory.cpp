@@ -72,6 +72,8 @@ void msgEnqueueWriteBuffer_command::execute()
 
     if( !message_->get_events().empty() )
     {
+        async_server::get_instance().wait();
+
         events.reserve( message_->get_events().size() );
 
         for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
@@ -87,21 +89,21 @@ void msgEnqueueWriteBuffer_command::execute()
         // Always no blocking
         buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
                            message_->get_buffer_size(), 0,
-                           true, events,
+                           false, events,
                            reinterpret_cast<generic_event**>( &ret_event ) );
 
-        remote_id_t id = server.get_event_manager().add( ret_event );
-        message_->set_event_id( id );
+        server.get_event_manager().add( ret_event, message_->get_event_id() );
     }
     else
     {
         // Always no blocking
         buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
                            message_->get_buffer_size(), 0, 
-                           true, events, NULL );
+                           false, events, NULL );
     }
 
-    queue_ptr->async_flush();
+    queue_ptr->flush();
+    //queue_ptr->async_flush();
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
@@ -120,6 +122,8 @@ void msgEnqueueReadBuffer_command::execute()
 
     if( !message_->get_events().empty() )
     {
+        async_server::get_instance().wait();
+
         events.reserve( message_->get_events().size() );
 
         for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
@@ -137,8 +141,7 @@ void msgEnqueueReadBuffer_command::execute()
                           message_->get_buffer_size(), message_->get_offset(), true,
                           events, reinterpret_cast<generic_event**>( &ret_event ) );
 
-        remote_id_t id = server.get_event_manager().add( ret_event );
-        message_->set_event_id( id );
+        server.get_event_manager().add( ret_event, message_->get_event_id() );
     }
     else
     {
@@ -148,7 +151,8 @@ void msgEnqueueReadBuffer_command::execute()
                           true, events, NULL );
     }
 
-    queue_ptr->async_flush();
+    queue_ptr->flush();
+    //queue_ptr->async_flush();
 }
 //-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()

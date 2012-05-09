@@ -382,5 +382,8 @@
     <ClCompile Include="config\common_config.cpp">
       <Filter>config</Filter>
     </ClCompile>
+    <ClCompile Include="server\server_command.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

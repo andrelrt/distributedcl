@@ -42,6 +42,8 @@
 #endif
 
 #include <boost/shared_ptr.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include "library_exception.h"
 //-----------------------------------------------------------------------------
 namespace dcl { namespace info {
@@ -68,6 +70,8 @@ typedef boost::shared_ptr< dcl::network::message::base_message > message_sp_t;
 typedef boost::shared_ptr< dcl::network::message::packet > packet_sp_t;
 typedef std::vector< message_sp_t > message_vector_t;
 
+typedef boost::interprocess::interprocess_mutex mutex_t;
+typedef boost::interprocess::scoped_lock< mutex_t > scoped_lock_t;
 //-----------------------------------------------------------------------------
 static const union { long one; char little; } is_endian = {1};
 //-----------------------------------------------------------------------------

@@ -68,9 +68,10 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
 
     if( event_ptr != NULL )
     {
-        *event_ptr =
-            reinterpret_cast<generic_event*>( new remote_event( context_ref_, message_sp ) );
+        remote_event* ptr = new remote_event( context_ref_, message_sp );
+        *event_ptr = reinterpret_cast<generic_event*>( ptr );
 
+        ptr->set_remote_id( msg_ptr->get_event_id( *event_ptr ) );
         msg_ptr->set_return_event( true );
 
         session_ref_.enqueue_message( message_sp );
@@ -78,6 +79,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     else
     {
         session_ref_.send_message( message_sp );
+        //session_ref_.enqueue_message( message_sp );
     }
 }
 //-----------------------------------------------------------------------------

@@ -24,17 +24,17 @@
 #define _DCL_NETWORK_MESSAGE_DISPATCHER_H_
 
 #include "distributedcl_internal.h"
-#include "message/packet.h"
-#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
+class server_messages;
+//-----------------------------------------------------------------------------
 class message_dispatcher
 {
 public:
-    void dispatch_messages( dcl::message_vector_t& messages );
+    void dispatch_messages( dcl::message_vector_t& messages, server_messages* waiting_messages_ptr );
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

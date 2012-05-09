@@ -24,6 +24,8 @@
 #define _DCL_MESSAGE_H_
 
 #include "distributedcl_internal.h"
+#include "info/object_manager.h"
+#include "info/event_info.h"
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 //-----------------------------------------------------------------------------
@@ -45,7 +47,8 @@ enum message_type
 {
     // Internal messages [1-20)
     msg_invalid_message = 0,
-    msg_error_message   = 1,    
+    msg_error_message   = 1,
+    msg_flush_server = 2,
 
     // OpenCL messages [20-128)
     msgGetPlatformIDs           = 20,
@@ -135,6 +138,11 @@ public:
     virtual ~base_message(){}
 
     static base_message* parse_message( uint8_t* msg_buffer_ptr, std::size_t length, bool is_request );
+
+    inline virtual bool is_async() const
+    {
+        return false;
+    }
 
     inline message_type get_type() const
     {
@@ -272,6 +280,11 @@ class enqueue_message
     : public base_message
 {
 public:
+    inline virtual bool is_async() const
+    {
+        return true;
+    }
+
     // Request
     MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
     MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
@@ -283,9 +296,14 @@ public:
         update_request_size();
     }
 
-    // Response
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
 
+    inline dcl::remote_id_t get_event_id( dcl::info::generic_event* event_ptr )
+    {
+        event_id_ = remote_event_ids_.get( event_ptr, true );
+
+        return event_id_;
+    }
 
     inline void wait()
     {
@@ -299,31 +317,34 @@ protected:
     dcl::remote_id_t event_id_;
 
     boost::interprocess::interprocess_semaphore received_;
+    static dcl::info::object_manager< dcl::info::generic_event > remote_event_ids_;
 
     enqueue_message( message_type type, bool wait_response = false,
                      std::size_t request_size = 0, std::size_t response_size = 0 ) :
         base_message( type, wait_response,
-                      request_size + sizeof(enqueue_message_request) - sizeof(dcl::remote_id_t),
-                      response_size + sizeof(enqueue_message_response) ),
+                      request_size + sizeof(enqueue_message_request),
+                      response_size ),
         return_event_( false ), event_id_( 0xffff ), received_( 0 ){}
 
     inline std::size_t get_enqueue_request_size()
     {
         return( sizeof(enqueue_message_request) + 
-                (events_.size() - 1) * sizeof(dcl::remote_id_t) );
+                events_.size() * sizeof(dcl::remote_id_t) );
+//                (events_.size() - 1) * sizeof(dcl::remote_id_t) );
     }
 
-    inline std::size_t get_enqueue_response_size()
-    {
-        return( sizeof(enqueue_message_response) );
-    }
+//    inline std::size_t get_enqueue_response_size()
+//    {
+//        return( 0 );
+////        return( sizeof(enqueue_message_response) );
+//    }
 
     inline virtual void update_request_size() = 0;
 
     virtual void* create_enqueue_request( void* payload_ptr );
-    virtual void* create_enqueue_response( void* payload_ptr );
+    //virtual void* create_enqueue_response( void* payload_ptr );
     virtual const void* parse_enqueue_request( const void* payload_ptr );
-    virtual const void* parse_enqueue_response( const void* payload_ptr );
+    //virtual const void* parse_enqueue_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
@@ -332,11 +353,6 @@ protected:
         uint16_t event_count_:15;
         uint16_t return_event_:1;
         dcl::remote_id_t events_[ 1 ];
-    };
-
-    struct enqueue_message_response
-    {
-        dcl::remote_id_t event_;
     };
     #pragma pack( pop )
 };

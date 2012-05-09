@@ -31,8 +31,6 @@
 #include "icd_object.h"
 #include <boost/thread.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/interprocess/sync/scoped_lock.hpp>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -115,8 +113,6 @@ protected:
     boost::scoped_ptr< boost::thread > async_worker_thread_sp_;
     boost::interprocess::interprocess_mutex queue_mutex_;
     boost::interprocess::interprocess_semaphore async_semaphore_;
-
-    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_mutex > scoped_lock_t;
 
     enum queue_commands
     {

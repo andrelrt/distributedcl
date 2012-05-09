@@ -41,21 +41,23 @@ public:
 };
 //-----------------------------------------------------------------------------
 class msgEnqueueWriteBuffer_command : 
-    public server_command< dcl::network::message::msgEnqueueWriteBuffer >
+    public async_server_command< dcl::network::message::msgEnqueueWriteBuffer >
 {
 public:
-    msgEnqueueWriteBuffer_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr ) {}
+    msgEnqueueWriteBuffer_command( message_sp_t message_ptr,
+                                   dcl::network::server::server_messages* waiting_messages_ptr ) :
+        async_server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr, waiting_messages_ptr ) {}
 
     void execute();
 };
 //-----------------------------------------------------------------------------
 class msgEnqueueReadBuffer_command : 
-    public server_command< dcl::network::message::msgEnqueueReadBuffer >
+    public async_server_command< dcl::network::message::msgEnqueueReadBuffer >
 {
 public:
-    msgEnqueueReadBuffer_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr ) {}
+    msgEnqueueReadBuffer_command( message_sp_t message_ptr,
+                                  dcl::network::server::server_messages* waiting_messages_ptr ) :
+        async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, waiting_messages_ptr ) {}
 
     void execute();
 };

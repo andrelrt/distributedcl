@@ -104,7 +104,6 @@ public:
                          sizeof( msgEnqueueNDRangeKernel_request ) ),
         kernel_id_( 0xffff ), command_queue_id_( 0xffff )
     {
-        set_response_size( get_enqueue_response_size() );
     }
 
     // Request
@@ -139,9 +138,7 @@ private:
     }
 
     virtual void create_request( void* payload_ptr );
-    virtual void create_response( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
-    virtual void parse_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
