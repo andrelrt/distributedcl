@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -74,7 +74,7 @@ static bool check_flags( cl_mem_flags flags, void* host_ptr, cl_int* errcode_ret
         return false;
     }
 
-    if( (flags & CL_MEM_USE_HOST_PTR) && 
+    if( (flags & CL_MEM_USE_HOST_PTR) &&
         (flags & (CL_MEM_ALLOC_HOST_PTR|CL_MEM_COPY_HOST_PTR)) )
     {
         if( errcode_ret != NULL )
@@ -115,7 +115,7 @@ clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_context* context_ptr = icd.get_object_ptr< composite_context >( context );
-        composite_memory* buffer_ptr = 
+        composite_memory* buffer_ptr =
             reinterpret_cast< composite_memory* >( context_ptr->create_buffer( host_ptr, size, flags ) );
 
         if( errcode_ret != NULL )
@@ -356,7 +356,7 @@ clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clEnqueueReadBuffer( cl_command_queue command_queue, cl_mem buffer,
-                     cl_bool blocking_read, size_t offset, size_t cb, 
+                     cl_bool blocking_read, size_t offset, size_t cb,
                      void* ptr, cl_uint num_events_in_wait_list,
                      const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_0
 {
@@ -492,8 +492,8 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clEnqueueCopyBufferRect( cl_command_queue command_queue, cl_mem src_buffer,
-//                         cl_mem dst_buffer, const size_t* src_origin, 
-//                         const size_t* dst_origin, const size_t* region, 
+//                         cl_mem dst_buffer, const size_t* src_origin,
+//                         const size_t* dst_origin, const size_t* region,
 //                         size_t src_row_pitch, size_t src_slice_pitch,
 //                         size_t dst_row_pitch, size_t dst_slice_pitch,
 //                         cl_uint num_events_in_wait_list, const cl_event* event_wait_list,
@@ -547,13 +547,56 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
 //}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY void * CL_API_CALL
-//clEnqueueMapBuffer( cl_command_queue command_queue, cl_mem buffer,
-//                    cl_bool blocking_map, cl_map_flags map_flags, size_t offset,
-//                    size_t cb, cl_uint num_events_in_wait_list,
-//                    const cl_event* event_wait_list, cl_event* event,
-//                    cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
-//{
-//}
+clEnqueueMapBuffer( cl_command_queue command_queue, cl_mem buffer,
+                    cl_bool blocking_map, cl_map_flags map_flags, size_t offset,
+                    size_t cb, cl_uint num_events_in_wait_list,
+                    const cl_event* event_wait_list, cl_event* event,
+                    cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
+{
+    if( ((event_wait_list == NULL) && (num_events_in_wait_list != 0)) ||
+        ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
+    {
+        return CL_INVALID_EVENT_WAIT_LIST;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_command_queue* queue_ptr =
+            icd.get_object_ptr< composite_command_queue >( command_queue );
+
+        composite_memory* buffer_ptr =
+            icd.get_object_ptr< composite_memory >( buffer );
+
+        dcl::events_t events;
+        load_events( events, num_events_in_wait_list, event_wait_list );
+
+        composite_event* event_ptr = NULL;
+
+        buffer_ptr->map( queue_ptr, flags, cb, offset, blocking_read, events,
+                         (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                         : NULL );
+
+        if( event != NULL )
+        {
+            *event = icd.get_cl_id< composite_event >( event_ptr );
+        }
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY void * CL_API_CALL
 //clEnqueueMapImage( cl_command_queue command_queue, cl_mem image,
@@ -564,10 +607,53 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clEnqueueUnmapMemObject( cl_command_queue command_queue, cl_mem memobj,
-//                         void* mapped_ptr, cl_uint num_events_in_wait_list,
-//                         const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_0
-//{
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clEnqueueUnmapMemObject( cl_command_queue command_queue, cl_mem memobj,
+                         void* mapped_ptr, cl_uint num_events_in_wait_list,
+                         const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_0
+{
+    if( ((event_wait_list == NULL) && (num_events_in_wait_list != 0)) ||
+        ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
+    {
+        return CL_INVALID_EVENT_WAIT_LIST;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_command_queue* queue_ptr =
+            icd.get_object_ptr< composite_command_queue >( command_queue );
+
+        composite_memory* buffer_ptr =
+            icd.get_object_ptr< composite_memory >( memobj );
+
+        dcl::events_t events;
+        load_events( events, num_events_in_wait_list, event_wait_list );
+
+        composite_event* event_ptr = NULL;
+
+        buffer_ptr->map( queue_ptr, flags, cb, offset, blocking_read, events,
+                         (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                         : NULL );
+
+        if( event != NULL )
+        {
+            *event = icd.get_cl_id< composite_event >( event_ptr );
+        }
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------

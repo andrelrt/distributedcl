@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -105,8 +105,11 @@ public:
     virtual ~generic_memory_object(){}
     inline void load_info(){}
 
+    virtual void unmap( generic_command_queue* queue_ptr, void* data_ptr,
+                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+
 protected:
-    generic_memory_object(){}
+    generic_memory_object() : map_count_( 0 ){}
 
     void set_info( const void* host_ptr, size_t size, cl_mem_flags flags )
     {
@@ -131,6 +134,9 @@ protected:
         local_info_.height_ = height;
         local_info_.row_pitch_ = row_pitch;
     }
+    
+private:
+    uint32_t map_count_;
 };
 //-----------------------------------------------------------------------------
 class generic_memory
@@ -144,6 +150,10 @@ public:
                         events_t& wait_events, generic_event** ret_event_ptr ) = 0;
 
     virtual void read( generic_command_queue* queue_ptr, void* data_ptr,
+                       size_t size, size_t offset, cl_bool blocking,
+                       events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+
+    virtual void* map( generic_command_queue* queue_ptr, cl_map_flags flags,
                        size_t size, size_t offset, cl_bool blocking,
                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
 protected:
