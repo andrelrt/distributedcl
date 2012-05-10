@@ -27,6 +27,7 @@
 #include "distributedcl_internal.h"
 #include "message/packet.h"
 #include "message/message.h"
+#include "message/msg_internal.h"
 #include "network/server_session.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
@@ -42,50 +43,6 @@ class command
 public:
     virtual void execute() = 0;
     virtual void wait(){}
-};
-//-----------------------------------------------------------------------------
-template< dcl::network::message::message_type TYPE >
-class server_command : public command
-{
-protected:
-    typedef typename boost::shared_ptr< dcl::network::message::dcl_message< TYPE > > dcl_message_sp_t;
-
-    server_command( message_sp_t message_sp ) :
-        message_( boost::static_pointer_cast< dcl::network::message::dcl_message< TYPE > >( message_sp ) ){}
-
-    dcl_message_sp_t message_;
-};
-//-----------------------------------------------------------------------------
-template< dcl::network::message::message_type TYPE >
-class async_server_command :
-    public server_command< TYPE >
-{
-public:
-    inline void async_execute( boost::shared_ptr< command > command_sp )
-    {
-        async_server::get_instance().enqueue( command_sp );
-        async_execute_sp_.reset( new boost::thread( &dcl::server::async_server_command<TYPE>::work_thread, this ) );
-    }
-
-    virtual void wait()
-    {
-        async_execute_sp_->join();
-    }
-
-protected:
-    async_server_command( message_sp_t message_sp, dcl::network::server::server_messages* waiting_messages_ptr ) :
-        server_command( message_sp ),
-        waiting_messages_ptr_( waiting_messages_ptr ){}
-
-private:
-    dcl::network::server::server_messages* waiting_messages_ptr_;
-    boost::scoped_ptr< boost::thread > async_execute_sp_;
-
-    void work_thread()
-    {
-        execute();
-        waiting_messages_ptr_->add( message_ );
-    }
 };
 //-----------------------------------------------------------------------------
 class async_server
@@ -124,6 +81,50 @@ private:
     mutex_t mutex_;
 
     async_server(){}
+};
+//-----------------------------------------------------------------------------
+template< dcl::network::message::message_type TYPE >
+class server_command : public command
+{
+protected:
+    typedef typename boost::shared_ptr< dcl::network::message::dcl_message< TYPE > > dcl_message_sp_t;
+
+    server_command( message_sp_t message_sp ) :
+        message_( boost::static_pointer_cast< dcl::network::message::dcl_message< TYPE > >( message_sp ) ){}
+
+    dcl_message_sp_t message_;
+};
+//-----------------------------------------------------------------------------
+template< dcl::network::message::message_type TYPE >
+class async_server_command :
+    public server_command< TYPE >
+{
+public:
+    inline void async_execute( boost::shared_ptr< command > command_sp )
+    {
+        async_server::get_instance().enqueue( command_sp );
+        async_execute_sp_.reset( new boost::thread( &dcl::server::async_server_command<TYPE>::work_thread, this ) );
+    }
+
+    virtual void wait()
+    {
+        async_execute_sp_->join();
+    }
+
+protected:
+    async_server_command( message_sp_t message_sp, dcl::network::server::server_messages* waiting_messages_ptr ) :
+        server_command< TYPE >( message_sp ),
+        waiting_messages_ptr_( waiting_messages_ptr ){}
+
+private:
+    dcl::network::server::server_messages* waiting_messages_ptr_;
+    boost::scoped_ptr< boost::thread > async_execute_sp_;
+
+    void work_thread()
+    {
+        command::execute();
+        waiting_messages_ptr_->add( server_command< TYPE >::message_ );
+    }
 };
 //-----------------------------------------------------------------------------
 class msg_flush_server_command :

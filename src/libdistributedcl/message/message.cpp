@@ -161,8 +161,8 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msgEnqueueBarrier );
 
         // OpenCL Extension base_messages [128-255]
-        MSG_NOT_IMPLEMENTED( msgExtension0 );
-        MSG_NOT_IMPLEMENTED( msgExtension1 );
+        //MSG_NOT_IMPLEMENTED( msgExtension0 );
+        //MSG_NOT_IMPLEMENTED( msgExtension1 );
 
         default: 
             throw dcl::library_exception( "Unkown message" );

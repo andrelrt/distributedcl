@@ -24,10 +24,11 @@
 #define _DCL_INFO_OBJECT_MANAGER_H_
 
 #include <map>
+#include "distributedcl_internal.h"
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
-#include "distributedcl_internal.h"
+#include <boost/thread.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
