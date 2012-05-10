@@ -52,6 +52,12 @@ static composite_platform* find_platform_in_properties( const cl_context_propert
             index += 2;
         }
     }
+    else
+    {
+		cl_platform_id platform_id = opencl_composite::get_instance().get_platform().get_icd_obj();
+
+		return icd_object_manager::get_instance().get_object_ptr< composite_platform >( platform_id );
+	}
 
     throw dcl::library_exception( CL_INVALID_PROPERTY );
 }

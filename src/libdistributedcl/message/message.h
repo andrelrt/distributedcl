@@ -339,7 +339,7 @@ protected:
 ////        return( sizeof(enqueue_message_response) );
 //    }
 
-    inline virtual void update_request_size() = 0;
+    virtual void update_request_size() = 0;
 
     virtual void* create_enqueue_request( void* payload_ptr );
     //virtual void* create_enqueue_response( void* payload_ptr );

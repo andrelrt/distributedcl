@@ -85,6 +85,7 @@ remote/remote_platform.cpp \
 remote/remote_platform.h \
 remote/remote_program.cpp \
 remote/remote_program.h \
+server/server_command.cpp \
 server/server_command.h \
 server/server_command_queue.cpp \
 server/server_command_queue.h \

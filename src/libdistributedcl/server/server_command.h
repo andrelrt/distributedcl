@@ -122,7 +122,7 @@ private:
 
     void work_thread()
     {
-        command::execute();
+        this->execute();
         waiting_messages_ptr_->add( server_command< TYPE >::message_ );
     }
 };

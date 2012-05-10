@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
+#include <fstream>
 #if defined( WIN32 )
 #include <Shlobj.h>
 #endif
@@ -64,7 +65,9 @@ void common_config::parse( const std::string& filename )
 {
     if( boost::filesystem::exists( filename ) )
     {
-        store( parse_config_file<char>( filename.c_str(), parameters_ ), config_ );
+		std::ifstream file( filename.c_str() );
+		
+        store( parse_config_file<char>( file, parameters_ ), config_ );
         notify( config_ );
 
         if( cpu_only_ && gpu_only_ )

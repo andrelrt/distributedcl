@@ -23,6 +23,7 @@
 #ifndef _DCL_INFO_OBJECT_MANAGER_H_
 #define _DCL_INFO_OBJECT_MANAGER_H_
 
+#include <time.h>
 #include <map>
 #include "distributedcl_internal.h"
 #include <boost/random/mersenne_twister.hpp>
