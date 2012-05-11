@@ -88,7 +88,7 @@ void msgEnqueueWriteBuffer_command::execute()
 
         // Always no blocking
         buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
-                           message_->get_buffer_size(), 0,
+                           message_->get_buffer_size(), message_->get_offset(),
                            false, events,
                            reinterpret_cast<generic_event**>( &ret_event ) );
 
@@ -98,7 +98,7 @@ void msgEnqueueWriteBuffer_command::execute()
     {
         // Always no blocking
         buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
-                           message_->get_buffer_size(), 0, 
+                           message_->get_buffer_size(), message_->get_offset(),
                            false, events, NULL );
     }
 

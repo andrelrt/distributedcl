@@ -196,7 +196,7 @@ void* enqueue_message::create_enqueue_request( void* payload_ptr )
 
     for( uint32_t i = 1; i <= events_.size(); i++ )
     {
-        request_ptr->events_[ i ] = host_to_network( events_[ i ] );
+        request_ptr->events_[ i ] = host_to_network( events_[ i - 1 ] );
     }
 
     return( reinterpret_cast<uint8_t*>( payload_ptr ) + get_enqueue_request_size() );
@@ -221,7 +221,7 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
     {
         events_.reserve( event_count );
 
-        for( uint32_t i = 1; i <= events_.size(); i++ )
+        for( uint32_t i = 1; i <= event_count; i++ )
         {
             events_.push_back( network_to_host( request_ptr->events_[ i ] ) );
         }

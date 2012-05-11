@@ -150,12 +150,97 @@ void* memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
                    size_t size, size_t offset, cl_bool blocking,
                    events_t& wait_events, generic_event** ret_event_ptr )
 {
+    if( opencl_.loaded() )
+    {
+        void* ret_ptr;
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        cl_event evnt;
+
+        if( wait_events.empty() )
+        {
+            ret_ptr =
+                opencl_.clEnqueueMapBuffer( queue->get_id(), get_id(), blocking,
+                                            flags, offset, size, 0, NULL,
+                                            (ret_event_ptr == NULL) ? NULL : &evnt,
+                                            &error_code );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            ret_ptr =
+                opencl_.clEnqueueMapBuffer( queue->get_id(), get_id(),
+                                            blocking, flags, offset, size,
+                                            static_cast<cl_uint>( wait_events.size() ),
+                                            events.get(),
+                                            (ret_event_ptr == NULL) ? NULL : &evnt,
+                                            &error_code );
+        }
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, evnt );
+        }
+
+        return ret_ptr;
+    }
+
     return NULL;
 }
 //-----------------------------------------------------------------------------
 void memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                     events_t& wait_events, generic_event** ret_event_ptr )
 {
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        cl_event evnt;
+
+        if( wait_events.empty() )
+        {
+            error_code =
+                opencl_.clEnqueueUnmapMemObject( queue->get_id(), get_id(), data_ptr, 0, NULL,
+                                                 (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            error_code =
+                opencl_.clEnqueueUnmapMemObject( queue->get_id(), get_id(), data_ptr,
+                                                 static_cast<cl_uint>( wait_events.size() ),
+                                                 events.get(), (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, evnt );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 image::image( const context& context_ref, const void* host_ptr, cl_mem_flags flags,
@@ -184,6 +269,44 @@ image::image( const context& context_ref, const void* host_ptr, cl_mem_flags fla
 void image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                    events_t& wait_events, generic_event** ret_event_ptr )
 {
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        cl_event evnt;
+
+        if( wait_events.empty() )
+        {
+            error_code =
+                opencl_.clEnqueueUnmapMemObject( queue->get_id(), get_id(), data_ptr, 0, NULL,
+                                                 (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            error_code =
+                opencl_.clEnqueueUnmapMemObject( queue->get_id(), get_id(), data_ptr,
+                                                 static_cast<cl_uint>( wait_events.size() ),
+                                                 events.get(), (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, evnt );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

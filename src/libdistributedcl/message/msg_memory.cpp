@@ -90,6 +90,7 @@ void dcl_message< msgEnqueueWriteBuffer >::create_request( void* payload_ptr )
     request_ptr->id_ = host_to_network( remote_id_ );
     request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
+    request_ptr->offset_ = host_to_network( static_cast<uint32_t>( offset_ ) );
 
     memcpy( request_ptr->buffer_, buffer_ptr_, buffer_len_ );
 }
@@ -104,6 +105,7 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_pt
     remote_id_ = network_to_host( request_ptr->id_ );
     command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     buffer_len_ = network_to_host( request_ptr->buffer_len_ );
+    offset_ = network_to_host( request_ptr->offset_ );
 
     buffer_ptr_ = request_ptr->buffer_;
 }

@@ -120,8 +120,9 @@ class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
-        enqueue_message( msgEnqueueWriteBuffer, false ), remote_id_( 0xffff ),
-        command_queue_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ){}
+        enqueue_message( msgEnqueueWriteBuffer, false ), offset_( 0 ),
+        remote_id_( 0xffff ), command_queue_id_( 0xffff ),
+        buffer_ptr_( NULL ), buffer_len_( 0 ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -132,10 +133,12 @@ public:
 
     MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer_pointer )
     MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
+    MSG_PARAMETER_GET( size_t, offset_, offset )
 
     inline void set_buffer( const uint8_t* ptr, size_t size, size_t offset )
     {
-        buffer_ptr_ = ptr + offset;
+        offset_ = offset;
+        buffer_ptr_ = ptr;
         buffer_len_ = size;
 
         update_request_size();
@@ -143,6 +146,7 @@ public:
 
 
 private:
+    size_t offset_;
     dcl::remote_id_t remote_id_;
     dcl::remote_id_t command_queue_id_;
     const uint8_t* buffer_ptr_;
@@ -165,6 +169,7 @@ private:
     {
         dcl::remote_id_t id_;
         dcl::remote_id_t command_queue_id_;
+        uint32_t offset_;
         uint32_t buffer_len_;
 
         uint8_t buffer_[1];

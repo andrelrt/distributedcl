@@ -56,7 +56,7 @@ icd_object_manager::icd_object_manager()
     //FILL_DISPATCH_ITEM( clEnqueueCopyBufferToImage );
     //FILL_DISPATCH_ITEM( clEnqueueCopyImage );
     //FILL_DISPATCH_ITEM( clEnqueueCopyImageToBuffer );
-    //FILL_DISPATCH_ITEM( clEnqueueMapBuffer );
+    FILL_DISPATCH_ITEM( clEnqueueMapBuffer );
     //FILL_DISPATCH_ITEM( clEnqueueMapImage );
     //FILL_DISPATCH_ITEM( clEnqueueMarker );
     FILL_DISPATCH_ITEM( clEnqueueNDRangeKernel );
@@ -66,7 +66,7 @@ icd_object_manager::icd_object_manager()
     //FILL_DISPATCH_ITEM( clEnqueueReadImage );
     //FILL_DISPATCH_ITEM( clEnqueueReleaseGLObjects );
     //FILL_DISPATCH_ITEM( clEnqueueTask );
-    //FILL_DISPATCH_ITEM( clEnqueueUnmapMemObject );
+    FILL_DISPATCH_ITEM( clEnqueueUnmapMemObject );
     //FILL_DISPATCH_ITEM( clEnqueueWaitForEvents );
     FILL_DISPATCH_ITEM( clEnqueueWriteBuffer );
     //FILL_DISPATCH_ITEM( clEnqueueWriteBufferRect );

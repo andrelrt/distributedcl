@@ -23,6 +23,7 @@
 #ifndef _DCL_REMOTE_MEMORY_H_
 #define _DCL_REMOTE_MEMORY_H_
 
+#include <map>
 #include "distributedcl_internal.h"
 #include "remote_object.h"
 #include "remote_context.h"
@@ -57,6 +58,19 @@ public:
                         events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
 
 private:
+    struct map_data
+    {
+        cl_map_flags flags_;
+        size_t size_;
+        size_t offset_;
+
+        map_data( cl_map_flags flags, size_t size, size_t offset ) :
+            flags_( flags ), size_( size ), offset_( offset ){}
+    };
+
+    typedef std::map< void*, map_data > map_pointer_flags_t;
+
+    map_pointer_flags_t map_pointers_;
     const remote_context& context_;
 };
 //-----------------------------------------------------------------------------

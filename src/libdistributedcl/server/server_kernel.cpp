@@ -77,7 +77,9 @@ void msgEnqueueNDRangeKernel_command::execute()
 
         events.reserve( message_->get_events().size() );
 
-        for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
+        dcl::remote_ids_t::const_iterator it;
+
+        for( it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
         {
             events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
         }

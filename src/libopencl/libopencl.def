@@ -22,7 +22,7 @@ EXPORTS
 ;    clEnqueueCopyBufferToImage      @20
 ;    clEnqueueCopyImage              @21
 ;    clEnqueueCopyImageToBuffer      @22
-;    clEnqueueMapBuffer              @23
+    clEnqueueMapBuffer              @23
 ;    clEnqueueMapImage               @24
 ;    clEnqueueMarker                 @25
     clEnqueueNDRangeKernel          @26
@@ -31,7 +31,7 @@ EXPORTS
 ;    clEnqueueReadImage              @29
 ;    clEnqueueReleaseGLObjects       @30
 ;    clEnqueueTask                   @31
-;    clEnqueueUnmapMemObject         @32
+    clEnqueueUnmapMemObject         @32
 ;    clEnqueueWaitForEvents          @33
     clEnqueueWriteBuffer            @34
 ;    clEnqueueWriteImage             @35

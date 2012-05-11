@@ -128,12 +128,35 @@ void* remote_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
                           size_t size, size_t offset, cl_bool blocking,
                           events_t& wait_events, generic_event** ret_event_ptr )
 {
-    return NULL;
+    void* ret_ptr = new uint8_t[ size ];
+
+    if( flags & CL_MAP_READ )
+    {
+        read( queue_ptr, ret_ptr, size, offset, blocking, wait_events, ret_event_ptr );
+    }
+
+    map_data data( flags, size, offset );
+    map_pointers_.insert( map_pointer_flags_t::value_type( ret_ptr, data ) );
+
+    return ret_ptr;
 }
 //-----------------------------------------------------------------------------
 void remote_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                            events_t& wait_events, generic_event** ret_event_ptr )
 {
+    map_pointer_flags_t::iterator it = map_pointers_.find( data_ptr );
+
+    if( it == map_pointers_.end() )
+        throw dcl::library_exception( CL_INVALID_VALUE );
+
+    if( it->second.flags_ & CL_MAP_WRITE )
+    {
+        write( queue_ptr, data_ptr, it->second.size_, it->second.offset_, false, wait_events, ret_event_ptr );
+    }
+
+    delete[] it->first;
+
+    map_pointers_.erase( it );
 }
 //-----------------------------------------------------------------------------
 remote_image::remote_image( const remote_context& context_ref, const void* host_ptr,
