@@ -146,6 +146,18 @@ void memory::read( generic_command_queue* queue_ptr, void* data_ptr,
     }
 }
 //-----------------------------------------------------------------------------
+void* memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
+                   size_t size, size_t offset, cl_bool blocking,
+                   events_t& wait_events, generic_event** ret_event_ptr )
+{
+    return NULL;
+}
+//-----------------------------------------------------------------------------
+void memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
+                    events_t& wait_events, generic_event** ret_event_ptr )
+{
+}
+//-----------------------------------------------------------------------------
 image::image( const context& context_ref, const void* host_ptr, cl_mem_flags flags,
               const cl_image_format* format, size_t width, size_t height, size_t row_pitch ) :
     opencl_object< cl_mem >( context_ref.get_opencl() )
@@ -167,6 +179,11 @@ image::image( const context& context_ref, const void* host_ptr, cl_mem_flags fla
 
         set_id( mem );
     }
+}
+//-----------------------------------------------------------------------------
+void image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
+                   events_t& wait_events, generic_event** ret_event_ptr )
+{
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

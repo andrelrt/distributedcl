@@ -54,7 +54,7 @@ public:
                        size_t size, size_t offset, cl_bool blocking,
                        events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
 
-    virtual void unmap( generic_command_queue* queue_ptr, void* data_ptr,
+    virtual void unmap( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
                         events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
 };
 //-----------------------------------------------------------------------------
@@ -69,6 +69,9 @@ public:
                      size_t height, size_t row_pitch );
 
     virtual ~composite_image(){}
+
+    virtual void unmap( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
+                        events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

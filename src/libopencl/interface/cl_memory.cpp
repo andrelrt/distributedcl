@@ -284,7 +284,7 @@ clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
                         return CL_INVALID_VALUE;
                     }
 
-                    *(reinterpret_cast<size_t*>( param_value )) = NULL;
+                    *(reinterpret_cast<size_t*>( param_value )) = 0;
                     break;
 
                 case CL_MEM_ASSOCIATED_MEMOBJECT:
@@ -546,7 +546,7 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY void * CL_API_CALL
+extern "C" CL_API_ENTRY void * CL_API_CALL
 clEnqueueMapBuffer( cl_command_queue command_queue, cl_mem buffer,
                     cl_bool blocking_map, cl_map_flags map_flags, size_t offset,
                     size_t cb, cl_uint num_events_in_wait_list,
@@ -556,7 +556,11 @@ clEnqueueMapBuffer( cl_command_queue command_queue, cl_mem buffer,
     if( ((event_wait_list == NULL) && (num_events_in_wait_list != 0)) ||
         ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
     {
-        return CL_INVALID_EVENT_WAIT_LIST;
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_EVENT_WAIT_LIST;
+        }
+        return NULL;
     }
 
     try
@@ -574,28 +578,46 @@ clEnqueueMapBuffer( cl_command_queue command_queue, cl_mem buffer,
 
         composite_event* event_ptr = NULL;
 
-        buffer_ptr->map( queue_ptr, flags, cb, offset, blocking_read, events,
-                         (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
-                                         : NULL );
+        void* ret_ptr = buffer_ptr->map( queue_ptr, map_flags, cb, offset, blocking_map, events,
+                                         (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                                         : NULL );
 
         if( event != NULL )
         {
             *event = icd.get_cl_id< composite_event >( event_ptr );
         }
 
-        return CL_SUCCESS;
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_SUCCESS;
+        }
+
+        return ret_ptr;
     }
     catch( dcl::library_exception& ex )
     {
-        return ex.get_error();
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = ex.get_error();
+            std::cerr << "Exception!!: " << ex.get_error() << std::endl;
+        }
+        return NULL;
     }
     catch( ... )
     {
-        return CL_INVALID_VALUE;
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
     }
 
     // Dummy
-    return CL_INVALID_VALUE;
+    if( errcode_ret != NULL )
+    {
+        *errcode_ret = CL_INVALID_VALUE;
+    }
+    return NULL;
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY void * CL_API_CALL
@@ -633,9 +655,9 @@ clEnqueueUnmapMemObject( cl_command_queue command_queue, cl_mem memobj,
 
         composite_event* event_ptr = NULL;
 
-        buffer_ptr->map( queue_ptr, flags, cb, offset, blocking_read, events,
-                         (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
-                                         : NULL );
+        buffer_ptr->unmap( queue_ptr, mapped_ptr, events,
+                           (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                           : NULL );
 
         if( event != NULL )
         {
