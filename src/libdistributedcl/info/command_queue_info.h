@@ -66,22 +66,9 @@ public:
         local_info_.device_ptr_ = device_ptr;
         local_info_.context_ptr_ = context_ptr;
         local_info_.properties_ = properties;
-
-        async_worker_thread_ptr_ = new boost::thread( &dcl::info::generic_command_queue::worker_thread, this );
     }
 
-    virtual ~generic_command_queue()
-    {
-        {
-            scoped_lock_t lock( queue_mutex_ );
-
-            async_command_.push( cmd_terminate );
-            async_semaphore_.post();
-        }
-
-        async_worker_thread_ptr_->join();
-        delete async_worker_thread_ptr_;
-    }
+    virtual ~generic_command_queue(){}
 
     inline const generic_device* get_device() const
     {
@@ -101,55 +88,10 @@ public:
     virtual void flush() const = 0;
     virtual void finish() const = 0;
 
-    inline void async_flush()
-    {
-        scoped_lock_t lock( queue_mutex_ );
-
-        async_command_.push( cmd_flush );
-        async_semaphore_.post();
-    }
-
 protected:
     std::queue<uint8_t> async_command_;
-    boost::thread* async_worker_thread_ptr_;
     boost::interprocess::interprocess_mutex queue_mutex_;
     boost::interprocess::interprocess_semaphore async_semaphore_;
-
-    enum queue_commands
-    {
-        cmd_invalid = 0,
-        cmd_terminate = 1,
-        cmd_flush = 2,
-    };
-
-    void worker_thread()
-    {
-        while( 1 )
-        {
-            async_semaphore_.wait();
-            queue_commands command = cmd_invalid;
-
-            {
-                scoped_lock_t lock( queue_mutex_ );
-
-                command = static_cast<queue_commands>( async_command_.front() );
-                async_command_.pop();
-            }
-
-            if( command == cmd_terminate )
-                break;
-
-            switch( command )
-            {
-                case cmd_flush:
-                    flush();
-                    break;
-
-                default:
-                    dcl::library_exception( "Invalid queue_command" );
-            }
-        }
-    }
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info
