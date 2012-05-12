@@ -92,7 +92,7 @@ generic_command_queue*
     message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
-    remote_command_queue* command_queue_ptr = new remote_command_queue( *this, *device, properties );
+    remote_command_queue* command_queue_ptr = new remote_command_queue( this, device, properties );
     command_queue_ptr->set_remote_id( msg_ptr->get_remote_id() );
 
     return reinterpret_cast< generic_command_queue* >( command_queue_ptr );

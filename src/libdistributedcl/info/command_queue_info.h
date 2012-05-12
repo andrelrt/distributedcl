@@ -67,7 +67,7 @@ public:
         local_info_.context_ptr_ = context_ptr;
         local_info_.properties_ = properties;
 
-        async_worker_thread_sp_.reset( new boost::thread( &dcl::info::generic_command_queue::worker_thread, this ) );
+        async_worker_thread_ptr_ = new boost::thread( &dcl::info::generic_command_queue::worker_thread, this );
     }
 
     virtual ~generic_command_queue()
@@ -79,7 +79,8 @@ public:
             async_semaphore_.post();
         }
 
-        async_worker_thread_sp_->join();
+        async_worker_thread_ptr_->join();
+        delete async_worker_thread_ptr_;
     }
 
     inline const generic_device* get_device() const
@@ -110,7 +111,7 @@ public:
 
 protected:
     std::queue<uint8_t> async_command_;
-    boost::scoped_ptr< boost::thread > async_worker_thread_sp_;
+    boost::thread* async_worker_thread_ptr_;
     boost::interprocess::interprocess_mutex queue_mutex_;
     boost::interprocess::interprocess_semaphore async_semaphore_;
 

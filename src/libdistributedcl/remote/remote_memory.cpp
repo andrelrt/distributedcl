@@ -128,7 +128,7 @@ void* remote_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
                           size_t size, size_t offset, cl_bool blocking,
                           events_t& wait_events, generic_event** ret_event_ptr )
 {
-    void* ret_ptr = new uint8_t[ size ];
+    uint8_t* ret_ptr = new uint8_t[ size ];
 
     if( flags & CL_MAP_READ )
     {
@@ -144,7 +144,8 @@ void* remote_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
 void remote_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                            events_t& wait_events, generic_event** ret_event_ptr )
 {
-    map_pointer_flags_t::iterator it = map_pointers_.find( data_ptr );
+    map_pointer_flags_t::iterator it =
+        map_pointers_.find( reinterpret_cast<uint8_t*>( data_ptr ) );
 
     if( it == map_pointers_.end() )
         throw dcl::library_exception( CL_INVALID_VALUE );

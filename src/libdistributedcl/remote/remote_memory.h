@@ -68,7 +68,7 @@ private:
             flags_( flags ), size_( size ), offset_( offset ){}
     };
 
-    typedef std::map< void*, map_data > map_pointer_flags_t;
+    typedef std::map< uint8_t*, map_data > map_pointer_flags_t;
 
     map_pointer_flags_t map_pointers_;
     const remote_context& context_;

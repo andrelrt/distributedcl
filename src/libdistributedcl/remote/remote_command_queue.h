@@ -36,12 +36,12 @@ class remote_command_queue :
     public remote_object< remote_command_queue >
 {
 public:
-    remote_command_queue( const remote_context& context_ref, const remote_device& device_ref, 
+    remote_command_queue( const remote_context* context_ptr, const remote_device* device_ptr, 
                           cl_command_queue_properties properties ) :
-        dcl::info::generic_command_queue( reinterpret_cast<const dcl::info::generic_context*>( &context_ref ), 
-                                          reinterpret_cast<const dcl::info::generic_device*>( &device_ref ), 
+        dcl::info::generic_command_queue( reinterpret_cast<const dcl::info::generic_context*>( context_ptr ), 
+                                          reinterpret_cast<const dcl::info::generic_device*>( device_ptr ), 
                                           properties ),
-        remote_object< remote_command_queue >( context_ref.get_session() ) {}
+        remote_object< remote_command_queue >( context_ptr->get_session() ) {}
 
     ~remote_command_queue(){}
 
