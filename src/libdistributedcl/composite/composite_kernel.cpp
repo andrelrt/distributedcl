@@ -49,12 +49,25 @@ void composite_kernel::execute( const generic_command_queue* queue_ptr,
 //-----------------------------------------------------------------------------
 void composite_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
 {
-    const composite_memory* mem_ptr =
-        reinterpret_cast<const composite_memory*>( memory_ptr );
-
-    for( iterator it = begin(); it != end(); it++ )
+    if( memory_ptr->get_type() == CL_MEM_OBJECT_BUFFER )
     {
-        it->second->set_argument( arg_index, mem_ptr->find( it->first ) );
+        const composite_memory* mem_ptr =
+            reinterpret_cast<const composite_memory*>( memory_ptr );
+
+        for( iterator it = begin(); it != end(); it++ )
+        {
+            it->second->set_argument( arg_index, mem_ptr->find( it->first ) );
+        }
+    }
+    else if( memory_ptr->get_type() == CL_MEM_OBJECT_IMAGE2D )
+    {
+        const composite_image* image_ptr =
+            reinterpret_cast<const composite_image*>( memory_ptr );
+
+        for( iterator it = begin(); it != end(); it++ )
+        {
+            it->second->set_argument( arg_index, image_ptr->find( it->first ) );
+        }
     }
 }
 //-----------------------------------------------------------------------------

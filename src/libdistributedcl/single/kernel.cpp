@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -73,7 +73,7 @@ void kernel::execute( const generic_command_queue* queue_ptr,
 
     if( wait_events.empty() )
     {
-        error_code = 
+        error_code =
             opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
                                             static_cast<cl_uint>( global.get_dimensions() ),
                                             offset.get_pointer(), global.get_pointer(),
@@ -88,7 +88,7 @@ void kernel::execute( const generic_command_queue* queue_ptr,
             events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
         }
 
-        error_code = 
+        error_code =
             opencl_.clEnqueueNDRangeKernel( queue->get_id(), get_id(),
                                             static_cast<cl_uint>( global.get_dimensions() ),
                                             offset.get_pointer(), global.get_pointer(), local.get_pointer(),
@@ -112,7 +112,16 @@ void kernel::execute( const generic_command_queue* queue_ptr,
 //-----------------------------------------------------------------------------
 void kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
 {
-    cl_mem mem = (reinterpret_cast<const memory*>( memory_ptr ))->get_id();
+    cl_mem mem;
+
+    if( memory_ptr->get_type() == CL_MEM_OBJECT_BUFFER )
+    {
+        mem = (reinterpret_cast<const memory*>( memory_ptr ))->get_id();
+    }
+    else if( memory_ptr->get_type() == CL_MEM_OBJECT_IMAGE2D )
+    {
+        mem = (reinterpret_cast<const image*>( memory_ptr ))->get_id();
+    }
 
     set_argument( arg_index, sizeof(cl_mem), &mem );
 }

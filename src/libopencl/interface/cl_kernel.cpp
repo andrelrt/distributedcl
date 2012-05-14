@@ -118,6 +118,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
 {
     try
     {
+        std::cout<< "clSetKernelArg: ";
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_kernel* kernel_ptr = icd.get_object_ptr< composite_kernel >( kernel );
@@ -129,6 +130,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
 
             if( icd.has_object< composite_memory >( memory ) )
             {
+                std::cout<< "icd.has_object< composite_memory >( memory )" << std::endl;
                 composite_memory* memory_ptr = icd.get_object_ptr< composite_memory >( memory );
 
                 kernel_ptr->set_argument( arg_index, memory_ptr );
@@ -136,6 +138,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
             }
             else if( icd.has_object< composite_image >( memory ) )
             {
+                std::cout<< "icd.has_object< composite_image >( memory )" << std::endl;
                 composite_image* image_ptr = icd.get_object_ptr< composite_image >( memory );
 
                 kernel_ptr->set_argument( arg_index, image_ptr );
@@ -143,6 +146,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
             }
         }
 
+        std::cout<< "kernel_ptr->set_argument( arg_index, arg_size, arg_value )" << std::endl;
         kernel_ptr->set_argument( arg_index, arg_size, arg_value );
 
         return CL_SUCCESS;

@@ -108,6 +108,11 @@ public:
     virtual void unmap( generic_command_queue* queue_ptr, void* data_ptr,
                         events_t& wait_events, generic_event** ret_event_ptr ) = 0;
 
+    inline cl_mem_object_type get_type() const
+    {
+        return local_info_.type_;
+    }
+
 protected:
     generic_memory_object() : map_count_( 0 ){}
 

@@ -89,7 +89,15 @@ void remote_kernel::set_argument( uint32_t arg_index, const generic_memory_objec
 
     msg_ptr->set_index( arg_index );
     msg_ptr->set_kernel_id( get_remote_id() );
-    msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
+    
+    if( memory_ptr->get_type() == CL_MEM_OBJECT_BUFFER )
+    {
+        msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
+    }
+    else if( memory_ptr->get_type() == CL_MEM_OBJECT_IMAGE2D )
+    {
+        msg_ptr->set_memory_id( reinterpret_cast<const remote_image*>( memory_ptr )->get_remote_id() );
+    }
 
     message_sp_t message_sp( msg_ptr );
     session_ref_.enqueue_message( message_sp );
