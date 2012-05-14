@@ -39,7 +39,7 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-#define MSG_DEBUG
+//#define MSG_DEBUG
 #if defined MSG_DEBUG
 #define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
 #define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));std::cout<<"async dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
@@ -133,7 +133,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
 
             MSG( msgFlush );
             MSG( msgFinish );
-            MSG_ASYNC( msgEnqueueReadBuffer );
+            MSG( msgEnqueueReadBuffer );
             MSG_ASYNC( msgEnqueueWriteBuffer );
 
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );

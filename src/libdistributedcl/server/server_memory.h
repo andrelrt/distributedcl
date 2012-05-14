@@ -52,12 +52,11 @@ public:
 };
 //-----------------------------------------------------------------------------
 class msgEnqueueReadBuffer_command : 
-    public async_server_command< dcl::network::message::msgEnqueueReadBuffer >
+    public server_command< dcl::network::message::msgEnqueueReadBuffer >
 {
 public:
-    msgEnqueueReadBuffer_command( message_sp_t message_ptr,
-                                  dcl::network::server::server_messages* waiting_messages_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, waiting_messages_ptr ) {}
+    msgEnqueueReadBuffer_command( message_sp_t message_ptr ) :
+        server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr ) {}
 
     void execute();
 };

@@ -127,7 +127,6 @@ public:
     typedef std::vector<uint8_t> buffer_t;
 
     // Request
-    MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
@@ -191,7 +190,6 @@ public:
     typedef std::vector<uint8_t> buffer_t;
 
     // Request
-    MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
     MSG_PARAMETER_GET_SET( size_t, offset_, offset )

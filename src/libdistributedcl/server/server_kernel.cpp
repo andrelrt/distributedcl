@@ -108,7 +108,7 @@ void msgEnqueueNDRangeKernel_command::execute()
 //-----------------------------------------------------------------------------
 void msgSetKernelArg_command::execute()
 {
-    std::cout<< "msgSetKernelArg_command::execute(): ";
+//    std::cout<< "msgSetKernelArg_command::execute(): ";
     server_platform& server = server_platform::get_instance();
 
     composite_kernel* kernel_ptr = 
@@ -120,7 +120,7 @@ void msgSetKernelArg_command::execute()
 
         if( server.get_memory_manager().has( memory_id ) )
         {
-            std::cout<< "server.get_memory_manager().has( memory_id )" << std::endl;
+//            std::cout<< "server.get_memory_manager().has( memory_id = " << memory_id << " )";
             composite_memory* memory_ptr =
                 server.get_memory_manager().get( memory_id );
 
@@ -128,7 +128,7 @@ void msgSetKernelArg_command::execute()
         }
         else if( server.get_image_manager().has( memory_id ) )
         {
-            std::cout<< "server.get_image_manager().has( memory_id )" << std::endl;
+//            std::cout<< "server.get_image_manager().has( memory_id = " << memory_id << " )";
             composite_image* image_ptr =
                 server.get_image_manager().get( memory_id );
 
@@ -139,7 +139,7 @@ void msgSetKernelArg_command::execute()
     }
     else
     {
-        std::cout<< "kernel_ptr->set_argument(...)" << std::endl;
+//        std::cout<< "kernel_ptr->set_argument(...)";
         kernel_ptr->set_argument( message_->get_index(),
                                   message_->get_buffer_size(),
                                   message_->get_buffer_pointer() );
