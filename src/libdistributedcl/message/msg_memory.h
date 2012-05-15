@@ -245,8 +245,7 @@ private:
         dcl::remote_id_t id_;
         dcl::remote_id_t command_queue_id_;
         uint32_t size_;
-        uint32_t offset_:31;
-        uint32_t blocking_:1;
+        uint32_t offset_;
     };
 
     struct msgEnqueueReadBuffer_response

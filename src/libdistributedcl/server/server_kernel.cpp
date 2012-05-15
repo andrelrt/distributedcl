@@ -103,12 +103,16 @@ void msgEnqueueNDRangeKernel_command::execute()
     }
 
     queue_ptr->flush();
-    //queue_ptr->async_flush();
+}
+//-----------------------------------------------------------------------------
+bool msgEnqueueNDRangeKernel_command::async_run() const
+{
+    return false;
+    //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
 void msgSetKernelArg_command::execute()
 {
-//    std::cout<< "msgSetKernelArg_command::execute(): ";
     server_platform& server = server_platform::get_instance();
 
     composite_kernel* kernel_ptr = 

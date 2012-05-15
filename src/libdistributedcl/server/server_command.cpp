@@ -25,7 +25,71 @@
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
+// async_server
+//-----------------------------------------------------------------------------
 async_server async_server::instance_;
+//-----------------------------------------------------------------------------
+async_server::~async_server()
+{
+    stop_ = true;
+    wait();
+}
+//-----------------------------------------------------------------------------
+void async_server::enqueue( boost::shared_ptr< command > command_sp )
+{
+    scoped_lock_t lock( mutex_ );
+
+    server_command_queue_.push( command_sp );
+
+    //semaphore_.post();
+}
+//-----------------------------------------------------------------------------
+void async_server::wait()
+{
+    semaphore_.post();
+    while( 1 )
+    {
+        {
+            scoped_lock_t lock( mutex_ );
+
+            if( server_command_queue_.empty() )
+                return;
+        }
+
+        boost::this_thread::sleep( boost::posix_time::milliseconds( 10 ) );
+    }
+}
+//-----------------------------------------------------------------------------
+void async_server::work_thread()
+{
+    while( 1 )
+    {
+        semaphore_.wait();
+
+        if( stop_ )
+            return;
+
+        while( 1 )
+        {
+            boost::shared_ptr< command > running_cmd;
+            {
+                scoped_lock_t lock( mutex_ );
+
+                if( server_command_queue_.empty() )
+                    break;
+
+                running_cmd.swap( server_command_queue_.front() );
+
+                server_command_queue_.pop();
+            }
+
+            running_cmd->execute();
+            running_cmd->enqueue_response();
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+// msg_flush_server_command
 //-----------------------------------------------------------------------------
 void msg_flush_server_command::execute()
 {

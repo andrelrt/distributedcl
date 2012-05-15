@@ -49,6 +49,7 @@ public:
         async_server_command< dcl::network::message::msgEnqueueNDRangeKernel >( message_ptr, waiting_messages_ptr ) {}
 
     void execute();
+    virtual bool async_run() const;
 };
 //-----------------------------------------------------------------------------
 class msgSetKernelArg_command : 

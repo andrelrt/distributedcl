@@ -97,3 +97,40 @@ clReleaseEvent( cl_event event ) CL_API_SUFFIX__VERSION_1_0
 //{
 //}
 //-----------------------------------------------------------------------------
+//extern "C" CL_API_ENTRY cl_int CL_API_CALL
+//clGetEventProfilingInfo( cl_event event, cl_profiling_info param_name,
+//                         size_t param_value_size, void* param_value,
+//                         size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+//{
+//    try
+//    {
+//        icd_object_manager& icd = icd_object_manager::get_instance();
+//
+//        composite_event* event_ptr = 
+//            get_info_check_parameters< composite_event >( event, param_value_size,
+//                                                          param_value, param_value_size_ret ) );
+//
+//        if( param_value_size_ret != NULL )
+//        {
+//            *param_value_size_ret = sizeof(cl_ulong);
+//        }
+//
+//        if( param_value != NULL )
+//        {
+//            uint64_t profiling_info = event_ptr->get_profiling_info( param_name );
+//
+//            *(reinterpret_cast<cl_ulong*>( param_value )) = profiling_info;
+//        }
+//    }
+//    catch( dcl::library_exception& ex )
+//    {
+//        return ex.get_error();
+//    }
+//    catch( ... )
+//    {
+//        return CL_INVALID_VALUE;
+//    }
+//
+//    return CL_SUCCESS;
+//}
+//-----------------------------------------------------------------------------

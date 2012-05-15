@@ -103,7 +103,11 @@ void msgEnqueueWriteBuffer_command::execute()
     }
 
     queue_ptr->flush();
-    //queue_ptr->async_flush();
+}
+//-----------------------------------------------------------------------------
+bool msgEnqueueWriteBuffer_command::async_run() const
+{
+    return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
@@ -152,7 +156,11 @@ void msgEnqueueReadBuffer_command::execute()
     }
 
     queue_ptr->flush();
-    //queue_ptr->async_flush();
+}
+//-----------------------------------------------------------------------------
+bool msgEnqueueReadBuffer_command::async_run() const
+{
+    return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()

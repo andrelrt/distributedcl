@@ -42,45 +42,42 @@ class command
 {
 public:
     virtual void execute() = 0;
-    virtual void wait(){}
+    virtual void enqueue_response(){}
 };
 //-----------------------------------------------------------------------------
 class async_server
 {
 public:
-    ~async_server(){}
+    ~async_server();
 
     static async_server& get_instance()
     {
         return instance_;
     }
 
-    void enqueue( boost::shared_ptr< command > command_sp )
+    inline void flush_queue()
     {
-        scoped_lock_t lock( mutex_ );
-
-        server_command_queue_.push( command_sp );
+        semaphore_.post();
     }
 
-    void wait()
-    {
-        scoped_lock_t lock( mutex_ );
-
-        while( !server_command_queue_.empty() )
-        {
-            server_command_queue_.front()->wait();
-            server_command_queue_.pop();
-        }
-    }
+    void wait();
+    void enqueue( boost::shared_ptr< command > command_sp );
 
 private:
     static async_server instance_;
 
-    std::queue< boost::shared_ptr< command > > server_command_queue_;
-    boost::scoped_ptr< boost::thread > async_execute_sp_;
+    bool stop_;
     mutex_t mutex_;
+    boost::scoped_ptr< boost::thread > async_execute_sp_;
+    boost::interprocess::interprocess_semaphore semaphore_;
+    std::queue< boost::shared_ptr< command > > server_command_queue_;
 
-    async_server(){}
+    async_server() : stop_( false ), semaphore_( 0 )
+    {
+        async_execute_sp_.reset( new boost::thread( &dcl::server::async_server::work_thread, this ) );
+    }
+
+    void work_thread();
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type TYPE >
@@ -103,12 +100,11 @@ public:
     inline void async_execute( boost::shared_ptr< command > command_sp )
     {
         async_server::get_instance().enqueue( command_sp );
-        async_execute_sp_.reset( new boost::thread( &dcl::server::async_server_command<TYPE>::work_thread, this ) );
     }
 
-    virtual void wait()
+    virtual void enqueue_response()
     {
-        async_execute_sp_->join();
+        waiting_messages_ptr_->add( server_command< TYPE >::message_ );
     }
 
 protected:
@@ -118,13 +114,6 @@ protected:
 
 private:
     dcl::network::server::server_messages* waiting_messages_ptr_;
-    boost::scoped_ptr< boost::thread > async_execute_sp_;
-
-    void work_thread()
-    {
-        this->execute();
-        waiting_messages_ptr_->add( server_command< TYPE >::message_ );
-    }
 };
 //-----------------------------------------------------------------------------
 class msg_flush_server_command :

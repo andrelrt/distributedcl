@@ -287,8 +287,9 @@ public:
 
     // Request
     MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
-    MSG_PARAMETER_GET_SET( bool, return_event_, return_event )
-
+    MSG_PARAMETER_GET( bool, return_event_, return_event )
+    MSG_PARAMETER_GET( dcl::remote_id_t, event_id_, event_id )
+    
     inline void add_event( dcl::remote_id_t event_id )
     {
         events_.push_back( event_id );
@@ -296,11 +297,16 @@ public:
         update_request_size();
     }
 
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, event_id_, event_id )
+    inline void set_event_id( dcl::remote_id_t event_id )
+    {
+        event_id_ = event_id;
+        return_event_ = true;
+    }
 
     inline dcl::remote_id_t get_event_id( dcl::info::generic_event* event_ptr )
     {
         event_id_ = remote_event_ids_.get( event_ptr, true );
+        return_event_ = true;
 
         return event_id_;
     }

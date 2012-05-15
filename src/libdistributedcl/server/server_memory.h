@@ -49,6 +49,7 @@ public:
         async_server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr, waiting_messages_ptr ) {}
 
     void execute();
+    virtual bool async_run() const;
 };
 //-----------------------------------------------------------------------------
 class msgEnqueueReadBuffer_command : 
@@ -60,6 +61,7 @@ public:
         async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, waiting_messages_ptr ) {}
 
     void execute();
+    virtual bool async_run() const;
 };
 //-----------------------------------------------------------------------------
 class msgCreateImage2D_command : 

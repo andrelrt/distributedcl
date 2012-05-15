@@ -41,9 +41,14 @@ public:
     object_manager() :
         rand_(), dist_( 1, 0xFFFF ), random_( rand_, dist_ )
     {
+#if defined WIN32
+        rand_.seed( std::clock() );
+#else
         timeval tv;
         gettimeofday( &tv, NULL );
         rand_.seed( tv.tv_usec );
+#endif
+
         boost::this_thread::sleep( boost::posix_time::milliseconds( 1 ) );
     }
 
