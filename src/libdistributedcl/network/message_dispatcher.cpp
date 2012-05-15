@@ -133,7 +133,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
 
             MSG( msgFlush );
             MSG( msgFinish );
-            MSG( msgEnqueueReadBuffer );
+            MSG_ASYNC( msgEnqueueReadBuffer );
             MSG_ASYNC( msgEnqueueWriteBuffer );
 
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );

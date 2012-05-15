@@ -120,7 +120,6 @@ void msgSetKernelArg_command::execute()
 
         if( server.get_memory_manager().has( memory_id ) )
         {
-//            std::cout<< "server.get_memory_manager().has( memory_id = " << memory_id << " )";
             composite_memory* memory_ptr =
                 server.get_memory_manager().get( memory_id );
 
@@ -128,7 +127,6 @@ void msgSetKernelArg_command::execute()
         }
         else if( server.get_image_manager().has( memory_id ) )
         {
-//            std::cout<< "server.get_image_manager().has( memory_id = " << memory_id << " )";
             composite_image* image_ptr =
                 server.get_image_manager().get( memory_id );
 
@@ -139,7 +137,6 @@ void msgSetKernelArg_command::execute()
     }
     else
     {
-//        std::cout<< "kernel_ptr->set_argument(...)";
         kernel_ptr->set_argument( message_->get_index(),
                                   message_->get_buffer_size(),
                                   message_->get_buffer_pointer() );
