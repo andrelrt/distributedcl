@@ -61,6 +61,11 @@ public:
         return text_;
     }
 
+    virtual const char* what() const throw()
+    {
+        return text_.c_str();
+    }
+
 private:
     int error_;
     std::string text_;

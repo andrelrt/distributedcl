@@ -31,7 +31,6 @@
 #include "network/session.h"
 #include "message/packet.h"
 #include "message/msg_internal.h"
-#include "server/server_command.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -202,8 +201,8 @@ private:
                 std::cout << "Connection reset, close session" << std::endl;
                 return;
             }
-
-            dcl::server::async_server::get_instance().flush_queue();
+            
+			dispatcher_.flush_async_queue();
         }
     }
 };

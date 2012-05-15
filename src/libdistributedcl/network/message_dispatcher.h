@@ -35,6 +35,7 @@ class message_dispatcher
 {
 public:
     void dispatch_messages( dcl::message_vector_t& messages, server_messages* waiting_messages_ptr );
+    void flush_async_queue();
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

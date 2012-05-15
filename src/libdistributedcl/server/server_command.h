@@ -52,7 +52,10 @@ public:
 
     static async_server& get_instance()
     {
-        return instance_;
+		if( instance_ptr_ == NULL )
+			instance_ptr_ = new async_server();
+			
+        return *instance_ptr_;
     }
 
     inline void flush_queue()
@@ -64,7 +67,7 @@ public:
     void enqueue( boost::shared_ptr< command > command_sp );
 
 private:
-    static async_server instance_;
+    static async_server* instance_ptr_;
 
     bool stop_;
     mutex_t mutex_;
@@ -96,6 +99,9 @@ template< dcl::network::message::message_type TYPE >
 class async_server_command :
     public server_command< TYPE >
 {
+private:
+    dcl::network::server::server_messages* waiting_messages_ptr_;
+
 public:
     inline void async_execute( boost::shared_ptr< command > command_sp )
     {
@@ -111,9 +117,6 @@ protected:
     async_server_command( message_sp_t message_sp, dcl::network::server::server_messages* waiting_messages_ptr ) :
         server_command< TYPE >( message_sp ),
         waiting_messages_ptr_( waiting_messages_ptr ){}
-
-private:
-    dcl::network::server::server_messages* waiting_messages_ptr_;
 };
 //-----------------------------------------------------------------------------
 class msg_flush_server_command :
