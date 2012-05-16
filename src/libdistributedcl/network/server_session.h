@@ -201,7 +201,7 @@ private:
                 std::cout << "Connection reset, close session" << std::endl;
                 return;
             }
-            
+
 			dispatcher_.flush_async_queue();
         }
     }

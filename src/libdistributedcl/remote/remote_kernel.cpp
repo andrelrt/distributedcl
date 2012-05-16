@@ -77,8 +77,8 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     }
     else
     {
-        session_ref_.send_message( message_sp );
-        //session_ref_.enqueue_message( message_sp );
+        //session_ref_.send_message( message_sp );
+        session_ref_.enqueue_message( message_sp );
     }
 }
 //-----------------------------------------------------------------------------
