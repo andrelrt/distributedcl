@@ -353,14 +353,16 @@ void opencl_library::load()
     LOAD_FUNCTION(clEnqueueMarker);
     LOAD_FUNCTION(clEnqueueWaitForEvents);
     LOAD_FUNCTION(clEnqueueBarrier);
-    LOAD_FUNCTION(clCreateSubBuffer);
-    LOAD_FUNCTION(clCreateUserEvent);
-    LOAD_FUNCTION(clEnqueueCopyBufferRect);
-    LOAD_FUNCTION(clEnqueueReadBufferRect);
-    LOAD_FUNCTION(clEnqueueWriteBufferRect);
-    LOAD_FUNCTION(clSetEventCallback);
-    LOAD_FUNCTION(clSetMemObjectDestructorCallback);
-    LOAD_FUNCTION(clSetUserEventStatus);
+
+    // OpenCL 1.1
+    //LOAD_FUNCTION(clCreateSubBuffer);
+    //LOAD_FUNCTION(clCreateUserEvent);
+    //LOAD_FUNCTION(clEnqueueCopyBufferRect);
+    //LOAD_FUNCTION(clEnqueueReadBufferRect);
+    //LOAD_FUNCTION(clEnqueueWriteBufferRect);
+    //LOAD_FUNCTION(clSetEventCallback);
+    //LOAD_FUNCTION(clSetMemObjectDestructorCallback);
+    //LOAD_FUNCTION(clSetUserEventStatus);
 }
 #undef LOAD_FUNCTION
 //-----------------------------------------------------------------------------
