@@ -33,12 +33,12 @@ namespace remote {
 //-----------------------------------------------------------------------------
 class remote_program :
     public dcl::info::generic_program,
-    public remote_object< remote_program >
+    public remote_object< remote_program, dcl::network::message::msgReleaseProgram >
 {
 public:
     remote_program( const remote_context& context_ref, const std::string& source_code ) :
         dcl::info::generic_program( source_code ), 
-        remote_object< remote_program >( context_ref.get_session() ),
+        remote_object< remote_program, dcl::network::message::msgReleaseProgram >( context_ref.get_session() ),
         context_( context_ref ){}
 
     ~remote_program(){}

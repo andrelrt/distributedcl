@@ -26,11 +26,12 @@
 #include "distributedcl_internal.h"
 #include "info/object_manager.h"
 #include "network/session_manager.h"
+#include "message/msg_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-template< typename DCL_TYPE_T >
+template< typename DCL_TYPE_T, dcl::network::message::message_type MSG_RELEASE_OBJECT >
 class remote_object
 {
 public:
@@ -48,6 +49,20 @@ public:
     {
         remote_id_ = remote_id;
     }
+    
+    virtual ~remote_object()
+    {
+		if( MSG_RELEASE_OBJECT != dcl::network::message::msg_dummy_message )
+		{
+			dcl::network::message::release_message< MSG_RELEASE_OBJECT >* msg_ptr =
+				new dcl::network::message::release_message< MSG_RELEASE_OBJECT >();
+
+			msg_ptr->set_remote_id( remote_id_ );
+
+			message_sp_t message_sp( msg_ptr );
+			session_ref_.enqueue_message( message_sp );
+		}
+	}
 
 protected:
     dcl::network::client::session_manager::session_t& session_ref_;

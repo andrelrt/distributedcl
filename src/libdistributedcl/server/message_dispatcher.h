@@ -28,16 +28,19 @@
 namespace dcl {
 namespace network {
 namespace server {
-//-----------------------------------------------------------------------------
 class server_messages;
+}}}
+//-----------------------------------------------------------------------------
+namespace dcl {
+namespace server {
 //-----------------------------------------------------------------------------
 class message_dispatcher
 {
 public:
-    void dispatch_messages( dcl::message_vector_t& messages, server_messages* waiting_messages_ptr );
+    void dispatch_messages( dcl::message_vector_t& messages, dcl::network::server::server_messages* waiting_messages_ptr );
     void flush_async_queue();
 };
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_NETWORK_MESSAGE_DISPATCHER_H_

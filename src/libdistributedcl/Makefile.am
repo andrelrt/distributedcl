@@ -58,8 +58,6 @@ message/msg_program.h \
 message/packet.cpp \
 message/packet.h \
 network/client_session.h \
-network/message_dispatcher.cpp \
-network/message_dispatcher.h \
 network/platform.h \
 network/server.h \
 network/server_session.h \
@@ -85,6 +83,8 @@ remote/remote_platform.cpp \
 remote/remote_platform.h \
 remote/remote_program.cpp \
 remote/remote_program.h \
+server/message_dispatcher.cpp \
+server/message_dispatcher.h \
 server/server_command.cpp \
 server/server_command.h \
 server/server_command_queue.cpp \

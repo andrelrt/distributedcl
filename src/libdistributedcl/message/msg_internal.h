@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +36,7 @@ class dcl_message< msg_error_message > : public base_message
 public:
     static dcl_message< msg_error_message > success;
 
-    dcl_message< msg_error_message >( int32_t error_code = CL_SUCCESS ) : 
+    dcl_message< msg_error_message >( int32_t error_code = CL_SUCCESS ) :
         base_message( msg_error_message, true, 0, sizeof( uint32_t ) ), error_code_( error_code )
     {
         set_response_mode();
@@ -60,6 +60,42 @@ class dcl_message< msg_flush_server > : public base_message
 public:
     dcl_message< msg_flush_server >() :
         base_message( msg_flush_server, true ){}
+};
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msg_dummy_message > : public base_message
+{
+public:
+    dcl_message< msg_dummy_message >() :
+        base_message( msg_dummy_message, false ){}
+};
+//-----------------------------------------------------------------------------
+template< message_type MESSAGE_NUMBER >
+class release_message : public base_message
+{
+public:
+	release_message() :
+		base_message( MESSAGE_NUMBER, false, sizeof(dcl::remote_id_t) ){}
+
+	// Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+
+private:
+    dcl::remote_id_t remote_id_;
+
+    virtual void create_request( void* payload_ptr )
+    {
+		dcl::remote_id_t* request_ptr = reinterpret_cast< dcl::remote_id_t* >( payload_ptr );
+
+		*request_ptr = host_to_network( remote_id_ );
+	}
+
+    virtual void parse_request( const void* payload_ptr )
+    {
+		const dcl::remote_id_t* request_ptr = reinterpret_cast< const dcl::remote_id_t* >( payload_ptr );
+
+		remote_id_ = network_to_host( *request_ptr );
+	}
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

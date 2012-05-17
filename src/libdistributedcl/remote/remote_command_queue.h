@@ -33,7 +33,7 @@ namespace remote {
 //-----------------------------------------------------------------------------
 class remote_command_queue :
     public dcl::info::generic_command_queue,
-    public remote_object< remote_command_queue >
+    public remote_object< remote_command_queue, dcl::network::message::msgReleaseCommandQueue >
 {
 public:
     remote_command_queue( const remote_context* context_ptr, const remote_device* device_ptr, 
@@ -41,7 +41,7 @@ public:
         dcl::info::generic_command_queue( reinterpret_cast<const dcl::info::generic_context*>( context_ptr ), 
                                           reinterpret_cast<const dcl::info::generic_device*>( device_ptr ), 
                                           properties ),
-        remote_object< remote_command_queue >( context_ptr->get_session() ) {}
+        remote_object< remote_command_queue, dcl::network::message::msgReleaseCommandQueue >( context_ptr->get_session() ) {}
 
     ~remote_command_queue(){}
 

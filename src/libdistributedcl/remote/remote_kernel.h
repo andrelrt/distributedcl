@@ -33,12 +33,12 @@ namespace remote {
 //-----------------------------------------------------------------------------
 class remote_kernel :
     public dcl::info::generic_kernel,
-    public remote_object< remote_kernel >
+    public remote_object< remote_kernel, dcl::network::message::msgReleaseKernel >
 {
 public:
     remote_kernel( const remote_context& context_ref, const std::string& name ) :
         dcl::info::generic_kernel( name ), 
-        remote_object< remote_kernel >( context_ref.get_session() ),
+        remote_object< remote_kernel, dcl::network::message::msgReleaseKernel >( context_ref.get_session() ),
         context_ref_( context_ref ){}
 
     ~remote_kernel(){}

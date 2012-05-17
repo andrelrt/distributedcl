@@ -27,8 +27,8 @@
 #include <boost/thread.hpp>
 #include <boost/scoped_ptr.hpp>
 #include "distributedcl_internal.h"
-#include "message_dispatcher.h"
-#include "network/session.h"
+#include "session.h"
+#include "server/message_dispatcher.h"
 #include "message/packet.h"
 #include "message/msg_internal.h"
 //-----------------------------------------------------------------------------
@@ -100,7 +100,7 @@ public:
 
 private:
     boost::thread* receive_thread_ptr_;
-    message_dispatcher dispatcher_;
+    dcl::server::message_dispatcher dispatcher_;
 
     void receive_thread()
     {

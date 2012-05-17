@@ -107,7 +107,8 @@ void msgEnqueueWriteBuffer_command::execute()
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteBuffer_command::async_run() const
 {
-    return message_->get_return_event();
+    return false;
+    //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
@@ -116,7 +117,7 @@ void msgEnqueueReadBuffer_command::execute()
 
     remote_id_t id = message_->get_remote_id();
     remote_id_t command_queue_id = message_->get_command_queue_id();
-
+    
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
@@ -128,11 +129,14 @@ void msgEnqueueReadBuffer_command::execute()
     {
         async_server::get_instance().wait();
 
-        events.reserve( message_->get_events().size() );
+		uint32_t count = message_->get_events().size();
 
-        for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
+        events.reserve( count );
+
+        for( uint32_t i = 0; i < count; i++ )
         {
-            events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
+			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
+            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
         }
     }
 
@@ -160,7 +164,8 @@ void msgEnqueueReadBuffer_command::execute()
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
 {
-    return message_->get_return_event();
+    return false;
+    //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()

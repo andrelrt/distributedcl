@@ -43,17 +43,17 @@ class remote_command_queue;
 //-----------------------------------------------------------------------------
 class remote_event :
     public dcl::info::generic_event,
-    public remote_object< remote_event >
+    public remote_object< remote_event, dcl::network::message::msgReleaseEvent >
 {
 public:
     remote_event( const remote_context& context_ref, dcl::remote_id_t id ) :
-        remote_object< remote_event >( context_ref.get_session() )
+        remote_object< remote_event, dcl::network::message::msgReleaseEvent >( context_ref.get_session() )
     {
         set_remote_id( id );
     }
 
     remote_event( const remote_context& context_ref, message_sp_t message_sp ) :
-        remote_object< remote_event >( context_ref.get_session() ),
+        remote_object< remote_event, dcl::network::message::msgReleaseEvent >( context_ref.get_session() ),
         message_sp_( message_sp ) {}
 
     ~remote_event(){}

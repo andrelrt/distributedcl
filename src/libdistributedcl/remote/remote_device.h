@@ -34,16 +34,16 @@ namespace remote {
 //-----------------------------------------------------------------------------
 class remote_device : 
     public dcl::info::generic_device,
-    public remote_object< remote_device >
+    public remote_object< remote_device, dcl::network::message::msg_dummy_message >
 {
 public:
     remote_device( const remote_platform* platform_ptr, cl_device_type type ) : 
         dcl::info::generic_device( platform_ptr, type ),
-        remote_object< remote_device >( platform_ptr->get_session() ) {}
+        remote_object< remote_device, dcl::network::message::msg_dummy_message >( platform_ptr->get_session() ) {}
 
     remote_device( const remote_platform* platform_ptr, dcl::remote_id_t id ) : 
         dcl::info::generic_device( platform_ptr ),
-        remote_object< remote_device >( platform_ptr->get_session() ) 
+        remote_object< remote_device, dcl::network::message::msg_dummy_message >( platform_ptr->get_session() ) 
     {
         set_remote_id( id );
         load_device_info();

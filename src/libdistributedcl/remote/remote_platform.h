@@ -39,11 +39,11 @@ class remote_device;
 //-----------------------------------------------------------------------------
 class remote_platform :
     public dcl::info::generic_platform,
-    public remote_object< remote_platform >
+    public remote_object< remote_platform, dcl::network::message::msg_dummy_message >
 {
 public:
     remote_platform( dcl::network::client::session_manager::session_t& session_ref ) : 
-        remote_object< remote_platform >( session_ref )
+        remote_object< remote_platform, dcl::network::message::msg_dummy_message >( session_ref )
     {
         load_devices();
     }

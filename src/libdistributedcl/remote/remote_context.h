@@ -34,12 +34,12 @@ namespace remote {
 //-----------------------------------------------------------------------------
 class remote_context : 
     public dcl::info::generic_context,
-    public remote_object< remote_context >
+    public remote_object< remote_context, dcl::network::message::msgReleaseContext >
 {
 public:
     remote_context( const remote_platform* platform_ptr ) :
         dcl::info::generic_context( *platform_ptr ),
-        remote_object< remote_context >( platform_ptr->get_session() ),
+        remote_object< remote_context, dcl::network::message::msgReleaseContext >( platform_ptr->get_session() ),
         platform_ptr_( platform_ptr ){}
 
     ~remote_context(){}

@@ -105,7 +105,14 @@ private:
 public:
     inline void async_execute( boost::shared_ptr< command > command_sp )
     {
-        async_server::get_instance().enqueue( command_sp );
+		if( async_run() )
+		{
+			async_server::get_instance().enqueue( command_sp );
+		}
+		else
+		{
+			this->execute();
+		}
     }
 
     virtual void enqueue_response()
@@ -117,6 +124,29 @@ protected:
     async_server_command( message_sp_t message_sp, dcl::network::server::server_messages* waiting_messages_ptr ) :
         server_command< TYPE >( message_sp ),
         waiting_messages_ptr_( waiting_messages_ptr ){}
+        
+	virtual bool async_run() const = 0;
+};
+//-----------------------------------------------------------------------------
+template< dcl::network::message::message_type TYPE, class DCL_TYPE >
+class release_command :
+	public server_command< TYPE >
+{
+public:
+	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE >& manager ) :
+		server_command< TYPE >( message_sp ), manager_( manager ){}
+		
+	virtual void execute()
+	{
+		dcl::remote_id_t obj_id = this->message_.get_remote_id();
+
+		DCL_TYPE* obj_ptr = manager_.get( obj_id );
+		
+		delete obj_ptr;
+	}
+	
+private:
+	dcl::info::object_manager< DCL_TYPE >& manager_;
 };
 //-----------------------------------------------------------------------------
 class msg_flush_server_command :

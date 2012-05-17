@@ -22,31 +22,39 @@
 //-----------------------------------------------------------------------------
 #include <iostream>
 #include "message_dispatcher.h"
-#include "server_session.h"
+#include "server_command.h"
+#include "server_platform.h"
+#include "server_context.h"
+#include "server_program.h"
+#include "server_kernel.h"
+#include "server_command_queue.h"
+#include "server_memory.h"
+#include "server_event.h"
+#include "network/server_session.h"
 #include "message/message.h"
-#include "server/server_command.h"
-#include "server/server_platform.h"
-#include "server/server_context.h"
-#include "server/server_program.h"
-#include "server/server_kernel.h"
-#include "server/server_command_queue.h"
-#include "server/server_memory.h"
-#include "server/server_event.h"
+#include "composite/composite_context.h"
+#include "composite/composite_command_queue.h"
+#include "composite/composite_memory.h"
+#include "composite/composite_program.h"
+#include "composite/composite_kernel.h"
+#include "composite/composite_event.h"
 using namespace dcl::network::message;
-using namespace dcl::server;
+using namespace dcl::composite;
+using dcl::network::server::server_messages;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-//#define MSG_DEBUG
+#define MSG_DEBUG
 #if defined MSG_DEBUG
 #define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
 #define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));std::cout<<"async dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
+#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
 #define MSG_IGNORE( x ) case x: std::cout<<"ignoring message " #x "..."<<std::endl;break
 #else
 #define MSG( x ) case x: {x##_command command(*it);command.execute();}break
 #define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));command_sp->async_execute(command_sp);}break
+#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);command.execute();}break
 #define MSG_IGNORE( x ) case x: break
 #endif
 #define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("dispatch_messages: " #x " not implemented");break
@@ -54,6 +62,7 @@ namespace server {
 void message_dispatcher::dispatch_messages( message_vector_t& messages, server_messages* waiting_messages_ptr )
 {
     message_vector_t::iterator it;
+    server_platform& server = server_platform::get_instance();
 
     for( it = messages.begin(); it != messages.end(); it++ )
     {
@@ -63,6 +72,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG_NOT_IMPLEMENTED( msg_invalid_message );
             MSG_IGNORE( msg_error_message );
             MSG( msg_flush_server );
+            MSG_IGNORE( msg_dummy_message );
 
             // OpenCL base_messages [20-128)
             MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
@@ -76,13 +86,13 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG( msgCreateContext );
             MSG( msgCreateContextFromType );
             MSG_NOT_IMPLEMENTED( msgRetainContext );
-            MSG_NOT_IMPLEMENTED( msgReleaseContext );
+            MSG_RELEASE( msgReleaseContext, server.get_context_manager(), composite_context );
             MSG( msgGetContextInfo );
 
             // Command queue
             MSG( msgCreateCommandQueue );
             MSG_NOT_IMPLEMENTED( msgRetainCommandQueue );
-            MSG_NOT_IMPLEMENTED( msgReleaseCommandQueue );
+            MSG_RELEASE( msgReleaseCommandQueue, server.get_command_queue_manager(), composite_command_queue );
             MSG_NOT_IMPLEMENTED( msgGetCommandQueueInfo );
             MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
@@ -91,7 +101,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG( msgCreateImage2D );
             MSG_NOT_IMPLEMENTED( msgCreateImage3D );
             MSG_NOT_IMPLEMENTED( msgRetainMemObject );
-            MSG_NOT_IMPLEMENTED( msgReleaseMemObject );
+            MSG_RELEASE( msgReleaseMemObject, server.get_memory_manager(), composite_memory );
             MSG_NOT_IMPLEMENTED( msgGetSupportedImageFormats );
             MSG_NOT_IMPLEMENTED( msgGetMemObjectInfo );
             MSG_NOT_IMPLEMENTED( msgGetImageInfo );
@@ -106,7 +116,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG( msgCreateProgramWithSource );
             MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
             MSG_NOT_IMPLEMENTED( msgRetainProgram );
-            MSG_NOT_IMPLEMENTED( msgReleaseProgram );
+            MSG_RELEASE( msgReleaseProgram, server.get_program_manager(), composite_program );
             MSG( msgBuildProgram );
             MSG_NOT_IMPLEMENTED( msgUnloadCompiler );
             MSG_NOT_IMPLEMENTED( msgGetProgramInfo );
@@ -116,7 +126,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG( msgCreateKernel );
             MSG_NOT_IMPLEMENTED( msgCreateKernelsInProgram );
             MSG_NOT_IMPLEMENTED( msgRetainKernel );
-            MSG_NOT_IMPLEMENTED( msgReleaseKernel );
+            MSG_RELEASE( msgReleaseKernel, server.get_kernel_manager(), composite_kernel );
             MSG( msgSetKernelArg );
             MSG_NOT_IMPLEMENTED( msgGetKernelInfo );
             MSG( msgGetKernelWorkGroupInfo );
@@ -125,14 +135,14 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG( msgWaitForEvents );
             MSG_NOT_IMPLEMENTED( msgGetEventInfo );
             MSG_NOT_IMPLEMENTED( msgRetainEvent );
-            MSG_NOT_IMPLEMENTED( msgReleaseEvent );
+            MSG_RELEASE( msgReleaseEvent, server.get_event_manager(), composite_event );
             MSG( msgGetEventProfilingInfo );
 
             // Enqueue
             MSG( msgFlush );
             MSG( msgFinish );
-            MSG_ASYNC( msgEnqueueReadBuffer );
-            MSG_ASYNC( msgEnqueueWriteBuffer );
+            MSG_ASYNC( msgEnqueueReadBuffer ); // async
+            MSG_ASYNC( msgEnqueueWriteBuffer ); // async
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );
             MSG_NOT_IMPLEMENTED( msgEnqueueReadImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueWriteImage );
@@ -142,7 +152,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG_NOT_IMPLEMENTED( msgEnqueueMapBuffer );
             MSG_NOT_IMPLEMENTED( msgEnqueueMapImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueUnmapMemObject );
-            MSG_ASYNC( msgEnqueueNDRangeKernel );
+            MSG_ASYNC( msgEnqueueNDRangeKernel ); // async
             MSG_NOT_IMPLEMENTED( msgEnqueueTask );
             MSG_NOT_IMPLEMENTED( msgEnqueueNativeKernel );
             MSG_NOT_IMPLEMENTED( msgEnqueueMarker );
@@ -168,5 +178,5 @@ void message_dispatcher::flush_async_queue()
 	async_server::get_instance().flush_queue();
 }
 //-----------------------------------------------------------------------------
-}}} // namespace dcl::network::server
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------

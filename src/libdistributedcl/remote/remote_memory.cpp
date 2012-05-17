@@ -32,13 +32,14 @@ using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
 using dcl::network::message::msgEnqueueWriteBuffer;
 using dcl::network::message::msgEnqueueReadBuffer;
+using dcl::network::message::msgReleaseMemObject;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
 remote_memory::remote_memory( const remote_context& context_ref, const void* host_ptr, 
                               size_t size, cl_mem_flags flags ) :
-        remote_object< remote_memory >( context_ref.get_session() ),
+        remote_object< remote_memory, msgReleaseMemObject >( context_ref.get_session() ),
         context_( context_ref )
 {
     set_info( host_ptr, size, flags );
@@ -157,10 +158,12 @@ void remote_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
     map_pointers_.erase( it );
 }
 //-----------------------------------------------------------------------------
+// remote_image
+//-----------------------------------------------------------------------------
 remote_image::remote_image( const remote_context& context_ref, const void* host_ptr,
                             cl_mem_flags flags, const cl_image_format* format,
                             size_t width, size_t height, size_t row_pitch ) :
-        remote_object< remote_image >( context_ref.get_session() ),
+        remote_object< remote_image, msgReleaseMemObject >( context_ref.get_session() ),
         context_( context_ref )
 {
     set_info( host_ptr, flags, format, width, height, row_pitch );

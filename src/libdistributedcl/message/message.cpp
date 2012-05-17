@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,9 +50,9 @@ base_message::base_message( message_type type, bool wait_response,
     message_id_ = next_id_++;
 }
 //-----------------------------------------------------------------------------
-base_message::base_message( const base_message& copy ) : 
+base_message::base_message( const base_message& copy ) :
         wait_response_( copy.wait_response_ ), buffer_ptr_( copy.buffer_ptr_ ),
-        size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ), 
+        size_( copy.size_ ), type_( copy.type_ ), request_size_( copy.request_size_ ),
         response_size_( copy.response_size_ ), response_( copy.response_ )
 {
     message_id_ = copy.message_id_;
@@ -60,8 +60,9 @@ base_message::base_message( const base_message& copy ) :
 //-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
 #define MSG( x ) case x: ret_ptr=reinterpret_cast<base_message*>(new dcl_message<x>());break
+#define MSG_RELEASE( x ) case x: ret_ptr=reinterpret_cast<base_message*>(new release_message<x>());break
 #define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("parse_message: " #x " not implemented");break
-    
+
 base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t length, bool is_request )
 {
     const message_header* header_ptr = reinterpret_cast< const message_header* >( msg_buffer_ptr );
@@ -82,6 +83,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msg_invalid_message );
         MSG( msg_error_message );
         MSG( msg_flush_server );
+        MSG( msg_dummy_message );
 
         // OpenCL base_messages [20-128)
         MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
@@ -93,12 +95,12 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG( msgCreateContext );
         MSG( msgCreateContextFromType );
         MSG_NOT_IMPLEMENTED( msgRetainContext );
-        MSG_NOT_IMPLEMENTED( msgReleaseContext );
+        MSG_RELEASE( msgReleaseContext );
         MSG( msgGetContextInfo );
 
         MSG( msgCreateCommandQueue );
         MSG_NOT_IMPLEMENTED( msgRetainCommandQueue );
-        MSG_NOT_IMPLEMENTED( msgReleaseCommandQueue );
+        MSG_RELEASE( msgReleaseCommandQueue );
         MSG_NOT_IMPLEMENTED( msgGetCommandQueueInfo );
         MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
@@ -106,7 +108,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG( msgCreateImage2D );
         MSG_NOT_IMPLEMENTED( msgCreateImage3D );
         MSG_NOT_IMPLEMENTED( msgRetainMemObject );
-        MSG_NOT_IMPLEMENTED( msgReleaseMemObject );
+        MSG_RELEASE( msgReleaseMemObject );
         MSG_NOT_IMPLEMENTED( msgGetSupportedImageFormats );
         MSG_NOT_IMPLEMENTED( msgGetMemObjectInfo );
         MSG_NOT_IMPLEMENTED( msgGetImageInfo );
@@ -119,7 +121,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG( msgCreateProgramWithSource );
         MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
         MSG_NOT_IMPLEMENTED( msgRetainProgram );
-        MSG_NOT_IMPLEMENTED( msgReleaseProgram );
+        MSG_RELEASE( msgReleaseProgram );
         MSG( msgBuildProgram );
         MSG_NOT_IMPLEMENTED( msgUnloadCompiler );
         MSG_NOT_IMPLEMENTED( msgGetProgramInfo );
@@ -136,7 +138,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG( msgWaitForEvents );
         MSG_NOT_IMPLEMENTED( msgGetEventInfo );
         MSG_NOT_IMPLEMENTED( msgRetainEvent );
-        MSG_NOT_IMPLEMENTED( msgReleaseEvent );
+        MSG_RELEASE( msgReleaseEvent );
         MSG( msgGetEventProfilingInfo );
 
         MSG( msgFlush );
@@ -164,7 +166,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         //MSG_NOT_IMPLEMENTED( msgExtension0 );
         //MSG_NOT_IMPLEMENTED( msgExtension1 );
 
-        default: 
+        default:
             throw dcl::library_exception( "Unkown message" );
     }
 
