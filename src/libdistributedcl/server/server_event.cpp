@@ -42,5 +42,18 @@ void msgWaitForEvents_command::execute()
     event_ptr->wait();
 }
 //-----------------------------------------------------------------------------
+void msgGetEventProfilingInfo_command::execute()
+{
+    server_platform& server = server_platform::get_instance();
+
+    remote_id_t event_id = message_->get_remote_id();
+
+    composite_event* event_ptr = server.get_event_manager().get( event_id );
+
+    event_ptr->load_info();
+
+    message_->set_event_info( event_ptr->get_info() );
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------

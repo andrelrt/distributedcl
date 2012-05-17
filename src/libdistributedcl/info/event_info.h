@@ -33,6 +33,35 @@ namespace info {
 //-----------------------------------------------------------------------------
 struct event_info
 {
+    uint64_t queued_;
+    uint64_t submit_;
+    uint64_t start_;
+    uint64_t end_;
+
+    event_info()
+    {
+        memset( this, 0, sizeof(event_info) );
+    }
+
+    inline size_t get_info_size( cl_profiling_info info ) const
+    {
+        return sizeof( uint64_t );
+    }
+
+    inline const void* get_info_pointer( cl_profiling_info info ) const
+    {
+        switch( info )
+        {
+            case CL_PROFILING_COMMAND_QUEUED: return &queued_;
+            case CL_PROFILING_COMMAND_SUBMIT: return &submit_;
+            case CL_PROFILING_COMMAND_START:  return &start_;
+            case CL_PROFILING_COMMAND_END:    return &end_;
+
+            default:
+                throw library_exception( CL_INVALID_VALUE );
+        }
+    }
+
 };
 //-----------------------------------------------------------------------------
 class generic_event :
@@ -45,6 +74,7 @@ public:
     virtual ~generic_event(){}
 
     virtual void wait() = 0;
+    virtual void load_info() = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

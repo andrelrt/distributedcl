@@ -44,5 +44,45 @@ void dcl_message< msgWaitForEvents >::parse_request( const void* payload_ptr )
     remote_id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
+// msgGetEventProfilingInfo
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetEventProfilingInfo >::create_request( void* payload_ptr )
+{
+    remote_id_t* request_ptr = reinterpret_cast<remote_id_t*>( payload_ptr );
+
+    *request_ptr = host_to_network( remote_id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetEventProfilingInfo >::parse_request( const void* payload_ptr )
+{
+    const remote_id_t* request_ptr =
+        reinterpret_cast<const remote_id_t*>( payload_ptr );
+
+    remote_id_ = network_to_host( *request_ptr );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetEventProfilingInfo >::create_response( void* payload_ptr )
+{
+    msgGetEventProfilingInfo_response* response_ptr =
+        reinterpret_cast< msgGetEventProfilingInfo_response* >( payload_ptr );
+
+    response_ptr->queued_ = host_to_network( event_info_.queued_ );
+    response_ptr->submit_ = host_to_network( event_info_.submit_ );
+    response_ptr->start_  = host_to_network( event_info_.start_ );
+    response_ptr->end_    = host_to_network( event_info_.end_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgGetEventProfilingInfo >::parse_response( const void* payload_ptr )
+{
+    const msgGetEventProfilingInfo_response* response_ptr =
+        reinterpret_cast< const msgGetEventProfilingInfo_response* >( payload_ptr );
+
+    event_info_.queued_ = network_to_host( response_ptr->queued_ );
+    event_info_.submit_ = network_to_host( response_ptr->submit_ );
+    event_info_.start_  = network_to_host( response_ptr->start_ );
+    event_info_.end_    = network_to_host( response_ptr->end_ );
+}
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

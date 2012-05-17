@@ -41,7 +41,9 @@ public:
         opencl_object< cl_event >( opencl, id ){}
 
     virtual ~event();
+
     virtual void wait();
+    virtual void load_info();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

@@ -59,6 +59,7 @@ public:
     ~remote_event(){}
 
     virtual void wait();
+    virtual void load_info();
     void wait_remote_id();
 
 private:

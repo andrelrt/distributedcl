@@ -32,10 +32,55 @@ event::~event()
 //-----------------------------------------------------------------------------
 void event::wait()
 {
-    int error_code = opencl_.clWaitForEvents( 1, &id_ );
+    cl_int error_code = opencl_.clWaitForEvents( 1, &id_ );
 
     if( error_code != CL_SUCCESS )
         throw dcl::library_exception( error_code );
+}
+//-----------------------------------------------------------------------------
+void event::load_info()
+{
+    cl_int error_code;
+
+    if( local_info_.queued_ == 0 )
+    {
+        error_code =
+            opencl_.clGetEventProfilingInfo( id_, CL_PROFILING_COMMAND_QUEUED,
+                                             sizeof(uint64_t), &local_info_.queued_, NULL );
+
+        if( error_code != CL_SUCCESS )
+            throw dcl::library_exception( error_code );
+    }
+
+    if( local_info_.submit_ == 0 )
+    {
+        error_code =
+            opencl_.clGetEventProfilingInfo( id_, CL_PROFILING_COMMAND_SUBMIT,
+                                             sizeof(uint64_t), &local_info_.submit_, NULL );
+
+        if( error_code != CL_SUCCESS )
+            throw dcl::library_exception( error_code );
+    }
+
+    if( local_info_.start_ == 0 )
+    {
+        error_code =
+            opencl_.clGetEventProfilingInfo( id_, CL_PROFILING_COMMAND_START,
+                                             sizeof(uint64_t), &local_info_.start_, NULL );
+
+        if( error_code != CL_SUCCESS )
+            throw dcl::library_exception( error_code );
+    }
+
+    if( local_info_.end_ == 0 )
+    {
+        error_code =
+            opencl_.clGetEventProfilingInfo( id_, CL_PROFILING_COMMAND_END,
+                                             sizeof(uint64_t), &local_info_.end_, NULL );
+
+        if( error_code != CL_SUCCESS )
+            throw dcl::library_exception( error_code );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

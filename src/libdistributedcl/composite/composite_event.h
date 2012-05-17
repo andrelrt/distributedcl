@@ -40,8 +40,10 @@ public:
 
     ~composite_event(){}
 
-    virtual void wait();
     static void wait( events_t& events );
+
+    virtual void wait();
+    virtual void load_info();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

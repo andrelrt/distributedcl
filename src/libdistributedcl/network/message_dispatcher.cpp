@@ -68,74 +68,71 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
             MSG_NOT_IMPLEMENTED( msgGetPlatformInfo );
 
+            // Device
             MSG( msgGetDeviceIDs );
-
             MSG( msgGetDeviceInfo );
+
+            // Context
             MSG( msgCreateContext );
             MSG( msgCreateContextFromType );
-
             MSG_NOT_IMPLEMENTED( msgRetainContext );
             MSG_NOT_IMPLEMENTED( msgReleaseContext );
-
             MSG( msgGetContextInfo );
-            MSG( msgCreateCommandQueue );
 
+            // Command queue
+            MSG( msgCreateCommandQueue );
             MSG_NOT_IMPLEMENTED( msgRetainCommandQueue );
             MSG_NOT_IMPLEMENTED( msgReleaseCommandQueue );
             MSG_NOT_IMPLEMENTED( msgGetCommandQueueInfo );
             MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
+            // Memory object
             MSG( msgCreateBuffer );
             MSG( msgCreateImage2D );
-
             MSG_NOT_IMPLEMENTED( msgCreateImage3D );
             MSG_NOT_IMPLEMENTED( msgRetainMemObject );
             MSG_NOT_IMPLEMENTED( msgReleaseMemObject );
             MSG_NOT_IMPLEMENTED( msgGetSupportedImageFormats );
             MSG_NOT_IMPLEMENTED( msgGetMemObjectInfo );
             MSG_NOT_IMPLEMENTED( msgGetImageInfo );
+
+            // Sampler
             MSG_NOT_IMPLEMENTED( msgCreateSampler );
             MSG_NOT_IMPLEMENTED( msgRetainSampler );
             MSG_NOT_IMPLEMENTED( msgReleaseSampler );
             MSG_NOT_IMPLEMENTED( msgGetSamplerInfo );
 
+            // Program
             MSG( msgCreateProgramWithSource );
-
             MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
             MSG_NOT_IMPLEMENTED( msgRetainProgram );
             MSG_NOT_IMPLEMENTED( msgReleaseProgram );
-
             MSG( msgBuildProgram );
-
             MSG_NOT_IMPLEMENTED( msgUnloadCompiler );
             MSG_NOT_IMPLEMENTED( msgGetProgramInfo );
-
             MSG( msgGetProgramBuildInfo );
 
+            // Kernel
             MSG( msgCreateKernel );
-
             MSG_NOT_IMPLEMENTED( msgCreateKernelsInProgram );
             MSG_NOT_IMPLEMENTED( msgRetainKernel );
             MSG_NOT_IMPLEMENTED( msgReleaseKernel );
-
             MSG( msgSetKernelArg );
-
             MSG_NOT_IMPLEMENTED( msgGetKernelInfo );
-
             MSG( msgGetKernelWorkGroupInfo );
 
+            // Event
             MSG( msgWaitForEvents );
-
             MSG_NOT_IMPLEMENTED( msgGetEventInfo );
             MSG_NOT_IMPLEMENTED( msgRetainEvent );
             MSG_NOT_IMPLEMENTED( msgReleaseEvent );
-            MSG_NOT_IMPLEMENTED( msgGetEventProfilingInfo );
+            MSG( msgGetEventProfilingInfo );
 
+            // Enqueue
             MSG( msgFlush );
             MSG( msgFinish );
             MSG_ASYNC( msgEnqueueReadBuffer );
             MSG_ASYNC( msgEnqueueWriteBuffer );
-
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyBuffer );
             MSG_NOT_IMPLEMENTED( msgEnqueueReadImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueWriteImage );
@@ -145,9 +142,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_m
             MSG_NOT_IMPLEMENTED( msgEnqueueMapBuffer );
             MSG_NOT_IMPLEMENTED( msgEnqueueMapImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueUnmapMemObject );
-
             MSG_ASYNC( msgEnqueueNDRangeKernel );
-
             MSG_NOT_IMPLEMENTED( msgEnqueueTask );
             MSG_NOT_IMPLEMENTED( msgEnqueueNativeKernel );
             MSG_NOT_IMPLEMENTED( msgEnqueueMarker );

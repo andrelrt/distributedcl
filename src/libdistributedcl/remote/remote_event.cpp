@@ -29,6 +29,7 @@ using dcl::network::message::base_message;
 using dcl::network::message::enqueue_message;
 using dcl::network::message::msg_flush_server;
 using dcl::network::message::msgWaitForEvents;
+using dcl::network::message::msgGetEventProfilingInfo;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -43,6 +44,27 @@ void remote_event::wait()
 
     message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
+}
+//-----------------------------------------------------------------------------
+void remote_event::load_info()
+{
+    if( (local_info_.end_ == 0)    ||
+        (local_info_.start_ == 0)  ||
+        (local_info_.submit_ == 0) ||
+        (local_info_.queued_ == 0) )
+    {
+        wait_remote_id();
+
+        dcl_message< msgGetEventProfilingInfo >* msg_ptr =
+            new dcl_message< msgGetEventProfilingInfo >();
+
+        msg_ptr->set_remote_id( get_remote_id() );
+
+        message_sp_t message_sp( msg_ptr );
+        session_ref_.send_message( message_sp );
+
+        local_info_ = msg_ptr->get_event_info();
+    }
 }
 //-----------------------------------------------------------------------------
 void remote_event::wait_remote_id()

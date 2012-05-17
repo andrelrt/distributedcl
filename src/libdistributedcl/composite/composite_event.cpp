@@ -25,6 +25,14 @@
 namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
+void composite_event::wait( events_t& events )
+{
+    for( events_t::iterator it = events.begin(); it != events.end(); it++ )
+    {
+        (*it)->wait();
+    }
+}
+//-----------------------------------------------------------------------------
 void composite_event::wait()
 {
     for( iterator it = begin(); it != end(); it++ )
@@ -33,11 +41,16 @@ void composite_event::wait()
     }
 }
 //-----------------------------------------------------------------------------
-void composite_event::wait( events_t& events )
+void composite_event::load_info()
 {
-    for( events_t::iterator it = events.begin(); it != events.end(); it++ )
+    if( (local_info_.end_ == 0)    ||
+        (local_info_.start_ == 0)  ||
+        (local_info_.submit_ == 0) ||
+        (local_info_.queued_ == 0) )
     {
-        (*it)->wait();
+        iterator it = begin();
+        it->second->load_info();
+        local_info_ = it->second->get_info();
     }
 }
 //-----------------------------------------------------------------------------

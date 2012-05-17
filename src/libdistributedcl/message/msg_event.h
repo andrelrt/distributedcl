@@ -55,6 +55,41 @@ private:
     virtual void parse_request( const void* payload_ptr );
 };
 //-----------------------------------------------------------------------------
+// msgGetEventProfilingInfo
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgGetEventProfilingInfo > : public base_message
+{
+public:
+    dcl_message< msgGetEventProfilingInfo >() : 
+        base_message( msgGetEventProfilingInfo, true, sizeof( dcl::remote_id_t ),
+                      sizeof(msgGetEventProfilingInfo_response) ),
+        remote_id_( 0xffff ){}
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+
+    //Response
+    MSG_PARAMETER_GET_SET( dcl::info::event_info, event_info_, event_info )
+
+private:
+    dcl::remote_id_t remote_id_;
+    dcl::info::event_info event_info_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
+
+    struct msgGetEventProfilingInfo_response
+    {
+        uint64_t queued_;
+        uint64_t submit_;
+        uint64_t start_;
+        uint64_t end_;
+    };
+};
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------
 #endif // _DCL_EVENT_MESSAGES_H_

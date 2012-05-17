@@ -40,6 +40,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class msgGetEventProfilingInfo_command :
+    public server_command< dcl::network::message::msgGetEventProfilingInfo >
+{
+public:
+    msgGetEventProfilingInfo_command( message_sp_t message_ptr ) :
+        server_command< dcl::network::message::msgGetEventProfilingInfo >( message_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif // _DCL_SERVER_EVENT_H_
