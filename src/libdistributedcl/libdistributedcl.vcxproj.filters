@@ -110,9 +110,6 @@
     <ClInclude Include="network\client_session.h">
       <Filter>network</Filter>
     </ClInclude>
-    <ClInclude Include="network\message_dispatcher.h">
-      <Filter>network</Filter>
-    </ClInclude>
     <ClInclude Include="network\server.h">
       <Filter>network</Filter>
     </ClInclude>
@@ -245,6 +242,9 @@
     <ClInclude Include="config\server_config.h">
       <Filter>config</Filter>
     </ClInclude>
+    <ClInclude Include="server\message_dispatcher.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -288,9 +288,6 @@
     </ClCompile>
     <ClCompile Include="single\device.cpp">
       <Filter>single</Filter>
-    </ClCompile>
-    <ClCompile Include="network\message_dispatcher.cpp">
-      <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="network\session_manager.cpp">
       <Filter>network</Filter>
@@ -383,6 +380,9 @@
       <Filter>config</Filter>
     </ClCompile>
     <ClCompile Include="server\server_command.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\message_dispatcher.cpp">
       <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>

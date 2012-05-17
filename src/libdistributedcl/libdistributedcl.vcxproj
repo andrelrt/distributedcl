@@ -57,7 +57,6 @@
     <ClInclude Include="message\packet.h" />
     <ClInclude Include="message\msg_context.h" />
     <ClInclude Include="network\client_session.h" />
-    <ClInclude Include="network\message_dispatcher.h" />
     <ClInclude Include="network\platform.h" />
     <ClInclude Include="network\server.h" />
     <ClInclude Include="network\server_session.h" />
@@ -74,6 +73,7 @@
     <ClInclude Include="remote\remote_object.h" />
     <ClInclude Include="remote\remote_context.h" />
     <ClInclude Include="remote\remote_program.h" />
+    <ClInclude Include="server\message_dispatcher.h" />
     <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_command_queue.h" />
     <ClInclude Include="server\server_event.h" />
@@ -113,7 +113,6 @@
     <ClCompile Include="message\msg_program.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="message\msg_context.cpp" />
-    <ClCompile Include="network\message_dispatcher.cpp" />
     <ClCompile Include="network\session_manager.cpp" />
     <ClCompile Include="remote\remote_command_queue.cpp" />
     <ClCompile Include="remote\remote_context.cpp" />
@@ -123,6 +122,7 @@
     <ClCompile Include="remote\remote_memory.cpp" />
     <ClCompile Include="remote\remote_platform.cpp" />
     <ClCompile Include="remote\remote_program.cpp" />
+    <ClCompile Include="server\message_dispatcher.cpp" />
     <ClCompile Include="server\server_command.cpp" />
     <ClCompile Include="server\server_command_queue.cpp" />
     <ClCompile Include="server\server_event.cpp" />

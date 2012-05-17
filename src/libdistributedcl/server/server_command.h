@@ -129,24 +129,27 @@ protected:
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type TYPE, class DCL_TYPE >
-class release_command :
-	public server_command< TYPE >
+class release_command : public command
 {
+private:
+    typedef typename boost::shared_ptr< dcl::network::message::release_message< TYPE > > release_message_sp_t;
+
+    release_message_sp_t message_;
+    dcl::info::object_manager< DCL_TYPE >& manager_;
+
 public:
 	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE >& manager ) :
-		server_command< TYPE >( message_sp ), manager_( manager ){}
+		message_( boost::static_pointer_cast< dcl::network::message::release_message< TYPE > >( message_sp ) ),
+        manager_( manager ){}
 		
 	virtual void execute()
 	{
-		dcl::remote_id_t obj_id = this->message_.get_remote_id();
+		dcl::remote_id_t obj_id = this->message_->get_remote_id();
 
 		DCL_TYPE* obj_ptr = manager_.get( obj_id );
 		
 		delete obj_ptr;
 	}
-	
-private:
-	dcl::info::object_manager< DCL_TYPE >& manager_;
 };
 //-----------------------------------------------------------------------------
 class msg_flush_server_command :
