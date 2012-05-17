@@ -137,7 +137,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msgGetEventInfo );
         MSG_NOT_IMPLEMENTED( msgRetainEvent );
         MSG_NOT_IMPLEMENTED( msgReleaseEvent );
-        MSG_NOT_IMPLEMENTED( msgGetEventProfilingInfo );
+        MSG( msgGetEventProfilingInfo );
 
         MSG( msgFlush );
         MSG( msgFinish );
