@@ -131,7 +131,7 @@ public:
 
         if( it == object_map_.end() )
         {
-            throw library_exception( "object_manager<>::get : Invalid object id", object_id );
+            throw library_exception( "object_manager<>::get : Invalid object id" );
         }
 
         return it->second;

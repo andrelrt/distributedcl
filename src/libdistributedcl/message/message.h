@@ -337,21 +337,12 @@ protected:
     {
         return( sizeof(enqueue_message_request) + 
                 events_.size() * sizeof(dcl::remote_id_t) );
-//                (events_.size() - 1) * sizeof(dcl::remote_id_t) );
     }
-
-//    inline std::size_t get_enqueue_response_size()
-//    {
-//        return( 0 );
-////        return( sizeof(enqueue_message_response) );
-//    }
 
     virtual void update_request_size() = 0;
 
     virtual void* create_enqueue_request( void* payload_ptr );
-    //virtual void* create_enqueue_response( void* payload_ptr );
     virtual const void* parse_enqueue_request( const void* payload_ptr );
-    //virtual const void* parse_enqueue_response( const void* payload_ptr );
 
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary

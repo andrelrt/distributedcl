@@ -29,6 +29,7 @@
 #include "message/message.h"
 #include "message/msg_internal.h"
 #include "network/server_session.h"
+#include "composite/composite_command_queue.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -43,6 +44,7 @@ class command
 public:
     virtual void execute() = 0;
     virtual void enqueue_response(){}
+    virtual dcl::composite::composite_command_queue* get_queue(){ return NULL; }
 };
 //-----------------------------------------------------------------------------
 class async_server
@@ -70,7 +72,8 @@ private:
     static async_server* instance_ptr_;
 
     bool stop_;
-    mutex_t mutex_;
+    mutex_t queue_mutex_;
+    mutex_t execute_mutex_;
     boost::scoped_ptr< boost::thread > async_execute_sp_;
     boost::interprocess::interprocess_semaphore semaphore_;
     std::queue< boost::shared_ptr< command > > server_command_queue_;
@@ -101,6 +104,7 @@ class async_server_command :
 {
 private:
     dcl::network::server::server_messages* waiting_messages_ptr_;
+    dcl::composite::composite_command_queue* queue_ptr_;
 
 public:
     inline void async_execute( boost::shared_ptr< command > command_sp )
@@ -120,12 +124,22 @@ public:
         waiting_messages_ptr_->add( server_command< TYPE >::message_ );
     }
 
+    dcl::composite::composite_command_queue* get_queue()
+    {
+        return queue_ptr_;
+    }
+
 protected:
     async_server_command( message_sp_t message_sp, dcl::network::server::server_messages* waiting_messages_ptr ) :
         server_command< TYPE >( message_sp ),
-        waiting_messages_ptr_( waiting_messages_ptr ){}
+        waiting_messages_ptr_( waiting_messages_ptr ), queue_ptr_( NULL ){}
         
 	virtual bool async_run() const = 0;
+
+    inline void set_command_queue( dcl::composite::composite_command_queue* queue_ptr )
+    {
+        queue_ptr_ = queue_ptr;
+    }
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type TYPE, class DCL_TYPE >

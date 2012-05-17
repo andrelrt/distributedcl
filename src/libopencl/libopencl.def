@@ -42,7 +42,7 @@ EXPORTS
     clGetDeviceIDs                  @40
     clGetDeviceInfo                 @41
 ;    clGetEventInfo                  @42
-;    clGetEventProfilingInfo         @43
+    clGetEventProfilingInfo         @43
 ;    clGetExtensionFunctionAddress   @44
 ;    clGetGLObjectInfo               @45
 ;    clGetGLTextureInfo              @46

@@ -69,6 +69,8 @@ void msgEnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
+    set_command_queue( queue_ptr );
+
     dcl::events_t events;
 
     if( !message_->get_events().empty() )
@@ -102,12 +104,12 @@ void msgEnqueueNDRangeKernel_command::execute()
                              NULL );
     }
 
-    queue_ptr->flush();
+    //queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueNDRangeKernel_command::async_run() const
 {
-    return false;
+    return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------

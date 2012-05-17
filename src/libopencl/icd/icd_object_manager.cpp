@@ -78,7 +78,7 @@ icd_object_manager::icd_object_manager()
     FILL_DISPATCH_ITEM( clGetDeviceIDs );
     FILL_DISPATCH_ITEM( clGetDeviceInfo );
     //FILL_DISPATCH_ITEM( clGetEventInfo );
-    //FILL_DISPATCH_ITEM( clGetEventProfilingInfo );
+    FILL_DISPATCH_ITEM( clGetEventProfilingInfo );
     //FILL_DISPATCH_ITEM( clGetExtensionFunctionAddress );
     //FILL_DISPATCH_ITEM( clGetGLObjectInfo );
     //FILL_DISPATCH_ITEM( clGetGLTextureInfo );

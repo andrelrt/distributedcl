@@ -68,6 +68,8 @@ void msgEnqueueWriteBuffer_command::execute()
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
+    set_command_queue( queue_ptr );
+
     dcl::events_t events;
 
     if( !message_->get_events().empty() )
@@ -102,12 +104,12 @@ void msgEnqueueWriteBuffer_command::execute()
                            false, events, NULL );
     }
 
-    queue_ptr->flush();
+    //queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteBuffer_command::async_run() const
 {
-    return false;
+    return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
@@ -120,6 +122,8 @@ void msgEnqueueReadBuffer_command::execute()
     
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
+
+    set_command_queue( queue_ptr );
 
     message_->allocate_buffer();
 
@@ -159,12 +163,12 @@ void msgEnqueueReadBuffer_command::execute()
                           true, events, NULL );
     }
 
-    queue_ptr->flush();
+    //queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
 {
-    return false;
+    return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
