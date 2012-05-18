@@ -60,7 +60,7 @@ public:
 			msg_ptr->set_remote_id( remote_id_ );
 
 			message_sp_t message_sp( msg_ptr );
-			session_ref_.enqueue_message( message_sp );
+			session_ref_.send_message( message_sp ); //enqeue
 		}
 	}
 

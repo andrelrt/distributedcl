@@ -48,29 +48,50 @@ void async_server::enqueue( boost::shared_ptr< command > command_sp )
 void async_server::wait()
 {
     semaphore_.post();
-    
-    //async_wait_.wait();
 
+    scoped_lock_t lock_queue( execute_mutex_ );
+}
+//-----------------------------------------------------------------------------
+void async_server::flush()
+{
+    scoped_lock_t lock_queue( execute_mutex_ );
     while( 1 )
     {
+        boost::shared_ptr< command > running_cmd;
         {
-            scoped_lock_t lock( queue_mutex_ );
+            scoped_lock_t lock_queue( queue_mutex_ );
 
             if( server_command_queue_.empty() )
                 break;
+
+            running_cmd.swap( server_command_queue_.front() );
+
+            server_command_queue_.pop();
         }
 
-        boost::this_thread::sleep( boost::posix_time::milliseconds( 10 ) );
-    }
+        try
+        {
+            running_cmd->execute();
+            running_cmd->enqueue_response();
+        }
+        catch( dcl::library_exception& ex )
+        {
+            running_cmd->enqueue_error( ex.get_error() );
+        }
+        catch( ... )
+        {
+            running_cmd->enqueue_error( CL_INVALID_VALUE );
+        }
 
-    //{
-        //scoped_lock_t lock_execute( execute_mutex_ );
-    //}
+        if( running_cmd->get_queue() != NULL )
+        {
+            queues_.insert( running_cmd->get_queue() );
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 void async_server::work_thread()
 {
-    std::set< composite_command_queue* > queues;
     std::set< composite_command_queue* >::iterator it;
 
     while( 1 )
@@ -82,39 +103,15 @@ void async_server::work_thread()
 
         while( 1 )
         {
-            boost::shared_ptr< command > running_cmd;
-            {
-                scoped_lock_t lock_queue( queue_mutex_ );
-
-                if( server_command_queue_.empty() )
-                    break;
-
-                running_cmd.swap( server_command_queue_.front() );
-
-                server_command_queue_.pop();
-            }
-
-            running_cmd->execute();
-            running_cmd->enqueue_response();
-
-            if( running_cmd->get_queue() != NULL )
-            {
-                queues.insert( running_cmd->get_queue() );
-            }
+            flush();
         }
         
-        //if( !async_wait_.try_wait() )
-        //{
-            //async_wait_.post();
-        //}
-        //async_wait_.post();
-
-        for( it = queues.begin(); it != queues.end(); it++ )
+        for( it = queues_.begin(); it != queues_.end(); it++ )
         {
             (*it)->flush();
         }
 
-        queues.clear();
+        queues_.clear();
     }
 }
 //-----------------------------------------------------------------------------

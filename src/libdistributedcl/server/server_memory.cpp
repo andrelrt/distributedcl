@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -72,15 +72,32 @@ void msgEnqueueWriteBuffer_command::execute()
 
     dcl::events_t events;
 
+    uint32_t count = message_->get_events().size();
+    std::cerr << "write - ptr: " << buffer_ptr
+              << ", queue: " << queue_ptr
+              << ", pointer: " << (void*) message_->get_buffer_pointer()
+              << ", size: " << message_->get_buffer_size()
+              << ", evcount: " << count;
+
+    for( uint32_t i = 0; i < count; i++ )
+    {
+        std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
+    }
+
+    std::cerr << std::endl;
+
     if( !message_->get_events().empty() )
     {
         async_server::get_instance().wait();
 
-        events.reserve( message_->get_events().size() );
+		uint32_t count = message_->get_events().size();
 
-        for( dcl::remote_ids_t::const_iterator it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
+        events.reserve( count );
+
+        for( uint32_t i = 0; i < count; i++ )
         {
-            events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
+			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
+            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
         }
     }
 
@@ -119,13 +136,27 @@ void msgEnqueueReadBuffer_command::execute()
 
     remote_id_t id = message_->get_remote_id();
     remote_id_t command_queue_id = message_->get_command_queue_id();
-    
+
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
     set_command_queue( queue_ptr );
 
     message_->allocate_buffer();
+
+    uint32_t count = message_->get_events().size();
+    std::cerr << "read - ptr: " << buffer_ptr
+              << ", queue: " << queue_ptr
+              << ", pointer: " << (void*) message_->get_buffer_pointer()
+              << ", size: " << message_->get_buffer_size()
+              << ", evcount: " << count;
+
+    for( uint32_t i = 0; i < count; i++ )
+    {
+        std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
+    }
+
+    std::cerr << std::endl;
 
     dcl::events_t events;
 
@@ -149,7 +180,7 @@ void msgEnqueueReadBuffer_command::execute()
         composite_event* ret_event = NULL;
 
         // Always blocking
-        buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(), 
+        buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
                           message_->get_buffer_size(), message_->get_offset(), true,
                           events, reinterpret_cast<generic_event**>( &ret_event ) );
 

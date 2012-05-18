@@ -44,6 +44,7 @@ class command
 public:
     virtual void execute() = 0;
     virtual void enqueue_response(){}
+    virtual void enqueue_error( int32_t error_code ){}
     virtual dcl::composite::composite_command_queue* get_queue(){ return NULL; }
 };
 //-----------------------------------------------------------------------------
@@ -73,16 +74,18 @@ private:
 
     bool stop_;
     mutex_t queue_mutex_;
+    mutex_t execute_mutex_;
     boost::scoped_ptr< boost::thread > async_execute_sp_;
     boost::interprocess::interprocess_semaphore semaphore_;
-    boost::interprocess::interprocess_semaphore async_wait_;
     std::queue< boost::shared_ptr< command > > server_command_queue_;
+    std::set< dcl::composite::composite_command_queue* > queues_;
 
-    async_server() : stop_( false ), semaphore_( 0 ), async_wait_( 0 )
+    async_server() : stop_( false ), semaphore_( 0 )
     {
         async_execute_sp_.reset( new boost::thread( &dcl::server::async_server::work_thread, this ) );
     }
-
+    
+    void flush();
     void work_thread();
 };
 //-----------------------------------------------------------------------------
@@ -124,6 +127,14 @@ public:
         waiting_messages_ptr_->add( server_command< TYPE >::message_ );
     }
 
+    virtual void enqueue_error( int32_t error_code )
+    {
+        message_sp_t
+            err_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( error_code ) );
+        
+        waiting_messages_ptr_->add( err_msg_sp );
+    }
+
     dcl::composite::composite_command_queue* get_queue()
     {
         return queue_ptr_;
@@ -142,27 +153,29 @@ protected:
     }
 };
 //-----------------------------------------------------------------------------
-template< dcl::network::message::message_type TYPE, class DCL_TYPE >
+template< dcl::network::message::message_type MESSAGE_T, class DCL_TYPE_T >
 class release_command : public command
 {
 private:
-    typedef typename boost::shared_ptr< dcl::network::message::release_message< TYPE > > release_message_sp_t;
+    typedef typename boost::shared_ptr< dcl::network::message::release_message< MESSAGE_T > > release_message_sp_t;
 
     release_message_sp_t message_;
-    dcl::info::object_manager< DCL_TYPE >& manager_;
+    dcl::info::object_manager< DCL_TYPE_T >& manager_;
 
 public:
-	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE >& manager ) :
-		message_( boost::static_pointer_cast< dcl::network::message::release_message< TYPE > >( message_sp ) ),
+	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE_T >& manager ) :
+		message_( boost::static_pointer_cast< dcl::network::message::release_message< MESSAGE_T > >( message_sp ) ),
         manager_( manager ){}
 		
 	virtual void execute()
 	{
 		dcl::remote_id_t obj_id = this->message_->get_remote_id();
 
-		DCL_TYPE* obj_ptr = manager_.get( obj_id );
+		DCL_TYPE_T* obj_ptr = manager_.get( obj_id );
 		
 		delete obj_ptr;
+        
+        manager_.remove( obj_id );
 	}
 };
 //-----------------------------------------------------------------------------

@@ -45,7 +45,7 @@ using dcl::network::server::server_messages;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-#define MSG_DEBUG
+//#define MSG_DEBUG
 #if defined MSG_DEBUG
 #define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
 #define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));std::cout<<"async dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
@@ -54,8 +54,7 @@ namespace server {
 #else
 #define MSG( x ) case x: {x##_command command(*it);command.execute();}break
 #define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));command_sp->async_execute(command_sp);}break
-#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
-//#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);command.execute();}break
+#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);command.execute();}break
 #define MSG_IGNORE( x ) case x: break
 #endif
 #define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("dispatch_messages: " #x " not implemented");break
