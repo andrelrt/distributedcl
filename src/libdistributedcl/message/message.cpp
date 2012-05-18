@@ -86,24 +86,30 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG( msg_dummy_message );
 
         // OpenCL base_messages [20-128)
+        
+        // Platform
         MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );
         MSG_NOT_IMPLEMENTED( msgGetPlatformInfo );
 
+        // Device
         MSG( msgGetDeviceIDs );
         MSG( msgGetDeviceInfo );
 
+        // Context
         MSG( msgCreateContext );
         MSG( msgCreateContextFromType );
         MSG_NOT_IMPLEMENTED( msgRetainContext );
         MSG_RELEASE( msgReleaseContext );
         MSG( msgGetContextInfo );
 
+        // Command queue
         MSG( msgCreateCommandQueue );
         MSG_NOT_IMPLEMENTED( msgRetainCommandQueue );
         MSG_RELEASE( msgReleaseCommandQueue );
         MSG_NOT_IMPLEMENTED( msgGetCommandQueueInfo );
         MSG_NOT_IMPLEMENTED( msgSetCommandQueueProperty );
 
+        // Memory object
         MSG( msgCreateBuffer );
         MSG( msgCreateImage2D );
         MSG_NOT_IMPLEMENTED( msgCreateImage3D );
@@ -113,11 +119,13 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msgGetMemObjectInfo );
         MSG_NOT_IMPLEMENTED( msgGetImageInfo );
 
+        // Sampler
         MSG_NOT_IMPLEMENTED( msgCreateSampler );
         MSG_NOT_IMPLEMENTED( msgRetainSampler );
         MSG_NOT_IMPLEMENTED( msgReleaseSampler );
         MSG_NOT_IMPLEMENTED( msgGetSamplerInfo );
 
+        // Program
         MSG( msgCreateProgramWithSource );
         MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
         MSG_NOT_IMPLEMENTED( msgRetainProgram );
@@ -127,20 +135,23 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msgGetProgramInfo );
         MSG( msgGetProgramBuildInfo );
 
+        // Kernel
         MSG( msgCreateKernel );
         MSG_NOT_IMPLEMENTED( msgCreateKernelsInProgram );
         MSG_NOT_IMPLEMENTED( msgRetainKernel );
-        MSG_NOT_IMPLEMENTED( msgReleaseKernel );
+        MSG_RELEASE( msgReleaseKernel );
         MSG( msgSetKernelArg );
         MSG_NOT_IMPLEMENTED( msgGetKernelInfo );
         MSG( msgGetKernelWorkGroupInfo );
 
+        // Event
         MSG( msgWaitForEvents );
         MSG_NOT_IMPLEMENTED( msgGetEventInfo );
         MSG_NOT_IMPLEMENTED( msgRetainEvent );
         MSG_RELEASE( msgReleaseEvent );
         MSG( msgGetEventProfilingInfo );
 
+        // Enqueue
         MSG( msgFlush );
         MSG( msgFinish );
 

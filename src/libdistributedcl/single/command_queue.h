@@ -35,30 +35,6 @@ class command_queue;
 class context;
 class device;
 //-----------------------------------------------------------------------------
-template<>
-struct context_wrapper< command_queue >
-{
-    static void context_attach( context* context_ptr, command_queue* command_queue_ptr );
-};
-//-----------------------------------------------------------------------------
-template<>
-struct reference_wrapper< cl_command_queue >
-{
-    //-------------------------------------------------------------------------
-    static inline void retain( const opencl_library& opencl, cl_command_queue queue )
-    {
-        if( opencl.loaded() )
-            opencl.clRetainCommandQueue( queue );
-    }
-
-    //-------------------------------------------------------------------------
-    static inline void release( const opencl_library& opencl, cl_command_queue queue )
-    {
-        if( opencl.loaded() )
-            opencl.clReleaseCommandQueue( queue );
-    }
-};
-//-----------------------------------------------------------------------------
 class command_queue :
     public dcl::info::generic_command_queue,
     public opencl_object< cl_command_queue >,
@@ -68,7 +44,7 @@ public:
     command_queue( const context& context_ref, const device& device_ref, 
                    cl_command_queue_properties properties );
 
-    ~command_queue(){}
+    ~command_queue();
 
     virtual void flush() const;
     virtual void finish() const;

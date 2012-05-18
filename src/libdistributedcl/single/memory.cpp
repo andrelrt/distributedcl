@@ -54,6 +54,11 @@ memory::memory( const context& context_ref, const void* host_ptr, size_t size, c
     }
 }
 //-----------------------------------------------------------------------------
+memory::~memory()
+{
+    opencl_.clReleaseMemObject( get_id() );
+}
+//-----------------------------------------------------------------------------
 void memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
                     size_t size, size_t offset, cl_bool blocking,
                     events_t& wait_events, generic_event** ret_event_ptr )
@@ -264,6 +269,11 @@ image::image( const context& context_ref, const void* host_ptr, cl_mem_flags fla
 
         set_id( mem );
     }
+}
+//-----------------------------------------------------------------------------
+image::~image()
+{
+    opencl_.clReleaseMemObject( get_id() );
 }
 //-----------------------------------------------------------------------------
 void image::unmap( generic_command_queue* queue_ptr, void* data_ptr,

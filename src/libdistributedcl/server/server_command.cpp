@@ -48,6 +48,9 @@ void async_server::enqueue( boost::shared_ptr< command > command_sp )
 void async_server::wait()
 {
     semaphore_.post();
+    
+    //async_wait_.wait();
+
     while( 1 )
     {
         {
@@ -60,7 +63,9 @@ void async_server::wait()
         boost::this_thread::sleep( boost::posix_time::milliseconds( 10 ) );
     }
 
-    scoped_lock_t lock_execute( execute_mutex_ );
+    //{
+        //scoped_lock_t lock_execute( execute_mutex_ );
+    //}
 }
 //-----------------------------------------------------------------------------
 void async_server::work_thread()
@@ -77,8 +82,6 @@ void async_server::work_thread()
 
         while( 1 )
         {
-            scoped_lock_t lock_execute( execute_mutex_ );
-
             boost::shared_ptr< command > running_cmd;
             {
                 scoped_lock_t lock_queue( queue_mutex_ );
@@ -99,6 +102,12 @@ void async_server::work_thread()
                 queues.insert( running_cmd->get_queue() );
             }
         }
+        
+        //if( !async_wait_.try_wait() )
+        //{
+            //async_wait_.post();
+        //}
+        //async_wait_.post();
 
         for( it = queues.begin(); it != queues.end(); it++ )
         {

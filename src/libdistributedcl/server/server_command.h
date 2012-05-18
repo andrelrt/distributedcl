@@ -73,12 +73,12 @@ private:
 
     bool stop_;
     mutex_t queue_mutex_;
-    mutex_t execute_mutex_;
     boost::scoped_ptr< boost::thread > async_execute_sp_;
     boost::interprocess::interprocess_semaphore semaphore_;
+    boost::interprocess::interprocess_semaphore async_wait_;
     std::queue< boost::shared_ptr< command > > server_command_queue_;
 
-    async_server() : stop_( false ), semaphore_( 0 )
+    async_server() : stop_( false ), semaphore_( 0 ), async_wait_( 0 )
     {
         async_execute_sp_.reset( new boost::thread( &dcl::server::async_server::work_thread, this ) );
     }
