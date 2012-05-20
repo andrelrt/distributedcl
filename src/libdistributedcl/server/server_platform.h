@@ -42,8 +42,8 @@ class msgGetDeviceIDs_command :
     public server_command< dcl::network::message::msgGetDeviceIDs >
 {
 public:
-    msgGetDeviceIDs_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr ) {}
+    msgGetDeviceIDs_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -52,8 +52,8 @@ class msgGetDeviceInfo_command :
     public server_command< dcl::network::message::msgGetDeviceInfo >
 {
 public:
-    msgGetDeviceInfo_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr ) {}
+    msgGetDeviceInfo_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgGetDeviceInfo >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -61,6 +61,12 @@ public:
 class server_platform
 {
 public:
+    server_platform(){}
+    ~server_platform()
+    {
+        clear_all_data();
+    }
+
     typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
@@ -69,25 +75,6 @@ public:
     typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_event > event_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_image > image_manager_t;
-
-private:
-    device_manager_t device_manager_;
-    context_manager_t context_manager_;
-    program_manager_t program_manager_;
-    kernel_manager_t kernel_manager_;
-    command_queue_manager_t command_queue_manager_;
-    memory_manager_t memory_manager_;
-    event_manager_t event_manager_;
-    image_manager_t image_manager_;
-    static server_platform instance_;
-
-    server_platform(){}
-
-public:
-    static server_platform& get_instance()
-    {
-        return instance_;
-    }
 
     inline device_manager_t& get_device_manager()
     {
@@ -128,6 +115,28 @@ public:
     {
         return image_manager_;
     }
+
+    inline void clear_all_data()
+    {
+        kernel_manager_.clear();
+        command_queue_manager_.clear();
+        memory_manager_.clear();
+        image_manager_.clear();
+
+        program_manager_.clear();
+        event_manager_.clear();
+        context_manager_.clear();
+    }
+
+private:
+    device_manager_t device_manager_;
+    context_manager_t context_manager_;
+    program_manager_t program_manager_;
+    kernel_manager_t kernel_manager_;
+    command_queue_manager_t command_queue_manager_;
+    memory_manager_t memory_manager_;
+    event_manager_t event_manager_;
+    image_manager_t image_manager_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

@@ -37,6 +37,8 @@ class composite_memory :
     public composite_object< dcl::info::generic_memory >
 {
 public:
+    static const char* get_name(){ return "composite_memory"; }
+
     composite_memory( const composite_context& context_ref,
                       const void* host_ptr, size_t size, cl_mem_flags flags );
 
@@ -63,6 +65,8 @@ class composite_image :
     public composite_object< dcl::info::generic_image >
 {
 public:
+    static const char* get_name(){ return "composite_image"; }
+
     composite_image( const composite_context& context_ref,
                      const void* host_ptr, cl_mem_flags flags,
                      const cl_image_format* format, size_t width,

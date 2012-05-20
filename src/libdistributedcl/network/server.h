@@ -23,8 +23,11 @@
 #ifndef _DCL_NETWORK_SERVER_H_
 #define _DCL_NETWORK_SERVER_H_
 
+#include <set>
 #include "distributedcl_internal.h"
 #include "server_session.h"
+#include <boost/thread.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -37,13 +40,27 @@ public:
     typedef COMM< server > communication_t;
     typedef typename COMM< server >::config_info_t config_info_t;
 
-    server( const config_info_t& config ) : communication_( config )
+    server( const config_info_t& config ) :
+        running_( true ), communication_( config ), semaphore_( 0 )
     {
+        oberver_thread_ptr_ = new boost::thread( &dcl::network::server::server<COMM>::observer_thread, this );
         communication_.startup( this );
     }
 
     ~server()
     {
+        running_ = false;
+        semaphore_.post();
+
+        oberver_thread_ptr_->join();
+
+        for( server_sessions_t::iterator it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
+        {
+            (*it)->shutdown();
+            delete *it;
+        }
+
+        open_sessions_.clear();
         communication_.shutdown();
     }
 
@@ -57,9 +74,11 @@ public:
     {
         typename server_session< COMM >::config_info_t config( connection, client );
 
-        server_session< COMM >* new_session = new server_session< COMM >( config );
+        server_session< COMM >* new_session = new server_session< COMM >( config, semaphore_ );
 
         new_session->startup();
+
+        open_sessions_.insert( new_session );
     }
 
     inline void wait()
@@ -68,7 +87,38 @@ public:
     }
 
 private:
+    typedef std::set< server_session< COMM >* > server_sessions_t;
+
+    bool running_;
     communication_t communication_;
+    server_sessions_t open_sessions_;
+    boost::interprocess::interprocess_semaphore semaphore_;
+    boost::thread* oberver_thread_ptr_;
+
+    void observer_thread()
+    {
+        while( running_ )
+        {
+            semaphore_.wait();
+
+            if( !running_ )
+                break;
+
+            for( server_sessions_t::iterator it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
+            {
+                if( !(*it)->running() )
+                {
+                    server_session< COMM >* session_ptr = *it;
+                    open_sessions_.erase( it );
+
+                    session_ptr->shutdown();
+                    delete session_ptr;
+                    break;
+                }
+            }
+
+        }
+    }
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

@@ -247,6 +247,8 @@ class generic_device :
     public dcl_object< device_info >
 {
 public:
+    static const char* get_name(){ return "generic_device"; }
+
     generic_device( const generic_platform* platform_ptr, cl_device_type type = 0 ) :
         info_loaded_( false ), platform_ptr_( platform_ptr )
     {

@@ -37,7 +37,7 @@ public:
     typedef COMM< session > communication_t;
     typedef typename COMM< session >::config_info_t config_info_t;
 
-    static const session_id_t invalid_session = 0xffff;
+    static const session_id_t invalid_session = 0xffffffff;
 
     ~session(){}
 
@@ -121,12 +121,12 @@ protected:
         packet_sp->setup( buffer_ptr, max_length, get_session_id(), get_sequence_number() );
     }
 
-    inline void send_packet( packet_sp_t packet_sp )
+    inline void send_packet( packet_sp_t packet_sp, bool blocking = true )
     {
         setup_packet( packet_sp );
         packet_sp->create_packet();
 
-        communication_.send_message( packet_sp->get_length() );
+        communication_.send_message( packet_sp->get_length(), blocking );
     }
 
 private:

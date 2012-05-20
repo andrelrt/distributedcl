@@ -35,6 +35,8 @@ class composite_kernel :
     public composite_object< dcl::info::generic_kernel >
 {
 public:
+    static const char* get_name(){ return "composite_kernel"; }
+
     composite_kernel( const composite_context& context_ref, const std::string& name ) :
         dcl::info::generic_kernel( name ),
         composite_object< dcl::info::generic_kernel >( context_ref ){}

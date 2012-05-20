@@ -34,8 +34,8 @@ class msgWaitForEvents_command :
     public server_command< dcl::network::message::msgWaitForEvents >
 {
 public:
-    msgWaitForEvents_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgWaitForEvents >( message_ptr ) {}
+    msgWaitForEvents_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgWaitForEvents >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -44,8 +44,8 @@ class msgGetEventProfilingInfo_command :
     public server_command< dcl::network::message::msgGetEventProfilingInfo >
 {
 public:
-    msgGetEventProfilingInfo_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgGetEventProfilingInfo >( message_ptr ) {}
+    msgGetEventProfilingInfo_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgGetEventProfilingInfo >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };

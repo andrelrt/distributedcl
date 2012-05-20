@@ -37,6 +37,8 @@ class composite_program :
     public composite_object< dcl::info::generic_program >
 {
 public:
+    static const char* get_name(){ return "composite_program"; }
+
     composite_program( const composite_context& context_ref, const std::string& source_code ) :
         dcl::info::generic_program( source_code ), 
         composite_object< dcl::info::generic_program >( context_ref ){}

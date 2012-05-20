@@ -34,8 +34,8 @@ class msgCreateKernel_command :
     public server_command< dcl::network::message::msgCreateKernel >
 {
 public:
-    msgCreateKernel_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgCreateKernel >( message_ptr ) {}
+    msgCreateKernel_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateKernel >( message_ptr, session_context_ptr ){}
 
     void execute();
 };
@@ -44,9 +44,8 @@ class msgEnqueueNDRangeKernel_command :
     public async_server_command< dcl::network::message::msgEnqueueNDRangeKernel >
 {
 public:
-    msgEnqueueNDRangeKernel_command( message_sp_t message_ptr,
-                                     dcl::network::server::server_messages* waiting_messages_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueNDRangeKernel >( message_ptr, waiting_messages_ptr ) {}
+    msgEnqueueNDRangeKernel_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        async_server_command< dcl::network::message::msgEnqueueNDRangeKernel >( message_ptr, session_context_ptr ) {}
 
     void execute();
     virtual bool async_run() const;
@@ -56,8 +55,8 @@ class msgSetKernelArg_command :
     public server_command< dcl::network::message::msgSetKernelArg >
 {
 public:
-    msgSetKernelArg_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgSetKernelArg >( message_ptr ) {}
+    msgSetKernelArg_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgSetKernelArg >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -66,8 +65,8 @@ class msgGetKernelWorkGroupInfo_command :
     public server_command< dcl::network::message::msgGetKernelWorkGroupInfo >
 {
 public:
-    msgGetKernelWorkGroupInfo_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgGetKernelWorkGroupInfo >( message_ptr ) {}
+    msgGetKernelWorkGroupInfo_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgGetKernelWorkGroupInfo >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };

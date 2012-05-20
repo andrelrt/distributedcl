@@ -34,8 +34,8 @@ class msgCreateProgramWithSource_command :
     public server_command< dcl::network::message::msgCreateProgramWithSource >
 {
 public:
-    msgCreateProgramWithSource_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgCreateProgramWithSource >( message_ptr ) {}
+    msgCreateProgramWithSource_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateProgramWithSource >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -44,8 +44,8 @@ class msgBuildProgram_command :
     public server_command< dcl::network::message::msgBuildProgram >
 {
 public:
-    msgBuildProgram_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgBuildProgram >( message_ptr ) {}
+    msgBuildProgram_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgBuildProgram >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -54,8 +54,8 @@ class msgGetProgramBuildInfo_command :
     public server_command< dcl::network::message::msgGetProgramBuildInfo >
 {
 public:
-    msgGetProgramBuildInfo_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetProgramBuildInfo >( message_ptr ) {}
+    msgGetProgramBuildInfo_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgGetProgramBuildInfo >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };

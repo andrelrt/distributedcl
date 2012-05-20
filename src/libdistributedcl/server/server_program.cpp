@@ -35,7 +35,7 @@ namespace server {
 //-----------------------------------------------------------------------------
 void msgCreateProgramWithSource_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t context_id = message_->get_context_id();
 
@@ -51,7 +51,7 @@ void msgCreateProgramWithSource_command::execute()
 //-----------------------------------------------------------------------------
 void msgBuildProgram_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t program_id = message_->get_program_id();
 
@@ -72,7 +72,7 @@ void msgBuildProgram_command::execute()
 //-----------------------------------------------------------------------------
 void msgGetProgramBuildInfo_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t program_id = message_->get_remote_id();
     remote_id_t device_id = message_->get_device_id();

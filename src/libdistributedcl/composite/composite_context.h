@@ -54,6 +54,8 @@ private:
 public:
     typedef contexts_t::const_iterator iterator;
 
+    static const char* get_name(){ return "composite_context"; }
+
     composite_context();
     ~composite_context();
 

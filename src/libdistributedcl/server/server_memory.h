@@ -34,8 +34,8 @@ class msgCreateBuffer_command :
     public server_command< dcl::network::message::msgCreateBuffer >
 {
 public:
-    msgCreateBuffer_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgCreateBuffer >( message_ptr ) {}
+    msgCreateBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateBuffer >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -44,9 +44,8 @@ class msgEnqueueWriteBuffer_command :
     public async_server_command< dcl::network::message::msgEnqueueWriteBuffer >
 {
 public:
-    msgEnqueueWriteBuffer_command( message_sp_t message_ptr,
-                                   dcl::network::server::server_messages* waiting_messages_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr, waiting_messages_ptr ) {}
+    msgEnqueueWriteBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        async_server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr, session_context_ptr ) {}
 
     void execute();
     virtual bool async_run() const;
@@ -56,9 +55,8 @@ class msgEnqueueReadBuffer_command :
     public async_server_command< dcl::network::message::msgEnqueueReadBuffer >
 {
 public:
-    msgEnqueueReadBuffer_command( message_sp_t message_ptr,
-                                  dcl::network::server::server_messages* waiting_messages_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, waiting_messages_ptr ) {}
+    msgEnqueueReadBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, session_context_ptr ) {}
 
     void execute();
     virtual bool async_run() const;
@@ -68,8 +66,8 @@ class msgCreateImage2D_command :
     public server_command< dcl::network::message::msgCreateImage2D >
 {
 public:
-    msgCreateImage2D_command( message_sp_t message_ptr ) :
-        server_command< dcl::network::message::msgCreateImage2D >( message_ptr ) {}
+    msgCreateImage2D_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateImage2D >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };

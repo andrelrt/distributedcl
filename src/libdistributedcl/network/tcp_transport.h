@@ -165,7 +165,7 @@ public:
         socket_ = -1;
     }
 
-    inline void send_message( std::size_t size )
+    inline void send_message( std::size_t size, bool blocking )
     {
         if( (size == 0) ||
             (size > buffer_size_) )
@@ -173,10 +173,20 @@ public:
             throw dcl::library_exception( "Invalid buffer size" );
         }
 
+        int flags = 0;
+
+#if !defined( WIN32 )
+        flags = blocking ? 0 : MSG_DONTWAIT;
+#endif
         std::size_t ret_size = ::send( socket_,
                                        reinterpret_cast< const char * >( base_message_buffer_ptr_ ),
-                                       static_cast< int >( size ), 0 );
+                                       static_cast< int >( size ), flags );
+#if defined( WIN32 )
         if( ret_size != size )
+#else
+        if( ((blocking) && (ret_size != size)) ||
+            ((!blocking) && (ret_size == -1) && (errno != EAGAIN) && (errno != EWOULDBLOCK)) )
+#endif
         {
             throw dcl::library_exception( "Error sending data" );
         }
@@ -302,6 +312,11 @@ private:
             if( chunk_size == -1 )
             {
                 throw dcl::library_exception( "Recv Error" );
+            }
+
+            if( chunk_size == 0 )
+            {
+                throw dcl::library_exception( "Orderly shutdown" );
             }
 
             recv_size += chunk_size;

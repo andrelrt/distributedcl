@@ -44,7 +44,7 @@ void msgCreateContext_command::execute()
         opencl_composite::get_instance().get_platform();
 
     server_platform::device_manager_t& device_manager =
-        server_platform::get_instance().get_device_manager();
+        session_context_ptr_->get_server_platform().get_device_manager();
 
     const remote_ids_t& device_ids = message_->get_devices();
     devices_t devices;
@@ -59,7 +59,7 @@ void msgCreateContext_command::execute()
     composite_context* context_ptr =
         reinterpret_cast<composite_context*>( platform.create_context( devices ) );
 
-    message_->set_remote_id( server_platform::get_instance().get_context_manager().get( context_ptr, true ) );
+    message_->set_remote_id( session_context_ptr_->get_server_platform().get_context_manager().get( context_ptr, true ) );
 }
 //-----------------------------------------------------------------------------
 void msgCreateContextFromType_command::execute()
@@ -72,14 +72,14 @@ void msgCreateContextFromType_command::execute()
     composite_context* context_ptr =
         reinterpret_cast<composite_context*>( platform.create_context( device_type ) );
 
-    message_->set_remote_id( server_platform::get_instance().get_context_manager().get( context_ptr, true ) );
+    message_->set_remote_id( session_context_ptr_->get_server_platform().get_context_manager().get( context_ptr, true ) );
 }
 //-----------------------------------------------------------------------------
 void msgGetContextInfo_command::execute()
 {
     remote_id_t id = message_->get_remote_id();
 
-    composite_context* context_ptr = server_platform::get_instance().get_context_manager().get( id );
+    composite_context* context_ptr = session_context_ptr_->get_server_platform().get_context_manager().get( id );
 
     const devices_t& devices_ref = context_ptr->get_devices();
 
@@ -89,7 +89,7 @@ void msgGetContextInfo_command::execute()
 
     for( it = devices_ref.begin(); it != devices_ref.end(); it++ )
     {
-        message_->add_device( server_platform::get_instance().get_device_manager().get( *it, true ) );
+        message_->add_device( session_context_ptr_->get_server_platform().get_device_manager().get( *it, true ) );
     }
 }
 //-----------------------------------------------------------------------------

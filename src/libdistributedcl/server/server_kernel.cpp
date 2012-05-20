@@ -45,7 +45,7 @@ namespace server {
 //-----------------------------------------------------------------------------
 void msgCreateKernel_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t program_id = message_->get_program_id();
 
@@ -61,7 +61,7 @@ void msgCreateKernel_command::execute()
 //-----------------------------------------------------------------------------
 void msgEnqueueNDRangeKernel_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     composite_command_queue* queue_ptr = 
         server.get_command_queue_manager().get( message_->get_command_queue_id() );
@@ -115,7 +115,7 @@ bool msgEnqueueNDRangeKernel_command::async_run() const
 //-----------------------------------------------------------------------------
 void msgSetKernelArg_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
@@ -151,7 +151,7 @@ void msgSetKernelArg_command::execute()
 //-----------------------------------------------------------------------------
 void msgGetKernelWorkGroupInfo_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );

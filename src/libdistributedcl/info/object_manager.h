@@ -120,7 +120,7 @@ public:
         }
 
         if( !create_new )
-            throw library_exception( "object_manager<>::get : Invalid object pointer" );
+            throw library_exception( (std::string( "object_manager<" ) + DCL_TYPE_T::get_name() + ">::get : Invalid object pointer").c_str() );
 
         return add( object_ptr );
     }
@@ -131,7 +131,7 @@ public:
 
         if( it == object_map_.end() )
         {
-            throw library_exception( "object_manager<>::get : Invalid object id", object_id );
+            throw library_exception( (std::string( "object_manager<" ) + DCL_TYPE_T::get_name() + ">::get : Invalid object id").c_str(), object_id );
         }
 
         return it->second;
@@ -149,8 +149,16 @@ public:
         return object_map_.empty();
     }
 
-    inline void get_objects()
+    inline void clear()
     {
+        typename object_map_t::const_iterator it;
+
+        for( it = object_map_.begin(); it != object_map_.end(); it++ )
+        {
+            delete it->second;
+        }
+
+        object_map_.clear();
     }
 
 private:

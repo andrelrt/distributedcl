@@ -95,10 +95,12 @@ class server_command : public command
 protected:
     typedef typename boost::shared_ptr< dcl::network::message::dcl_message< TYPE > > dcl_message_sp_t;
 
-    server_command( message_sp_t message_sp ) :
-        message_( boost::static_pointer_cast< dcl::network::message::dcl_message< TYPE > >( message_sp ) ){}
+    server_command( message_sp_t message_sp, dcl::network::server::server_session_context* session_context_ptr ) :
+        message_( boost::static_pointer_cast< dcl::network::message::dcl_message< TYPE > >( message_sp ) ),
+        session_context_ptr_( session_context_ptr ){}
 
     dcl_message_sp_t message_;
+    dcl::network::server::server_session_context* session_context_ptr_;
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type TYPE >
@@ -106,7 +108,6 @@ class async_server_command :
     public server_command< TYPE >
 {
 private:
-    dcl::network::server::server_messages* waiting_messages_ptr_;
     dcl::composite::composite_command_queue* queue_ptr_;
 
 public:
@@ -124,15 +125,21 @@ public:
 
     virtual void enqueue_response()
     {
-        waiting_messages_ptr_->add( server_command< TYPE >::message_ );
+        if( session_context_ptr_ != NULL )
+        {
+            session_context_ptr_->add( server_command< TYPE >::message_ );
+        }
     }
 
     virtual void enqueue_error( int32_t error_code )
     {
-        message_sp_t
-            err_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( error_code ) );
-        
-        waiting_messages_ptr_->add( err_msg_sp );
+        if( session_context_ptr_ != NULL )
+        {
+            message_sp_t
+                err_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( error_code ) );
+
+            session_context_ptr_->add( err_msg_sp );
+        }
     }
 
     dcl::composite::composite_command_queue* get_queue()
@@ -141,9 +148,8 @@ public:
     }
 
 protected:
-    async_server_command( message_sp_t message_sp, dcl::network::server::server_messages* waiting_messages_ptr ) :
-        server_command< TYPE >( message_sp ),
-        waiting_messages_ptr_( waiting_messages_ptr ), queue_ptr_( NULL ){}
+    async_server_command( message_sp_t message_sp, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< TYPE >( message_sp, session_context_ptr ), queue_ptr_( NULL ){}
         
 	virtual bool async_run() const = 0;
 
@@ -154,7 +160,7 @@ protected:
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type MESSAGE_T, class DCL_TYPE_T >
-class release_command : public command
+class release_command : public async_server_command< MESSAGE_T >
 {
 private:
     typedef typename boost::shared_ptr< dcl::network::message::release_message< MESSAGE_T > > release_message_sp_t;
@@ -162,8 +168,12 @@ private:
     release_message_sp_t message_;
     dcl::info::object_manager< DCL_TYPE_T >& manager_;
 
+    virtual bool async_run() const{ return true; }
+
 public:
-	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE_T >& manager ) :
+	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE_T >& manager,
+                     dcl::network::server::server_session_context* session_context_ptr ) :
+        async_server_command< MESSAGE_T >( message_sp, session_context_ptr ),
 		message_( boost::static_pointer_cast< dcl::network::message::release_message< MESSAGE_T > >( message_sp ) ),
         manager_( manager ){}
 		
@@ -183,8 +193,8 @@ class msg_flush_server_command :
     public server_command< dcl::network::message::msg_flush_server >
 {
 public:
-    msg_flush_server_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msg_flush_server >( message_ptr ) {}
+    msg_flush_server_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msg_flush_server >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };

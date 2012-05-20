@@ -73,6 +73,8 @@ public:
     generic_event(){}
     virtual ~generic_event(){}
 
+    static const char* get_name(){ return "generic_event"; }
+
     virtual void wait() = 0;
     virtual void load_info() = 0;
 };

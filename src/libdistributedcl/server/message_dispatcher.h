@@ -28,7 +28,7 @@
 namespace dcl {
 namespace network {
 namespace server {
-class server_messages;
+class server_session_context;
 }}}
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -37,7 +37,7 @@ namespace server {
 class message_dispatcher
 {
 public:
-    void dispatch_messages( dcl::message_vector_t& messages, dcl::network::server::server_messages* waiting_messages_ptr );
+    void dispatch_messages( dcl::message_vector_t& messages, dcl::network::server::server_session_context* session_context_ptr );
     void flush_async_queue();
 };
 //-----------------------------------------------------------------------------

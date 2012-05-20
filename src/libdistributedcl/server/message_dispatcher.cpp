@@ -40,29 +40,29 @@
 #include "composite/composite_event.h"
 using namespace dcl::network::message;
 using namespace dcl::composite;
-using dcl::network::server::server_messages;
+using dcl::network::server::server_session_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
 //#define MSG_DEBUG
 #if defined MSG_DEBUG
-#define MSG( x ) case x: {x##_command command(*it);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
-#define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));std::cout<<"async dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
-#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
+#define MSG( x ) case x: {x##_command command(*it,session_context_ptr);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
+#define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,session_context_ptr));std::cout<<"async dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
+#define MSG_RELEASE( x, y, d ) case x: {boost::shared_ptr<release_command>command_sp(new release_command<x,d>(*it,y,session_context_ptr);std::cout<<"sync dispatch message " #x "..."<<std::endl;command_sp->async_execute(command_sp);}break
 #define MSG_IGNORE( x ) case x: std::cout<<"ignoring message " #x "..."<<std::endl;break
 #else
-#define MSG( x ) case x: {x##_command command(*it);command.execute();}break
-#define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,waiting_messages_ptr));command_sp->async_execute(command_sp);}break
-#define MSG_RELEASE( x, y, d ) case x: {release_command< x, d > command(*it, y);command.execute();}break
+#define MSG( x ) case x: {x##_command command(*it,session_context_ptr);command.execute();}break
+#define MSG_ASYNC( x ) case x: {boost::shared_ptr<x##_command>command_sp(new x##_command(*it,session_context_ptr));command_sp->async_execute(command_sp);}break
+#define MSG_RELEASE( x, y, d ) case x: {boost::shared_ptr<release_command<x,d> >command_sp(new release_command<x,d>(*it,y,session_context_ptr));command_sp->async_execute(command_sp);}break
 #define MSG_IGNORE( x ) case x: break
 #endif
 #define MSG_NOT_IMPLEMENTED( x ) case x: throw dcl::library_exception("dispatch_messages: " #x " not implemented");break
 //-----------------------------------------------------------------------------
-void message_dispatcher::dispatch_messages( message_vector_t& messages, server_messages* waiting_messages_ptr )
+void message_dispatcher::dispatch_messages( message_vector_t& messages, server_session_context* session_context_ptr )
 {
     message_vector_t::iterator it;
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr->get_server_platform();
 
     for( it = messages.begin(); it != messages.end(); it++ )
     {

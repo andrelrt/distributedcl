@@ -40,7 +40,7 @@ namespace server {
 //-----------------------------------------------------------------------------
 void msgCreateBuffer_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t context_id = message_->get_context_id();
 
@@ -60,7 +60,7 @@ void msgCreateBuffer_command::execute()
 //-----------------------------------------------------------------------------
 void msgEnqueueWriteBuffer_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t id = message_->get_remote_id();
     remote_id_t command_queue_id = message_->get_command_queue_id();
@@ -73,18 +73,18 @@ void msgEnqueueWriteBuffer_command::execute()
     dcl::events_t events;
 
     uint32_t count = message_->get_events().size();
-    std::cerr << "write - ptr: " << buffer_ptr
-              << ", queue: " << queue_ptr
-              << ", pointer: " << (void*) message_->get_buffer_pointer()
-              << ", size: " << message_->get_buffer_size()
-              << ", evcount: " << count;
+    //std::cerr << "write - ptr: " << buffer_ptr
+    //          << ", queue: " << queue_ptr
+    //          << ", pointer: " << (void*) message_->get_buffer_pointer()
+    //          << ", size: " << message_->get_buffer_size()
+    //          << ", evcount: " << count;
 
-    for( uint32_t i = 0; i < count; i++ )
-    {
-        std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
-    }
+    //for( uint32_t i = 0; i < count; i++ )
+    //{
+    //    std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
+    //}
 
-    std::cerr << std::endl;
+    //std::cerr << std::endl;
 
     if( !message_->get_events().empty() )
     {
@@ -132,7 +132,7 @@ bool msgEnqueueWriteBuffer_command::async_run() const
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t id = message_->get_remote_id();
     remote_id_t command_queue_id = message_->get_command_queue_id();
@@ -145,18 +145,18 @@ void msgEnqueueReadBuffer_command::execute()
     message_->allocate_buffer();
 
     uint32_t count = message_->get_events().size();
-    std::cerr << "read - ptr: " << buffer_ptr
-              << ", queue: " << queue_ptr
-              << ", pointer: " << (void*) message_->get_buffer_pointer()
-              << ", size: " << message_->get_buffer_size()
-              << ", evcount: " << count;
+    //std::cerr << "read - ptr: " << buffer_ptr
+    //          << ", queue: " << queue_ptr
+    //          << ", pointer: " << (void*) message_->get_buffer_pointer()
+    //          << ", size: " << message_->get_buffer_size()
+    //          << ", evcount: " << count;
 
-    for( uint32_t i = 0; i < count; i++ )
-    {
-        std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
-    }
+    //for( uint32_t i = 0; i < count; i++ )
+    //{
+    //    std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
+    //}
 
-    std::cerr << std::endl;
+    //std::cerr << std::endl;
 
     dcl::events_t events;
 
@@ -205,7 +205,7 @@ bool msgEnqueueReadBuffer_command::async_run() const
 //-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()
 {
-    server_platform& server = server_platform::get_instance();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t context_id = message_->get_context_id();
 

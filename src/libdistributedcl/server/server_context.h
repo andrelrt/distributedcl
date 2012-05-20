@@ -34,8 +34,8 @@ class msgCreateContext_command :
     public server_command< dcl::network::message::msgCreateContext >
 {
 public:
-    msgCreateContext_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgCreateContext >( message_ptr ) {}
+    msgCreateContext_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateContext >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -44,8 +44,8 @@ class msgCreateContextFromType_command :
     public server_command< dcl::network::message::msgCreateContextFromType >
 {
 public:
-    msgCreateContextFromType_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgCreateContextFromType >( message_ptr ) {}
+    msgCreateContextFromType_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateContextFromType >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };
@@ -54,8 +54,8 @@ class msgGetContextInfo_command :
     public server_command< dcl::network::message::msgGetContextInfo >
 {
 public:
-    msgGetContextInfo_command( message_sp_t message_ptr ) : 
-        server_command< dcl::network::message::msgGetContextInfo >( message_ptr ) {}
+    msgGetContextInfo_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgGetContextInfo >( message_ptr, session_context_ptr ) {}
 
     void execute();
 };

@@ -36,8 +36,6 @@ using dcl::remote_id_t;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-server_platform server_platform::instance_;
-//-----------------------------------------------------------------------------
 void msgGetDeviceIDs_command::execute()
 {
     const composite_platform& platform = opencl_composite::get_instance().get_platform();
@@ -46,7 +44,7 @@ void msgGetDeviceIDs_command::execute()
     for( devices_t::const_iterator it = devs.begin(); it != devs.end(); it++ )
     {
         composite_device* device_ptr = reinterpret_cast< composite_device* >( *it );
-        remote_id_t id = server_platform::get_instance().get_device_manager().add( device_ptr );
+        remote_id_t id = session_context_ptr_->get_server_platform().get_device_manager().add( device_ptr );
 
         switch( device_ptr->get_type() )
         {
@@ -75,7 +73,7 @@ void msgGetDeviceInfo_command::execute()
 {
     remote_id_t remote_id = message_->get_remote_id();
 
-    const composite_device* device_ptr = server_platform::get_instance().get_device_manager().get( remote_id );
+    const composite_device* device_ptr = session_context_ptr_->get_server_platform().get_device_manager().get( remote_id );
 
     message_->set_info( device_ptr->get_info() );
 }

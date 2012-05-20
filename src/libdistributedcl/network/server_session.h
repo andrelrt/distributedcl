@@ -33,40 +33,52 @@
 #include "message/msg_internal.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
+namespace server {
+class server_platform;
+}}
+//-----------------------------------------------------------------------------
+namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-class server_messages
+class server_session_context
 {
 public:
-    void add( message_sp_t message_sp )
+    inline void add( message_sp_t message_sp )
     {
         dcl::scoped_lock_t lock( waiting_messages_mutex_ );
 
         waiting_messages_.push_back( message_sp );
     }
 
-protected:
-    server_messages(){}
+    inline dcl::server::server_platform& get_server_platform()
+    {
+        return *server_platform_ptr_;
+    }
 
+protected:
     dcl::mutex_t waiting_messages_mutex_;
     dcl::message_vector_t waiting_messages_;
+    dcl::server::server_platform* server_platform_ptr_;
+
+    server_session_context();
+    virtual ~server_session_context();
 };
 //-----------------------------------------------------------------------------
 template< template< class > class COMM >
 class server_session :
     public dcl::network::platform::session< COMM >,
-    public server_messages
+    public server_session_context
 {
 public:
 	typedef typename dcl::network::platform::session< COMM > session_t;
 	typedef typename session_t::config_info_t config_info_t;
 
-    server_session( const config_info_t& config ) :
-        session_t( config ), receive_thread_ptr_( NULL )
+    server_session( const config_info_t& config, boost::interprocess::interprocess_semaphore& observer_semaphore ) :
+        session_t( config ), running_( false ), receive_thread_ptr_( NULL ), observer_semaphore_( observer_semaphore )
     {}
 
-    ~server_session()
+    virtual ~server_session()
     {
         shutdown();
     }
@@ -77,7 +89,7 @@ public:
         {
             session_t::get_communication().startup( this );
 
-            receive_thread_ptr_ = new boost::thread( &dcl::network::server::server_session< COMM >::receive_thread, this );
+            receive_thread_ptr_ = new boost::thread( &dcl::network::server::server_session< COMM >::start_thread, this );
         }
     }
 
@@ -98,9 +110,25 @@ public:
         session_t::get_communication().shutdown();
     }
 
+    inline bool running()
+    {
+        return running_;
+    }
+
 private:
+    bool running_;
     boost::thread* receive_thread_ptr_;
     dcl::server::message_dispatcher dispatcher_;
+    boost::interprocess::interprocess_semaphore& observer_semaphore_;
+
+    void start_thread()
+    {
+        running_ = true;
+        receive_thread();
+        
+        running_ = false;
+        observer_semaphore_.post();
+    }
 
     void receive_thread()
     {
@@ -125,7 +153,7 @@ private:
             }
 
             if( boost::this_thread::interruption_requested() )
-                break;
+                return;
 
             // Create response packet
             packet_sp_t ret_packet_sp( session_t::create_packet() );
@@ -188,12 +216,12 @@ private:
             }
 
             if( boost::this_thread::interruption_requested() )
-                break;
+                return;
 
             try
             {
                 // Send response
-                session_t::send_packet( ret_packet_sp );
+                session_t::send_packet( ret_packet_sp, true );
             }
             catch( dcl::library_exception& )
             {
