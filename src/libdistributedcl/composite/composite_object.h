@@ -47,7 +47,7 @@ template< class DCL_TYPE_T >
 class composite_object
 {
 public:
-    typedef std::map< dcl::info::generic_context*, DCL_TYPE_T* > composite_map_t;
+    typedef std::map< boost::shared_ptr<dcl::info::generic_context>, boost::shared_ptr<DCL_TYPE_T> > composite_map_t;
     typedef typename composite_map_t::const_iterator const_iterator;
 
 protected:
@@ -80,9 +80,10 @@ public:
         }
     }
 
-    inline void insert_context_object( dcl::info::generic_context* context_ptr, DCL_TYPE_T* new_obj )
+    inline void insert_context_object( boost::shared_ptr<dcl::info::generic_context> context_sp,
+                                       boost::shared_ptr<DCL_TYPE_T> obj_sp )
     {
-        composite_map_.insert( typename composite_map_t::value_type( context_ptr, new_obj ) );
+        composite_map_.insert( typename composite_map_t::value_type( context_sp, obj_sp ) );
     }
 
     inline const composite_context& get_context() const
@@ -100,9 +101,10 @@ public:
         return composite_map_.end();
     }
 
-    inline DCL_TYPE_T* find( const dcl::info::generic_context* ctx ) const
+    inline boost::shared_ptr<DCL_TYPE_T> find( boost::shared_ptr<const dcl::info::generic_context> ctx ) const
     {
-        const_iterator it = composite_map_.find( const_cast< dcl::info::generic_context* >( ctx ) );
+        const_iterator it =
+            composite_map_.find( boost::const_pointer_cast<dcl::info::generic_context>( ctx ) );
 
         if( it != composite_map_.end() )
         {

@@ -72,7 +72,7 @@ void composite_context::load_devices()
     }
 }
 //-----------------------------------------------------------------------------
-generic_program* composite_context::do_create_program( const std::string& source_code )
+boost::shared_ptr<generic_program> composite_context::do_create_program( const std::string& source_code )
 {
     contexts_t::iterator it;
 
@@ -80,29 +80,29 @@ generic_program* composite_context::do_create_program( const std::string& source
 
     for( it = contexts_.begin(); it != contexts_.end(); it++ )
     {
-        generic_program* program_ptr = (*it)->create_program( source_code );
+        boost::shared_ptr<generic_program> program_sp( (*it)->create_program( source_code ) );
 
-        programs->insert_context_object( *it, program_ptr );
+        programs->insert_context_object( *it, program_sp );
     }
 
-    return reinterpret_cast< generic_program* >( programs );
+    return boost::shared_ptr<generic_program>( reinterpret_cast< generic_program* >( programs ) );
 }
 //-----------------------------------------------------------------------------
-generic_command_queue*
-    composite_context::do_create_command_queue( const generic_device* device_ptr,
-                                                cl_command_queue_properties properties )
+boost::shared_ptr<generic_command_queue>
+composite_context::do_create_command_queue( const boost::shared_ptr<generic_device> device_sp,
+                                            cl_command_queue_properties properties )
 {
-    context_map_t::iterator it = context_map_.find( device_ptr );
+    context_map_t::iterator it = context_map_.find( device_sp );
 
     if( it == context_map_.end() )
     {
         throw dcl::library_exception( CL_INVALID_DEVICE );
     }
 
-    return it->second->create_command_queue( device_ptr, properties );
+    return it->second->create_command_queue( device_sp, properties );
 }
 //-----------------------------------------------------------------------------
-generic_memory*
+boost::shared_ptr<generic_memory>
 composite_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags )
 {
     contexts_t::iterator it;
@@ -111,15 +111,15 @@ composite_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_f
 
     for( it = contexts_.begin(); it != contexts_.end(); it++ )
     {
-        generic_memory* memory_ptr = (*it)->create_buffer( host_ptr, size, flags );
+        boost::shared_ptr<generic_memory> memory_sp( (*it)->create_buffer( host_ptr, size, flags ) );
 
-        memories->insert_context_object( *it, memory_ptr );
+        memories->insert_context_object( *it, memory_sp );
     }
 
-    return reinterpret_cast< generic_memory* >( memories );
+    return boost::shared_ptr<generic_memory>( reinterpret_cast< generic_memory* >( memories ) );
 }
 //-----------------------------------------------------------------------------
-generic_image*
+boost::shared_ptr<generic_image>
 composite_context::do_create_image( const void* host_ptr, cl_mem_flags flags,
                                     const cl_image_format* format, size_t width,
                                     size_t height, size_t row_pitch )

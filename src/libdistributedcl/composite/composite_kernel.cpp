@@ -79,16 +79,16 @@ void composite_kernel::set_argument( uint32_t arg_index, size_t arg_size, const 
     }
 }
 //-----------------------------------------------------------------------------
-const kernel_group_info& composite_kernel::get_group_info( const generic_device* device_ptr )
+const kernel_group_info& composite_kernel::get_group_info( boost::shared_ptr<const generic_device> device_sp )
 {
-    const composite_device* dev_ptr =
-        reinterpret_cast<const composite_device*>( device_ptr );
+    boost::shared_ptr<const composite_device> dev_sp(
+        boost::static_pointer_cast<const composite_device>( device_sp ) );
 
     for( iterator it = begin(); it != end(); it++ )
     {
-        if( it->first->get_platform() == dev_ptr->get_platform() )
+        if( it->first->get_platform() == dev_sp->get_platform() )
         {
-            return it->second->get_group_info( device_ptr );
+            return it->second->get_group_info( device_sp );
         }
     }
 

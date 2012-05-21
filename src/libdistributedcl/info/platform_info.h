@@ -130,9 +130,9 @@ public:
         }
     }
 
-    inline void add_device( dcl::info::generic_device* device_ptr )
+    inline void add_device( boost::shared_ptr<dcl::info::generic_device> device_sp )
     {
-        devices_.push_back( device_ptr );
+        devices_.push_back( device_sp );
     }
 
     inline const devices_t& get_devices() const

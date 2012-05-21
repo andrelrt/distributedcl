@@ -37,7 +37,7 @@ public:
         session_ref_( session_ref ) 
     {
         remote_platform* platform_ptr = new remote_platform( session_ref_ );
-        platforms_.push_back( reinterpret_cast< dcl::info::generic_platform* >( platform_ptr ) );
+        platforms_.push_back( boost::shared_ptr<dcl::info::generic_platform>( reinterpret_cast< dcl::info::generic_platform* >( platform_ptr ) ) );
     }
 
     ~remote_opencl(){}
