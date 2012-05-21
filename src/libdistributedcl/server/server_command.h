@@ -125,20 +125,20 @@ public:
 
     virtual void enqueue_response()
     {
-        if( session_context_ptr_ != NULL )
+        if( this->session_context_ptr_ != NULL )
         {
-            session_context_ptr_->add( server_command< TYPE >::message_ );
+            this->session_context_ptr_->add( server_command< TYPE >::message_ );
         }
     }
 
     virtual void enqueue_error( int32_t error_code )
     {
-        if( session_context_ptr_ != NULL )
+        if( this->session_context_ptr_ != NULL )
         {
             message_sp_t
                 err_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( error_code ) );
 
-            session_context_ptr_->add( err_msg_sp );
+            this->session_context_ptr_->add( err_msg_sp );
         }
     }
 
@@ -179,13 +179,7 @@ public:
 		
 	virtual void execute()
 	{
-		dcl::remote_id_t obj_id = this->message_->get_remote_id();
-
-		DCL_TYPE_T* obj_ptr = manager_.get( obj_id );
-		
-		delete obj_ptr;
-        
-        manager_.remove( obj_id );
+        manager_.remove( this->message_->get_remote_id() );
 	}
 };
 //-----------------------------------------------------------------------------

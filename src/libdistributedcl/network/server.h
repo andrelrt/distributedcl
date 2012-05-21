@@ -54,7 +54,9 @@ public:
 
         oberver_thread_ptr_->join();
 
-        for( server_sessions_t::iterator it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
+		typename server_sessions_t::iterator it;
+
+        for( it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
         {
             (*it)->shutdown();
             delete *it;
@@ -103,8 +105,10 @@ private:
 
             if( !running_ )
                 break;
+                
+            typename server_sessions_t::iterator it;
 
-            for( server_sessions_t::iterator it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
+            for( it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
             {
                 if( !(*it)->running() )
                 {

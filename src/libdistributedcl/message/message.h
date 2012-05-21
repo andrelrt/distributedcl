@@ -287,6 +287,8 @@ public:
     }
 
     // Request
+    MSG_PARAMETER_GET_SET( bool, blocking_, blocking )
+
     MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
     MSG_PARAMETER_GET( bool, return_event_, return_event )
     MSG_PARAMETER_GET( dcl::remote_id_t, event_id_, event_id )
@@ -306,7 +308,7 @@ public:
 
     inline dcl::remote_id_t get_event_id( dcl::info::generic_event* event_ptr )
     {
-        event_id_ = remote_event_ids_.get( event_ptr, true );
+        event_id_ = remote_event_ids_.get( boost::shared_ptr<dcl::info::generic_event>( event_ptr ), true );
         return_event_ = true;
 
         return event_id_;
@@ -318,6 +320,7 @@ public:
     }
 
 protected:
+    bool blocking_;
     bool return_event_;
     dcl::remote_ids_t events_;
 
@@ -331,7 +334,7 @@ protected:
         base_message( type, wait_response,
                       request_size + sizeof(enqueue_message_request),
                       response_size ),
-        return_event_( false ), event_id_( 0xffff ), received_( 0 ){}
+        blocking_( false ), return_event_( false ), event_id_( 0xffff ), received_( 0 ){}
 
     inline std::size_t get_enqueue_request_size()
     {
@@ -348,8 +351,9 @@ protected:
     // Better when aligned in 32 bits boundary
     struct enqueue_message_request
     {
-        uint16_t event_count_:15;
+        uint16_t event_count_:14;
         uint16_t return_event_:1;
+        uint16_t blocking_:1;
         dcl::remote_id_t events_[ 1 ];
     };
     #pragma pack( pop )

@@ -202,6 +202,7 @@ void* enqueue_message::create_enqueue_request( void* payload_ptr )
     enqueue_message_request* request_ptr =
         reinterpret_cast< enqueue_message_request* >( payload_ptr );
 
+    request_ptr->blocking_ = static_cast<uint16_t>( blocking_? 1 : 0 );
     request_ptr->return_event_ = static_cast<uint16_t>( return_event_? 1 : 0 );
     request_ptr->event_count_ = static_cast<uint16_t>( events_.size() );
 
@@ -220,6 +221,7 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
     const enqueue_message_request* request_ptr =
         reinterpret_cast< const enqueue_message_request* >( payload_ptr );
 
+    blocking_ = (request_ptr->blocking_ == 1)? true : false;
     return_event_ = (request_ptr->return_event_ == 1)? true : false;
 
     event_id_ = network_to_host( request_ptr->events_[ 0 ] );

@@ -178,13 +178,13 @@ public:
 #if !defined( WIN32 )
         flags = blocking ? 0 : MSG_DONTWAIT;
 #endif
-        std::size_t ret_size = ::send( socket_,
-                                       reinterpret_cast< const char * >( base_message_buffer_ptr_ ),
-                                       static_cast< int >( size ), flags );
+        int32_t ret_size = ::send( socket_,
+                                   reinterpret_cast< const char * >( base_message_buffer_ptr_ ),
+                                   static_cast< int >( size ), flags );
 #if defined( WIN32 )
         if( ret_size != size )
 #else
-        if( ((blocking) && (ret_size != size)) ||
+        if( ((blocking) && (ret_size != static_cast<int32_t>(size))) ||
             ((!blocking) && (ret_size == -1) && (errno != EAGAIN) && (errno != EWOULDBLOCK)) )
 #endif
         {
@@ -271,7 +271,7 @@ private:
 
     enum
     {
-        default_buffer_size = 32786,
+        default_buffer_size = 0x00400000, //4MiB
         max_buffer_size = UINT32_MAX
     };
 

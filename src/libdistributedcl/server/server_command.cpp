@@ -42,14 +42,12 @@ void async_server::enqueue( boost::shared_ptr< command > command_sp )
 
     server_command_queue_.push( command_sp );
 
-    //semaphore_.post();
+    semaphore_.post();
 }
 //-----------------------------------------------------------------------------
 void async_server::wait()
 {
-    semaphore_.post();
-
-    scoped_lock_t lock_queue( execute_mutex_ );
+	flush();
 }
 //-----------------------------------------------------------------------------
 void async_server::flush()
@@ -89,6 +87,8 @@ void async_server::flush()
         }
     }
 
+    std::set< composite_command_queue* >::iterator it;
+
     for( it = queues_.begin(); it != queues_.end(); it++ )
     {
         (*it)->flush();
@@ -99,8 +99,6 @@ void async_server::flush()
 //-----------------------------------------------------------------------------
 void async_server::work_thread()
 {
-    std::set< composite_command_queue* >::iterator it;
-
     while( 1 )
     {
         semaphore_.wait();

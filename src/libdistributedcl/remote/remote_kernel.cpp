@@ -56,7 +56,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     msg_ptr->get_offset().copy( offset );
     msg_ptr->get_global().copy( global );
     msg_ptr->get_local().copy( local );
-
+    
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
         reinterpret_cast<remote_event*>( *it )->wait_remote_id();
@@ -77,6 +77,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     }
     else
     {
+		//msg_ptr->set_blocking( true )
         //session_ref_.send_message( message_sp );
         session_ref_.enqueue_message( message_sp );
     }

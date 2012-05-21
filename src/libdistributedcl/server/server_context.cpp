@@ -27,6 +27,7 @@
 #include "composite/opencl_composite.h"
 #include "composite/composite_device.h"
 #include "composite/composite_context.h"
+using dcl::info::object_manager;
 using dcl::info::generic_device;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgCreateContextFromType;
@@ -69,10 +70,13 @@ void msgCreateContextFromType_command::execute()
     const composite_platform& platform =
         opencl_composite::get_instance().get_platform();
 
-    composite_context* context_ptr =
-        reinterpret_cast<composite_context*>( platform.create_context( device_type ) );
+    boost::shared_ptr<composite_context> context_sp(
+        reinterpret_cast<composite_context*>( platform.create_context( device_type ) ) );
 
-    message_->set_remote_id( session_context_ptr_->get_server_platform().get_context_manager().get( context_ptr, true ) );
+	object_manager< composite_context >& context_manager =
+		session_context_ptr_->get_server_platform().get_context_manager();
+
+    message_->set_remote_id( context_manager.get( context_sp, true ) );
 }
 //-----------------------------------------------------------------------------
 void msgGetContextInfo_command::execute()
@@ -87,9 +91,12 @@ void msgGetContextInfo_command::execute()
 
     devices_t::const_iterator it;
 
+	object_manager< composite_device >& device_manager =
+		session_context_ptr_->get_server_platform().get_device_manager();
+
     for( it = devices_ref.begin(); it != devices_ref.end(); it++ )
     {
-        message_->add_device( session_context_ptr_->get_server_platform().get_device_manager().get( *it, true ) );
+        message_->add_device( device_manager.get( *it, true ) );
     }
 }
 //-----------------------------------------------------------------------------

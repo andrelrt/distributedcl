@@ -72,7 +72,7 @@ void msgEnqueueWriteBuffer_command::execute()
 
     dcl::events_t events;
 
-    uint32_t count = message_->get_events().size();
+    //uint32_t count = message_->get_events().size();
     //std::cerr << "write - ptr: " << buffer_ptr
     //          << ", queue: " << queue_ptr
     //          << ", pointer: " << (void*) message_->get_buffer_pointer()
@@ -126,7 +126,8 @@ void msgEnqueueWriteBuffer_command::execute()
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteBuffer_command::async_run() const
 {
-    return true;
+    return !message_->get_blocking();
+    //return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
@@ -144,7 +145,7 @@ void msgEnqueueReadBuffer_command::execute()
 
     message_->allocate_buffer();
 
-    uint32_t count = message_->get_events().size();
+    //uint32_t count = message_->get_events().size();
     //std::cerr << "read - ptr: " << buffer_ptr
     //          << ", queue: " << queue_ptr
     //          << ", pointer: " << (void*) message_->get_buffer_pointer()
@@ -199,7 +200,8 @@ void msgEnqueueReadBuffer_command::execute()
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
 {
-    return true;
+    return !message_->get_blocking();
+    //return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
