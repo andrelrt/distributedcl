@@ -60,6 +60,7 @@ message/packet.h \
 network/client_session.h \
 network/platform.h \
 network/server.h \
+network/server_session.cpp \
 network/server_session.h \
 network/session.h \
 network/session_manager.cpp \
