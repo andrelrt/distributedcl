@@ -88,6 +88,13 @@ void async_server::flush()
             queues_.insert( running_cmd->get_queue() );
         }
     }
+
+    for( it = queues_.begin(); it != queues_.end(); it++ )
+    {
+        (*it)->flush();
+    }
+
+    queues_.clear();
 }
 //-----------------------------------------------------------------------------
 void async_server::work_thread()
@@ -101,17 +108,7 @@ void async_server::work_thread()
         if( stop_ )
             return;
 
-        while( 1 )
-        {
-            flush();
-        }
-        
-        for( it = queues_.begin(); it != queues_.end(); it++ )
-        {
-            (*it)->flush();
-        }
-
-        queues_.clear();
+        flush();
     }
 }
 //-----------------------------------------------------------------------------
