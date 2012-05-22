@@ -60,14 +60,9 @@ public:
 			msg_ptr->set_remote_id( remote_id_ );
 
 			message_sp_t message_sp( msg_ptr );
-			session_ref_.send_message( message_sp ); //enqeue
+			session_ref_.send_message( message_sp ); //enqueue
 		}
 	}
-
-    static void wait_all()
-    {
-        dcl::network::client::session_manager::session_t::wait_all();
-    }
 
 protected:
     dcl::network::client::session_manager::session_t& session_ref_;

@@ -42,14 +42,16 @@ class dcl_message< msgWaitForEvents > : public base_message
 {
 public:
     dcl_message< msgWaitForEvents >() : 
-        base_message( msgWaitForEvents, true, sizeof( dcl::remote_id_t ), 0 ),
+        base_message( msgWaitForEvents, true, 2*sizeof( dcl::remote_id_t ), 0 ),
         remote_id_( 0xffff ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
 private:
     dcl::remote_id_t remote_id_;
+    dcl::remote_id_t command_queue_id_;
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
@@ -68,12 +70,14 @@ public:
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
     //Response
     MSG_PARAMETER_GET_SET( dcl::info::event_info, event_info_, event_info )
 
 private:
     dcl::remote_id_t remote_id_;
+    dcl::remote_id_t command_queue_id_;
     dcl::info::event_info event_info_;
 
     virtual void create_request( void* payload_ptr );

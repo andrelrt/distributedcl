@@ -31,9 +31,9 @@ namespace server {
 //-----------------------------------------------------------------------------
 void msgWaitForEvents_command::execute()
 {
-    async_server::get_instance().wait();
-
     server_platform& server = session_context_ptr_->get_server_platform();
+
+    server.wait( message_->get_command_queue_id() );
 
     remote_id_t event_id = message_->get_remote_id();
 
@@ -44,9 +44,9 @@ void msgWaitForEvents_command::execute()
 //-----------------------------------------------------------------------------
 void msgGetEventProfilingInfo_command::execute()
 {
-    async_server::get_instance().wait();
-
     server_platform& server = session_context_ptr_->get_server_platform();
+
+    server.wait( message_->get_command_queue_id() );
 
     remote_id_t event_id = message_->get_remote_id();
 

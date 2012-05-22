@@ -36,11 +36,10 @@ namespace remote {
 //-----------------------------------------------------------------------------
 void remote_event::wait()
 {
-    wait_remote_id();
-
     dcl_message< msgWaitForEvents >* msg_ptr = new dcl_message< msgWaitForEvents >();
 
     msg_ptr->set_remote_id( get_remote_id() );
+    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr_ )->get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
@@ -53,8 +52,6 @@ void remote_event::load_info()
         (local_info_.submit_ == 0) ||
         (local_info_.queued_ == 0) )
     {
-        wait_remote_id();
-
         dcl_message< msgGetEventProfilingInfo >* msg_ptr =
             new dcl_message< msgGetEventProfilingInfo >();
 
@@ -64,28 +61,6 @@ void remote_event::load_info()
         session_ref_.send_message( message_sp );
 
         local_info_ = msg_ptr->get_event_info();
-    }
-}
-//-----------------------------------------------------------------------------
-void remote_event::wait_remote_id()
-{
-    if( get_remote_id() == 0 )
-    {
-        if( session_ref_.queue_empty() )
-        {
-            message_sp_t message_sp( new dcl_message< msg_flush_server >() );
-            session_ref_.send_message( message_sp );
-        }
-        else
-        {
-            session_ref_.flush_queue();
-        }
-
-        enqueue_message* msg_ptr = reinterpret_cast<enqueue_message*>( message_sp_.get() );
-
-        msg_ptr->wait();
-
-        set_remote_id( msg_ptr->get_event_id() );
     }
 }
 //-----------------------------------------------------------------------------

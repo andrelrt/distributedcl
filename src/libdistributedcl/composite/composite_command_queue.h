@@ -32,6 +32,31 @@ namespace composite {
 //-----------------------------------------------------------------------------
 typedef dcl::info::generic_command_queue composite_command_queue;
 //-----------------------------------------------------------------------------
+//class composite_command_queue :
+//    public dcl::info::generic_command_queue
+//{
+//public:
+//    composite_command_queue( const dcl::info::generic_context* context_ptr,
+//                             const dcl::info::generic_device* device_ptr,
+//                             cl_command_queue_properties properties ) :
+//        dcl::info::generic_command_queue( context_ptr, device_ptr, properties ){}
+//
+//    void enable_async_execution()
+//    {
+//        execute_thread_sp_.reset( new boost::thread( &dcl::composite::composite_command_queue::work_thread, this ) );
+//    }
+//
+//private:
+//    boost::scoped_ptr<boost::thread> execute_thread_sp_;
+//
+//    void work_thread()
+//    {
+//        while( 1 )
+//        {
+//        }
+//    }
+//};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::composite
 //-----------------------------------------------------------------------------
 #endif //_DCL_COMPOSITE_COMMAND_QUEUE_H_

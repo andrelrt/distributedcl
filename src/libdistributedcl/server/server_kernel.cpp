@@ -75,7 +75,7 @@ void msgEnqueueNDRangeKernel_command::execute()
 
     if( !message_->get_events().empty() )
     {
-        async_server::get_instance().wait();
+        server.wait( message_->get_command_queue_id() );
 
         events.reserve( message_->get_events().size() );
 
@@ -87,21 +87,15 @@ void msgEnqueueNDRangeKernel_command::execute()
         }
     }
 
+    composite_event* ret_event = NULL;
+
+    kernel_ptr->execute( queue_ptr, message_->get_offset(), 
+                         message_->get_global(), message_->get_local(), events,
+                         reinterpret_cast<generic_event**>( &ret_event ) );
+
     if( message_->get_return_event() )
     {
-        composite_event* ret_event = NULL;
-
-        kernel_ptr->execute( queue_ptr, message_->get_offset(), 
-                             message_->get_global(), message_->get_local(), events,
-                             reinterpret_cast<generic_event**>( &ret_event ) );
-
         server.get_event_manager().add( ret_event, message_->get_event_id() );
-    }
-    else
-    {
-        kernel_ptr->execute( queue_ptr, message_->get_offset(), 
-                             message_->get_global(), message_->get_local(), events,
-                             NULL );
     }
 
     //queue_ptr->flush();

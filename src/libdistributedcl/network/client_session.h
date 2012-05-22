@@ -148,21 +148,9 @@ public:
         return received_messages_;
     }
 
-    static void setup_barrier( uint32_t count )
-    {
-        async_barrier_sp_.reset( new boost::interprocess::barrier( count + 1 ) );
-    }
-
-    static void wait_all()
-    {
-        async_barrier_sp_.wait();
-    }
-
 private:
     typedef std::queue< message_sp_t > message_queue_t;
     typedef std::map< uint16_t, message_sp_t > message_map_t;
-
-    static boost::scoped_ptr<boost::interprocess::barrier> async_barrier_sp_;
 
     bool running_;
     dcl::mutex_t queue_mutex_;
@@ -243,8 +231,6 @@ private:
                 return;
 
             flush_queue();
-
-            async_barrier_sp_->wait();
         }
     }
 };

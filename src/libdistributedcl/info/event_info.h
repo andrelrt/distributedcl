@@ -31,6 +31,8 @@
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
+class generic_command_queue;
+//-----------------------------------------------------------------------------
 struct event_info
 {
     uint64_t queued_;
@@ -70,13 +72,22 @@ class generic_event :
     public dcl_object< event_info >
 {
 public:
-    generic_event(){}
+    generic_event( const generic_command_queue* queue_ptr ) :
+        queue_ptr_( queue_ptr ){}
     virtual ~generic_event(){}
 
     static const char* get_name(){ return "generic_event"; }
 
     virtual void wait() = 0;
     virtual void load_info() = 0;
+
+    inline const generic_command_queue* get_queue() const
+    {
+        return queue_ptr_;
+    }
+
+protected:
+    const generic_command_queue* queue_ptr_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

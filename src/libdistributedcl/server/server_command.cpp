@@ -21,6 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include "server_command.h"
+#include "server_platform.h"
 using dcl::composite::composite_command_queue;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -28,93 +29,100 @@ namespace server {
 //-----------------------------------------------------------------------------
 // async_server
 //-----------------------------------------------------------------------------
-async_server* async_server::instance_ptr_ = NULL;
-//-----------------------------------------------------------------------------
-async_server::~async_server()
-{
-    stop_ = true;
-    wait();
-}
-//-----------------------------------------------------------------------------
-void async_server::enqueue( boost::shared_ptr< command > command_sp )
-{
-    scoped_lock_t lock( queue_mutex_ );
-
-    server_command_queue_.push( command_sp );
-
-    semaphore_.post();
-}
-//-----------------------------------------------------------------------------
-void async_server::wait()
-{
-	flush();
-}
-//-----------------------------------------------------------------------------
-void async_server::flush()
-{
-    scoped_lock_t lock_queue( execute_mutex_ );
-    while( 1 )
-    {
-        boost::shared_ptr< command > running_cmd;
-        {
-            scoped_lock_t lock_queue( queue_mutex_ );
-
-            if( server_command_queue_.empty() )
-                break;
-
-            running_cmd.swap( server_command_queue_.front() );
-
-            server_command_queue_.pop();
-        }
-
-        try
-        {
-            running_cmd->execute();
-            running_cmd->enqueue_response();
-        }
-        catch( dcl::library_exception& ex )
-        {
-            running_cmd->enqueue_error( ex.get_error() );
-        }
-        catch( ... )
-        {
-            running_cmd->enqueue_error( CL_INVALID_VALUE );
-        }
-
-        if( running_cmd->get_queue() != NULL )
-        {
-            queues_.insert( running_cmd->get_queue() );
-        }
-    }
-
-    std::set< composite_command_queue* >::iterator it;
-
-    for( it = queues_.begin(); it != queues_.end(); it++ )
-    {
-        (*it)->flush();
-    }
-
-    queues_.clear();
-}
-//-----------------------------------------------------------------------------
-void async_server::work_thread()
-{
-    while( 1 )
-    {
-        semaphore_.wait();
-
-        if( stop_ )
-            return;
-
-        flush();
-    }
-}
+//async_server* async_server::instance_ptr_ = NULL;
+////-----------------------------------------------------------------------------
+//async_server::~async_server()
+//{
+//    stop_ = true;
+//    wait();
+//}
+////-----------------------------------------------------------------------------
+//void async_server::enqueue( boost::shared_ptr< command > command_sp )
+//{
+//    scoped_lock_t lock( queue_mutex_ );
+//
+//    server_command_queue_.push( command_sp );
+//
+//    semaphore_.post();
+//}
+////-----------------------------------------------------------------------------
+//void async_server::wait()
+//{
+//	flush();
+//}
+////-----------------------------------------------------------------------------
+//void async_server::flush()
+//{
+//    scoped_lock_t lock_queue( execute_mutex_ );
+//    while( 1 )
+//    {
+//        boost::shared_ptr< command > running_cmd;
+//        {
+//            scoped_lock_t lock_queue( queue_mutex_ );
+//
+//            if( server_command_queue_.empty() )
+//                break;
+//
+//            running_cmd.swap( server_command_queue_.front() );
+//
+//            server_command_queue_.pop();
+//        }
+//
+//        try
+//        {
+//            running_cmd->execute();
+//            running_cmd->enqueue_response();
+//        }
+//        catch( dcl::library_exception& ex )
+//        {
+//            running_cmd->enqueue_error( ex.get_error() );
+//        }
+//        catch( ... )
+//        {
+//            running_cmd->enqueue_error( CL_INVALID_VALUE );
+//        }
+//
+//        if( running_cmd->get_queue() != NULL )
+//        {
+//            queues_.insert( running_cmd->get_queue() );
+//        }
+//    }
+//
+//    std::set< composite_command_queue* >::iterator it;
+//
+//    for( it = queues_.begin(); it != queues_.end(); it++ )
+//    {
+//        (*it)->flush();
+//    }
+//
+//    queues_.clear();
+//}
+////-----------------------------------------------------------------------------
+//void async_server::work_thread()
+//{
+//    while( 1 )
+//    {
+//        semaphore_.wait();
+//
+//        if( stop_ )
+//            return;
+//
+//        flush();
+//    }
+//}
 //-----------------------------------------------------------------------------
 // msg_flush_server_command
 //-----------------------------------------------------------------------------
 void msg_flush_server_command::execute()
 {
-    async_server::get_instance().wait();
+//    async_server::get_instance().wait();
+    session_context_ptr_->get_server_platform().wait_all();
+}
+//-----------------------------------------------------------------------------
+void release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue>::execute()
+{
+    session_context_ptr_->get_server_platform().close_queue( manager_.get( this->message_->get_remote_id() ) );
+    manager_.remove( this->message_->get_remote_id() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

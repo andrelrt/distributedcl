@@ -46,13 +46,15 @@ class remote_event :
     public remote_object< remote_event, dcl::network::message::msgReleaseEvent >
 {
 public:
-    remote_event( const remote_context& context_ref, dcl::remote_id_t id ) :
+    remote_event( const remote_context& context_ref, remote_command_queue* queue_ptr, dcl::remote_id_t id ) :
+        dcl::info::generic_event( reinterpret_cast<dcl::info::generic_command_queue*>( queue_ptr ) ),
         remote_object< remote_event, dcl::network::message::msgReleaseEvent >( context_ref.get_session() )
     {
         set_remote_id( id );
     }
 
-    remote_event( const remote_context& context_ref, message_sp_t message_sp ) :
+    remote_event( const remote_context& context_ref, const dcl::info::generic_command_queue* queue_ptr, message_sp_t message_sp ) :
+        dcl::info::generic_event( queue_ptr ),
         remote_object< remote_event, dcl::network::message::msgReleaseEvent >( context_ref.get_session() ),
         message_sp_( message_sp ) {}
 
@@ -60,7 +62,6 @@ public:
 
     virtual void wait();
     virtual void load_info();
-    void wait_remote_id();
 
 private:
     message_sp_t message_sp_;

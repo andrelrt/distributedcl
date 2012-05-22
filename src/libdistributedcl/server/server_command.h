@@ -48,46 +48,46 @@ public:
     virtual dcl::composite::composite_command_queue* get_queue(){ return NULL; }
 };
 //-----------------------------------------------------------------------------
-class async_server
-{
-public:
-    ~async_server();
-
-    static async_server& get_instance()
-    {
-		if( instance_ptr_ == NULL )
-			instance_ptr_ = new async_server();
-			
-        return *instance_ptr_;
-    }
-
-    inline void flush_queue()
-    {
-        semaphore_.post();
-    }
-
-    void wait();
-    void enqueue( boost::shared_ptr< command > command_sp );
-
-private:
-    static async_server* instance_ptr_;
-
-    bool stop_;
-    mutex_t queue_mutex_;
-    mutex_t execute_mutex_;
-    boost::scoped_ptr< boost::thread > async_execute_sp_;
-    boost::interprocess::interprocess_semaphore semaphore_;
-    std::queue< boost::shared_ptr< command > > server_command_queue_;
-    std::set< dcl::composite::composite_command_queue* > queues_;
-
-    async_server() : stop_( false ), semaphore_( 0 )
-    {
-        async_execute_sp_.reset( new boost::thread( &dcl::server::async_server::work_thread, this ) );
-    }
-    
-    void flush();
-    void work_thread();
-};
+//class async_server
+//{
+//public:
+//    ~async_server();
+//
+//    static async_server& get_instance()
+//    {
+//		if( instance_ptr_ == NULL )
+//			instance_ptr_ = new async_server();
+//			
+//        return *instance_ptr_;
+//    }
+//
+//    inline void flush_queue()
+//    {
+//        semaphore_.post();
+//    }
+//
+//    void wait();
+//    void enqueue( boost::shared_ptr< command > command_sp );
+//
+//private:
+//    static async_server* instance_ptr_;
+//
+//    bool stop_;
+//    mutex_t queue_mutex_;
+//    mutex_t execute_mutex_;
+//    boost::scoped_ptr< boost::thread > async_execute_sp_;
+//    boost::interprocess::interprocess_semaphore semaphore_;
+//    std::queue< boost::shared_ptr< command > > server_command_queue_;
+//    std::set< dcl::composite::composite_command_queue* > queues_;
+//
+//    async_server() : stop_( false ), semaphore_( 0 )
+//    {
+//        async_execute_sp_.reset( new boost::thread( &dcl::server::async_server::work_thread, this ) );
+//    }
+//    
+//    void flush();
+//    void work_thread();
+//};
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type TYPE >
 class server_command : public command
@@ -111,11 +111,13 @@ private:
     dcl::composite::composite_command_queue* queue_ptr_;
 
 public:
-    inline void async_execute( boost::shared_ptr< command > command_sp )
+    inline void async_execute( boost::shared_ptr< command > command_sp, remote_id_t queue_id )
     {
 		if( async_run() )
 		{
-			async_server::get_instance().enqueue( command_sp );
+            this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+            this->session_context_ptr_->get_server_platform().flush( queue_id );
+			//async_server::get_instance().enqueue( command_sp );
 		}
 		else
 		{
@@ -160,7 +162,7 @@ protected:
 };
 //-----------------------------------------------------------------------------
 template< dcl::network::message::message_type MESSAGE_T, class DCL_TYPE_T >
-class release_command : public async_server_command< MESSAGE_T >
+class release_command : public server_command< MESSAGE_T >
 {
 private:
     typedef typename boost::shared_ptr< dcl::network::message::release_message< MESSAGE_T > > release_message_sp_t;
@@ -168,12 +170,12 @@ private:
     release_message_sp_t message_;
     dcl::info::object_manager< DCL_TYPE_T >& manager_;
 
-    virtual bool async_run() const{ return true; }
+    //virtual bool async_run() const{ return true; }
 
 public:
 	release_command( message_sp_t message_sp, dcl::info::object_manager< DCL_TYPE_T >& manager,
                      dcl::network::server::server_session_context* session_context_ptr ) :
-        async_server_command< MESSAGE_T >( message_sp, session_context_ptr ),
+        server_command< MESSAGE_T >( message_sp, session_context_ptr ),
 		message_( boost::static_pointer_cast< dcl::network::message::release_message< MESSAGE_T > >( message_sp ) ),
         manager_( manager ){}
 		
@@ -181,6 +183,28 @@ public:
 	{
         manager_.remove( this->message_->get_remote_id() );
 	}
+};
+//-----------------------------------------------------------------------------
+template<>
+class release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue> :
+    public server_command< dcl::network::message::msgReleaseCommandQueue >
+{
+private:
+    typedef boost::shared_ptr< dcl::network::message::release_message< dcl::network::message::msgReleaseCommandQueue > > release_message_sp_t;
+
+    release_message_sp_t message_;
+    dcl::info::object_manager< dcl::composite::composite_command_queue >& manager_;
+
+    //virtual bool async_run() const{ return true; }
+
+public:
+	release_command( message_sp_t message_sp, dcl::info::object_manager< dcl::composite::composite_command_queue >& manager,
+                     dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgReleaseCommandQueue >( message_sp, session_context_ptr ),
+		message_( boost::static_pointer_cast< dcl::network::message::release_message< dcl::network::message::msgReleaseCommandQueue > >( message_sp ) ),
+        manager_( manager ){}
+		
+	virtual void execute();
 };
 //-----------------------------------------------------------------------------
 class msg_flush_server_command :

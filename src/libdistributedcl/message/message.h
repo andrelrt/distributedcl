@@ -200,6 +200,8 @@ public:
 
     virtual void parse_response( const void* payload_ptr ){} //, uint32_t size
 
+    virtual void server_wait(){}
+
 protected:
     base_message( message_type type, bool wait_response = false,
                   std::size_t request_size = 0, std::size_t response_size = 0 );
@@ -314,9 +316,25 @@ public:
         return event_id_;
     }
 
-    inline void wait()
+    inline void set_server_event( dcl::info::generic_event* event_ptr )
     {
-        received_.wait();
+        event_ptr_ = event_ptr;
+    }
+
+    virtual void server_wait()
+    {
+        if( event_ptr_ != NULL )
+        {
+            event_ptr_->wait();
+        }
+    }
+
+    virtual ~enqueue_message()
+    {
+        if( !return_event_ )
+        {
+            delete event_ptr_;
+        }
     }
 
 protected:
@@ -325,8 +343,8 @@ protected:
     dcl::remote_ids_t events_;
 
     dcl::remote_id_t event_id_;
+    dcl::info::generic_event* event_ptr_;
 
-    boost::interprocess::interprocess_semaphore received_;
     static dcl::info::object_manager< dcl::info::generic_event > remote_event_ids_;
 
     enqueue_message( message_type type, bool wait_response = false,
@@ -334,7 +352,7 @@ protected:
         base_message( type, wait_response,
                       request_size + sizeof(enqueue_message_request),
                       response_size ),
-        blocking_( false ), return_event_( false ), event_id_( 0xffff ), received_( 0 ){}
+        blocking_( false ), return_event_( false ), event_id_( 0xffff ), event_ptr_( NULL ){}
 
     inline std::size_t get_enqueue_request_size()
     {

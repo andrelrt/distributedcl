@@ -37,7 +37,8 @@ class event :
     public context_object< event >
 {
 public:
-    event( const opencl_library& opencl, cl_event id ) :
+    event( const opencl_library& opencl, const dcl::info::generic_command_queue* queue_ptr, cl_event id ) :
+        dcl::info::generic_event( queue_ptr ),
         opencl_object< cl_event >( opencl, id ){}
 
     virtual ~event();

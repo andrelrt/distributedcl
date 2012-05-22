@@ -100,7 +100,7 @@ void memory::write( generic_command_queue* queue_ptr, const void* data_ptr,
 
         if( (ret_event_ptr != NULL) && (evnt != NULL) )
         {
-            *ret_event_ptr = new event( opencl_, evnt );
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
         }
     }
 }
@@ -146,7 +146,7 @@ void memory::read( generic_command_queue* queue_ptr, void* data_ptr,
 
         if( (ret_event_ptr != NULL) && (evnt != NULL) )
         {
-            *ret_event_ptr = new event( opencl_, evnt );
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
         }
     }
 }
@@ -196,7 +196,7 @@ void* memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
 
         if( (ret_event_ptr != NULL) && (evnt != NULL) )
         {
-            *ret_event_ptr = new event( opencl_, evnt );
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
         }
 
         return ret_ptr;
@@ -243,7 +243,7 @@ void memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
 
         if( (ret_event_ptr != NULL) && (evnt != NULL) )
         {
-            *ret_event_ptr = new event( opencl_, evnt );
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
         }
     }
 }
@@ -314,7 +314,7 @@ void image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
 
         if( (ret_event_ptr != NULL) && (evnt != NULL) )
         {
-            *ret_event_ptr = new event( opencl_, evnt );
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
         }
     }
 }

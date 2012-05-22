@@ -25,6 +25,7 @@
 
 #include "distributedcl_internal.h"
 #include "composite_object.h"
+#include "composite_command_queue.h"
 #include "info/event_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -35,7 +36,8 @@ class composite_event :
     public composite_object< dcl::info::generic_event >
 {
 public:
-    composite_event( const composite_context& context_ref ) :
+    composite_event( const composite_context& context_ref, const dcl::info::generic_command_queue* queue_ptr ) :
+        dcl::info::generic_event( queue_ptr ),
         composite_object< dcl::info::generic_event >( context_ref ){}
 
     ~composite_event(){}

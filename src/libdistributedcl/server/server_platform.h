@@ -58,6 +58,80 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class async_execute
+{
+public:
+    async_execute( dcl::composite::composite_command_queue* queue_ptr ) :
+        running_( false ), queue_ptr_( queue_ptr ), semaphore_( 0 )
+    {
+        thread_sp_.reset( new boost::thread( &dcl::server::async_execute::work_thread, this ) );
+    }
+
+    ~async_execute()
+    {
+        stop();
+        thread_sp_->join();
+    }
+
+    void stop()
+    {
+        running_ = false;
+        semaphore_.post();
+    }
+
+    void enqueue( boost::shared_ptr<command> command_sp )
+    {
+        dcl::scoped_lock_t lock( mutex_ );
+
+        server_queue_.push( command_sp );
+    }
+
+    void flush()
+    {
+        semaphore_.post();
+    }
+
+    void wait()
+    {
+        execute_queue();
+    }
+
+private:
+    bool running_;
+    std::queue< boost::shared_ptr<command> > server_queue_;
+    dcl::composite::composite_command_queue* queue_ptr_;
+
+    boost::scoped_ptr<boost::thread> thread_sp_;
+    boost::interprocess::interprocess_mutex mutex_;
+    boost::interprocess::interprocess_semaphore semaphore_;
+
+    void execute_queue()
+    {
+        dcl::scoped_lock_t lock( mutex_ );
+
+        while( !server_queue_.empty() )
+        {
+            server_queue_.front()->execute();
+            server_queue_.pop();
+        }
+    }
+
+    void work_thread()
+    {
+        while( 1 )
+        {
+            semaphore_.wait();
+
+            if( !running_ )
+                return;
+
+            execute_queue();
+
+            queue_ptr_->flush();
+        }
+    }
+};
+//-----------------------------------------------------------------------------
 class server_platform
 {
 public:
@@ -118,6 +192,13 @@ public:
 
     inline void clear_all_data()
     {
+        for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+        {
+            delete it->second;
+        }
+
+        queue_thread_.clear();
+
         kernel_manager_.clear();
         command_queue_manager_.clear();
         memory_manager_.clear();
@@ -126,6 +207,57 @@ public:
         program_manager_.clear();
         event_manager_.clear();
         context_manager_.clear();
+    }
+
+    void open_queue( dcl::composite::composite_command_queue* queue_ptr )
+    {
+        queue_thread_[ queue_ptr ] = new async_execute( queue_ptr );
+    }
+
+    void enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp )
+    {
+        dcl::composite::composite_command_queue* queue_ptr =
+            command_queue_manager_.get( queue_id );
+
+        queue_thread_[ queue_ptr ]->enqueue( command_sp );
+    }
+
+    void flush( remote_id_t queue_id )
+    {
+        dcl::composite::composite_command_queue* queue_ptr =
+            command_queue_manager_.get( queue_id );
+
+        queue_thread_[ queue_ptr ]->flush();
+    }
+
+    void wait( remote_id_t queue_id )
+    {
+        dcl::composite::composite_command_queue* queue_ptr =
+            command_queue_manager_.get( queue_id );
+
+        queue_thread_[ queue_ptr ]->wait();
+    }
+
+    void wait_all()
+    {
+        for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+        {
+            it->second->wait();
+        }
+    }
+
+    void flush_all()
+    {
+        for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+        {
+            it->second->flush();
+        }
+    }
+
+    void close_queue( dcl::composite::composite_command_queue* queue_ptr )
+    {
+        delete queue_thread_[ queue_ptr ];
+        queue_thread_.erase( queue_ptr );
     }
 
 private:
@@ -137,6 +269,10 @@ private:
     memory_manager_t memory_manager_;
     event_manager_t event_manager_;
     image_manager_t image_manager_;
+
+    typedef std::map< dcl::composite::composite_command_queue*, async_execute* > queue_thread_map_t;
+
+    queue_thread_map_t queue_thread_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

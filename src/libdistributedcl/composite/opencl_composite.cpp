@@ -85,11 +85,6 @@ void opencl_composite::add_remote( const std::string& connection_string )
 
 }
 //-----------------------------------------------------------------------------
-void opencl_composite::setup_remote_count( uint32_t count )
-{
-    session_manager::session_t::setup_barrier( count );
-}
-//-----------------------------------------------------------------------------
 void opencl_composite::unload_compiler()
 {
     for( opencl_set_t::iterator it = opencl_set_.begin(); it != opencl_set_.end(); it++ )

@@ -72,23 +72,9 @@ void msgEnqueueWriteBuffer_command::execute()
 
     dcl::events_t events;
 
-    //uint32_t count = message_->get_events().size();
-    //std::cerr << "write - ptr: " << buffer_ptr
-    //          << ", queue: " << queue_ptr
-    //          << ", pointer: " << (void*) message_->get_buffer_pointer()
-    //          << ", size: " << message_->get_buffer_size()
-    //          << ", evcount: " << count;
-
-    //for( uint32_t i = 0; i < count; i++ )
-    //{
-    //    std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
-    //}
-
-    //std::cerr << std::endl;
-
     if( !message_->get_events().empty() )
     {
-        async_server::get_instance().wait();
+        server.wait( command_queue_id );
 
 		uint32_t count = message_->get_events().size();
 
@@ -126,8 +112,8 @@ void msgEnqueueWriteBuffer_command::execute()
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteBuffer_command::async_run() const
 {
-    return !message_->get_blocking();
-    //return true;
+    //return !message_->get_blocking();
+    return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
@@ -145,25 +131,11 @@ void msgEnqueueReadBuffer_command::execute()
 
     message_->allocate_buffer();
 
-    //uint32_t count = message_->get_events().size();
-    //std::cerr << "read - ptr: " << buffer_ptr
-    //          << ", queue: " << queue_ptr
-    //          << ", pointer: " << (void*) message_->get_buffer_pointer()
-    //          << ", size: " << message_->get_buffer_size()
-    //          << ", evcount: " << count;
-
-    //for( uint32_t i = 0; i < count; i++ )
-    //{
-    //    std::cerr << ", event[ " << i << " ]: " << message_->get_events()[ i ];
-    //}
-
-    //std::cerr << std::endl;
-
     dcl::events_t events;
 
     if( !message_->get_events().empty() )
     {
-        async_server::get_instance().wait();
+        server.wait( command_queue_id );
 
 		uint32_t count = message_->get_events().size();
 
@@ -176,32 +148,27 @@ void msgEnqueueReadBuffer_command::execute()
         }
     }
 
+    composite_event* ret_event = NULL;
+
+    // Always no blocking
+    buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
+                      message_->get_buffer_size(), message_->get_offset(), false,
+                      events, reinterpret_cast<generic_event**>( &ret_event ) );
+
     if( message_->get_return_event() )
     {
-        composite_event* ret_event = NULL;
-
-        // Always blocking
-        buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
-                          message_->get_buffer_size(), message_->get_offset(), true,
-                          events, reinterpret_cast<generic_event**>( &ret_event ) );
-
         server.get_event_manager().add( ret_event, message_->get_event_id() );
     }
-    else
-    {
-        // Always blocking
-        buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
-                          message_->get_buffer_size(), message_->get_offset(),
-                          true, events, NULL );
-    }
+
+    message_->set_server_event( ret_event );
 
     //queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
 {
-    return !message_->get_blocking();
-    //return true;
+    //return !message_->get_blocking();
+    return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------

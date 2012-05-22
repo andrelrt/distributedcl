@@ -48,6 +48,7 @@ void msgCreateCommandQueue_command::execute()
         ( context_ptr->create_command_queue( device_ptr, message_->get_properties() ) );
 
     remote_id_t id = server.get_command_queue_manager().add( command_queue_ptr );
+    server.open_queue( command_queue_ptr );
 
     message_->set_remote_id( id );
 }

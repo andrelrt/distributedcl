@@ -167,6 +167,7 @@ private:
 
                 // Execute all messages in package
                 dispatcher_.dispatch_messages( messages_ref, this );
+                dispatcher_.wait_messages( messages_ref );
 
                 // Create return package
                 dcl::message_vector_t::iterator it;
@@ -230,7 +231,7 @@ private:
                 return;
             }
 
-			dispatcher_.flush_async_queue();
+			dispatcher_.flush_async_queue( this );
         }
     }
 };

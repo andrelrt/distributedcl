@@ -102,7 +102,7 @@ void kernel::execute( const generic_command_queue* queue_ptr,
 
     if( (event_ptr != NULL) && (evnt != NULL) )
     {
-        *event_ptr = new event( opencl_, evnt );
+        *event_ptr = new event( opencl_, queue_ptr, evnt );
     }
     else if( evnt != NULL )
     {
