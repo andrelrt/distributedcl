@@ -26,6 +26,7 @@
 #include <queue>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_barrier.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -44,18 +45,17 @@ class client_session : public dcl::network::platform::session< COMM >
 {
 public:
     client_session( const typename dcl::network::platform::session< COMM >::config_info_t& config ) :
-        dcl::network::platform::session< COMM >( config )//, running_( true ), semaphore_( 0 )
+        dcl::network::platform::session< COMM >( config ), running_( true ), send_semaphore_( 0 )
     {
         dcl::network::platform::session< COMM >::get_communication().startup( this );
+        send_thread_sp_.reset( new boost::thread( &dcl::network::client::client_session<COMM>::send_thread, this ) );
     }
 
     ~client_session()
     {
-//        running_ = false;
-//        semaphore_.post();
-
-//        if( send_thread_ptr_ != NULL )
-//            send_thread_ptr_->join();
+        running_ = false;
+        send_semaphore_.post();
+        send_thread_sp_->join();
 
         dcl::network::platform::session< COMM >::get_communication().shutdown();
         clear_received_messages();
@@ -74,6 +74,20 @@ public:
     inline bool queue_empty() const
     {
         return message_queue_.empty();
+    }
+
+    inline void async_send_message( message_sp_t message_sp )
+    {
+        scoped_lock_t lock( queue_mutex_ );
+
+        message_queue_.push( message_sp );
+
+        send_semaphore_.post();
+    }
+
+    inline void async_flush_queue()
+    {
+        send_semaphore_.post();
     }
 
     inline void flush_queue()
@@ -97,10 +111,10 @@ public:
         flush_packet( packet_sp );
     }
 
-//    inline void wait()
-//    {
-//        wait_response_.wait();
-//    }
+    inline void wait()
+    {
+        wait_response_.wait();
+    }
 
     inline void enqueue_message( message_sp_t message_sp )
     {
@@ -113,9 +127,9 @@ public:
     {
         scoped_lock_t lock( queue_mutex_ );
 
-        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
-
         message_queue_.push( message_sp );
+
+        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
 
         while( !message_queue_.empty() )
         {
@@ -134,30 +148,32 @@ public:
         return received_messages_;
     }
 
+    static void setup_barrier( uint32_t count )
+    {
+        async_barrier_sp_.reset( new boost::interprocess::barrier( count + 1 ) );
+    }
+
+    static void wait_all()
+    {
+        async_barrier_sp_.wait();
+    }
+
 private:
     typedef std::queue< message_sp_t > message_queue_t;
     typedef std::map< uint16_t, message_sp_t > message_map_t;
 
-//    bool running_;
-    message_queue_t message_queue_;
-    dcl::mutex_t queue_mutex_;
-//    boost::interprocess::interprocess_semaphore wait_message_;
-//    boost::interprocess::interprocess_semaphore wait_response_;
-    dcl::message_vector_t received_messages_;
-//    boost::thread* send_thread_ptr_;
-    message_map_t pending_messages_;
+    static boost::scoped_ptr<boost::interprocess::barrier> async_barrier_sp_;
 
+    bool running_;
+    dcl::mutex_t queue_mutex_;
+    message_queue_t message_queue_;
+    message_map_t pending_messages_;
+    dcl::message_vector_t received_messages_;
+    boost::scoped_ptr<boost::thread> send_thread_sp_;
+    boost::interprocess::interprocess_semaphore send_semaphore_;
 
     void flush_packet( packet_sp_t packet_sp )
     {
-//        if( send_thread_ptr_ == NULL )
-//        {
-//            send_thread_ptr_ = new boost::thread( &dcl::network::server::client_session< COMM >::send_thread, this );
-//        }
-//
-//        wait_message_.post();
-
-
         // Send data
         dcl::network::platform::session< COMM >::send_packet( packet_sp );
         packet_sp_t recv_packet_sp;
@@ -217,74 +233,20 @@ private:
         received_messages_.clear();
     }
 
-    /*
     void send_thread()
     {
         while( 1 )
         {
-            wait_message_.wait();
+            send_semaphore_.wait();
 
-            boost::scoped_ptr< dcl::network::message::packet > packet_ptr( dcl::network::platform::session< COMM >::create_packet() );
-
-            {
-                scoped_lock_t lock( mutex_ );
-
-                while( !message_queue_.empty() )
-                {
-                    message_sp_t message_sp = message_queue_.front();
-
-                    packet_ptr->add( message_sp );
-                    message_queue_.pop();
-                }
-            }
-
-            // Send data
-            dcl::network::platform::session< COMM >::send_packet( packet_ptr.get() );
-            boost::scoped_ptr< dcl::network::message::packet > recv_packet_ptr;
-
-            try
-            {
-                // Wait response
-                recv_packet_ptr.reset( dcl::network::platform::session< COMM >::receive_packet() );
-            }
-            catch( dcl::library_exception& )
-            {
-                // Connection reset, reconnect
-                // TODO: Reconnect
+            if( !running_ )
                 return;
-            }
 
-            if( recv_packet_ptr->get_message_count() != 1 )
-            {
-                throw new dcl::library_exception( "Invalid received base_message count" );
-            }
+            flush_queue();
 
-            // Fill internal received base_messages
-            clear_received_messages();
-
-            recv_packet_ptr->parse( false );
-
-            dcl::network::message::message_vector_t::iterator recv_message_it;
-            dcl::network::message::message_vector_t& recv_messages = recv_packet_ptr->get_messages();
-
-            for( recv_message_it = recv_messages.begin(); recv_message_it != recv_messages.end(); recv_message_it++ )
-            {
-                if( (*recv_message_it)->get_type() == dcl::network::message::msg_error_message )
-                {
-                    received_messages_.push_back( *recv_message_it );
-                }
-                else
-                {
-                    message_sp_t sent_message_sp( packet_ptr->get_message( (*recv_message_it)->get_id() ) );
-
-                    sent_message_sp->parse_response( (*recv_message_it)->get_payload() );
-                }
-            }
-
-            wait_response_.post();
+            async_barrier_sp_->wait();
         }
     }
-    */
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::client

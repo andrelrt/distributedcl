@@ -64,6 +64,11 @@ public:
 		}
 	}
 
+    static void wait_all()
+    {
+        dcl::network::client::session_manager::session_t::wait_all();
+    }
+
 protected:
     dcl::network::client::session_manager::session_t& session_ref_;
 

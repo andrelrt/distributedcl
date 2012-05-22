@@ -73,6 +73,8 @@ void setup_library()
         const std::vector< std::string >& servers = config.get_servers();
         std::vector< std::string >::const_iterator it;
 
+        opencl_composite::get_instance().setup_remote_count( servers.size() );
+
         for( it = servers.begin(); it != servers.end(); it++ )
         {
 			std::cout << "Connecting remote DistributedCL server: " << *it << std::endl;

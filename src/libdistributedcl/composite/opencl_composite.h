@@ -59,6 +59,7 @@ public:
 
     void add_library( const std::string& libpath );
     void add_remote( const std::string& connection_string );
+    void setup_remote_count( uint32_t count );
 
     const composite_platform& get_platform() const
     {
