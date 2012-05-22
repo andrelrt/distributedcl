@@ -249,8 +249,8 @@ class generic_device :
 public:
     static const char* get_name(){ return "generic_device"; }
 
-    generic_device( boost::shared_ptr<const generic_platform> platform_sp, cl_device_type type = 0 ) :
-        info_loaded_( false ), platform_sp_( platform_sp )
+    generic_device( const generic_platform* platform_ptr, cl_device_type type = 0 ) :
+        info_loaded_( false ), platform_ptr_( platform_ptr )
     {
         local_info_.type_ = type;
     }
@@ -270,9 +270,9 @@ public:
         return local_info_.type_;
     }
 
-    inline boost::shared_ptr<const generic_platform> get_platform() const
+    inline const generic_platform* get_platform() const
     {
-        return platform_sp_;
+        return platform_ptr_;
     }
 
 protected:
@@ -283,9 +283,11 @@ protected:
         return info_loaded_;
     }
 
+
+
 private:
     bool info_loaded_;
-    boost::shared_ptr<const generic_platform> platform_sp_;
+    const generic_platform* platform_ptr_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

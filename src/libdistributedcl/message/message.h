@@ -308,7 +308,7 @@ public:
 
     inline dcl::remote_id_t get_event_id( dcl::info::generic_event* event_ptr )
     {
-        event_id_ = remote_event_ids_.get( boost::shared_ptr<dcl::info::generic_event>( event_ptr ), true );
+        event_id_ = remote_event_ids_.get( event_ptr, true );
         return_event_ = true;
 
         return event_id_;

@@ -54,7 +54,7 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
     msg_ptr->set_remote_id( get_remote_id() );
     msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
-    msg_ptr->set_blocking( blocking );
+    msg_ptr->set_blocking( (blocking == CL_TRUE) );
 
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
@@ -93,7 +93,7 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
     msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
     msg_ptr->set_buffer_size( size );
     msg_ptr->set_offset( offset );
-    msg_ptr->set_blocking( blocking );
+    msg_ptr->set_blocking( (blocking == CL_TRUE) );
 
     msg_ptr->set_data_pointer( data_ptr );
 

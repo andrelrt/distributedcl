@@ -54,11 +54,11 @@ public:
     dcl::info::generic_context* create_context( cl_device_type device_type = CL_DEVICE_TYPE_ALL ) const;
 
 
-    void add_platform( boost::shared_ptr<dcl::info::generic_platform> platform_sp )
+    void add_platform( dcl::info::generic_platform* platform_ptr )
     {
-        platforms_.push_back( platform_sp );
+        platforms_.push_back( platform_ptr );
 
-        const devices_t& devs = platform_sp->get_devices();
+        const devices_t& devs = platform_ptr->get_devices();
 
         devices_.insert( devices_.end(), devs.begin(), devs.end() );
     }

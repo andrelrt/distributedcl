@@ -53,18 +53,16 @@ public:
     }
 
     ~object_manager(){}
-    
-    typedef boost::shared_ptr< DCL_TYPE_T > dcl_sp_t;
 
-    inline void add( dcl_sp_t object_sp, remote_id_t object_id )
+    inline void add( DCL_TYPE_T* object_ptr, remote_id_t object_id )
     {
         if( object_map_.find( object_id ) == object_map_.end() )
         {
-            object_map_.insert( typename object_map_t::value_type( object_id, object_sp ) );
+            object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
         }
     }
 
-    inline remote_id_t add( dcl_sp_t object_sp )
+    inline remote_id_t add( DCL_TYPE_T* object_ptr )
     {
         remote_id_t object_id;
 
@@ -74,7 +72,7 @@ public:
 
         } while( object_map_.find( object_id ) != object_map_.end() );
 
-        object_map_.insert( typename object_map_t::value_type( object_id, object_sp ) );
+        object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
 
         //object_ptr->set_remote_id( object_id );
 
@@ -86,13 +84,13 @@ public:
         object_map_.erase( object_id );
     }
 
-    inline void remove( const dcl_sp_t object_sp )
+    inline void remove( const DCL_TYPE_T* object_ptr )
     {
         typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin; it != object_map_.end(); it++ )
         {
-            if( it->second == object_sp )
+            if( it->second == object_ptr )
             {
                 break;
             }
@@ -104,13 +102,13 @@ public:
         }
     }
 
-    inline remote_id_t get( dcl_sp_t object_sp, bool create_new = false )
+    inline remote_id_t get( DCL_TYPE_T* object_ptr, bool create_new = false )
     {
         typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin(); it != object_map_.end(); it++ )
         {
-            if( it->second == object_sp )
+            if( it->second == object_ptr )
             {
                 break;
             }
@@ -124,10 +122,10 @@ public:
         if( !create_new )
             throw library_exception( (std::string( "object_manager<" ) + DCL_TYPE_T::get_name() + ">::get : Invalid object pointer").c_str() );
 
-        return add( object_sp );
+        return add( object_ptr );
     }
 
-    inline dcl_sp_t get( remote_id_t object_id ) const
+    inline DCL_TYPE_T* get( remote_id_t object_id ) const
     {
         typename object_map_t::const_iterator it = object_map_.find( object_id );
 
@@ -153,11 +151,18 @@ public:
 
     inline void clear()
     {
+        typename object_map_t::const_iterator it;
+
+        for( it = object_map_.begin(); it != object_map_.end(); it++ )
+        {
+            delete it->second;
+        }
+
         object_map_.clear();
     }
 
 private:
-    typedef std::map< remote_id_t, dcl_sp_t > object_map_t;
+    typedef std::map< remote_id_t, DCL_TYPE_T* > object_map_t;
 
     object_map_t object_map_;
     boost::mt19937 rand_;

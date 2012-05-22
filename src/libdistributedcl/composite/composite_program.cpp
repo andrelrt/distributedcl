@@ -42,7 +42,7 @@ void composite_program::build( const std::string& build_options, cl_bool blockin
 //-----------------------------------------------------------------------------
 void composite_program::build( const devices_t& devices, const std::string& build_options, cl_bool blocking )
 {
-    typedef std::set< boost::shared_ptr<generic_device> > device_set_t;
+    typedef std::set< generic_device* > device_set_t;
 
     for( iterator it = begin(); it != end(); it++ )
     {
