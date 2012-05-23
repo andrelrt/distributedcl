@@ -167,7 +167,7 @@ private:
 
                 // Execute all messages in package
                 dispatcher_.dispatch_messages( messages_ref, this );
-                dispatcher_.wait_messages( messages_ref );
+                dispatcher_.wait_messages( messages_ref, this );
 
                 // Create return package
                 dcl::message_vector_t::iterator it;

@@ -38,7 +38,7 @@ class message_dispatcher
 {
 public:
     void dispatch_messages( dcl::message_vector_t& messages, dcl::network::server::server_session_context* session_context_ptr );
-    void wait_messages( dcl::message_vector_t& messages );
+    void wait_messages( dcl::message_vector_t& messages, dcl::network::server::server_session_context* session_context_ptr );
     void flush_async_queue( dcl::network::server::server_session_context* session_context_ptr );
 };
 //-----------------------------------------------------------------------------

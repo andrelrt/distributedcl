@@ -77,7 +77,6 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
     msgEnqueueNDRangeKernel_request* request_ptr =
         reinterpret_cast< msgEnqueueNDRangeKernel_request* >( enqueue_ptr );
 
-    request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
     request_ptr->kernel_id_ = host_to_network( kernel_id_ );
     request_ptr->dimensions_ = host_to_network( static_cast<uint16_t>( global_.get_dimensions() ) );
 
@@ -96,7 +95,6 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
     const msgEnqueueNDRangeKernel_request* request_ptr =
         reinterpret_cast< const msgEnqueueNDRangeKernel_request* >( enqueue_ptr );
 
-    command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
     kernel_id_ = network_to_host( request_ptr->kernel_id_ );
     uint16_t dimensions = network_to_host( request_ptr->dimensions_ );
     size_t value[ 3 ];

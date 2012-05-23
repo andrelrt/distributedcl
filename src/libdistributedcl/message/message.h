@@ -41,6 +41,12 @@
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
+namespace server {
+class server_session_context;
+}}}
+//-----------------------------------------------------------------------------
+namespace dcl {
+namespace network {
 namespace message {
 //-----------------------------------------------------------------------------
 enum message_type
@@ -200,7 +206,7 @@ public:
 
     virtual void parse_response( const void* payload_ptr ){} //, uint32_t size
 
-    virtual void server_wait(){}
+    virtual void server_wait( dcl::network::server::server_session_context* session_context_ptr ){}
 
 protected:
     base_message( message_type type, bool wait_response = false,
@@ -290,6 +296,7 @@ public:
 
     // Request
     MSG_PARAMETER_GET_SET( bool, blocking_, blocking )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
     MSG_PARAMETER_GET( dcl::remote_ids_t, events_, events )
     MSG_PARAMETER_GET( bool, return_event_, return_event )
@@ -321,13 +328,7 @@ public:
         event_ptr_ = event_ptr;
     }
 
-    virtual void server_wait()
-    {
-        if( event_ptr_ != NULL )
-        {
-            event_ptr_->wait();
-        }
-    }
+    virtual void server_wait( dcl::network::server::server_session_context* session_context_ptr );
 
     virtual ~enqueue_message()
     {
@@ -341,6 +342,7 @@ protected:
     bool blocking_;
     bool return_event_;
     dcl::remote_ids_t events_;
+    dcl::remote_id_t command_queue_id_;
 
     dcl::remote_id_t event_id_;
     dcl::info::generic_event* event_ptr_;
@@ -352,7 +354,8 @@ protected:
         base_message( type, wait_response,
                       request_size + sizeof(enqueue_message_request),
                       response_size ),
-        blocking_( false ), return_event_( false ), event_id_( 0xffff ), event_ptr_( NULL ){}
+        blocking_( false ), return_event_( false ), command_queue_id_( 0xffff ),
+        event_id_( 0xffff ), event_ptr_( NULL ){}
 
     inline std::size_t get_enqueue_request_size()
     {
@@ -372,6 +375,7 @@ protected:
         uint16_t event_count_:14;
         uint16_t return_event_:1;
         uint16_t blocking_:1;
+        dcl::remote_id_t command_queue_id_;
         dcl::remote_id_t events_[ 1 ];
     };
     #pragma pack( pop )

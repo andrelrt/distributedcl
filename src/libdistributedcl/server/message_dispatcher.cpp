@@ -190,13 +190,13 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
 #undef MSG_ASYNC
 #undef MSG
 //-----------------------------------------------------------------------------
-void message_dispatcher::wait_messages( message_vector_t& messages )
+void message_dispatcher::wait_messages( message_vector_t& messages, server_session_context* session_context_ptr )
 {
     message_vector_t::iterator it;
 
     for( it = messages.begin(); it != messages.end(); it++ )
     {
-        (*it)->server_wait();
+        (*it)->server_wait( session_context_ptr );
     }
 }
 //-----------------------------------------------------------------------------

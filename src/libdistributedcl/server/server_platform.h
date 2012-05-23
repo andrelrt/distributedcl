@@ -112,6 +112,7 @@ private:
         while( !server_queue_.empty() )
         {
             server_queue_.front()->execute();
+            server_queue_.front()->enqueue_response();
             server_queue_.pop();
         }
     }

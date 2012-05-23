@@ -102,13 +102,12 @@ public:
     dcl_message< msgEnqueueNDRangeKernel >() :
         enqueue_message( msgEnqueueNDRangeKernel, false,
                          sizeof( msgEnqueueNDRangeKernel_request ) ),
-        kernel_id_( 0xffff ), command_queue_id_( 0xffff )
+        kernel_id_( 0xffff )
     {
     }
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
     inline dcl::info::ndrange& get_offset()
     {
@@ -127,7 +126,6 @@ public:
 
 private:
     dcl::remote_id_t kernel_id_;
-    dcl::remote_id_t command_queue_id_;
     dcl::info::ndrange offset_;
     dcl::info::ndrange global_;
     dcl::info::ndrange local_;

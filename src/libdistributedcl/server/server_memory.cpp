@@ -167,8 +167,8 @@ void msgEnqueueReadBuffer_command::execute()
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
 {
-    //return !message_->get_blocking();
-    return true;
+    return !message_->get_blocking();
+    //return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------

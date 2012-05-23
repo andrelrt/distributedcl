@@ -30,7 +30,10 @@
 #include "msg_command_queue.h"
 #include "msg_memory.h"
 #include "msg_event.h"
+#include "network/server_session.h"
+#include "server/server_platform.h"
 #include <boost/interprocess/sync/scoped_lock.hpp>
+using dcl::network::server::server_session_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
@@ -205,6 +208,7 @@ void* enqueue_message::create_enqueue_request( void* payload_ptr )
     request_ptr->blocking_ = static_cast<uint16_t>( blocking_? 1 : 0 );
     request_ptr->return_event_ = static_cast<uint16_t>( return_event_? 1 : 0 );
     request_ptr->event_count_ = static_cast<uint16_t>( events_.size() );
+    request_ptr->command_queue_id_ = host_to_network( command_queue_id_ );
 
     request_ptr->events_[ 0 ] = host_to_network( event_id_ );
 
@@ -223,6 +227,7 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
 
     blocking_ = (request_ptr->blocking_ == 1)? true : false;
     return_event_ = (request_ptr->return_event_ == 1)? true : false;
+    command_queue_id_ = network_to_host( request_ptr->command_queue_id_ );
 
     event_id_ = network_to_host( request_ptr->events_[ 0 ] );
 
@@ -243,6 +248,19 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
     }
 
     return( reinterpret_cast<const uint8_t*>( payload_ptr ) + get_enqueue_request_size() );
+}
+//-----------------------------------------------------------------------------
+void enqueue_message::server_wait( server_session_context* session_context_ptr )
+{
+    if( blocking_ )
+    {
+        session_context_ptr->get_server_platform().wait( command_queue_id_ );
+    }
+
+    if( event_ptr_ != NULL )
+    {
+        event_ptr_->wait();
+    }
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message

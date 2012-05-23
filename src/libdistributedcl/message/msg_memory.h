@@ -121,14 +121,12 @@ class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
         enqueue_message( msgEnqueueWriteBuffer, false ), offset_( 0 ),
-        remote_id_( 0xffff ), command_queue_id_( 0xffff ),
-        buffer_ptr_( NULL ), buffer_len_( 0 ){}
+        remote_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
     MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer_pointer )
     MSG_PARAMETER_GET( size_t, buffer_len_, buffer_size )
@@ -147,7 +145,6 @@ public:
 private:
     size_t offset_;
     dcl::remote_id_t remote_id_;
-    dcl::remote_id_t command_queue_id_;
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
     //buffer_t buffer_;
@@ -184,14 +181,12 @@ class dcl_message< msgEnqueueReadBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueReadBuffer >() :
         enqueue_message( msgEnqueueReadBuffer, true, sizeof( msgEnqueueReadBuffer_request ) ),
-        remote_id_( 0xffff ), command_queue_id_( 0xffff ), size_( 0 ),
-        offset_( 0 ), data_ptr_( NULL ){}
+        remote_id_( 0xffff ), size_( 0 ), offset_( 0 ), data_ptr_( NULL ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
     MSG_PARAMETER_GET_SET( size_t, offset_, offset )
 
     MSG_PARAMETER_GET( size_t, size_, buffer_size )
@@ -221,7 +216,6 @@ public:
 
 private:
     dcl::remote_id_t remote_id_;
-    dcl::remote_id_t command_queue_id_;
     size_t size_;
     size_t offset_;
     void* data_ptr_;
