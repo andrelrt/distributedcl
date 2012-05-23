@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_NETWORK_SERVER_SESSION_H_
 #define _DCL_NETWORK_SERVER_SESSION_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include <iostream>
 #include <boost/thread.hpp>

@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_NETWORK_MESSAGE_PACKET_H_
 #define _DCL_NETWORK_MESSAGE_PACKET_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include <map>
 #include <vector>

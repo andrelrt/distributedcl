@@ -33,7 +33,7 @@ void msgWaitForEvents_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();
 
-    server.wait( message_->get_command_queue_id() );
+//    server.wait( message_->get_command_queue_id() );
 
     remote_id_t event_id = message_->get_remote_id();
 

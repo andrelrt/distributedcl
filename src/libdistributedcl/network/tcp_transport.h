@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_TCP_TRANSPORT_H_
 #define _DCL_TCP_TRANSPORT_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #if !defined( WIN32 )
 #include <netinet/tcp.h>

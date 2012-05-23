@@ -31,19 +31,23 @@ namespace message {
 //-----------------------------------------------------------------------------
 void dcl_message< msgWaitForEvents >::create_request( void* payload_ptr )
 {
-    remote_id_t* response_ptr = reinterpret_cast<remote_id_t*>( payload_ptr );
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
 
-    *response_ptr++ = host_to_network( remote_id_ );
-    *response_ptr = host_to_network( command_queue_id_ );
+    remote_id_t* request_ptr = reinterpret_cast<remote_id_t*>( enqueue_ptr );
+
+    *request_ptr++ = host_to_network( remote_id_ );
+    *request_ptr = host_to_network( command_queue_id_ );
 }
 //-----------------------------------------------------------------------------
 void dcl_message< msgWaitForEvents >::parse_request( const void* payload_ptr )
 {
-    const remote_id_t* response_ptr =
-        reinterpret_cast<const remote_id_t*>( payload_ptr );
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
 
-    remote_id_ = network_to_host( *response_ptr++ );
-    command_queue_id_ = network_to_host( *response_ptr );
+    const remote_id_t* request_ptr =
+        reinterpret_cast<const remote_id_t*>( enqueue_ptr );
+
+    remote_id_ = network_to_host( *request_ptr++ );
+    command_queue_id_ = network_to_host( *request_ptr );
 }
 //-----------------------------------------------------------------------------
 // msgGetEventProfilingInfo

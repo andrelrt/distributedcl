@@ -34,6 +34,7 @@
 #include "message/message.h"
 #include "message/msg_kernel.h"
 #include "message/msg_memory.h"
+#include "message/msg_event.h"
 #include "composite/composite_context.h"
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
@@ -47,7 +48,7 @@ using dcl::network::server::server_session_context;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-#define MSG_DEBUG
+//#define MSG_DEBUG
 #if defined MSG_DEBUG
 #define MSG( x ) case x: {x##_command command(*it,session_context_ptr);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
 #define MSG_ASYNC( x )\
@@ -147,7 +148,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
             MSG( msgGetKernelWorkGroupInfo );
 
             // Event
-            MSG( msgWaitForEvents );
+            MSG_ASYNC( msgWaitForEvents );
             MSG_NOT_IMPLEMENTED( msgGetEventInfo );
             MSG_NOT_IMPLEMENTED( msgRetainEvent );
             MSG_RELEASE( msgReleaseEvent, server.get_event_manager(), composite_event );
@@ -192,17 +193,18 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
 //-----------------------------------------------------------------------------
 void message_dispatcher::wait_messages( message_vector_t& messages, server_session_context* session_context_ptr )
 {
-    message_vector_t::iterator it;
+    session_context_ptr->get_server_platform().wait_unblock_all();
+    //message_vector_t::iterator it;
 
-    for( it = messages.begin(); it != messages.end(); it++ )
-    {
-        (*it)->server_wait( session_context_ptr );
-    }
+    //for( it = messages.begin(); it != messages.end(); it++ )
+    //{
+    //    (*it)->server_wait( session_context_ptr );
+    //}
 }
 //-----------------------------------------------------------------------------
 void message_dispatcher::flush_async_queue( server_session_context* session_context_ptr )
 {
-    session_context_ptr->get_server_platform().flush_all();
+//    session_context_ptr->get_server_platform().flush_all();
 //	async_server::get_instance().flush_queue();
 }
 //-----------------------------------------------------------------------------

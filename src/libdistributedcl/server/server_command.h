@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_SERVER_SERVER_COMMAND_H_
 #define _DCL_SERVER_SERVER_COMMAND_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include <queue>
 #include "distributedcl_internal.h"
@@ -46,6 +49,7 @@ public:
     virtual void enqueue_response(){}
     virtual void enqueue_error( int32_t error_code ){}
     virtual dcl::composite::composite_command_queue* get_queue(){ return NULL; }
+    virtual bool get_blocking() const { return false; }
 };
 //-----------------------------------------------------------------------------
 //class async_server
@@ -113,16 +117,22 @@ private:
 public:
     inline void async_execute( boost::shared_ptr< command > command_sp, remote_id_t queue_id )
     {
-		if( async_run() )
-		{
-            this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
-            this->session_context_ptr_->get_server_platform().flush( queue_id );
-			//async_server::get_instance().enqueue( command_sp );
-		}
-		else
-		{
-			this->execute();
-		}
+        this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+		//if( async_run() )
+		//{
+  //          this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+  //          this->session_context_ptr_->get_server_platform().flush( queue_id );
+		//	//async_server::get_instance().enqueue( command_sp );
+		//}
+		//else
+		//{
+		//	this->execute();
+		//}
+    }
+
+    virtual bool get_blocking() const
+    {
+        return !async_run();
     }
 
     virtual void enqueue_response()

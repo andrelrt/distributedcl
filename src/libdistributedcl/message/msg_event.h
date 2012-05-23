@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_EVENT_MESSAGES_H_
 #define _DCL_EVENT_MESSAGES_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include "message.h"
 //-----------------------------------------------------------------------------
@@ -38,20 +41,27 @@ namespace message {
 // msgWaitForEvents
 //-----------------------------------------------------------------------------
 template<>
-class dcl_message< msgWaitForEvents > : public base_message
+class dcl_message< msgWaitForEvents > : public enqueue_message
 {
 public:
-    dcl_message< msgWaitForEvents >() : 
-        base_message( msgWaitForEvents, true, 2*sizeof( dcl::remote_id_t ), 0 ),
-        remote_id_( 0xffff ){}
+    dcl_message< msgWaitForEvents >() :
+        enqueue_message( msgWaitForEvents, true, 2*sizeof( dcl::remote_id_t ), 0 ),
+        remote_id_( 0xffff )
+    {
+        set_blocking( true );
+    }
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
-    MSG_PARAMETER_GET_SET( dcl::remote_id_t, command_queue_id_, command_queue_id )
 
 private:
     dcl::remote_id_t remote_id_;
-    dcl::remote_id_t command_queue_id_;
+
+    inline virtual void update_request_size()
+    {
+        set_size( get_enqueue_request_size() + 
+                  2*sizeof( dcl::remote_id_t ) );
+    }
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );

@@ -133,7 +133,7 @@ void msgSetKernelArg_command::execute()
             kernel_ptr->set_argument( message_->get_index(), image_ptr );
         }
         else
-            throw dcl::library_exception( "Invalid memory object" );
+            throw dcl::library_exception( "Invalid memory object", CL_INVALID_MEM_OBJECT );
     }
     else
     {

@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_CONFIG_CLIENT_H_
 #define _DCL_CONFIG_CLIENT_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include "common_config.h"
 //-----------------------------------------------------------------------------

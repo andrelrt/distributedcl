@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_SERVER_PLATFORM_H_
 #define _DCL_SERVER_PLATFORM_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include "distributedcl_internal.h"
 #include "server_command.h"
@@ -34,6 +37,7 @@
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
 #include "composite/composite_event.h"
+#include <boost/interprocess/sync/interprocess_barrier.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -61,205 +65,68 @@ public:
 class async_execute
 {
 public:
-    async_execute( dcl::composite::composite_command_queue* queue_ptr ) :
-        running_( false ), queue_ptr_( queue_ptr ), semaphore_( 0 )
-    {
-        thread_sp_.reset( new boost::thread( &dcl::server::async_execute::work_thread, this ) );
-    }
+    async_execute( dcl::composite::composite_command_queue* queue_ptr );
+    ~async_execute();
 
-    ~async_execute()
+    void stop();
+    void enqueue( boost::shared_ptr<command> command_sp );
+    void flush();
+    //void wait();
+    //void wait_unblock();
+    bool has_blocking_command();
+    void setup_barrier( boost::shared_ptr<boost::interprocess::barrier> barrier_sp )
     {
-        stop();
-        thread_sp_->join();
-    }
-
-    void stop()
-    {
-        running_ = false;
-        semaphore_.post();
-    }
-
-    void enqueue( boost::shared_ptr<command> command_sp )
-    {
-        dcl::scoped_lock_t lock( mutex_ );
-
-        server_queue_.push( command_sp );
-    }
-
-    void flush()
-    {
-        semaphore_.post();
-    }
-
-    void wait()
-    {
-        execute_queue();
+        barrier_sp_ = barrier_sp;
     }
 
 private:
     bool running_;
+    uint32_t blocking_count_;
     std::queue< boost::shared_ptr<command> > server_queue_;
     dcl::composite::composite_command_queue* queue_ptr_;
 
     boost::scoped_ptr<boost::thread> thread_sp_;
     boost::interprocess::interprocess_mutex mutex_;
+    boost::interprocess::interprocess_mutex condition_mutex_;
     boost::interprocess::interprocess_semaphore semaphore_;
+    boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
 
-    void execute_queue()
-    {
-        dcl::scoped_lock_t lock( mutex_ );
-
-        while( !server_queue_.empty() )
-        {
-            server_queue_.front()->execute();
-            server_queue_.front()->enqueue_response();
-            server_queue_.pop();
-        }
-    }
-
-    void work_thread()
-    {
-        while( 1 )
-        {
-            semaphore_.wait();
-
-            if( !running_ )
-                return;
-
-            execute_queue();
-
-            queue_ptr_->flush();
-        }
-    }
+    void execute_queue( bool unblock, bool sync );
+    void work_thread();
 };
 //-----------------------------------------------------------------------------
 class server_platform
 {
 public:
     server_platform(){}
-    ~server_platform()
-    {
-        clear_all_data();
-    }
+    ~server_platform();
 
-    typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
-    typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
-    typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
-    typedef dcl::info::object_manager< dcl::composite::composite_kernel > kernel_manager_t;
-    typedef dcl::info::object_manager< dcl::composite::composite_command_queue > command_queue_manager_t;
-    typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_event > event_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_image > image_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_device > device_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_kernel > kernel_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_command_queue > command_queue_manager_t;
 
-    inline device_manager_t& get_device_manager()
-    {
-        return device_manager_;
-    }
+    inline event_manager_t& get_event_manager(){ return event_manager_; }
+    inline image_manager_t& get_image_manager(){ return image_manager_; }
+    inline device_manager_t& get_device_manager(){ return device_manager_; }
+    inline kernel_manager_t& get_kernel_manager(){ return kernel_manager_; }
+    inline memory_manager_t& get_memory_manager(){ return memory_manager_; }
+    inline context_manager_t& get_context_manager(){ return context_manager_; }
+    inline program_manager_t& get_program_manager(){ return program_manager_; }
+    inline command_queue_manager_t& get_command_queue_manager(){ return command_queue_manager_; }
 
-    inline context_manager_t& get_context_manager()
-    {
-        return context_manager_;
-    }
-
-    inline program_manager_t& get_program_manager()
-    {
-        return program_manager_;
-    }
-
-    inline kernel_manager_t& get_kernel_manager()
-    {
-        return kernel_manager_;
-    }
-
-    inline command_queue_manager_t& get_command_queue_manager()
-    {
-        return command_queue_manager_;
-    }
-
-    inline memory_manager_t& get_memory_manager()
-    {
-        return memory_manager_;
-    }
-
-    inline event_manager_t& get_event_manager()
-    {
-        return event_manager_;
-    }
-
-    inline image_manager_t& get_image_manager()
-    {
-        return image_manager_;
-    }
-
-    inline void clear_all_data()
-    {
-        for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
-        {
-            delete it->second;
-        }
-
-        queue_thread_.clear();
-
-        kernel_manager_.clear();
-        command_queue_manager_.clear();
-        memory_manager_.clear();
-        image_manager_.clear();
-
-        program_manager_.clear();
-        event_manager_.clear();
-        context_manager_.clear();
-    }
-
-    void open_queue( dcl::composite::composite_command_queue* queue_ptr )
-    {
-        queue_thread_[ queue_ptr ] = new async_execute( queue_ptr );
-    }
-
-    void enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp )
-    {
-        dcl::composite::composite_command_queue* queue_ptr =
-            command_queue_manager_.get( queue_id );
-
-        queue_thread_[ queue_ptr ]->enqueue( command_sp );
-    }
-
-    void flush( remote_id_t queue_id )
-    {
-        dcl::composite::composite_command_queue* queue_ptr =
-            command_queue_manager_.get( queue_id );
-
-        queue_thread_[ queue_ptr ]->flush();
-    }
-
-    void wait( remote_id_t queue_id )
-    {
-        dcl::composite::composite_command_queue* queue_ptr =
-            command_queue_manager_.get( queue_id );
-
-        queue_thread_[ queue_ptr ]->wait();
-    }
-
-    void wait_all()
-    {
-        for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
-        {
-            it->second->wait();
-        }
-    }
-
-    void flush_all()
-    {
-        for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
-        {
-            it->second->flush();
-        }
-    }
-
-    void close_queue( dcl::composite::composite_command_queue* queue_ptr )
-    {
-        delete queue_thread_[ queue_ptr ];
-        queue_thread_.erase( queue_ptr );
-    }
+    void clear_all_data();
+    void open_queue( dcl::composite::composite_command_queue* queue_ptr );
+    void enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp );
+    void wait( remote_id_t queue_id );
+    void wait_unblock( remote_id_t queue_id );
+    void wait_all();
+    void wait_unblock_all();
+    void close_queue( dcl::composite::composite_command_queue* queue_ptr );
 
 private:
     device_manager_t device_manager_;
@@ -274,6 +141,10 @@ private:
     typedef std::map< dcl::composite::composite_command_queue*, async_execute* > queue_thread_map_t;
 
     queue_thread_map_t queue_thread_;
+    boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
+
+    void flush( remote_id_t queue_id );
+    void flush_all();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

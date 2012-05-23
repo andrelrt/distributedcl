@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_INFO_OBJECT_MANAGER_H_
 #define _DCL_INFO_OBJECT_MANAGER_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include <time.h>
 #include <map>
@@ -30,6 +33,9 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
 #include <boost/thread.hpp>
+#if defined WIN32
+#pragma intrinsic(__rdtsc)
+#endif
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
@@ -42,14 +48,14 @@ public:
         rand_(), dist_( 1, 0xFFFF ), random_( rand_, dist_ )
     {
 #if defined WIN32
-        rand_.seed( std::clock() );
+        rand_.seed( static_cast<uint32_t>( __rdtsc() ) );
 #else
         timeval tv;
         gettimeofday( &tv, NULL );
         rand_.seed( tv.tv_usec );
 #endif
 
-        boost::this_thread::sleep( boost::posix_time::milliseconds( 1ll ) );
+        boost::this_thread::yield();
     }
 
     ~object_manager(){}

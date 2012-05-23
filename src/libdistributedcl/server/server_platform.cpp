@@ -31,6 +31,7 @@ using dcl::network::message::msgGetDeviceIDs;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
 using dcl::composite::composite_device;
+using dcl::composite::composite_command_queue;
 using dcl::remote_id_t;
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -76,6 +77,202 @@ void msgGetDeviceInfo_command::execute()
     const composite_device* device_ptr = session_context_ptr_->get_server_platform().get_device_manager().get( remote_id );
 
     message_->set_info( device_ptr->get_info() );
+}
+//-----------------------------------------------------------------------------
+// async_execute
+//-----------------------------------------------------------------------------
+async_execute::async_execute( composite_command_queue* queue_ptr ) :
+    running_( false ), blocking_count_( 0 ), queue_ptr_( queue_ptr ),
+    semaphore_( 0 )
+{
+    thread_sp_.reset( new boost::thread( &dcl::server::async_execute::work_thread, this ) );
+}
+//-----------------------------------------------------------------------------
+async_execute::~async_execute()
+{
+    stop();
+    thread_sp_->join();
+}
+//-----------------------------------------------------------------------------
+void async_execute::stop()
+{
+    running_ = false;
+    semaphore_.post();
+}
+//-----------------------------------------------------------------------------
+void async_execute::enqueue( boost::shared_ptr<command> command_sp )
+{
+    dcl::scoped_lock_t lock( mutex_ );
+
+    server_queue_.push( command_sp );
+
+    if( command_sp->get_blocking() )
+    {
+        blocking_count_++;
+    }
+}
+//-----------------------------------------------------------------------------
+void async_execute::flush()
+{
+    semaphore_.post();
+}
+////-----------------------------------------------------------------------------
+//void async_execute::wait()
+//{
+//    execute_queue( false, true );
+//}
+////-----------------------------------------------------------------------------
+//void async_execute::wait_unblock()
+//{
+//    execute_queue( true, true );
+//}
+//-----------------------------------------------------------------------------
+bool async_execute::has_blocking_command()
+{
+    return( blocking_count_ != 0 );
+}
+//-----------------------------------------------------------------------------
+void async_execute::execute_queue( bool unblock, bool sync )
+{
+    dcl::scoped_lock_t lock( mutex_ );
+
+    while( !server_queue_.empty() )
+    {
+        server_queue_.front()->execute();
+        server_queue_.front()->enqueue_response();
+
+        if( server_queue_.front()->get_blocking() )
+        {
+            blocking_count_--;
+
+            if( unblock && !has_blocking_command() )
+                break;
+        }
+
+        server_queue_.pop();
+    }
+}
+//-----------------------------------------------------------------------------
+void async_execute::work_thread()
+{
+    running_ = true;
+    while( 1 )
+    {
+        semaphore_.wait();
+
+        if( !running_ )
+            return;
+
+        execute_queue( false, true );
+
+        barrier_sp_->wait();
+        queue_ptr_->flush();
+    }
+}
+//-----------------------------------------------------------------------------
+// server_platform
+//-----------------------------------------------------------------------------
+server_platform::~server_platform()
+{
+    clear_all_data();
+}
+//-----------------------------------------------------------------------------
+void server_platform::clear_all_data()
+{
+    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    {
+        delete it->second;
+    }
+
+    queue_thread_.clear();
+
+    kernel_manager_.clear();
+    command_queue_manager_.clear();
+    memory_manager_.clear();
+    image_manager_.clear();
+
+    program_manager_.clear();
+    event_manager_.clear();
+    context_manager_.clear();
+}
+//-----------------------------------------------------------------------------
+void server_platform::open_queue( composite_command_queue* queue_ptr )
+{
+    queue_thread_[ queue_ptr ] = new async_execute( queue_ptr );
+
+    barrier_sp_ = boost::shared_ptr<boost::interprocess::barrier>(
+        new boost::interprocess::barrier( queue_thread_.size() + 1 ) );
+
+    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    {
+        it->second->setup_barrier( barrier_sp_ );
+    }
+}
+//-----------------------------------------------------------------------------
+void server_platform::enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp )
+{
+    composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+
+    queue_thread_[ queue_ptr ]->enqueue( command_sp );
+}
+//-----------------------------------------------------------------------------
+void server_platform::flush( remote_id_t queue_id )
+{
+    wait_all();
+    //composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+
+    //queue_thread_[ queue_ptr ]->flush();
+}
+//-----------------------------------------------------------------------------
+void server_platform::wait( remote_id_t queue_id )
+{
+    wait_all();
+//    flush( queue_id );
+
+    //composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+
+    //queue_thread_[ queue_ptr ]->wait();
+}
+//-----------------------------------------------------------------------------
+void server_platform::wait_unblock( remote_id_t queue_id )
+{
+    wait_all();
+//    flush( queue_id );
+
+    //composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+
+    //queue_thread_[ queue_ptr ]->wait_unblock();
+}
+//-----------------------------------------------------------------------------
+void server_platform::wait_all()
+{
+    if( queue_thread_.size() != 0 )
+    {
+        flush_all();
+
+        barrier_sp_->wait();
+    }
+}
+//-----------------------------------------------------------------------------
+void server_platform::wait_unblock_all()
+{
+    wait_all();
+}
+//-----------------------------------------------------------------------------
+void server_platform::flush_all()
+{
+    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    {
+        it->second->flush();
+    }
+
+    boost::this_thread::yield();
+}
+//-----------------------------------------------------------------------------
+void server_platform::close_queue( composite_command_queue* queue_ptr )
+{
+    delete queue_thread_[ queue_ptr ];
+    queue_thread_.erase( queue_ptr );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server
