@@ -41,7 +41,7 @@ class composite_event :
 public:
     composite_event( const composite_context& context_ref, const dcl::info::generic_command_queue* queue_ptr ) :
         dcl::info::generic_event( queue_ptr ),
-        composite_object< dcl::info::generic_event >( context_ref ), semaphore_( 0 ){}
+        composite_object< dcl::info::generic_event >( context_ref ), executed_( false ), semaphore_( 0 ){}
 
     ~composite_event(){}
 
@@ -49,10 +49,14 @@ public:
 
     virtual void wait();
     virtual void load_info();
+
+    void wait_execute();
     void add_event( const dcl::info::generic_context* context_ptr, dcl::info::generic_event* event_ptr );
 
 private:
+    bool executed_;
     boost::interprocess::interprocess_semaphore semaphore_;
+    boost::interprocess::interprocess_mutex mutex_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

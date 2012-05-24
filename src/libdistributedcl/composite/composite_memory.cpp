@@ -48,8 +48,20 @@ void composite_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
     const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = reinterpret_cast<generic_memory*>( find( ctx ) );
 
-    memory_ptr->read( queue_ptr, data_ptr, size, offset,
-                      blocking, wait_events, ret_event_ptr );
+    if( (ret_event_ptr == NULL) || (*ret_event_ptr == NULL) )
+    {
+        memory_ptr->read( queue_ptr, data_ptr, size, offset,
+                          blocking, wait_events, ret_event_ptr );
+    }
+    else
+    {
+        generic_event* event_ptr = NULL;
+
+        memory_ptr->read( queue_ptr, data_ptr, size, offset,
+                          blocking, wait_events, &event_ptr );
+
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, event_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 void composite_memory::write( generic_command_queue* queue_ptr, const void* data_ptr, 
@@ -59,8 +71,20 @@ void composite_memory::write( generic_command_queue* queue_ptr, const void* data
     const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = reinterpret_cast<generic_memory*>( find( ctx ) );
 
-    memory_ptr->write( queue_ptr, data_ptr, size, offset,
-                       blocking, wait_events, ret_event_ptr );
+    if( (ret_event_ptr == NULL) || (*ret_event_ptr == NULL) )
+    {
+        memory_ptr->write( queue_ptr, data_ptr, size, offset,
+                           blocking, wait_events, ret_event_ptr );
+    }
+    else
+    {
+        generic_event* event_ptr = NULL;
+
+        memory_ptr->write( queue_ptr, data_ptr, size, offset,
+                           blocking, wait_events, &event_ptr );
+
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, event_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 void* composite_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,

@@ -73,15 +73,15 @@ public:
     void flush();
     //void wait();
     //void wait_unblock();
-    bool has_blocking_command();
-    void setup_barrier( boost::shared_ptr<boost::interprocess::barrier> barrier_sp )
-    {
-        barrier_sp_ = barrier_sp;
-    }
+    //bool has_blocking_command();
+    //void setup_barrier( boost::shared_ptr<boost::interprocess::barrier> barrier_sp )
+    //{
+    //    barrier_sp_ = barrier_sp;
+    //}
 
 private:
     bool running_;
-    uint32_t blocking_count_;
+    //uint32_t blocking_count_;
     std::queue< boost::shared_ptr<command> > server_queue_;
     dcl::composite::composite_command_queue* queue_ptr_;
 
@@ -89,9 +89,9 @@ private:
     boost::interprocess::interprocess_mutex mutex_;
     boost::interprocess::interprocess_mutex condition_mutex_;
     boost::interprocess::interprocess_semaphore semaphore_;
-    boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
+    //boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
 
-    void execute_queue( bool unblock, bool sync );
+    void execute_queue();
     void work_thread();
 };
 //-----------------------------------------------------------------------------
@@ -122,10 +122,10 @@ public:
     void clear_all_data();
     void open_queue( dcl::composite::composite_command_queue* queue_ptr );
     void enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp );
-    void wait( remote_id_t queue_id );
-    void wait_unblock( remote_id_t queue_id );
-    void wait_all();
-    void wait_unblock_all();
+//    void wait( remote_id_t queue_id );
+//    void wait_unblock( remote_id_t queue_id );
+    //void wait_all();
+    //void wait_unblock_all();
     void close_queue( dcl::composite::composite_command_queue* queue_ptr );
     void flush_all();
     void flush( remote_id_t queue_id );

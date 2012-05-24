@@ -82,8 +82,7 @@ void msgGetDeviceInfo_command::execute()
 // async_execute
 //-----------------------------------------------------------------------------
 async_execute::async_execute( composite_command_queue* queue_ptr ) :
-    running_( false ), blocking_count_( 0 ), queue_ptr_( queue_ptr ),
-    semaphore_( 0 )
+    running_( false ), queue_ptr_( queue_ptr ), semaphore_( 0 )
 {
     thread_sp_.reset( new boost::thread( &dcl::server::async_execute::work_thread, this ) );
 }
@@ -106,10 +105,10 @@ void async_execute::enqueue( boost::shared_ptr<command> command_sp )
 
     server_queue_.push( command_sp );
 
-    if( command_sp->get_blocking() )
-    {
-        blocking_count_++;
-    }
+    //if( command_sp->get_blocking() )
+    //{
+    //    blocking_count_++;
+    //}
 }
 //-----------------------------------------------------------------------------
 void async_execute::flush()
@@ -126,13 +125,13 @@ void async_execute::flush()
 //{
 //    execute_queue( true, true );
 //}
+////-----------------------------------------------------------------------------
+//bool async_execute::has_blocking_command()
+//{
+//    return( blocking_count_ != 0 );
+//}
 //-----------------------------------------------------------------------------
-bool async_execute::has_blocking_command()
-{
-    return( blocking_count_ != 0 );
-}
-//-----------------------------------------------------------------------------
-void async_execute::execute_queue( bool unblock, bool sync )
+void async_execute::execute_queue()
 {
     dcl::scoped_lock_t lock( mutex_ );
 
@@ -140,15 +139,6 @@ void async_execute::execute_queue( bool unblock, bool sync )
     {
         server_queue_.front()->execute();
         server_queue_.front()->enqueue_response();
-
-        if( server_queue_.front()->get_blocking() )
-        {
-            blocking_count_--;
-
-            if( unblock && !has_blocking_command() )
-                break;
-        }
-
         server_queue_.pop();
     }
 }
@@ -163,9 +153,9 @@ void async_execute::work_thread()
         if( !running_ )
             return;
 
-        execute_queue( false, true );
+        execute_queue();
 
-        barrier_sp_->wait();
+        //barrier_sp_->wait();
         queue_ptr_->flush();
     }
 }
@@ -200,13 +190,13 @@ void server_platform::open_queue( composite_command_queue* queue_ptr )
 {
     queue_thread_[ queue_ptr ] = new async_execute( queue_ptr );
 
-    barrier_sp_ = boost::shared_ptr<boost::interprocess::barrier>(
-        new boost::interprocess::barrier( queue_thread_.size() + 1 ) );
+    //barrier_sp_ = boost::shared_ptr<boost::interprocess::barrier>(
+    //    new boost::interprocess::barrier( queue_thread_.size() + 1 ) );
 
-    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
-    {
-        it->second->setup_barrier( barrier_sp_ );
-    }
+    //for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    //{
+    //    it->second->setup_barrier( barrier_sp_ );
+    //}
 }
 //-----------------------------------------------------------------------------
 void server_platform::enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp )
@@ -218,46 +208,43 @@ void server_platform::enqueue( remote_id_t queue_id, boost::shared_ptr<command> 
 //-----------------------------------------------------------------------------
 void server_platform::flush( remote_id_t queue_id )
 {
-    wait_all();
-    //composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+    composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
 
-    //queue_thread_[ queue_ptr ]->flush();
+    queue_thread_[ queue_ptr ]->flush();
 }
 //-----------------------------------------------------------------------------
-void server_platform::wait( remote_id_t queue_id )
-{
-    wait_all();
+//void server_platform::wait( remote_id_t queue_id )
+//{
 //    flush( queue_id );
-
-    //composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
-
-    //queue_thread_[ queue_ptr ]->wait();
-}
-//-----------------------------------------------------------------------------
-void server_platform::wait_unblock( remote_id_t queue_id )
-{
-    wait_all();
+//
+//    composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+//
+//    queue_thread_[ queue_ptr ]->wait();
+//}
+////-----------------------------------------------------------------------------
+//void server_platform::wait_unblock( remote_id_t queue_id )
+//{
 //    flush( queue_id );
-
-    //composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
-
-    //queue_thread_[ queue_ptr ]->wait_unblock();
-}
-//-----------------------------------------------------------------------------
-void server_platform::wait_all()
-{
-    if( queue_thread_.size() != 0 )
-    {
-        flush_all();
-
-        barrier_sp_->wait();
-    }
-}
-//-----------------------------------------------------------------------------
-void server_platform::wait_unblock_all()
-{
-    wait_all();
-}
+//
+//    composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+//
+//    queue_thread_[ queue_ptr ]->wait_unblock();
+//}
+////-----------------------------------------------------------------------------
+//void server_platform::wait_all()
+//{
+//    if( queue_thread_.size() != 0 )
+//    {
+//        flush_all();
+//
+//        barrier_sp_->wait();
+//    }
+//}
+////-----------------------------------------------------------------------------
+//void server_platform::wait_unblock_all()
+//{
+//    wait_all();
+//}
 //-----------------------------------------------------------------------------
 void server_platform::flush_all()
 {

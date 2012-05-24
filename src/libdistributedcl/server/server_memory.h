@@ -68,6 +68,9 @@ public:
     msgEnqueueReadBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
         async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, session_context_ptr )
     {
+        if( message_->get_blocking() )
+            set_command_event();
+
         server_platform& server = session_context_ptr_->get_server_platform();
 
         dcl::composite::composite_command_queue* queue_ptr = 

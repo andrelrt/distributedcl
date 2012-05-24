@@ -46,12 +46,13 @@ void msgGetEventProfilingInfo_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();
 
-    server.wait( message_->get_command_queue_id() );
+    server.flush( message_->get_command_queue_id() );
 
     remote_id_t event_id = message_->get_remote_id();
 
     composite_event* event_ptr = server.get_event_manager().get( event_id );
 
+    event_ptr->wait_execute();
     event_ptr->load_info();
 
     message_->set_event_info( event_ptr->get_info() );

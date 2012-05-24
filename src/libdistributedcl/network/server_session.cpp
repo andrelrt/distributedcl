@@ -28,14 +28,13 @@ namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
-server_session_context::server_session_context()
+server_session_context::server_session_context() :
+    server_platform_sp_( new server_platform() )
 {
-    server_platform_ptr_ = new server_platform();
 }
 //-----------------------------------------------------------------------------
 server_session_context::~server_session_context()
 {
-    delete server_platform_ptr_;
 }
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::server

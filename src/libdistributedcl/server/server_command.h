@@ -118,17 +118,17 @@ private:
 public:
     inline void async_execute( boost::shared_ptr< command > command_sp, remote_id_t queue_id )
     {
-        //this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
-        if( async_run() )
-        {
-            this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
-            //this->session_context_ptr_->get_server_platform().flush( queue_id );
-            //async_server::get_instance().enqueue( command_sp );
-        }
-        else
-        {
-            this->execute();
-        }
+        this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+        //if( async_run() )
+        //{
+        //    this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+        //    //this->session_context_ptr_->get_server_platform().flush( queue_id );
+        //    //async_server::get_instance().enqueue( command_sp );
+        //}
+        //else
+        //{
+        //    this->execute();
+        //}
     }
 
     virtual bool get_blocking() const
@@ -140,7 +140,7 @@ public:
     {
         if( this->session_context_ptr_ != NULL )
         {
-            this->session_context_ptr_->add( server_command< TYPE >::message_ );
+            this->session_context_ptr_->add_waiting_message( server_command< TYPE >::message_ );
         }
     }
 
@@ -151,7 +151,7 @@ public:
             message_sp_t
                 err_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( error_code ) );
 
-            this->session_context_ptr_->add( err_msg_sp );
+            this->session_context_ptr_->add_waiting_message( err_msg_sp );
         }
     }
 
@@ -160,11 +160,18 @@ public:
         return queue_ptr_;
     }
 
+    void set_command_event()
+    {
+        server_event_ = true;
+    }
+
 protected:
+    bool server_event_;
     dcl::composite::composite_event* event_ptr_;
 
     async_server_command( message_sp_t message_sp, dcl::network::server::server_session_context* session_context_ptr ) :
-        server_command< TYPE >( message_sp, session_context_ptr ), queue_ptr_( NULL ), event_ptr_( NULL ){}
+        server_command< TYPE >( message_sp, session_context_ptr ),
+        queue_ptr_( NULL ), server_event_( false ), event_ptr_( NULL ){}
 
     virtual bool async_run() const = 0;
 
@@ -172,13 +179,22 @@ protected:
     {
         queue_ptr_ = queue_ptr;
 
-        if( message_->get_return_event() )
+        if( server_event_ ||
+            message_->get_return_event() )
         {
             event_ptr_ =
                 new composite_event( *(reinterpret_cast<const composite_context*>(queue_ptr->get_context())), queue_ptr );
 
-            server_platform& server = session_context_ptr_->get_server_platform();
-            server.get_event_manager().add( event_ptr_, message_->get_event_id() );
+            if( message_->get_return_event() )
+            {
+                server_platform& server = session_context_ptr_->get_server_platform();
+                server.get_event_manager().add( event_ptr_, message_->get_event_id() );
+            }
+
+            if( server_event_ )
+            {
+                message_->set_server_event( event_ptr_ );
+            }
         }
     }
 };

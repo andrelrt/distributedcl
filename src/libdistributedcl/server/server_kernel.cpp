@@ -75,7 +75,7 @@ void msgEnqueueNDRangeKernel_command::execute()
 
     if( !message_->get_events().empty() )
     {
-        server.wait( message_->get_command_queue_id() );
+        server.flush( message_->get_command_queue_id() );
 
         events.reserve( message_->get_events().size() );
 
@@ -83,7 +83,11 @@ void msgEnqueueNDRangeKernel_command::execute()
 
         for( it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
         {
-            events.push_back( reinterpret_cast<generic_event*>( server.get_event_manager().get( *it ) ) );
+            composite_event* event_ptr = server.get_event_manager().get( *it );
+
+            event_ptr->wait_execute();
+
+            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
         }
     }
 

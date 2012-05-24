@@ -84,7 +84,9 @@ public:
 
     inline void remove( remote_id_t object_id )
     {
+        DCL_TYPE_T* ptr = get( object_id );
         object_map_.erase( object_id );
+        delete ptr;
     }
 
     inline void remove( const DCL_TYPE_T* object_ptr )
@@ -99,10 +101,7 @@ public:
             }
         }
 
-        if( it != object_map_.end() )
-        {
-            object_map_->erase( it );
-        }
+        remove( it->first );
     }
 
     inline remote_id_t get( DCL_TYPE_T* object_ptr, bool create_new = false )
@@ -158,7 +157,13 @@ public:
 
         for( it = object_map_.begin(); it != object_map_.end(); it++ )
         {
-            delete it->second;
+            try
+            {
+                delete it->second;
+            }
+            catch( ... )
+            {
+            }
         }
 
         object_map_.clear();

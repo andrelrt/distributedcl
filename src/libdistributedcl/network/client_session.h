@@ -229,11 +229,14 @@ private:
         while( 1 )
         {
             send_semaphore_.wait();
+            boost::this_thread::yield();
+            //boost::this_thread::sleep( boost::posix_time::milliseconds( 10 ) );
 
             if( !running_ )
                 return;
 
-            flush_queue();
+            message_sp_t message_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_flush_server >() );
+            send_message( message_sp );
         }
     }
 };

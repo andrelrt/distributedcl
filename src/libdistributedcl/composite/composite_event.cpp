@@ -37,7 +37,7 @@ void composite_event::wait( events_t& events )
 //-----------------------------------------------------------------------------
 void composite_event::wait()
 {
-    semaphore_.wait();
+    wait_execute();
 
     for( iterator it = begin(); it != end(); it++ )
     {
@@ -55,6 +55,17 @@ void composite_event::load_info()
         iterator it = begin();
         it->second->load_info();
         local_info_ = it->second->get_info();
+    }
+}
+//-----------------------------------------------------------------------------
+void composite_event::wait_execute()
+{
+    dcl::scoped_lock_t lock( mutex_ );
+
+    if( !executed_ )
+    {
+        semaphore_.wait();
+        executed_ = true;
     }
 }
 //-----------------------------------------------------------------------------

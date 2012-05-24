@@ -252,10 +252,10 @@ const void* enqueue_message::parse_enqueue_request( const void* payload_ptr )
 //-----------------------------------------------------------------------------
 void enqueue_message::server_wait( server_session_context* session_context_ptr )
 {
-    if( blocking_ )
-    {
-        session_context_ptr->get_server_platform().wait( command_queue_id_ );
-    }
+    //if( blocking_ )
+    //{
+    //    session_context_ptr->get_server_platform().wait( command_queue_id_ );
+    //}
 
     if( event_ptr_ != NULL )
     {

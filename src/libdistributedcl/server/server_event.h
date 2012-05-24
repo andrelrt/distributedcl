@@ -31,14 +31,13 @@ namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
 class msgWaitForEvents_command :
-    public async_server_command< dcl::network::message::msgWaitForEvents >
+    public server_command< dcl::network::message::msgWaitForEvents >
 {
 public:
     msgWaitForEvents_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
-        async_server_command< dcl::network::message::msgWaitForEvents >( message_ptr, session_context_ptr ) {}
+        server_command< dcl::network::message::msgWaitForEvents >( message_ptr, session_context_ptr ) {}
 
     void execute();
-    virtual bool async_run() const { return false; }
 };
 //-----------------------------------------------------------------------------
 class msgGetEventProfilingInfo_command :

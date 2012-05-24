@@ -116,7 +116,7 @@ namespace server {
 void msg_flush_server_command::execute()
 {
 //    async_server::get_instance().wait();
-    session_context_ptr_->get_server_platform().wait_all();
+    session_context_ptr_->get_server_platform().flush_all();
 }
 //-----------------------------------------------------------------------------
 void release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue>::execute()

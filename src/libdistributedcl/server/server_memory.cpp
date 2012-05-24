@@ -72,7 +72,7 @@ void msgEnqueueWriteBuffer_command::execute()
 
     if( !message_->get_events().empty() )
     {
-        server.wait( command_queue_id );
+        server.flush( command_queue_id );
 
 		uint32_t count = message_->get_events().size();
 
@@ -81,27 +81,17 @@ void msgEnqueueWriteBuffer_command::execute()
         for( uint32_t i = 0; i < count; i++ )
         {
 			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
+
+            event_ptr->wait_execute();
+
             events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
         }
     }
 
-    if( message_->get_return_event() )
-    {
-        // Always no blocking
-        buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
-                           message_->get_buffer_size(), message_->get_offset(),
-                           false, events,
-                           reinterpret_cast<generic_event**>( &event_ptr_ ) );
-    }
-    else
-    {
-        // Always no blocking
-        buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
-                           message_->get_buffer_size(), message_->get_offset(),
-                           false, events, NULL );
-    }
-
-    //queue_ptr->flush();
+    // Always no blocking
+    buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
+                       message_->get_buffer_size(), message_->get_offset(), false,
+                       events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteBuffer_command::async_run() const
@@ -127,7 +117,7 @@ void msgEnqueueReadBuffer_command::execute()
 
     if( !message_->get_events().empty() )
     {
-        server.wait( command_queue_id );
+        server.flush( command_queue_id );
 
 		uint32_t count = message_->get_events().size();
 
@@ -136,6 +126,9 @@ void msgEnqueueReadBuffer_command::execute()
         for( uint32_t i = 0; i < count; i++ )
         {
 			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
+
+            event_ptr->wait_execute();
+
             events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
         }
     }
@@ -150,15 +143,13 @@ void msgEnqueueReadBuffer_command::execute()
     //    server.get_event_manager().add( ret_event, message_->get_event_id() );
     //}
 
-    message_->set_server_event( event_ptr_ );
-
     //queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
 {
-    return !message_->get_blocking();
-    //return true;
+    //return !message_->get_blocking();
+    return true;
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------

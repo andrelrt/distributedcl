@@ -47,7 +47,7 @@ namespace server {
 class server_session_context
 {
 public:
-    inline void add( message_sp_t message_sp )
+    inline void add_waiting_message( message_sp_t message_sp )
     {
         dcl::scoped_lock_t lock( waiting_messages_mutex_ );
 
@@ -56,13 +56,18 @@ public:
 
     inline dcl::server::server_platform& get_server_platform()
     {
-        return *server_platform_ptr_;
+        return *server_platform_sp_;
+    }
+
+    inline void attach_server( boost::shared_ptr<dcl::server::server_platform> server_platform_sp )
+    {
+        server_platform_sp_ = server_platform_sp;
     }
 
 protected:
     dcl::mutex_t waiting_messages_mutex_;
     dcl::message_vector_t waiting_messages_;
-    dcl::server::server_platform* server_platform_ptr_;
+    boost::shared_ptr<dcl::server::server_platform> server_platform_sp_;
 
     server_session_context();
     virtual ~server_session_context();

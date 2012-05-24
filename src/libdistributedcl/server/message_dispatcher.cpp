@@ -148,7 +148,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
             MSG( msgGetKernelWorkGroupInfo );
 
             // Event
-            MSG_ASYNC( msgWaitForEvents );
+            MSG( msgWaitForEvents );
             MSG_NOT_IMPLEMENTED( msgGetEventInfo );
             MSG_NOT_IMPLEMENTED( msgRetainEvent );
             MSG_RELEASE( msgReleaseEvent, server.get_event_manager(), composite_event );
@@ -194,9 +194,9 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
 void message_dispatcher::wait_messages( message_vector_t& messages, server_session_context* session_context_ptr )
 {
     //session_context_ptr->get_server_platform().wait_unblock_all();
-    message_vector_t::iterator it;
+    session_context_ptr->get_server_platform().flush_all();
 
-    for( it = messages.begin(); it != messages.end(); it++ )
+    for( message_vector_t::iterator it = messages.begin(); it != messages.end(); it++ )
     {
         (*it)->server_wait( session_context_ptr );
     }

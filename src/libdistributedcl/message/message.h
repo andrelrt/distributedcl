@@ -59,6 +59,7 @@ enum message_type
     msg_error_message   = 1,
     msg_flush_server = 2,
     msg_dummy_message = 3,
+    msg_attach_context = 4,
 
     // OpenCL messages [20-128)
     msgGetPlatformIDs           = 20,

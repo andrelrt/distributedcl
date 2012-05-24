@@ -73,6 +73,23 @@ public:
         base_message( msg_dummy_message, false ){}
 };
 //-----------------------------------------------------------------------------
+template<>
+class dcl_message< msg_attach_context > : public base_message
+{
+public:
+    dcl_message< msg_attach_context >() :
+        base_message( msg_attach_context, false, sizeof(dcl::remote_id_t) ){}
+
+	// Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
+
+private:
+    dcl::remote_id_t remote_id_;
+};
+//-----------------------------------------------------------------------------
 template< message_type MESSAGE_NUMBER >
 class release_message : public base_message
 {

@@ -43,6 +43,8 @@ void remote_event::wait()
 
     message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
+
+    //msg_ptr->wait_response();
 }
 //-----------------------------------------------------------------------------
 void remote_event::load_info()
@@ -56,6 +58,7 @@ void remote_event::load_info()
             new dcl_message< msgGetEventProfilingInfo >();
 
         msg_ptr->set_remote_id( get_remote_id() );
+        msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr_ )->get_remote_id() );
 
         message_sp_t message_sp( msg_ptr );
         session_ref_.send_message( message_sp );
