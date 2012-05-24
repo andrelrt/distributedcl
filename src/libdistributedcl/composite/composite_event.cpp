@@ -21,6 +21,8 @@
  */
 //-----------------------------------------------------------------------------
 #include "composite_event.h"
+using dcl::info::generic_context;
+using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace composite {
@@ -35,6 +37,8 @@ void composite_event::wait( events_t& events )
 //-----------------------------------------------------------------------------
 void composite_event::wait()
 {
+    semaphore_.wait();
+
     for( iterator it = begin(); it != end(); it++ )
     {
         it->second->wait();
@@ -52,6 +56,12 @@ void composite_event::load_info()
         it->second->load_info();
         local_info_ = it->second->get_info();
     }
+}
+//-----------------------------------------------------------------------------
+void composite_event::add_event( const generic_context* context_ptr, generic_event* event_ptr )
+{
+   insert_context_object( const_cast<generic_context*>( context_ptr ), event_ptr );
+   semaphore_.post();
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

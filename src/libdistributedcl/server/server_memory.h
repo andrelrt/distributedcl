@@ -25,7 +25,9 @@
 
 #include "distributedcl_internal.h"
 #include "server_command.h"
+#include "server_platform.h"
 #include "message/message.h"
+#include "message/msg_memory.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -45,7 +47,15 @@ class msgEnqueueWriteBuffer_command :
 {
 public:
     msgEnqueueWriteBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr, session_context_ptr ) {}
+        async_server_command< dcl::network::message::msgEnqueueWriteBuffer >( message_ptr, session_context_ptr )
+    {
+        server_platform& server = session_context_ptr_->get_server_platform();
+
+        dcl::composite::composite_command_queue* queue_ptr = 
+            server.get_command_queue_manager().get( message_->get_command_queue_id() );
+
+        set_command_queue( queue_ptr );
+    }
 
     void execute();
     virtual bool async_run() const;
@@ -56,7 +66,15 @@ class msgEnqueueReadBuffer_command :
 {
 public:
     msgEnqueueReadBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
-        async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, session_context_ptr ) {}
+        async_server_command< dcl::network::message::msgEnqueueReadBuffer >( message_ptr, session_context_ptr )
+    {
+        server_platform& server = session_context_ptr_->get_server_platform();
+
+        dcl::composite::composite_command_queue* queue_ptr = 
+            server.get_command_queue_manager().get( message_->get_command_queue_id() );
+
+        set_command_queue( queue_ptr );
+    }
 
     void execute();
     virtual bool async_run() const;

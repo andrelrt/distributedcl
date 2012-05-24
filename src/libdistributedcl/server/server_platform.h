@@ -127,6 +127,8 @@ public:
     void wait_all();
     void wait_unblock_all();
     void close_queue( dcl::composite::composite_command_queue* queue_ptr );
+    void flush_all();
+    void flush( remote_id_t queue_id );
 
 private:
     device_manager_t device_manager_;
@@ -143,8 +145,6 @@ private:
     queue_thread_map_t queue_thread_;
     boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
 
-    void flush( remote_id_t queue_id );
-    void flush_all();
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

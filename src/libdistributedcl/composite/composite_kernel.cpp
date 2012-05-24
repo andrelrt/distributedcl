@@ -24,6 +24,7 @@
 #include "composite_command_queue.h"
 #include "composite_memory.h"
 #include "composite_device.h"
+#include "composite_event.h"
 using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_event;
@@ -44,7 +45,18 @@ void composite_kernel::execute( const generic_command_queue* queue_ptr,
     const generic_context* ctx = queue_ptr->get_context();
     generic_kernel* kernel_ptr = find( ctx );
 
-    kernel_ptr->execute( queue_ptr, offset, global, local, wait_events, event_ptr );
+    if( (event_ptr == NULL) || (*event_ptr == NULL) )
+    {
+        kernel_ptr->execute( queue_ptr, offset, global, local, wait_events, event_ptr );
+    }
+    else
+    {
+        generic_event* evnt_ptr = NULL;
+
+        kernel_ptr->execute( queue_ptr, offset, global, local, wait_events, &evnt_ptr );
+
+        reinterpret_cast<composite_event*>(*event_ptr)->add_event( ctx, evnt_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 void composite_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )

@@ -62,10 +62,7 @@ public:
 
     inline void add( DCL_TYPE_T* object_ptr, remote_id_t object_id )
     {
-        if( object_map_.find( object_id ) == object_map_.end() )
-        {
-            object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
-        }
+        object_map_[ object_id ] = object_ptr;
     }
 
     inline remote_id_t add( DCL_TYPE_T* object_ptr )

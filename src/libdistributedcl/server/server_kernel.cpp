@@ -29,6 +29,7 @@
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
 #include "composite/composite_event.h"
+#include "composite/composite_context.h"
 using dcl::info::generic_event;
 using dcl::info::generic_device;
 using dcl::info::kernel_group_info;
@@ -39,6 +40,7 @@ using dcl::composite::composite_command_queue;
 using dcl::composite::composite_memory;
 using dcl::composite::composite_event;
 using dcl::composite::composite_image;
+using dcl::composite::composite_context;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -69,8 +71,6 @@ void msgEnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
-    set_command_queue( queue_ptr );
-
     dcl::events_t events;
 
     if( !message_->get_events().empty() )
@@ -87,18 +87,16 @@ void msgEnqueueNDRangeKernel_command::execute()
         }
     }
 
-    composite_event* ret_event = NULL;
-
     kernel_ptr->execute( queue_ptr, message_->get_offset(), 
                          message_->get_global(), message_->get_local(), events,
-                         reinterpret_cast<generic_event**>( &ret_event ) );
+                         reinterpret_cast<generic_event**>( &event_ptr_ ) );
 
-    if( message_->get_return_event() )
-    {
-        server.get_event_manager().add( ret_event, message_->get_event_id() );
-    }
+    //if( message_->get_return_event() )
+    //{
+    //    server.get_event_manager().add( ret_event, message_->get_event_id() );
+    //}
 
-    //queue_ptr->flush();
+    ////queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueNDRangeKernel_command::async_run() const

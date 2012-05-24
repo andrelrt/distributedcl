@@ -68,8 +68,6 @@ void msgEnqueueWriteBuffer_command::execute()
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
-    set_command_queue( queue_ptr );
-
     dcl::events_t events;
 
     if( !message_->get_events().empty() )
@@ -89,15 +87,11 @@ void msgEnqueueWriteBuffer_command::execute()
 
     if( message_->get_return_event() )
     {
-        composite_event* ret_event = NULL;
-
         // Always no blocking
         buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
                            message_->get_buffer_size(), message_->get_offset(),
                            false, events,
-                           reinterpret_cast<generic_event**>( &ret_event ) );
-
-        server.get_event_manager().add( ret_event, message_->get_event_id() );
+                           reinterpret_cast<generic_event**>( &event_ptr_ ) );
     }
     else
     {
@@ -127,8 +121,6 @@ void msgEnqueueReadBuffer_command::execute()
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
-    set_command_queue( queue_ptr );
-
     message_->allocate_buffer();
 
     dcl::events_t events;
@@ -148,19 +140,17 @@ void msgEnqueueReadBuffer_command::execute()
         }
     }
 
-    composite_event* ret_event = NULL;
-
     // Always no blocking
     buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
                       message_->get_buffer_size(), message_->get_offset(), false,
-                      events, reinterpret_cast<generic_event**>( &ret_event ) );
+                      events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
 
-    if( message_->get_return_event() )
-    {
-        server.get_event_manager().add( ret_event, message_->get_event_id() );
-    }
+    //if( message_->get_return_event() )
+    //{
+    //    server.get_event_manager().add( ret_event, message_->get_event_id() );
+    //}
 
-    message_->set_server_event( ret_event );
+    message_->set_server_event( event_ptr_ );
 
     //queue_ptr->flush();
 }

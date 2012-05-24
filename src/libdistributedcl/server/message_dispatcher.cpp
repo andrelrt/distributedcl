@@ -193,18 +193,18 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
 //-----------------------------------------------------------------------------
 void message_dispatcher::wait_messages( message_vector_t& messages, server_session_context* session_context_ptr )
 {
-    session_context_ptr->get_server_platform().wait_unblock_all();
-    //message_vector_t::iterator it;
+    //session_context_ptr->get_server_platform().wait_unblock_all();
+    message_vector_t::iterator it;
 
-    //for( it = messages.begin(); it != messages.end(); it++ )
-    //{
-    //    (*it)->server_wait( session_context_ptr );
-    //}
+    for( it = messages.begin(); it != messages.end(); it++ )
+    {
+        (*it)->server_wait( session_context_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 void message_dispatcher::flush_async_queue( server_session_context* session_context_ptr )
 {
-//    session_context_ptr->get_server_platform().flush_all();
+    session_context_ptr->get_server_platform().flush_all();
 //	async_server::get_instance().flush_queue();
 }
 //-----------------------------------------------------------------------------

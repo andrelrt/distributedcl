@@ -33,6 +33,7 @@
 #include "message/msg_internal.h"
 #include "network/server_session.h"
 #include "composite/composite_command_queue.h"
+#include "composite/composite_event.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -117,17 +118,17 @@ private:
 public:
     inline void async_execute( boost::shared_ptr< command > command_sp, remote_id_t queue_id )
     {
-        this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
-		//if( async_run() )
-		//{
-  //          this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
-  //          this->session_context_ptr_->get_server_platform().flush( queue_id );
-		//	//async_server::get_instance().enqueue( command_sp );
-		//}
-		//else
-		//{
-		//	this->execute();
-		//}
+        //this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+        if( async_run() )
+        {
+            this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+            //this->session_context_ptr_->get_server_platform().flush( queue_id );
+            //async_server::get_instance().enqueue( command_sp );
+        }
+        else
+        {
+            this->execute();
+        }
     }
 
     virtual bool get_blocking() const
@@ -160,14 +161,25 @@ public:
     }
 
 protected:
+    dcl::composite::composite_event* event_ptr_;
+
     async_server_command( message_sp_t message_sp, dcl::network::server::server_session_context* session_context_ptr ) :
-        server_command< TYPE >( message_sp, session_context_ptr ), queue_ptr_( NULL ){}
-        
-	virtual bool async_run() const = 0;
+        server_command< TYPE >( message_sp, session_context_ptr ), queue_ptr_( NULL ), event_ptr_( NULL ){}
+
+    virtual bool async_run() const = 0;
 
     inline void set_command_queue( dcl::composite::composite_command_queue* queue_ptr )
     {
         queue_ptr_ = queue_ptr;
+
+        if( message_->get_return_event() )
+        {
+            event_ptr_ =
+                new composite_event( *(reinterpret_cast<const composite_context*>(queue_ptr->get_context())), queue_ptr );
+
+            server_platform& server = session_context_ptr_->get_server_platform();
+            server.get_event_manager().add( event_ptr_, message_->get_event_id() );
+        }
     }
 };
 //-----------------------------------------------------------------------------
