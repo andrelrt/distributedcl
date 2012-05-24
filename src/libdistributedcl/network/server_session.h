@@ -249,6 +249,7 @@ private:
                 return;
             }
 
+            // Set semaphore
 			dispatcher_.flush_async_queue( this );
         }
     }

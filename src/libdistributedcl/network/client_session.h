@@ -73,7 +73,7 @@ public:
 
         child->connect();
 
-        return child;        
+        return child;
     }
 
     inline void connect()
@@ -84,6 +84,11 @@ public:
         dcl::network::platform::session< COMM >::set_session_id( 1 );
         dcl::network::platform::session< COMM >::set_sequence_number( 200 );
         dcl::network::platform::session< COMM >::set_remote_sequence_number( 100 );
+    }
+
+    inline void close()
+    {
+        dcl::network::platform::session< COMM >::get_communication().shutdown();
     }
 
     inline bool queue_empty() const

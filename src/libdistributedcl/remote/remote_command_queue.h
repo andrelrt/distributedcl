@@ -48,7 +48,10 @@ public:
         remote_object< remote_command_queue, dcl::network::message::msgReleaseCommandQueue >( context_ptr->get_session() ),
         queue_session_ref_( session_ref ){}
 
-    ~remote_command_queue(){}
+    ~remote_command_queue()
+    {
+        queue_session_ref_.close();
+    }
 
     virtual void flush() const;
     virtual void finish() const;

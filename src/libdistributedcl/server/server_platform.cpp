@@ -103,6 +103,11 @@ void async_execute::enqueue( boost::shared_ptr<command> command_sp )
 {
     dcl::scoped_lock_t lock( mutex_ );
 
+    //if( command_sp->get_queue()->get_device()->get_type() == CL_DEVICE_TYPE_CPU )
+    //{
+    //    // TODO: lower the thread priority
+    //}
+
     server_queue_.push( command_sp );
 
     //if( command_sp->get_blocking() )

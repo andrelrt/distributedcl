@@ -119,6 +119,12 @@ public:
     inline void async_execute( boost::shared_ptr< command > command_sp, remote_id_t queue_id )
     {
         this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );
+
+        if( !async_run() )
+        {
+            this->session_context_ptr_->get_server_platform().flush( queue_id );
+        }
+
         //if( async_run() )
         //{
         //    this->session_context_ptr_->get_server_platform().enqueue( queue_id, command_sp );

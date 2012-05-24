@@ -196,7 +196,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
 void message_dispatcher::wait_messages( message_vector_t& messages, server_session_context* session_context_ptr )
 {
     //session_context_ptr->get_server_platform().wait_unblock_all();
-    session_context_ptr->get_server_platform().flush_all();
+    //session_context_ptr->get_server_platform().flush_all();
 
     for( message_vector_t::iterator it = messages.begin(); it != messages.end(); it++ )
     {
