@@ -23,14 +23,18 @@
 #include "server_session.h"
 #include "server/server_platform.h"
 using dcl::server::server_platform;
+using dcl::info::object_manager;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace network {
 namespace server {
 //-----------------------------------------------------------------------------
+object_manager< server_session_context > server_session_context::session_objects_;
+//-----------------------------------------------------------------------------
 server_session_context::server_session_context() :
     server_platform_sp_( new server_platform() )
 {
+    session_objects_.add( this );
 }
 //-----------------------------------------------------------------------------
 server_session_context::~server_session_context()

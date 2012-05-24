@@ -59,15 +59,25 @@ public:
         return *server_platform_sp_;
     }
 
-    inline void attach_server( boost::shared_ptr<dcl::server::server_platform> server_platform_sp )
+    inline void attach_server( dcl::remote_id_t id )
     {
-        server_platform_sp_ = server_platform_sp;
+        server_session_context* server_ptr = session_objects_.get( id );
+        server_platform_sp_ = server_ptr->server_platform_sp_;
     }
+
+    inline dcl::remote_id_t get_server()
+    {
+        return session_objects_.get( this );
+    }
+
+    static const char* get_name() { return "server_session_context"; }
 
 protected:
     dcl::mutex_t waiting_messages_mutex_;
     dcl::message_vector_t waiting_messages_;
     boost::shared_ptr<dcl::server::server_platform> server_platform_sp_;
+
+    static dcl::info::object_manager< server_session_context > session_objects_;
 
     server_session_context();
     virtual ~server_session_context();

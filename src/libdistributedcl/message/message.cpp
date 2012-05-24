@@ -80,13 +80,14 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 
     switch( header_ptr->type )
     {
-        // TODO: Create the base_message objects
+        MSG_NOT_IMPLEMENTED( msg_invalid_message );
 
         // Internal base_messages [1-20)
-        MSG_NOT_IMPLEMENTED( msg_invalid_message );
         MSG( msg_error_message );
         MSG( msg_flush_server );
         MSG( msg_dummy_message );
+        MSG( msg_get_context );
+        MSG( msg_attach_context );
 
         // OpenCL base_messages [20-128)
         

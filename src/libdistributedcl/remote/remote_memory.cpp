@@ -76,9 +76,10 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
     //    session_ref_.send_message( message_sp );
     //}
     //else
-    {
-        session_ref_.enqueue_message( message_sp );
-    }
+    //{
+    //    session_ref_.enqueue_message( message_sp );
+    //}
+    reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr, 
@@ -115,9 +116,10 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
     //    session_ref_.send_message( message_sp );
     //}
     //else
-    {
-        session_ref_.enqueue_message( message_sp );
-    }
+    //{
+    //    session_ref_.enqueue_message( message_sp );
+    //}
+    reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void* remote_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,

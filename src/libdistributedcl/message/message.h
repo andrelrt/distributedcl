@@ -54,12 +54,14 @@ namespace message {
 //-----------------------------------------------------------------------------
 enum message_type
 {
-    // Internal messages [1-20)
     msg_invalid_message = 0,
-    msg_error_message   = 1,
+
+    // Internal messages [1-20)
+    msg_error_message = 1,
     msg_flush_server = 2,
     msg_dummy_message = 3,
-    msg_attach_context = 4,
+    msg_get_context = 4,
+    msg_attach_context = 5,
 
     // OpenCL messages [20-128)
     msgGetPlatformIDs           = 20,

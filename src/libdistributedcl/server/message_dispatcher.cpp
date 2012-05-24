@@ -89,6 +89,8 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
             MSG_IGNORE( msg_error_message );
             MSG( msg_flush_server );
             MSG_IGNORE( msg_dummy_message );
+            MSG( msg_get_context );
+            MSG( msg_attach_context );
 
             // OpenCL base_messages [20-128)
             MSG_NOT_IMPLEMENTED( msgGetPlatformIDs );

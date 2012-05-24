@@ -71,14 +71,15 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
 
         ptr->set_remote_id( msg_ptr->get_event_id( *event_ptr ) );
 
-        session_ref_.enqueue_message( message_sp );
+        //session_ref_.enqueue_message( message_sp );
     }
     else
     {
 		//msg_ptr->set_blocking( true )
         //session_ref_.send_message( message_sp );
-        session_ref_.enqueue_message( message_sp );
+        //session_ref_.enqueue_message( message_sp );
     }
+    reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )

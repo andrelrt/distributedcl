@@ -30,6 +30,8 @@
 #include "message/msg_context.h"
 #include "message/msg_command_queue.h"
 #include "message/msg_memory.h"
+#include "message/msg_internal.h"
+#include "network/session_manager.h"
 using dcl::info::generic_device;
 using dcl::info::generic_program;
 using dcl::info::generic_command_queue;
@@ -42,6 +44,9 @@ using dcl::network::message::msgCreateProgramWithSource;
 using dcl::network::message::msgCreateCommandQueue;
 using dcl::network::message::msgCreateBuffer;
 using dcl::network::message::msgCreateImage2D;
+using dcl::network::message::msg_get_context;
+using dcl::network::message::msg_attach_context;
+using dcl::network::client::session_manager;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -81,6 +86,27 @@ generic_command_queue*
     remote_context::do_create_command_queue( const generic_device* device_ptr,
                                              cl_command_queue_properties properties )
 {
+    // Get connection context
+    dcl_message< msg_get_context >* msg_get_ptr =
+        new dcl_message< msg_get_context >();
+
+    message_sp_t msg_get_sp( msg_get_ptr );
+    session_ref_.send_message( msg_get_sp );
+
+
+    // Create new connection
+    session_manager::session_t* child_session_ptr = session_ref_.create_child();
+
+    dcl_message< msg_attach_context >* msg_attach_ptr =
+        new dcl_message< msg_attach_context >();
+
+    msg_attach_ptr->set_remote_id( msg_get_ptr->get_remote_id() );
+
+    message_sp_t msg_attach_sp( msg_attach_ptr );
+    child_session_ptr->enqueue_message( msg_attach_sp );
+
+
+    // Create command queue
     dcl_message< msgCreateCommandQueue >* msg_ptr = new dcl_message< msgCreateCommandQueue >();
 
     const remote_device* device = reinterpret_cast< const remote_device* >( device_ptr );
@@ -90,9 +116,11 @@ generic_command_queue*
     msg_ptr->set_properties( properties );
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
+    child_session_ptr->send_message( message_sp );
 
-    remote_command_queue* command_queue_ptr = new remote_command_queue( this, device, properties );
+    remote_command_queue* command_queue_ptr =
+        new remote_command_queue( *child_session_ptr, this, device, properties );
+
     command_queue_ptr->set_remote_id( msg_ptr->get_remote_id() );
 
     return reinterpret_cast< generic_command_queue* >( command_queue_ptr );

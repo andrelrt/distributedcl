@@ -117,6 +117,11 @@ public:
         //delete base_message_buffer_ptr_;
     }
 
+    const config_info_t get_config() const
+    {
+        return config_;
+    }
+
     inline void startup( observer_ptr_t observer )
     {
         observer_ = observer;

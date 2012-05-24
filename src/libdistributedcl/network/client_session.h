@@ -64,6 +64,18 @@ public:
         clear_received_messages();
     }
 
+    client_session<COMM>* create_child()
+    {
+        client_session<COMM>* child =
+            new client_session<COMM>( dcl::network::platform::session< COMM >::get_communication().get_config() );
+
+        childs_.push_back( child );
+
+        child->connect();
+
+        return child;        
+    }
+
     inline void connect()
     {
         dcl::network::platform::session< COMM >::get_communication().connect();
@@ -154,8 +166,10 @@ public:
 private:
     typedef std::queue< message_sp_t > message_queue_t;
     typedef std::map< uint16_t, message_sp_t > message_map_t;
+    typedef std::vector< client_session<COMM>* > clients_t;
 
     bool running_;
+    clients_t childs_;
     dcl::mutex_t queue_mutex_;
     message_queue_t message_queue_;
     message_map_t pending_messages_;

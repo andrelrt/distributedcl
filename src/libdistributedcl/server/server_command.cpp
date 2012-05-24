@@ -119,6 +119,22 @@ void msg_flush_server_command::execute()
     session_context_ptr_->get_server_platform().flush_all();
 }
 //-----------------------------------------------------------------------------
+// msg_get_context_command
+//-----------------------------------------------------------------------------
+void msg_get_context_command::execute()
+{
+    message_->set_remote_id( session_context_ptr_->get_server() );
+}
+//-----------------------------------------------------------------------------
+// msg_attach_context_command
+//-----------------------------------------------------------------------------
+void msg_attach_context_command::execute()
+{
+    session_context_ptr_->attach_server( message_->get_remote_id() );
+}
+//-----------------------------------------------------------------------------
+// release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue>
+//-----------------------------------------------------------------------------
 void release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue>::execute()
 {
     session_context_ptr_->get_server_platform().close_queue( manager_.get( this->message_->get_remote_id() ) );

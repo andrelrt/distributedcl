@@ -46,5 +46,35 @@ void dcl_message< msg_error_message >::parse_response( const void* payload_ptr )
     *error_code_ptr = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
+void dcl_message< msg_get_context >::create_response( void* payload_ptr )
+{
+    remote_id_t* response_ptr = reinterpret_cast<remote_id_t*>( payload_ptr );
+
+    *response_ptr = host_to_network( remote_id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msg_get_context >::parse_response( const void* payload_ptr )
+{
+    const remote_id_t* response_ptr =
+        reinterpret_cast<const remote_id_t*>( payload_ptr );
+
+    remote_id_ = network_to_host( *response_ptr );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msg_attach_context >::create_request( void* payload_ptr )
+{
+    remote_id_t* request_ptr = reinterpret_cast<remote_id_t*>( payload_ptr );
+
+    *request_ptr = host_to_network( remote_id_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msg_attach_context >::parse_request( const void* payload_ptr )
+{
+    const remote_id_t* request_ptr =
+        reinterpret_cast<const remote_id_t*>( payload_ptr );
+
+    remote_id_ = network_to_host( *request_ptr );
+}
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

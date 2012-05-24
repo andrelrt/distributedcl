@@ -255,6 +255,26 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class msg_get_context_command :
+    public server_command< dcl::network::message::msg_get_context >
+{
+public:
+    msg_get_context_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msg_get_context >( message_ptr, session_context_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
+class msg_attach_context_command :
+    public server_command< dcl::network::message::msg_attach_context >
+{
+public:
+    msg_attach_context_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msg_attach_context >( message_ptr, session_context_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------
 #endif //_DCL_SERVER_SERVER_COMMAND_H_

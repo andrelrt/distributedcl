@@ -39,17 +39,27 @@ class remote_command_queue :
     public remote_object< remote_command_queue, dcl::network::message::msgReleaseCommandQueue >
 {
 public:
-    remote_command_queue( const remote_context* context_ptr, const remote_device* device_ptr, 
+    remote_command_queue( dcl::network::client::session_manager::session_t& session_ref,
+                          const remote_context* context_ptr, const remote_device* device_ptr, 
                           cl_command_queue_properties properties ) :
         dcl::info::generic_command_queue( reinterpret_cast<const dcl::info::generic_context*>( context_ptr ), 
                                           reinterpret_cast<const dcl::info::generic_device*>( device_ptr ), 
                                           properties ),
-        remote_object< remote_command_queue, dcl::network::message::msgReleaseCommandQueue >( context_ptr->get_session() ) {}
+        remote_object< remote_command_queue, dcl::network::message::msgReleaseCommandQueue >( context_ptr->get_session() ),
+        queue_session_ref_( session_ref ){}
 
     ~remote_command_queue(){}
 
     virtual void flush() const;
     virtual void finish() const;
+
+    inline dcl::network::client::session_manager::session_t& get_queue_session() const
+    {
+        return queue_session_ref_;
+    }
+
+private:
+    dcl::network::client::session_manager::session_t& queue_session_ref_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
