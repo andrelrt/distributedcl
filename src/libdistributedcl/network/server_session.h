@@ -150,6 +150,8 @@ private:
 
     void receive_thread()
     {
+        std::cerr << "Client connected" << std::endl;
+
         //TODO: send hankshake base_messages
         session_t::set_session_id( 1 );
         session_t::set_sequence_number( 100 );

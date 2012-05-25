@@ -41,28 +41,32 @@ public:
 
     inline static session_t& create_session( const std::string& connection_string )
     {
-        if( instance_.session_ptr_ == NULL )
-        {
-            session_t::config_info_t config_info( connection_string );
+        session_t::config_info_t config_info( connection_string );
 
-            instance_.session_ptr_ = new session_t( config_info );
+        session_t* session_ptr = new session_t( config_info );
 
-            instance_.session_ptr_->connect();
-        }
+        session_ptr->connect();
 
-        return *(instance_.session_ptr_);
+        instance_.sessions_.insert( session_ptr );
+
+        return *session_ptr;
     }
 
 private:
     static session_manager instance_;
-    session_t* session_ptr_;
+    std::set<session_t*> sessions_;
 
-    session_manager() : session_ptr_( NULL ){}
+    session_manager(){}
 
     ~session_manager()
     {
-        delete session_ptr_;
-        session_ptr_ = NULL;
+        std::set<session_t*>::iterator it;
+
+        for( it = sessions_.begin(); it != sessions_.end(); it++ )
+        {
+            delete *it;
+        }
+        sessions_.clear();
     }
 };
 //-----------------------------------------------------------------------------
