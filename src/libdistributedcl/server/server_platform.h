@@ -50,6 +50,7 @@ public:
         server_command< dcl::network::message::msgGetDeviceIDs >( message_ptr, session_context_ptr ) {}
 
     void execute();
+    void load_devices();
 };
 //-----------------------------------------------------------------------------
 class msgGetDeviceInfo_command : 

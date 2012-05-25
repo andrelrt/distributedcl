@@ -39,6 +39,15 @@ namespace server {
 //-----------------------------------------------------------------------------
 void msgGetDeviceIDs_command::execute()
 {
+    // Double the devices to hide the network latency
+    load_devices();
+    load_devices();
+
+    message_->update_response_size();
+}
+//-----------------------------------------------------------------------------
+void msgGetDeviceIDs_command::load_devices()
+{
     const composite_platform& platform = opencl_composite::get_instance().get_platform();
     const devices_t& devs = platform.get_devices();
 
@@ -66,8 +75,6 @@ void msgGetDeviceIDs_command::execute()
                 break;
         }
     }
-
-    message_->update_response_size();
 }
 //-----------------------------------------------------------------------------
 void msgGetDeviceInfo_command::execute()
