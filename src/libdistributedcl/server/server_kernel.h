@@ -24,7 +24,7 @@
 #define _DCL_SERVER_KERNEL_H_
 
 #include "distributedcl_internal.h"
-#include "server_command.h"
+#include "async_server_command.h"
 #include "server_platform.h"
 #include "message/message.h"
 #include "message/msg_kernel.h"

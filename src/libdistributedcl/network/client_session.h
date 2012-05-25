@@ -133,7 +133,7 @@ public:
 
     inline void wait()
     {
-        wait_response_.wait();
+        this->wait_response_.wait();
     }
 
     inline void enqueue_message( message_sp_t message_sp )
