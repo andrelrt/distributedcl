@@ -40,7 +40,7 @@ namespace server {
 void msgGetDeviceIDs_command::execute()
 {
     // Double the devices to hide the network latency
-    load_devices();
+    //load_devices();
     load_devices();
 
     message_->update_response_size();
@@ -115,7 +115,7 @@ void async_execute::enqueue( boost::shared_ptr<command> command_sp )
     //    // TODO: lower the thread priority
     //}
 
-    server_queue_.push( command_sp );
+    server_queue_.push_back( command_sp );
 
     //if( command_sp->get_blocking() )
     //{
@@ -149,9 +149,17 @@ void async_execute::execute_queue()
 
     while( !server_queue_.empty() )
     {
-        server_queue_.front()->execute();
-        server_queue_.front()->enqueue_response();
-        server_queue_.pop();
+		try
+		{
+			server_queue_.front()->execute();
+			server_queue_.front()->enqueue_response();
+			server_queue_.pop_front();
+		}
+		catch( dcl::library_exception& ex )
+		{
+			server_queue_.front()->enqueue_error( ex.get_error() );
+			server_queue_.clear();
+		}
     }
 }
 //-----------------------------------------------------------------------------

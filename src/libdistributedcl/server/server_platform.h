@@ -26,6 +26,7 @@
 #pragma once
 #endif
 
+#include <deque>
 #include "distributedcl_internal.h"
 #include "server_command.h"
 #include "info/object_manager.h"
@@ -81,9 +82,9 @@ public:
     //}
 
 private:
-    bool running_;
+    volatile bool running_;
     //uint32_t blocking_count_;
-    std::queue< boost::shared_ptr<command> > server_queue_;
+    std::deque< boost::shared_ptr<command> > server_queue_;
     dcl::composite::composite_command_queue* queue_ptr_;
 
     boost::scoped_ptr<boost::thread> thread_sp_;

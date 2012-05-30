@@ -61,7 +61,7 @@ void remote_event::load_info()
         msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr_ )->get_remote_id() );
 
         message_sp_t message_sp( msg_ptr );
-        session_ref_.send_message( message_sp );
+        reinterpret_cast<const remote_command_queue*>( queue_ptr_ )->get_queue_session().send_message( message_sp );
 
         local_info_ = msg_ptr->get_event_info();
     }

@@ -48,7 +48,7 @@ using dcl::network::server::server_session_context;
 namespace dcl {
 namespace server {
 //-----------------------------------------------------------------------------
-//#define MSG_DEBUG
+#define MSG_DEBUG
 #if defined MSG_DEBUG
 #define MSG( x ) case x: {x##_command command(*it,session_context_ptr);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
 #define MSG_ASYNC( x )\

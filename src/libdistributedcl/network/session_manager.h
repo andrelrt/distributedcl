@@ -47,13 +47,21 @@ public:
 
         session_ptr->connect();
 
-        instance_.sessions_.insert( session_ptr );
+        get_instance()->sessions_.insert( session_ptr );
 
         return *session_ptr;
     }
 
 private:
-    static session_manager instance_;
+	static session_manager* get_instance()
+	{
+		if( instance_ptr_ == NULL )
+			instance_ptr_ = new session_manager();
+			
+		return instance_ptr_;
+	}
+	
+    static session_manager* instance_ptr_;
     std::set<session_t*> sessions_;
 
     session_manager(){}

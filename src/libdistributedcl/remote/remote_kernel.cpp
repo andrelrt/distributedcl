@@ -99,7 +99,7 @@ void remote_kernel::set_argument( uint32_t arg_index, const generic_memory_objec
     }
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.enqueue_message( message_sp );
+    session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
@@ -111,7 +111,7 @@ void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const voi
     msg_ptr->set_kernel_id( get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.enqueue_message( message_sp );
+    session_ref_.send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 const kernel_group_info& remote_kernel::get_group_info( const generic_device* device_ptr )

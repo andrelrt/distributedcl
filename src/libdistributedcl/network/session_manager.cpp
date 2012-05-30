@@ -26,7 +26,7 @@ namespace dcl {
 namespace network {
 namespace client {
 //-----------------------------------------------------------------------------
-session_manager session_manager::instance_;
+session_manager* session_manager::instance_ptr_ = NULL;
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::client
 //-----------------------------------------------------------------------------
