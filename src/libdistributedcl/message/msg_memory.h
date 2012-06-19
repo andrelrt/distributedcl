@@ -138,19 +138,20 @@ public:
     inline void set_buffer( const uint8_t* ptr, size_t size, size_t offset )
     {
         offset_ = offset;
-        buffer_ptr_ = ptr;
+        buffer_.assign( ptr, ptr + size );
+        buffer_ptr_ = buffer_.data();
+        //buffer_ptr_ = ptr;
         buffer_len_ = size;
 
         update_request_size();
     }
-
 
 private:
     size_t offset_;
     dcl::remote_id_t remote_id_;
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
-    //buffer_t buffer_;
+    buffer_t buffer_;
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );

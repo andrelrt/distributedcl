@@ -125,12 +125,17 @@ void* remote_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
                           size_t size, size_t offset, cl_bool blocking,
                           events_t& wait_events, generic_event** ret_event_ptr )
 {
+    std::cerr << "map size: " << size;
+
     uint8_t* ret_ptr = new uint8_t[ size ];
 
     if( flags & CL_MAP_READ )
     {
+        std::cerr << " - read - ";
         read( queue_ptr, ret_ptr, size, offset, blocking, wait_events, ret_event_ptr );
     }
+
+    std::cerr << std::endl;
 
     map_data data( flags, size, offset );
     map_pointers_.insert( map_pointer_flags_t::value_type( ret_ptr, data ) );
@@ -141,6 +146,9 @@ void* remote_memory::map( generic_command_queue* queue_ptr, cl_map_flags flags,
 void remote_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                            events_t& wait_events, generic_event** ret_event_ptr )
 {
+    std::cerr << "unmap ptr: " << data_ptr
+              << std::endl;
+
     map_pointer_flags_t::iterator it =
         map_pointers_.find( reinterpret_cast<uint8_t*>( data_ptr ) );
 
@@ -149,7 +157,8 @@ void remote_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
 
     if( it->second.flags_ & CL_MAP_WRITE )
     {
-        write( queue_ptr, data_ptr, it->second.size_, it->second.offset_, false, wait_events, ret_event_ptr );
+        // TODO: change the blocking mode to false and delete the pointer when the message was sent
+        write( queue_ptr, data_ptr, it->second.size_, it->second.offset_, true, wait_events, ret_event_ptr );
     }
 
     delete[] it->first;

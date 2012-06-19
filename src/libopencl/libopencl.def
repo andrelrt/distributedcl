@@ -37,7 +37,7 @@ EXPORTS
 ;    clEnqueueWriteImage             @35
     clFinish                        @36
     clFlush                         @37
-;    clGetCommandQueueInfo           @38
+    clGetCommandQueueInfo           @38
     clGetContextInfo                @39
     clGetDeviceIDs                  @40
     clGetDeviceInfo                 @41

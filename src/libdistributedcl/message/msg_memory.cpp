@@ -76,6 +76,8 @@ void dcl_message< msgCreateBuffer >::parse_response( const void* payload_ptr )
         reinterpret_cast< const remote_id_t* >( payload_ptr );
 
     remote_id_ = network_to_host( *response_ptr );
+    
+    std::cerr << "created message id: " << remote_id_ << std::endl;
 }
 //-----------------------------------------------------------------------------
 // msgEnqueueWriteBuffer
@@ -87,6 +89,7 @@ void dcl_message< msgEnqueueWriteBuffer >::create_request( void* payload_ptr )
     msgEnqueueWriteBuffer_request* request_ptr = 
         reinterpret_cast< msgEnqueueWriteBuffer_request* >( enqueue_ptr );
 
+    std::cerr << "write remote message id: " << remote_id_ << std::endl;
     request_ptr->id_ = host_to_network( remote_id_ );
     request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
     request_ptr->offset_ = host_to_network( static_cast<uint32_t>( offset_ ) );
@@ -104,6 +107,7 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_pt
     remote_id_ = network_to_host( request_ptr->id_ );
     buffer_len_ = network_to_host( request_ptr->buffer_len_ );
     offset_ = network_to_host( request_ptr->offset_ );
+    std::cerr << "write remote message id: " << remote_id_ << std::endl;
 
     buffer_ptr_ = request_ptr->buffer_;
 }
@@ -117,6 +121,7 @@ void dcl_message< msgEnqueueReadBuffer >::create_request( void* payload_ptr )
     msgEnqueueReadBuffer_request* request_ptr = 
         reinterpret_cast< msgEnqueueReadBuffer_request* >( enqueue_ptr );
 
+    std::cerr << "read remote message id: " << remote_id_ << std::endl;
     request_ptr->id_ = host_to_network( remote_id_ );
     request_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
     request_ptr->offset_ = host_to_network( static_cast<uint32_t>( offset_ ) );
@@ -132,6 +137,8 @@ void dcl_message< msgEnqueueReadBuffer >::parse_request( const void* payload_ptr
     remote_id_ = network_to_host( request_ptr->id_ );
     size_ = network_to_host( request_ptr->size_ );
     offset_ = network_to_host( request_ptr->offset_ );
+
+    std::cerr << "read remote message id: " << remote_id_ << std::endl;
 
     set_response_size( size_ +
                        sizeof(msgEnqueueReadBuffer_response) - 1 );

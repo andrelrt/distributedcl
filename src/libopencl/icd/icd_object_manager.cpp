@@ -73,7 +73,7 @@ icd_object_manager::icd_object_manager()
     //FILL_DISPATCH_ITEM( clEnqueueWriteImage );
     FILL_DISPATCH_ITEM( clFinish );
     FILL_DISPATCH_ITEM( clFlush );
-    //FILL_DISPATCH_ITEM( clGetCommandQueueInfo );
+    FILL_DISPATCH_ITEM( clGetCommandQueueInfo );
     FILL_DISPATCH_ITEM( clGetContextInfo );
     FILL_DISPATCH_ITEM( clGetDeviceIDs );
     FILL_DISPATCH_ITEM( clGetDeviceInfo );

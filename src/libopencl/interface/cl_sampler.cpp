@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 AndrÃ© TupinambÃ¡ (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,43 +20,41 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include "server_event.h"
-#include "server_platform.h"
-#include "message/msg_event.h"
-#include "composite/composite_event.h"
-using dcl::composite::composite_event;
+#include "distributedcl_internal.h"
+#include "cl_utils.h"
+#include "icd/icd_object_manager.h"
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace server {
-//-----------------------------------------------------------------------------
-void msgWaitForEvents_command::execute()
+extern "C" CL_API_ENTRY cl_sampler CL_API_CALL
+clCreateSampler( cl_context context, cl_bool normalized_coords,
+                 cl_addressing_mode addressing_mode, cl_filter_mode filter_mode,
+                 cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
-    server_platform& server = session_context_ptr_->get_server_platform();
-
-    server.flush( message_->get_command_queue_id() );
-
-    remote_id_t event_id = message_->get_remote_id();
-
-    composite_event* event_ptr = server.get_event_manager().get( event_id );
-
-    event_ptr->wait();
+    // Dummy
+    if( errcode_ret != NULL )
+    {
+        *errcode_ret = CL_INVALID_VALUE;
+    }
+    return NULL;
 }
 //-----------------------------------------------------------------------------
-void msgGetEventProfilingInfo_command::execute()
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clRetainSampler( cl_sampler sampler ) CL_API_SUFFIX__VERSION_1_0
 {
-    server_platform& server = session_context_ptr_->get_server_platform();
-
-    server.flush( message_->get_command_queue_id() );
-
-    remote_id_t event_id = message_->get_remote_id();
-
-    composite_event* event_ptr = server.get_event_manager().get( event_id );
-
-    event_ptr->wait();
-    event_ptr->load_info();
-
-    message_->set_event_info( event_ptr->get_info() );
+	return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------
-}} // namespace dcl::server
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clReleaseSampler( cl_sampler sampler ) CL_API_SUFFIX__VERSION_1_0
+{
+	return CL_INVALID_VALUE;
+}
+//-----------------------------------------------------------------------------
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clGetSamplerInfo( cl_sampler sampler, cl_sampler_info param_name,
+                  size_t param_value_size, void* param_value,
+                  size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+{
+	return CL_INVALID_VALUE;
+}
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
