@@ -99,14 +99,58 @@ clReleaseCommandQueue( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1
     return release_object< composite_command_queue >( command_queue );
 }
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clGetCommandQueueInfo( cl_command_queue command_queue, cl_command_queue_info param_name,
-//                       size_t param_value_size, void* param_value,
-//                       size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
-//{
-//    //FIXME: Not implemented
-//    return CL_INVALID_COMMAND_QUEUE;
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clGetCommandQueueInfo( cl_command_queue command_queue, cl_command_queue_info param_name,
+                       size_t param_value_size, void* param_value,
+                       size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
+{
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_command_queue* command_queue_ptr =
+            icd.get_object_ptr< composite_command_queue >( command_queue );
+
+		size_t ret_size = 0;
+		void* ret_ptr = NULL;
+
+		switch( param_name )
+		{
+			case CL_QUEUE_CONTEXT:
+				ret_size = sizeof(cl_context);
+				break;
+
+			case CL_QUEUE_DEVICE:
+				ret_size = sizeof(cl_device_id);
+				break;
+
+			case CL_QUEUE_REFERENCE_COUNT:
+				ret_size = sizeof(cl_uint);
+				break;
+
+			case CL_QUEUE_PROPERTIES:
+				ret_size = sizeof(cl_command_queue_properties);
+				break;
+			
+			default:
+				return CL_INVALID_VALUE;
+		}
+
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_COMMAND_QUEUE;
+    }
+
+    // Dummy
+    return CL_INVALID_COMMAND_QUEUE;
+}
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clFlush( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
