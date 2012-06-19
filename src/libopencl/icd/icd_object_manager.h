@@ -290,6 +290,15 @@ public:
             delete cl_object_ptr;
         }
     }
+
+    template< typename DCL_TYPE_T >
+    inline uint32_t get_reference_count( typename DCL_TYPE_T::cl_type_t cl_ptr )
+    {
+        cl_object* cl_object_ptr = *get_internal_object< DCL_TYPE_T >( cl_ptr );
+
+        return cl_object_ptr->reference_count;
+    }
+
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::icd

@@ -109,33 +109,70 @@ clGetCommandQueueInfo( cl_command_queue command_queue, cl_command_queue_info par
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_command_queue* command_queue_ptr =
-            icd.get_object_ptr< composite_command_queue >( command_queue );
+            get_info_check_parameters< composite_command_queue >( command_queue, param_value_size, 
+                                                                  param_value, param_value_size_ret );
 
-		size_t ret_size = 0;
+        size_t ret_size = 0;
 		void* ret_ptr = NULL;
+
+        cl_context ctx;
+        cl_device_id dev;
+        cl_uint count;
+        cl_command_queue_properties properties;
 
 		switch( param_name )
 		{
 			case CL_QUEUE_CONTEXT:
+            {
 				ret_size = sizeof(cl_context);
+
+                composite_context* ctx_ptr = const_cast<composite_context*>(
+                    reinterpret_cast<const composite_context*>( command_queue_ptr->get_context() ));
+
+                ctx = icd.get_cl_id< composite_context >( ctx_ptr );
+                ret_ptr = &ctx;
 				break;
+            }
 
 			case CL_QUEUE_DEVICE:
+            {
 				ret_size = sizeof(cl_device_id);
-				break;
+
+                composite_device* dev_ptr = const_cast<composite_device*>(
+                    reinterpret_cast<const composite_device*>( command_queue_ptr->get_device() ));
+
+                dev = icd.get_cl_id< composite_device >( dev_ptr );
+                ret_ptr = &dev;
+                break;
+            }
 
 			case CL_QUEUE_REFERENCE_COUNT:
-				ret_size = sizeof(cl_uint);
+            {
+                ret_size = sizeof(cl_uint);
+                count = static_cast<cl_uint>( icd.get_reference_count< composite_command_queue >( command_queue ) );
+                ret_ptr = &count;
 				break;
+            }
 
 			case CL_QUEUE_PROPERTIES:
-				ret_size = sizeof(cl_command_queue_properties);
+            {
+                ret_size = sizeof(cl_command_queue_properties);
+                properties = command_queue_ptr->get_properties();
+                ret_ptr = &properties;
 				break;
-			
+            }
+
 			default:
 				return CL_INVALID_VALUE;
 		}
 
+        if( param_value_size_ret != NULL )
+            *param_value_size_ret = ret_size;
+
+        if( (param_value != NULL) && (param_value_size < ret_size) )
+            return CL_INVALID_VALUE;
+
+        memcpy( param_value, ret_ptr, ret_size );
 
         return CL_SUCCESS;
     }
