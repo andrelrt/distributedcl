@@ -43,6 +43,9 @@
     <ClCompile Include="interface\cl_extension.cpp">
       <Filter>interface</Filter>
     </ClCompile>
+    <ClCompile Include="interface\cl_sampler.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="libopencl.def" />

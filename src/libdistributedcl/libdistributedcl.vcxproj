@@ -45,6 +45,7 @@
     <ClInclude Include="info\opencl_functions.h" />
     <ClInclude Include="info\platform_info.h" />
     <ClInclude Include="info\program_info.h" />
+    <ClInclude Include="info\sampler_info.h" />
     <ClInclude Include="library_exception.h" />
     <ClInclude Include="message\message.h" />
     <ClInclude Include="message\msg_command_queue.h" />

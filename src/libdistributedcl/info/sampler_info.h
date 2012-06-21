@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Andrï¿½ Tupinambï¿½ (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 André Tupinambá (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,55 +20,44 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_ICD_OBJECT_H_
-#define _DCL_ICD_OBJECT_H_
+#ifndef _DCL_INFO_SAMPLER_H_
+#define _DCL_INFO_SAMPLER_H_
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #pragma once
 #endif
 
-#include <set>
-#include <map>
+#include <string.h>
 #include "distributedcl_internal.h"
-#include "opencl_functions.h"
+#include "library_exception.h"
+#include "dcl_objects.h"
+#include "icd_object.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace info {
 //-----------------------------------------------------------------------------
-enum dcl_object_types
-{
-    dcl_platform_id = 0,
-    dcl_device_id = 1,
-    dcl_context_id = 2,
-    dcl_program_id = 3,
-    dcl_kernel_id = 4,
-    dcl_command_queue_id = 5,
-    dcl_memory_id = 6,
-    dcl_event_id = 7,
-    dcl_sampler_id = 8,
-};
-//-----------------------------------------------------------------------------
-template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >
-class icd_object
+struct sampler_info
 {
 public:
-    static const uint32_t type_id = DCL_TYPE_ID;
+    cl_bool normalized_coords_;
+    cl_addressing_mode addressing_mode_;
+    cl_filter_mode filter_mode_;
 
-    inline CL_TYPE_T get_icd_obj() const
+    sampler_info()
     {
-        return icd_obj_;
+        memset( this, 0, sizeof(sampler_info) );
     }
-
-    inline void set_icd_obj( CL_TYPE_T icd_obj )
-    {
-        icd_obj_ = icd_obj;
-    }
-
-protected:
-    CL_TYPE_T icd_obj_;
-
-    icd_object() : icd_obj_( NULL ){}
+};
+//-----------------------------------------------------------------------------
+class generic_sampler :
+    public cl_object< cl_sampler, cl_sampler_info, CL_INVALID_SAMPLER >,
+    public icd_object< cl_sampler, dcl_sampler_id >,
+    public dcl_object< sampler_info >
+{
+public:
+    virtual ~generic_sampler(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info
 //-----------------------------------------------------------------------------
-#endif // _DCL_ICD_OBJECT_H_
+#endif // _DCL_INFO_KERNEL_H_
+

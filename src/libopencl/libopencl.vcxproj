@@ -192,6 +192,7 @@
     <ClCompile Include="interface\cl_memory.cpp" />
     <ClCompile Include="interface\cl_platform.cpp" />
     <ClCompile Include="interface\cl_program.cpp" />
+    <ClCompile Include="interface\cl_sampler.cpp" />
     <ClCompile Include="interface\cl_utils.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
