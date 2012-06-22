@@ -28,6 +28,7 @@
     <ClInclude Include="composite\composite_object.h" />
     <ClInclude Include="composite\composite_platform.h" />
     <ClInclude Include="composite\composite_program.h" />
+    <ClInclude Include="composite\composite_sampler.h" />
     <ClInclude Include="composite\opencl_composite.h" />
     <ClInclude Include="config\client_config.h" />
     <ClInclude Include="config\common_config.h" />
@@ -55,6 +56,7 @@
     <ClInclude Include="message\msg_kernel.h" />
     <ClInclude Include="message\msg_memory.h" />
     <ClInclude Include="message\msg_program.h" />
+    <ClInclude Include="message\msg_sampler.h" />
     <ClInclude Include="message\packet.h" />
     <ClInclude Include="message\msg_context.h" />
     <ClInclude Include="network\client_session.h" />
@@ -74,6 +76,7 @@
     <ClInclude Include="remote\remote_object.h" />
     <ClInclude Include="remote\remote_context.h" />
     <ClInclude Include="remote\remote_program.h" />
+    <ClInclude Include="remote\remote_sampler.h" />
     <ClInclude Include="server\message_dispatcher.h" />
     <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_command_queue.h" />
@@ -83,6 +86,7 @@
     <ClInclude Include="server\server_platform.h" />
     <ClInclude Include="server\server_context.h" />
     <ClInclude Include="server\server_program.h" />
+    <ClInclude Include="server\server_sampler.h" />
     <ClInclude Include="single\command_queue.h" />
     <ClInclude Include="single\context.h" />
     <ClInclude Include="single\device.h" />
@@ -93,6 +97,7 @@
     <ClInclude Include="single\opencl_single.h" />
     <ClInclude Include="single\platform.h" />
     <ClInclude Include="single\program.h" />
+    <ClInclude Include="single\sampler.h" />
     <ClInclude Include="single\single_object.h" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +117,7 @@
     <ClCompile Include="message\msg_kernel.cpp" />
     <ClCompile Include="message\msg_memory.cpp" />
     <ClCompile Include="message\msg_program.cpp" />
+    <ClCompile Include="message\msg_sampler.cpp" />
     <ClCompile Include="message\packet.cpp" />
     <ClCompile Include="message\msg_context.cpp" />
     <ClCompile Include="network\server_session.cpp" />
@@ -133,6 +139,7 @@
     <ClCompile Include="server\server_platform.cpp" />
     <ClCompile Include="server\server_context.cpp" />
     <ClCompile Include="server\server_program.cpp" />
+    <ClCompile Include="server\server_sampler.cpp" />
     <ClCompile Include="single\command_queue.cpp" />
     <ClCompile Include="single\context.cpp" />
     <ClCompile Include="single\device.cpp" />
@@ -143,6 +150,7 @@
     <ClCompile Include="single\opencl_single.cpp" />
     <ClCompile Include="single\platform.cpp" />
     <ClCompile Include="single\program.cpp" />
+    <ClCompile Include="single\sampler.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A71DDAA-A818-4C50-9239-C03EBCA6CDC8}</ProjectGuid>

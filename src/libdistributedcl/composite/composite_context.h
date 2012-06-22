@@ -37,6 +37,7 @@ namespace dcl {
 namespace info {
 class generic_device;
 class generic_program;
+class generic_sampler;
 }}
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -99,6 +100,10 @@ private:
     virtual dcl::info::generic_image*
         do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
                          size_t width, size_t height, size_t row_pitch );
+
+    virtual dcl::info::generic_sampler*
+        do_create_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
+                           cl_filter_mode filter_mode );
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

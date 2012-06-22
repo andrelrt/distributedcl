@@ -30,6 +30,7 @@
 #include "server_command_queue.h"
 #include "server_memory.h"
 #include "server_event.h"
+#include "server_sampler.h"
 #include "network/server_session.h"
 #include "message/message.h"
 #include "message/msg_kernel.h"
@@ -41,6 +42,7 @@
 #include "composite/composite_program.h"
 #include "composite/composite_kernel.h"
 #include "composite/composite_event.h"
+#include "composite/composite_sampler.h"
 using namespace dcl::network::message;
 using namespace dcl::composite;
 using dcl::network::server::server_session_context;
@@ -125,9 +127,9 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
             MSG_NOT_IMPLEMENTED( msgGetImageInfo );
 
             // Sampler
-            MSG_NOT_IMPLEMENTED( msgCreateSampler );
+            MSG( msgCreateSampler );
             MSG_NOT_IMPLEMENTED( msgRetainSampler );
-            MSG_NOT_IMPLEMENTED( msgReleaseSampler );
+            MSG_RELEASE( msgReleaseSampler, server.get_sampler_manager(), composite_sampler );
             MSG_NOT_IMPLEMENTED( msgGetSamplerInfo );
 
             // Program

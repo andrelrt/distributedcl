@@ -38,6 +38,7 @@
 #include "composite/composite_command_queue.h"
 #include "composite/composite_memory.h"
 #include "composite/composite_event.h"
+#include "composite/composite_sampler.h"
 #include <boost/interprocess/sync/interprocess_barrier.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
@@ -110,6 +111,7 @@ public:
     typedef dcl::info::object_manager< dcl::composite::composite_memory > memory_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_context > context_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_program > program_manager_t;
+    typedef dcl::info::object_manager< dcl::composite::composite_sampler > sampler_manager_t;
     typedef dcl::info::object_manager< dcl::composite::composite_command_queue > command_queue_manager_t;
 
     inline event_manager_t& get_event_manager(){ return event_manager_; }
@@ -119,6 +121,7 @@ public:
     inline memory_manager_t& get_memory_manager(){ return memory_manager_; }
     inline context_manager_t& get_context_manager(){ return context_manager_; }
     inline program_manager_t& get_program_manager(){ return program_manager_; }
+    inline sampler_manager_t& get_sampler_manager(){ return sampler_manager_; }
     inline command_queue_manager_t& get_command_queue_manager(){ return command_queue_manager_; }
 
     void clear_all_data();
@@ -141,7 +144,8 @@ private:
     memory_manager_t memory_manager_;
     event_manager_t event_manager_;
     image_manager_t image_manager_;
-
+    sampler_manager_t sampler_manager_;
+    
     typedef std::map< dcl::composite::composite_command_queue*, async_execute* > queue_thread_map_t;
 
     queue_thread_map_t queue_thread_;

@@ -248,6 +248,21 @@
     <ClInclude Include="info\sampler_info.h">
       <Filter>info</Filter>
     </ClInclude>
+    <ClInclude Include="single\sampler.h">
+      <Filter>single</Filter>
+    </ClInclude>
+    <ClInclude Include="composite\composite_sampler.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\remote_sampler.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="message\msg_sampler.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_sampler.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">
@@ -390,6 +405,15 @@
     </ClCompile>
     <ClCompile Include="network\server_session.cpp">
       <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="single\sampler.cpp">
+      <Filter>single</Filter>
+    </ClCompile>
+    <ClCompile Include="message\msg_sampler.cpp">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_sampler.cpp">
+      <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

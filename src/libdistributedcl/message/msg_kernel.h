@@ -163,14 +163,25 @@ class dcl_message< msgSetKernelArg > : public base_message
 public:
     dcl_message< msgSetKernelArg >() :
         base_message( msgSetKernelArg, false, 0, 0 ), kernel_id_( 0xffff ),
-        memory_id_( 0xffff ), index_( 0 ), is_memory_object_( false ),
+        argument_id_( 0xffff ), index_( 0 ), argument_type_( unknow_type ),
         size_( 0 ), is_null_( false ){}
+
+    enum argument_type_t
+    {
+        unknow_type = 0,
+        memory_type = 1,
+        image_type = 2,
+        sampler_type = 3,
+    };
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )
     MSG_PARAMETER_GET_SET( uint16_t, index_, index )
-    MSG_PARAMETER_GET( dcl::remote_id_t, memory_id_, memory_id )
+    MSG_PARAMETER_GET( dcl::remote_id_t, argument_id_, memory_id )
+    MSG_PARAMETER_GET( dcl::remote_id_t, argument_id_, image_id )
+    MSG_PARAMETER_GET( dcl::remote_id_t, argument_id_, sampler_id )
     MSG_PARAMETER_GET( uint32_t, size_, buffer_size )
+    MSG_PARAMETER_GET( argument_type_t, argument_type_, argument_type )
 
     inline const uint8_t* get_buffer_pointer() const
     {
@@ -179,15 +190,31 @@ public:
 
     inline void set_memory_id( dcl::remote_id_t memory_id )
     {
-        is_memory_object_ = true;
-        memory_id_ = memory_id;
+        argument_type_ = memory_type;
+        argument_id_ = memory_id;
+
+        set_size( sizeof(msgSetKernelArg_memory_request) );
+    }
+
+    inline void set_image_id( dcl::remote_id_t image_id )
+    {
+        argument_type_ = image_type;
+        argument_id_ = image_id;
+
+        set_size( sizeof(msgSetKernelArg_memory_request) );
+    }
+
+    inline void set_sampler_id( dcl::remote_id_t sampler_id )
+    {
+        argument_type_ = sampler_type;
+        argument_id_ = sampler_id;
 
         set_size( sizeof(msgSetKernelArg_memory_request) );
     }
 
     inline void set_buffer( const uint8_t* arg_value, size_t arg_size )
     {
-        is_memory_object_ = false;
+        argument_type_ = unknow_type;
         is_null_ = (arg_value == NULL);
         size_ = static_cast<uint32_t>( arg_size );
 
@@ -203,17 +230,17 @@ public:
         }
     }
 
-    inline bool is_memory_object() const
+    inline bool is_object() const
     {
-        return is_memory_object_;
+        return argument_type_ != unknow_type;
     }
 
 private:
     dcl::remote_id_t kernel_id_;
-    dcl::remote_id_t memory_id_;
+    dcl::remote_id_t argument_id_;
     uint16_t index_;
     std::vector<uint8_t> buffer_;
-    bool is_memory_object_;
+    argument_type_t argument_type_;
     uint32_t size_;
     bool is_null_;
 
@@ -226,17 +253,17 @@ private:
     struct msgSetKernelArg_memory_request
     {
         dcl::remote_id_t kernel_id_;
-        uint16_t is_memory_object_:1;
-        uint16_t index_:15;
-        dcl::remote_id_t memory_id_;
+        uint16_t argument_type_:2;
+        uint16_t index_:14;
+        dcl::remote_id_t argmuent_id_;
     };
 
     struct msgSetKernelArg_buffer_request
     {
         dcl::remote_id_t kernel_id_;
-        uint16_t is_memory_object_:1;
+        uint16_t argument_type_:2;
         uint16_t is_null_:1;
-        uint16_t index_:14;
+        uint16_t index_:13;
         uint32_t size_;
 
         uint8_t buffer_[1];

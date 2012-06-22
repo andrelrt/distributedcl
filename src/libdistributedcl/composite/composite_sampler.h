@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,49 +20,34 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_KERNEL_H_
-#define _DCL_KERNEL_H_
+#ifndef _DCL_COMPOSITE_SAMPLER_H_
+#define _DCL_COMPOSITE_SAMPLER_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
-#include <map>
-#include <string>
 #include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/kernel_info.h"
-#include "program.h"
+#include "composite_object.h"
+#include "info/sampler_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
-class generic_memory;
-class generic_image;
-class generic_sampler;
-}}
+namespace composite {
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace single {
-//-----------------------------------------------------------------------------
-class kernel :
-    public dcl::info::generic_kernel,
-    public opencl_object< cl_kernel >,
-    public context_object< kernel >
+class composite_sampler :
+    public dcl::info::generic_sampler,
+    public composite_object< dcl::info::generic_sampler >
 {
 public:
-    kernel( const program& program_ref, const std::string& name );
-    ~kernel();
+    static const char* get_name(){ return "composite_sampler"; }
 
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
+    composite_sampler( const composite_context& context_ref, cl_bool normalized_coords,
+                       cl_addressing_mode addressing_mode, cl_filter_mode filter_mode ) :
+        dcl::info::generic_sampler( normalized_coords, addressing_mode, filter_mode ),
+        composite_object< dcl::info::generic_sampler >( context_ref ){}
 
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_image* image_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_sampler* sampler_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
+    ~composite_sampler(){}
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::composite
 //-----------------------------------------------------------------------------
-#endif //_DCL_KERNEL_H_
+#endif //_DCL_COMPOSITE_SAMPLER_H_

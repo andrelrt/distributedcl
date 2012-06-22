@@ -26,10 +26,13 @@
 #include "memory.h"
 #include "device.h"
 #include "event.h"
+#include "sampler.h"
 using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_command_queue;
-using dcl::info::generic_memory_object;
+using dcl::info::generic_memory;
+using dcl::info::generic_image;
+using dcl::info::generic_sampler;
 using dcl::info::generic_device;
 using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
@@ -110,20 +113,22 @@ void kernel::execute( const generic_command_queue* queue_ptr,
     }
 }
 //-----------------------------------------------------------------------------
-void kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
+void kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
 {
-    cl_mem mem;
-
-    if( memory_ptr->get_type() == CL_MEM_OBJECT_BUFFER )
-    {
-        mem = (reinterpret_cast<const memory*>( memory_ptr ))->get_id();
-    }
-    else if( memory_ptr->get_type() == CL_MEM_OBJECT_IMAGE2D )
-    {
-        mem = (reinterpret_cast<const image*>( memory_ptr ))->get_id();
-    }
-
+    cl_mem mem = (reinterpret_cast<const memory*>( memory_ptr ))->get_id();
     set_argument( arg_index, sizeof(cl_mem), &mem );
+}
+//-----------------------------------------------------------------------------
+void kernel::set_argument( uint32_t arg_index, const generic_image* image_ptr )
+{
+    cl_mem mem = (reinterpret_cast<const image*>( image_ptr ))->get_id();
+    set_argument( arg_index, sizeof(cl_mem), &mem );
+}
+//-----------------------------------------------------------------------------
+void kernel::set_argument( uint32_t arg_index, const generic_sampler* sampler_ptr )
+{
+    cl_sampler samp = (reinterpret_cast<const sampler*>( sampler_ptr ))->get_id();
+    set_argument( arg_index, sizeof(cl_sampler), &samp );
 }
 //-----------------------------------------------------------------------------
 void kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )

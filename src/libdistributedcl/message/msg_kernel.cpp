@@ -119,22 +119,22 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
 //-----------------------------------------------------------------------------
 void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
 {
-    if( is_memory_object_ )
+    if( is_object() )
     {
         msgSetKernelArg_memory_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_memory_request* >( payload_ptr );
 
-        request_ptr->is_memory_object_ = 1;
+        request_ptr->argument_type_ = argument_type_;
         request_ptr->index_ = index_;
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
-        request_ptr->memory_id_ = host_to_network( memory_id_ );
+        request_ptr->argmuent_id_ = host_to_network( argument_id_ );
     }
     else
     {
         msgSetKernelArg_buffer_request* request_ptr =
             reinterpret_cast< msgSetKernelArg_buffer_request* >( payload_ptr );
 
-        request_ptr->is_memory_object_ = 0;
+        request_ptr->argument_type_ = unknow_type;
         request_ptr->is_null_ = is_null_? 1 : 0;
         request_ptr->index_ = index_;
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
@@ -152,19 +152,20 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
     const msgSetKernelArg_memory_request* request_ptr =
         reinterpret_cast< const msgSetKernelArg_memory_request* >( payload_ptr );
 
-    if( request_ptr->is_memory_object_ )
+    argument_type_ = static_cast<argument_type_t>( request_ptr->argument_type_ );
+
+    if( is_object() )
     {
-        is_memory_object_ = true;
         index_ = request_ptr->index_;
         kernel_id_ = network_to_host( request_ptr->kernel_id_ );
-        memory_id_ = network_to_host( request_ptr->memory_id_ );
+        argument_id_ = network_to_host( request_ptr->argmuent_id_ );
     }
     else
     {
         const msgSetKernelArg_buffer_request* req_ptr =
             reinterpret_cast< const msgSetKernelArg_buffer_request* >( payload_ptr );
 
-        is_memory_object_ = false;
+        argument_type_ = unknow_type;
 
         size_ = req_ptr->size_;
         index_ = network_to_host( req_ptr->index_ );

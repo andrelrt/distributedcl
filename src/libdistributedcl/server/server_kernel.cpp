@@ -41,6 +41,8 @@ using dcl::composite::composite_memory;
 using dcl::composite::composite_event;
 using dcl::composite::composite_image;
 using dcl::composite::composite_context;
+using dcl::network::message::dcl_message;
+using dcl::network::message::msgSetKernelArg;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -116,32 +118,31 @@ void msgSetKernelArg_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
-    if( message_->is_memory_object() )
+    switch( message_->get_argument_type() )
     {
-        dcl::remote_id_t memory_id = message_->get_memory_id();
+        case dcl_message< msgSetKernelArg >::unknow_type:
+            kernel_ptr->set_argument( message_->get_index(),
+                                      message_->get_buffer_size(),
+                                      message_->get_buffer_pointer() );
+            break;
 
-        if( server.get_memory_manager().has( memory_id ) )
-        {
-            composite_memory* memory_ptr =
-                server.get_memory_manager().get( memory_id );
+        case dcl_message< msgSetKernelArg >::memory_type:
+            kernel_ptr->set_argument( message_->get_index(),
+                server.get_memory_manager().get( message_->get_memory_id() ));
 
-            kernel_ptr->set_argument( message_->get_index(), memory_ptr );
-        }
-        else if( server.get_image_manager().has( memory_id ) )
-        {
-            composite_image* image_ptr =
-                server.get_image_manager().get( memory_id );
+            break;
 
-            kernel_ptr->set_argument( message_->get_index(), image_ptr );
-        }
-        else
-            throw dcl::library_exception( "Invalid memory object", CL_INVALID_MEM_OBJECT );
-    }
-    else
-    {
-        kernel_ptr->set_argument( message_->get_index(),
-                                  message_->get_buffer_size(),
-                                  message_->get_buffer_pointer() );
+        case dcl_message< msgSetKernelArg >::image_type:
+            kernel_ptr->set_argument( message_->get_index(),
+                server.get_image_manager().get( message_->get_image_id() ));
+
+            break;
+
+        case dcl_message< msgSetKernelArg >::sampler_type:
+            kernel_ptr->set_argument( message_->get_index(),
+                server.get_sampler_manager().get( message_->get_sampler_id() ));
+
+            break;
     }
 }
 //-----------------------------------------------------------------------------

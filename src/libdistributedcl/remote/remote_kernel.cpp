@@ -26,6 +26,7 @@
 #include "remote_memory.h"
 #include "remote_device.h"
 #include "remote_event.h"
+#include "remote_sampler.h"
 #include "message/msg_kernel.h"
 using dcl::network::message::dcl_message;
 using dcl::network::message::base_message;
@@ -36,7 +37,9 @@ using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_device;
 using dcl::info::generic_kernel;
-using dcl::info::generic_memory_object;
+using dcl::info::generic_memory;
+using dcl::info::generic_image;
+using dcl::info::generic_sampler;
 using dcl::info::generic_command_queue;
 using dcl::info::generic_event;
 //-----------------------------------------------------------------------------
@@ -82,21 +85,37 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
-void remote_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
+void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
 {
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
     msg_ptr->set_index( arg_index );
     msg_ptr->set_kernel_id( get_remote_id() );
-    
-    if( memory_ptr->get_type() == CL_MEM_OBJECT_BUFFER )
-    {
-        msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
-    }
-    else if( memory_ptr->get_type() == CL_MEM_OBJECT_IMAGE2D )
-    {
-        msg_ptr->set_memory_id( reinterpret_cast<const remote_image*>( memory_ptr )->get_remote_id() );
-    }
+    msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
+
+    message_sp_t message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+}
+//-----------------------------------------------------------------------------
+void remote_kernel::set_argument( uint32_t arg_index, const generic_image* image_ptr )
+{
+    dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
+
+    msg_ptr->set_index( arg_index );
+    msg_ptr->set_kernel_id( get_remote_id() );
+    msg_ptr->set_image_id( reinterpret_cast<const remote_image*>( image_ptr )->get_remote_id() );
+
+    message_sp_t message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+}
+//-----------------------------------------------------------------------------
+void remote_kernel::set_argument( uint32_t arg_index, const generic_sampler* sampler_ptr )
+{
+    dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
+
+    msg_ptr->set_index( arg_index );
+    msg_ptr->set_kernel_id( get_remote_id() );
+    msg_ptr->set_sampler_id( reinterpret_cast<const remote_sampler*>( sampler_ptr )->get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );

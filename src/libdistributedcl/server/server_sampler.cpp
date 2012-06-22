@@ -20,49 +20,34 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_KERNEL_H_
-#define _DCL_KERNEL_H_
-
-#include <map>
-#include <string>
-#include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/kernel_info.h"
-#include "program.h"
+#include "server_sampler.h"
+#include "server_platform.h"
+#include "message/msg_sampler.h"
+#include "composite/composite_context.h"
+#include "composite/composite_sampler.h"
+using dcl::composite::composite_context;
+using dcl::composite::composite_sampler;
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
-class generic_memory;
-class generic_image;
-class generic_sampler;
-}}
+namespace server {
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace single {
-//-----------------------------------------------------------------------------
-class kernel :
-    public dcl::info::generic_kernel,
-    public opencl_object< cl_kernel >,
-    public context_object< kernel >
+void msgCreateSampler_command::execute()
 {
-public:
-    kernel( const program& program_ref, const std::string& name );
-    ~kernel();
+    server_platform& server = session_context_ptr_->get_server_platform();
 
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
+    remote_id_t context_id = message_->get_context_id();
 
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_image* image_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_sampler* sampler_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
-};
+    composite_context* context_ptr = server.get_context_manager().get( context_id );
+
+    composite_sampler* sampler_ptr = reinterpret_cast<composite_sampler*>(
+        context_ptr->create_sampler( message_->get_normalized_coords(),
+                                     message_->get_addressing_mode(),
+                                     message_->get_filter_mode() ) );
+
+    remote_id_t id = server.get_sampler_manager().add( sampler_ptr );
+
+    message_->set_remote_id( id );
+}
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif //_DCL_KERNEL_H_

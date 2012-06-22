@@ -25,10 +25,12 @@
 #include "composite_device.h"
 #include "composite_command_queue.h"
 #include "composite_memory.h"
+#include "composite_sampler.h"
 #include "info/program_info.h"
 using dcl::info::generic_device;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
+using dcl::info::generic_sampler;
 using dcl::info::generic_command_queue;
 using dcl::info::generic_memory;
 using dcl::info::generic_image;
@@ -138,6 +140,24 @@ composite_context::do_create_image( const void* host_ptr, cl_mem_flags flags,
     }
 
     return reinterpret_cast< generic_image* >( images );
+}
+//-----------------------------------------------------------------------------
+generic_sampler*
+composite_context::do_create_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
+                                      cl_filter_mode filter_mode )
+{
+    contexts_t::iterator it;
+
+    composite_sampler* samplers = new composite_sampler( *this, normalized_coords, addressing_mode, filter_mode );
+
+    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    {
+        generic_sampler* sampler_ptr = (*it)->create_sampler( normalized_coords, addressing_mode, filter_mode );
+
+        samplers->insert_context_object( *it, sampler_ptr );
+    }
+
+    return reinterpret_cast< generic_sampler* >( samplers );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

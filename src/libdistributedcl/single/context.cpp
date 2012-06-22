@@ -27,10 +27,12 @@
 #include "program.h"
 #include "command_queue.h"
 #include "memory.h"
+#include "sampler.h"
 using dcl::info::generic_command_queue;
 using dcl::info::generic_platform;
 using dcl::info::generic_context;
 using dcl::info::generic_program;
+using dcl::info::generic_sampler;
 using dcl::info::generic_device;
 using dcl::info::generic_memory;
 using dcl::info::generic_image;
@@ -181,6 +183,12 @@ generic_image* context::do_create_image( const void* host_ptr, cl_mem_flags flag
                                          size_t height, size_t row_pitch )
 {
     return new image( *this, host_ptr, flags, format, width, height, row_pitch );
+}
+//-----------------------------------------------------------------------------
+generic_sampler* context::do_create_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
+                                             cl_filter_mode filter_mode )
+{
+    return new sampler( *this, normalized_coords, addressing_mode, filter_mode );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

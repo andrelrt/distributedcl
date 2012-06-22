@@ -20,49 +20,26 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_KERNEL_H_
-#define _DCL_KERNEL_H_
+#ifndef _DCL_SERVER_SAMPLER_H_
+#define _DCL_SERVER_SAMPLER_H_
 
-#include <map>
-#include <string>
 #include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/kernel_info.h"
-#include "program.h"
+#include "server_command.h"
+#include "message/message.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
-namespace info {
-class generic_memory;
-class generic_image;
-class generic_sampler;
-}}
+namespace server {
 //-----------------------------------------------------------------------------
-namespace dcl {
-namespace single {
-//-----------------------------------------------------------------------------
-class kernel :
-    public dcl::info::generic_kernel,
-    public opencl_object< cl_kernel >,
-    public context_object< kernel >
+class msgCreateSampler_command : 
+    public server_command< dcl::network::message::msgCreateSampler >
 {
 public:
-    kernel( const program& program_ref, const std::string& name );
-    ~kernel();
+    msgCreateSampler_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateSampler >( message_ptr, session_context_ptr ) {}
 
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
-
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_image* image_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_sampler* sampler_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
+    void execute();
 };
 //-----------------------------------------------------------------------------
-}} // namespace dcl::single
+}} // namespace dcl::server
 //-----------------------------------------------------------------------------
-#endif //_DCL_KERNEL_H_
+#endif // _DCL_SERVER_SAMPLER_H_

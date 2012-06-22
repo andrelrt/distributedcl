@@ -39,6 +39,7 @@ class generic_command_queue;
 class generic_memory_object;
 class generic_memory;
 class generic_image;
+class generic_sampler;
 //-----------------------------------------------------------------------------
 struct context_info
 {
@@ -110,6 +111,19 @@ public:
 
     // TODO: Create Image3D objects
 
+
+    inline generic_sampler* create_sampler( cl_bool normalized_coords,
+                                            cl_addressing_mode addressing_mode,
+                                            cl_filter_mode filter_mode )
+    {
+        generic_sampler* sampler_ptr =
+            do_create_sampler( normalized_coords, addressing_mode, filter_mode );
+
+        samplers_.push_back( sampler_ptr );
+
+        return sampler_ptr;
+    }
+
     inline const generic_platform* get_platform() const
     {
         return &platform_;
@@ -119,9 +133,11 @@ protected:
     typedef std::vector< generic_program* > programs_t;
     typedef std::vector< generic_command_queue* > queues_t;
     typedef std::vector< generic_memory_object* > memory_objects_t;
+    typedef std::vector< generic_sampler* > samplers_t;
 
     queues_t queues_;
     devices_t devices_;
+    samplers_t samplers_;
     programs_t programs_;
     memory_objects_t memory_objects_;
     const generic_platform& platform_;
@@ -140,6 +156,10 @@ protected:
     virtual generic_image*
         do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
                          size_t width, size_t height, size_t row_pitch ) = 0;
+
+    virtual generic_sampler*
+        do_create_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
+                           cl_filter_mode filter_mode ) = 0;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info

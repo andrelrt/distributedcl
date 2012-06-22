@@ -22,6 +22,9 @@
 //-----------------------------------------------------------------------------
 #ifndef _DCL_CONTEXT_H_
 #define _DCL_CONTEXT_H_
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#pragma once
+#endif
 
 #include "distributedcl_internal.h"
 #include "opencl_single.h"
@@ -89,6 +92,10 @@ private:
     virtual dcl::info::generic_image*
         do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
                          size_t width, size_t height, size_t row_pitch );
+
+    virtual dcl::info::generic_sampler*
+        do_create_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
+                           cl_filter_mode filter_mode );
 
     image_formats_t image2d_formats_;
     image_formats_t image3d_formats_;

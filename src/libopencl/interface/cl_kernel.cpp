@@ -29,6 +29,7 @@
 #include "composite/composite_device.h"
 #include "composite/composite_command_queue.h"
 #include "composite/composite_event.h"
+#include "composite/composite_sampler.h"
 using dcl::info::ndrange;
 using dcl::info::generic_event;
 using dcl::info::kernel_group_info;
@@ -40,6 +41,7 @@ using dcl::composite::composite_device;
 using dcl::composite::composite_command_queue;
 using dcl::composite::composite_event;
 using dcl::composite::composite_image;
+using dcl::composite::composite_sampler;
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_kernel CL_API_CALL
 clCreateKernel( cl_program program, const char* kernel_name,
@@ -139,6 +141,16 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
                 composite_image* image_ptr = icd.get_object_ptr< composite_image >( memory );
 
                 kernel_ptr->set_argument( arg_index, image_ptr );
+                return CL_SUCCESS;
+            }
+            
+            cl_sampler sampler = *(reinterpret_cast<const cl_sampler*>( arg_value ));
+
+            if( icd.has_object< composite_sampler >( sampler ) )
+            {
+                composite_sampler* sampler_ptr = icd.get_object_ptr< composite_sampler >( sampler );
+
+                kernel_ptr->set_argument( arg_index, sampler_ptr );
                 return CL_SUCCESS;
             }
         }

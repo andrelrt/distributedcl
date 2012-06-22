@@ -20,49 +20,39 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_KERNEL_H_
-#define _DCL_KERNEL_H_
-
-#include <map>
-#include <string>
-#include "distributedcl_internal.h"
-#include "single_object.h"
-#include "opencl_library.h"
-#include "info/kernel_info.h"
-#include "program.h"
-//-----------------------------------------------------------------------------
-namespace dcl {
-namespace info {
-class generic_memory;
-class generic_image;
-class generic_sampler;
-}}
+#include "sampler.h"
+#include "context.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-class kernel :
-    public dcl::info::generic_kernel,
-    public opencl_object< cl_kernel >,
-    public context_object< kernel >
+sampler::~sampler()
 {
-public:
-    kernel( const program& program_ref, const std::string& name );
-    ~kernel();
+    opencl_.clReleaseSampler( id_ );
+}
+//-----------------------------------------------------------------------------
+sampler::sampler( const context& context_ref, cl_bool normalized_coords,
+                  cl_addressing_mode addressing_mode, cl_filter_mode filter_mode ) :
+    generic_sampler( normalized_coords, addressing_mode, filter_mode ),
+    opencl_object< cl_sampler >( context_ref.get_opencl() )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+        cl_sampler sampler_id;
 
-    virtual void execute( const dcl::info::generic_command_queue* queue_ptr, 
-                          const dcl::info::ndrange& offset, 
-                          const dcl::info::ndrange& global, 
-                          const dcl::info::ndrange& local,
-                          events_t& wait_events, dcl::info::generic_event** event_ptr = NULL );
+        sampler_id =
+            opencl_.clCreateSampler( context_ref.get_id(), normalized_coords,
+                                     addressing_mode, filter_mode, &error_code );
 
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_memory* memory_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_image* image_ptr );
-    virtual void set_argument( uint32_t arg_index, const dcl::info::generic_sampler* sampler_ptr );
-    virtual void set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value );
-    virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
-};
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        set_id( sampler_id );
+    }
+}
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single
 //-----------------------------------------------------------------------------
-#endif //_DCL_KERNEL_H_

@@ -200,6 +200,7 @@ void server_platform::clear_all_data()
     command_queue_manager_.clear();
     memory_manager_.clear();
     image_manager_.clear();
+    sampler_manager_.clear();
 
     program_manager_.clear();
     event_manager_.clear();

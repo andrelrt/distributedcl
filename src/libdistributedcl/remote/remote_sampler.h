@@ -20,53 +20,34 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_CONTEXT_H_
-#define _DCL_REMOTE_CONTEXT_H_
+#ifndef _DCL_REMOTE_SAMPLER_H_
+#define _DCL_REMOTE_SAMPLER_H_
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #pragma once
 #endif
 
 #include "distributedcl_internal.h"
 #include "remote_object.h"
-#include "remote_platform.h"
-#include "info/context_info.h"
-#include "info/dcl_objects.h"
+#include "remote_context.h"
+#include "info/sampler_info.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-class remote_context : 
-    public dcl::info::generic_context,
-    public remote_object< remote_context, dcl::network::message::msgReleaseContext >
+class remote_sampler :
+    public dcl::info::generic_sampler,
+    public remote_object< remote_sampler, dcl::network::message::msgReleaseSampler >
 {
 public:
-    remote_context( const remote_platform* platform_ptr ) :
-        dcl::info::generic_context( *platform_ptr ),
-        remote_object< remote_context, dcl::network::message::msgReleaseContext >( platform_ptr->get_session() ),
-        platform_ptr_( platform_ptr ){}
+    remote_sampler( const remote_context& context_ref, cl_bool normalized_coords,
+                    cl_addressing_mode addressing_mode, cl_filter_mode filter_mode ) :
+        dcl::info::generic_sampler( normalized_coords, addressing_mode, filter_mode ),
+        remote_object< remote_sampler, dcl::network::message::msgReleaseSampler >( context_ref.get_session() )
+        {}
 
-    ~remote_context(){}
-
-private:
-    const remote_platform* platform_ptr_;
-
-    virtual void load_devices();
-    virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
-    virtual dcl::info::generic_command_queue*
-        do_create_command_queue( const dcl::info::generic_device* device_ptr,
-                                 cl_command_queue_properties properties );
-    virtual dcl::info::generic_memory*
-        do_create_buffer( const void* host_ptr, size_t size, cl_mem_flags flags );
-
-    virtual dcl::info::generic_image*
-        do_create_image( const void* host_ptr, cl_mem_flags flags, const cl_image_format* format,
-                         size_t width, size_t height, size_t row_pitch );
-
-    virtual dcl::info::generic_sampler*
-        do_create_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
-                           cl_filter_mode filter_mode );
+    ~remote_sampler(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
 //-----------------------------------------------------------------------------
-#endif // _DCL_REMOTE_CONTEXT_H_
+#endif // _DCL_REMOTE_SAMPLER_H_

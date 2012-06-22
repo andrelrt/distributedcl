@@ -30,6 +30,7 @@
 #include "msg_command_queue.h"
 #include "msg_memory.h"
 #include "msg_event.h"
+#include "msg_sampler.h"
 #include "network/server_session.h"
 #include "server/server_platform.h"
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -124,9 +125,9 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
         MSG_NOT_IMPLEMENTED( msgGetImageInfo );
 
         // Sampler
-        MSG_NOT_IMPLEMENTED( msgCreateSampler );
+        MSG( msgCreateSampler );
         MSG_NOT_IMPLEMENTED( msgRetainSampler );
-        MSG_NOT_IMPLEMENTED( msgReleaseSampler );
+        MSG_RELEASE( msgReleaseSampler );
         MSG_NOT_IMPLEMENTED( msgGetSamplerInfo );
 
         // Program

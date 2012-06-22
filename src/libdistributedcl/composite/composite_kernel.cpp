@@ -25,11 +25,14 @@
 #include "composite_memory.h"
 #include "composite_device.h"
 #include "composite_event.h"
+#include "composite_sampler.h"
 using dcl::info::ndrange;
 using dcl::info::kernel_group_info;
 using dcl::info::generic_event;
 using dcl::info::generic_kernel;
-using dcl::info::generic_memory_object;
+using dcl::info::generic_memory;
+using dcl::info::generic_image;
+using dcl::info::generic_sampler;
 using dcl::info::generic_device;
 using dcl::info::generic_context;
 using dcl::info::generic_command_queue;
@@ -59,28 +62,19 @@ void composite_kernel::execute( const generic_command_queue* queue_ptr,
     }
 }
 //-----------------------------------------------------------------------------
-void composite_kernel::set_argument( uint32_t arg_index, const generic_memory_object* memory_ptr )
+void composite_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
 {
-    if( memory_ptr->get_type() == CL_MEM_OBJECT_BUFFER )
-    {
-        const composite_memory* mem_ptr =
-            reinterpret_cast<const composite_memory*>( memory_ptr );
-
-        for( iterator it = begin(); it != end(); it++ )
-        {
-            it->second->set_argument( arg_index, mem_ptr->find( it->first ) );
-        }
-    }
-    else if( memory_ptr->get_type() == CL_MEM_OBJECT_IMAGE2D )
-    {
-        const composite_image* image_ptr =
-            reinterpret_cast<const composite_image*>( memory_ptr );
-
-        for( iterator it = begin(); it != end(); it++ )
-        {
-            it->second->set_argument( arg_index, image_ptr->find( it->first ) );
-        }
-    }
+    set_argument< composite_memory, generic_memory >( arg_index, memory_ptr );
+}
+//-----------------------------------------------------------------------------
+void composite_kernel::set_argument( uint32_t arg_index, const generic_image* image_ptr )
+{
+    set_argument< composite_image, generic_image >( arg_index, image_ptr );
+}
+//-----------------------------------------------------------------------------
+void composite_kernel::set_argument( uint32_t arg_index, const generic_sampler* sampler_ptr )
+{
+    set_argument< composite_sampler, generic_sampler >( arg_index, sampler_ptr );
 }
 //-----------------------------------------------------------------------------
 void composite_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )

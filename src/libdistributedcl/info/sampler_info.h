@@ -46,6 +46,32 @@ public:
     {
         memset( this, 0, sizeof(sampler_info) );
     }
+
+    inline size_t get_info_size( cl_device_info info ) const
+    {
+        switch( info )
+        {
+            case CL_SAMPLER_NORMALIZED_COORDS:  return sizeof(cl_bool);
+            case CL_SAMPLER_ADDRESSING_MODE:    return sizeof(cl_addressing_mode);
+            case CL_SAMPLER_FILTER_MODE:        return sizeof(cl_filter_mode);
+
+            default:
+                throw library_exception( CL_INVALID_VALUE );
+        }
+    }
+
+    inline const void* get_info_pointer( cl_device_info info ) const
+    {
+        switch( info )
+        {
+            case CL_SAMPLER_NORMALIZED_COORDS:  return &normalized_coords_;
+            case CL_SAMPLER_ADDRESSING_MODE:    return &addressing_mode_;
+            case CL_SAMPLER_FILTER_MODE:        return &filter_mode_;
+
+            default:
+                throw library_exception( CL_INVALID_VALUE );
+        }
+    }
 };
 //-----------------------------------------------------------------------------
 class generic_sampler :
@@ -55,6 +81,22 @@ class generic_sampler :
 {
 public:
     virtual ~generic_sampler(){}
+
+    generic_sampler( cl_bool normalized_coords, cl_addressing_mode addressing_mode,
+                     cl_filter_mode filter_mode )
+    {
+        local_info_.normalized_coords_ = normalized_coords;
+        local_info_.addressing_mode_ = addressing_mode;
+        local_info_.filter_mode_ = filter_mode;
+    }
+
+    inline const sampler_info& get_info() const
+    {
+        return local_info_;
+    }
+
+protected:
+    sampler_info local_info_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info
