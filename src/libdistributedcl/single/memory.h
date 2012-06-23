@@ -55,6 +55,11 @@ public:
 
     virtual void unmap( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
                         events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
+
+    virtual void copy( dcl::info::generic_command_queue* queue_ptr,
+                       dcl::info::generic_memory* src_ptr,
+                       size_t size, size_t src_offset, size_t dst_offset,
+                       events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
 };
 //-----------------------------------------------------------------------------
 class image :

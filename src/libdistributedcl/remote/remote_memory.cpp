@@ -33,6 +33,7 @@ using dcl::network::message::base_message;
 using dcl::network::message::msgEnqueueWriteBuffer;
 using dcl::network::message::msgEnqueueReadBuffer;
 using dcl::network::message::msgReleaseMemObject;
+using dcl::network::message::msgEnqueueCopyBuffer;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -164,6 +165,37 @@ void remote_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
     delete[] it->first;
 
     map_pointers_.erase( it );
+}
+//-----------------------------------------------------------------------------
+void remote_memory::copy( generic_command_queue* queue_ptr, generic_memory* src_ptr,
+                          size_t size, size_t src_offset, size_t dst_offset,
+                          events_t& wait_events, dcl::info::generic_event** ret_event_ptr )
+{
+    dcl_message< msgEnqueueCopyBuffer >* msg_ptr = new dcl_message< msgEnqueueCopyBuffer >();
+
+    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg_ptr->set_src_remote_id( reinterpret_cast<remote_memory*>( src_ptr )->get_remote_id() );
+    msg_ptr->set_dst_remote_id( get_remote_id() );
+    msg_ptr->set_buffer_size( size );
+    msg_ptr->set_src_offset( src_offset );
+    msg_ptr->set_dst_offset( src_offset );
+
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    {
+        msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
+    }
+
+    message_sp_t message_sp( msg_ptr );
+
+    if( ret_event_ptr != NULL )
+    {
+        remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
+        *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
+
+        ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
+    }
+
+    reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 // remote_image

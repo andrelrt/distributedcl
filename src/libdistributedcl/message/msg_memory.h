@@ -168,7 +168,7 @@ private:
     struct msgEnqueueWriteBuffer_request
     {
         dcl::remote_id_t id_;
-        dcl::remote_id_t command_queue_id_;
+        //dcl::remote_id_t command_queue_id_;
         uint32_t offset_;
         uint32_t buffer_len_;
 
@@ -241,7 +241,7 @@ private:
     struct msgEnqueueReadBuffer_request
     {
         dcl::remote_id_t id_;
-        dcl::remote_id_t command_queue_id_;
+        //dcl::remote_id_t command_queue_id_;
         uint32_t size_;
         uint32_t offset_;
     };
@@ -250,6 +250,52 @@ private:
     {
         uint32_t size_;
         uint8_t buffer_[ 1 ];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+// msgEnqueueCopyBuffer
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgEnqueueCopyBuffer > : public enqueue_message
+{
+public:
+    dcl_message< msgEnqueueCopyBuffer >() :
+        enqueue_message( msgEnqueueCopyBuffer, false, sizeof( msgEnqueueCopyBuffer_request ) ),
+        src_remote_id_( 0xffff ), dst_remote_id_( 0xffff ), size_( 0 ), src_offset_( 0 ), dst_offset_( 0 ){}
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, src_remote_id_, src_remote_id )
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, dst_remote_id_, dst_remote_id )
+    MSG_PARAMETER_GET_SET( size_t, src_offset_, src_offset )
+    MSG_PARAMETER_GET_SET( size_t, dst_offset_, dst_offset )
+    MSG_PARAMETER_GET_SET( size_t, size_, buffer_size )
+
+
+private:
+    dcl::remote_id_t src_remote_id_;
+    dcl::remote_id_t dst_remote_id_;
+    size_t size_;
+    size_t src_offset_;
+    size_t dst_offset_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+
+    inline virtual void update_request_size()
+    {
+        set_size( get_enqueue_request_size() + sizeof(msgEnqueueCopyBuffer_request) );
+    }
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgEnqueueCopyBuffer_request
+    {
+        dcl::remote_id_t src_id_;
+        dcl::remote_id_t dst_id_;
+        uint32_t size_;
+        uint32_t src_offset_;
+        uint32_t dst_offset_;
     };
     #pragma pack( pop )
 };

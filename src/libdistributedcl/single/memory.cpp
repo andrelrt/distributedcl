@@ -248,6 +248,55 @@ void memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
     }
 }
 //-----------------------------------------------------------------------------
+void memory::copy( generic_command_queue* queue_ptr, generic_memory* src_ptr,
+                   size_t size, size_t src_offset, size_t dst_offset,
+                   events_t& wait_events, dcl::info::generic_event** ret_event_ptr )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        memory* src_buffer_ptr = reinterpret_cast<memory*>( src_ptr );
+        cl_event evnt;
+
+        if( wait_events.empty() )
+        {
+            error_code =
+                opencl_.clEnqueueCopyBuffer( queue->get_id(), src_buffer_ptr->get_id(),
+                                             get_id(), src_offset, dst_offset, size, 0,
+                                             NULL, (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            error_code =
+                opencl_.clEnqueueCopyBuffer( queue->get_id(), src_buffer_ptr->get_id(),
+                                             get_id(), src_offset, dst_offset, size,
+                                             static_cast<cl_uint>( wait_events.size() ),
+                                             events.get(), (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+// image
+//-----------------------------------------------------------------------------
 image::image( const context& context_ref, const void* host_ptr, cl_mem_flags flags,
               const cl_image_format* format, size_t width, size_t height, size_t row_pitch ) :
     opencl_object< cl_mem >( context_ref.get_opencl() )

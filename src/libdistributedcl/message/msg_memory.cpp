@@ -167,6 +167,36 @@ void dcl_message< msgEnqueueReadBuffer >::parse_response( const void* payload_pt
         buffer_.assign( response_ptr->buffer_, response_ptr->buffer_ + size_ );
 }
 //-----------------------------------------------------------------------------
+// msgEnqueueCopyBuffer
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueCopyBuffer >::create_request( void* payload_ptr )
+{
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
+
+    msgEnqueueCopyBuffer_request* request_ptr = 
+        reinterpret_cast< msgEnqueueCopyBuffer_request* >( enqueue_ptr );
+
+    request_ptr->src_id_ = host_to_network( src_remote_id_ );
+    request_ptr->dst_id_ = host_to_network( dst_remote_id_ );
+    request_ptr->size_ = host_to_network( static_cast<uint32_t>( size_ ) );
+    request_ptr->src_offset_ = host_to_network( static_cast<uint32_t>( src_offset_ ) );
+    request_ptr->dst_offset_ = host_to_network( static_cast<uint32_t>( dst_offset_ ) );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueCopyBuffer >::parse_request( const void* payload_ptr )
+{
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
+
+    const msgEnqueueCopyBuffer_request* request_ptr = 
+        reinterpret_cast< const msgEnqueueCopyBuffer_request* >( enqueue_ptr );
+
+    src_remote_id_ = network_to_host( request_ptr->src_id_ );
+    dst_remote_id_ = network_to_host( request_ptr->dst_id_ );
+    size_ = network_to_host( request_ptr->size_ );
+    src_offset_ = network_to_host( request_ptr->src_offset_ );
+    dst_offset_ = network_to_host( request_ptr->dst_offset_ );
+}
+//-----------------------------------------------------------------------------
 // msgCreateImage2D
 //-----------------------------------------------------------------------------
 void dcl_message< msgCreateImage2D >::create_request( void* payload_ptr )

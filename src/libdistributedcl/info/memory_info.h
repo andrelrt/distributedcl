@@ -164,6 +164,11 @@ public:
     virtual void* map( generic_command_queue* queue_ptr, cl_map_flags flags,
                        size_t size, size_t offset, cl_bool blocking,
                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+
+    virtual void copy( generic_command_queue* queue_ptr, generic_memory* src_ptr,
+                       size_t size, size_t src_offset, size_t dst_offset,
+                       events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+
 protected:
     generic_memory(){}
 };
