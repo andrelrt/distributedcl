@@ -325,6 +325,54 @@ image::~image()
     opencl_.clReleaseMemObject( get_id() );
 }
 //-----------------------------------------------------------------------------
+void image::write( generic_command_queue* queue_ptr, const void* data_ptr,
+                   const size_t origin[3], const size_t region[3],
+                   size_t row_pitch, size_t slice_pitch, bool blocking,
+                   events_t& wait_events, generic_event** ret_event_ptr )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+
+        command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
+        cl_event evnt;
+
+        if( wait_events.empty() )
+        {
+            error_code =
+                opencl_.clEnqueueWriteImage( queue->get_id(), get_id(), blocking,
+                                             origin, region, row_pitch, slice_pitch,
+                                             data_ptr, 0, NULL,
+                                             (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+        else
+        {
+            boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
+
+            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            {
+                events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
+            }
+
+            error_code =
+                opencl_.clEnqueueWriteImage( queue->get_id(), get_id(), blocking,
+                                             origin, region, row_pitch, slice_pitch,
+                                             data_ptr, static_cast<cl_uint>( wait_events.size() ),
+                                             events.get(), (ret_event_ptr == NULL) ? NULL : &evnt );
+        }
+
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        if( (ret_event_ptr != NULL) && (evnt != NULL) )
+        {
+            *ret_event_ptr = new event( opencl_, queue_ptr, evnt );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 void image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                    events_t& wait_events, generic_event** ret_event_ptr )
 {

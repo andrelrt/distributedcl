@@ -168,7 +168,6 @@ private:
     struct msgEnqueueWriteBuffer_request
     {
         dcl::remote_id_t id_;
-        //dcl::remote_id_t command_queue_id_;
         uint32_t offset_;
         uint32_t buffer_len_;
 
@@ -241,7 +240,6 @@ private:
     struct msgEnqueueReadBuffer_request
     {
         dcl::remote_id_t id_;
-        //dcl::remote_id_t command_queue_id_;
         uint32_t size_;
         uint32_t offset_;
     };
@@ -270,7 +268,6 @@ public:
     MSG_PARAMETER_GET_SET( size_t, src_offset_, src_offset )
     MSG_PARAMETER_GET_SET( size_t, dst_offset_, dst_offset )
     MSG_PARAMETER_GET_SET( size_t, size_, buffer_size )
-
 
 private:
     dcl::remote_id_t src_remote_id_;
@@ -503,6 +500,105 @@ private:
         uint32_t width_;
         uint32_t height_;
         uint32_t row_pitch_;
+
+        uint32_t buffer_len_;
+        uint8_t buffer_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
+// msgEnqueueWriteImage
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgEnqueueWriteImage > : public enqueue_message
+{
+public:
+    dcl_message< msgEnqueueWriteImage >() :
+        enqueue_message( msgEnqueueWriteImage, false, 0 ),
+        remote_id_( 0xffff ), buffer_ptr_( NULL ), row_pitch_( 0 ),
+        slice_pitch_( 0 )
+    {
+        origin_[ 0 ] = origin_[ 1 ] = origin_[ 2 ] = 0;
+        region_[ 0 ] = region_[ 1 ] = region_[ 2 ] = 0;
+    }
+
+    typedef std::vector<uint8_t> buffer_t;
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+
+    MSG_PARAMETER_GET( uint8_t*, buffer_ptr_, buffer )
+    MSG_PARAMETER_GET( size_t, row_pitch_, row_pitch )
+    MSG_PARAMETER_GET( size_t, slice_pitch_, slice_pitch )
+    MSG_PARAMETER_GET( size_t*, origin_, origin )
+    MSG_PARAMETER_GET( size_t*, region_, region )
+
+    void set_buffer( const uint8_t* buffer_ptr )
+    {
+        buffer_ptr_ = buffer_ptr;
+        update_request_size();
+    }
+
+    void set_row_pitch( size_t row_pitch )
+    {
+        row_pitch_ = row_pitch;
+        update_request_size();
+    }
+
+    void set_slice_pitch( size_t slice_pitch )
+    {
+        slice_pitch_ = slice_pitch;
+        update_request_size();
+    }
+
+    void set_origin( size_t origin[ 3 ] )
+    {
+        origin_[ 0 ] = origin[ 0 ];
+        origin_[ 1 ] = origin[ 1 ];
+        origin_[ 2 ] = origin[ 2 ];
+    }
+
+    void set_region( size_t region[ 3 ] )
+    {
+        region_[ 0 ] = region[ 0 ];
+        region_[ 1 ] = region[ 1 ];
+        region_[ 2 ] = region[ 2 ];
+    }
+
+private:
+    dcl::remote_id_t remote_id_;
+    const uint8_t* buffer_ptr_;
+    size_t row_pitch_;
+    size_t slice_pitch_;
+    size_t origin_[ 3 ];
+    size_t region_[ 3 ];
+    buffer_t buffer_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+
+    inline virtual void update_request_size()
+    {
+        //size_t row_pitch = row_pitch_;
+        //if( row_pitch == 0 )
+        //{
+        //    row_pitch = width_ * channel_element_size();
+        //}
+
+        //buffer_len_ = height_ * row_pitch;
+
+        //set_size( get_enqueue_request_size() +
+        //          (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) +
+        //          sizeof(msgCreateImage2D_request) - 1 );
+    }
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgEnqueueWriteImage_request
+    {
+        dcl::remote_id_t remote_id_;
+        uint32_t row_pitch_;
+        uint32_t slice_pitch_;
 
         uint32_t buffer_len_;
         uint8_t buffer_[1];

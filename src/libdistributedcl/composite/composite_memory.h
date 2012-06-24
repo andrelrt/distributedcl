@@ -82,6 +82,11 @@ public:
 
     virtual ~composite_image(){}
 
+    virtual void write( dcl::info::generic_command_queue* queue_ptr, const void* data_ptr,
+                        const size_t origin[3], const size_t region[3],
+                        size_t row_pitch, size_t slice_pitch, bool blocking,
+                        events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
+
     virtual void unmap( dcl::info::generic_command_queue* queue_ptr, void* data_ptr,
                         events_t& wait_events, dcl::info::generic_event** ret_event_ptr );
 };

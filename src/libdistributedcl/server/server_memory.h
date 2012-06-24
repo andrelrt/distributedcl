@@ -83,6 +83,28 @@ public:
     virtual bool async_run() const;
 };
 //-----------------------------------------------------------------------------
+class msgEnqueueCopyBuffer_command : 
+    public async_server_command< dcl::network::message::msgEnqueueCopyBuffer >
+{
+public:
+    msgEnqueueCopyBuffer_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        async_server_command< dcl::network::message::msgEnqueueCopyBuffer >( message_ptr, session_context_ptr )
+    {
+        if( message_->get_blocking() )
+            set_command_event();
+
+        server_platform& server = session_context_ptr_->get_server_platform();
+
+        dcl::composite::composite_command_queue* queue_ptr = 
+            server.get_command_queue_manager().get( message_->get_command_queue_id() );
+
+        set_command_queue( queue_ptr );
+    }
+
+    void execute();
+    virtual bool async_run() const;
+};
+//-----------------------------------------------------------------------------
 class msgCreateImage2D_command : 
     public server_command< dcl::network::message::msgCreateImage2D >
 {

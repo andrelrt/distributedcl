@@ -179,6 +179,11 @@ class generic_image
 public:
     virtual ~generic_image(){}
 
+    virtual void write( generic_command_queue* queue_ptr, const void* data_ptr,
+                        const size_t origin[3], const size_t region[3],
+                        size_t input_row_pitch, size_t input_slice_pitch, bool blocking,
+                        events_t& wait_events, generic_event** ret_event_ptr ) = 0;
+
 protected:
     generic_image(){}
 };

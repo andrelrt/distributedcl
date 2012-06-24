@@ -548,22 +548,68 @@ clEnqueueCopyBuffer( cl_command_queue command_queue, cl_mem src_buffer,
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clEnqueueReadImage( cl_command_queue command_queue, cl_mem image,
-//                    cl_bool blocking_read, const size_t* origin[3],
-//                    const size_t* region[3], size_t row_pitch,
+//                    cl_bool blocking_read, const size_t origin[3],
+//                    const size_t region[3], size_t row_pitch,
 //                    size_t slice_pitch, void* ptr, cl_uint num_events_in_wait_list,
 //                    const cl_event* event_wait_list, cl_event* event ) CL_API_SUFFIX__VERSION_1_0
 //{
 //}
 //-----------------------------------------------------------------------------
-//extern "C" CL_API_ENTRY cl_int CL_API_CALL
-//clEnqueueWriteImage( cl_command_queue command_queue, cl_mem image,
-//                     cl_bool blocking_write, const size_t* origin[3],
-//                     const size_t* region[3], size_t input_row_pitch,
-//                     size_t input_slice_pitch, const void* ptr,
-//                     cl_uint num_events_in_wait_list, const cl_event* event_wait_list,
-//                     cl_event* event ) CL_API_SUFFIX__VERSION_1_0
-//{
-//}
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clEnqueueWriteImage( cl_command_queue command_queue, cl_mem image,
+                     cl_bool blocking_write, const size_t origin[3],
+                     const size_t region[3], size_t input_row_pitch,
+                     size_t input_slice_pitch, const void* ptr,
+                     cl_uint num_events_in_wait_list, const cl_event* event_wait_list,
+                     cl_event* event ) CL_API_SUFFIX__VERSION_1_0
+{
+    if( ptr == NULL )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    if( ((event_wait_list == NULL) && (num_events_in_wait_list != 0)) ||
+        ((event_wait_list != NULL) && (num_events_in_wait_list == 0)) )
+    {
+        return CL_INVALID_EVENT_WAIT_LIST;
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
+        composite_image* image_ptr = icd.get_object_ptr< composite_image >( image );
+
+        dcl::events_t events;
+        load_events( events, num_events_in_wait_list, event_wait_list );
+
+        composite_event* event_ptr = NULL;
+
+        image_ptr->write( queue_ptr, ptr, origin, region, input_row_pitch, input_slice_pitch,
+                          (blocking_write == CL_TRUE)? true : false, events,
+                          (event != NULL) ? reinterpret_cast<generic_event**>( &event_ptr )
+                                          : NULL );
+
+        if( event != NULL )
+        {
+            *event = icd.get_cl_id< composite_event >( event_ptr );
+        }
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
+}
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
 //clEnqueueCopyImage( cl_command_queue command_queue, cl_mem src_image,

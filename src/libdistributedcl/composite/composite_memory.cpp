@@ -145,6 +145,18 @@ composite_image::composite_image( const composite_context& context_ref,
     set_info( host_ptr, flags, format, width, height, row_pitch );
 }
 //-----------------------------------------------------------------------------
+void composite_image::write( generic_command_queue* queue_ptr, const void* data_ptr,
+                             const size_t origin[3], const size_t region[3],
+                             size_t row_pitch, size_t slice_pitch, bool blocking,
+                             events_t& wait_events, generic_event** ret_event_ptr )
+{
+    const generic_context* ctx = queue_ptr->get_context();
+    generic_image* image_ptr = reinterpret_cast<generic_image*>( find( ctx ) );
+
+    image_ptr->write( queue_ptr, data_ptr, origin, region, row_pitch, 
+                      slice_pitch, blocking, wait_events, ret_event_ptr );
+}
+//-----------------------------------------------------------------------------
 void composite_image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
                              events_t& wait_events, generic_event** ret_event_ptr )
 {

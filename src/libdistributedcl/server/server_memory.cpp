@@ -153,6 +153,48 @@ bool msgEnqueueReadBuffer_command::async_run() const
     //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
+void msgEnqueueCopyBuffer_command::execute()
+{
+    server_platform& server = session_context_ptr_->get_server_platform();
+
+    remote_id_t src_id = message_->get_src_remote_id();
+    remote_id_t dst_id = message_->get_dst_remote_id();
+    remote_id_t command_queue_id = message_->get_command_queue_id();
+
+    composite_memory* src_buffer_ptr = server.get_memory_manager().get( src_id );
+    composite_memory* dst_buffer_ptr = server.get_memory_manager().get( dst_id );
+    composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
+
+    dcl::events_t events;
+
+    if( !message_->get_events().empty() )
+    {
+        server.flush( command_queue_id );
+
+		uint32_t count = message_->get_events().size();
+
+        events.reserve( count );
+
+        for( uint32_t i = 0; i < count; i++ )
+        {
+			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
+
+            event_ptr->wait_execute();
+
+            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
+        }
+    }
+
+    dst_buffer_ptr->copy( queue_ptr, src_buffer_ptr, message_->get_buffer_size(),
+                          message_->get_src_offset(), message_->get_dst_offset(),
+                          events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
+}
+//-----------------------------------------------------------------------------
+bool msgEnqueueCopyBuffer_command::async_run() const
+{
+    return true;
+    //return message_->get_return_event();
+}//-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();
