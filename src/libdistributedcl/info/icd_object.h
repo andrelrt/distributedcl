@@ -43,8 +43,9 @@ enum dcl_object_types
     dcl_kernel_id = 4,
     dcl_command_queue_id = 5,
     dcl_memory_id = 6,
-    dcl_event_id = 7,
-    dcl_sampler_id = 8,
+    dcl_image_id = 7,
+    dcl_event_id = 8,
+    dcl_sampler_id = 9,
 };
 //-----------------------------------------------------------------------------
 template< typename CL_TYPE_T, uint32_t DCL_TYPE_ID >

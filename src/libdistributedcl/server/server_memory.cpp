@@ -55,6 +55,8 @@ void msgCreateBuffer_command::execute()
 
     remote_id_t id = server.get_memory_manager().add( buffer_ptr );
 
+    std::cerr << id;
+
     message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
@@ -194,7 +196,8 @@ bool msgEnqueueCopyBuffer_command::async_run() const
 {
     return true;
     //return message_->get_return_event();
-}//-----------------------------------------------------------------------------
+}
+//-----------------------------------------------------------------------------
 void msgCreateImage2D_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();
@@ -216,6 +219,8 @@ void msgCreateImage2D_command::execute()
     composite_image* image_ptr = reinterpret_cast<composite_image*>( ptr );
 
     remote_id_t id = server.get_image_manager().add( image_ptr );
+
+    std::cerr << id;
 
     message_->set_remote_id( id );
 }

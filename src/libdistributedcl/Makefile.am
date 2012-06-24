@@ -19,6 +19,7 @@ composite/composite_platform.cpp \
 composite/composite_platform.h \
 composite/composite_program.cpp \
 composite/composite_program.h \
+composite/composite_sampler.h \
 composite/opencl_composite.cpp \
 composite/opencl_composite.h \
 config/client_config.h \
@@ -37,6 +38,7 @@ info/object_manager.h \
 info/opencl_functions.h \
 info/platform_info.h \
 info/program_info.h \
+info/sampler_info.h \
 message/message.cpp \
 message/message.h \
 message/msg_command_queue.cpp \
@@ -55,6 +57,8 @@ message/msg_memory.cpp \
 message/msg_memory.h \
 message/msg_program.cpp \
 message/msg_program.h \
+message/msg_sampler.cpp \
+message/msg_sampler.h \
 message/packet.cpp \
 message/packet.h \
 network/client_session.h \
@@ -84,6 +88,7 @@ remote/remote_platform.cpp \
 remote/remote_platform.h \
 remote/remote_program.cpp \
 remote/remote_program.h \
+remote/remote_sampler.h \
 server/async_server_command.h \
 server/message_dispatcher.cpp \
 server/message_dispatcher.h \
@@ -103,6 +108,8 @@ server/server_platform.cpp \
 server/server_platform.h \
 server/server_program.cpp \
 server/server_program.h \
+server/server_sampler.cpp \
+server/server_sampler.h \
 single/command_queue.cpp \
 single/command_queue.h \
 single/context.cpp \
@@ -123,4 +130,6 @@ single/platform.cpp \
 single/platform.h \
 single/program.cpp \
 single/program.h \
+single/sampler.h \
+single/sampler.cpp \
 single/single_object.h

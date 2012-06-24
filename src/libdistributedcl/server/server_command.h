@@ -34,6 +34,7 @@
 #include "network/server_session.h"
 #include "composite/composite_command_queue.h"
 #include "composite/composite_event.h"
+#include "composite/composite_memory.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -150,6 +151,25 @@ public:
         server_command< dcl::network::message::msgReleaseCommandQueue >( message_sp, session_context_ptr ),
 		message_( boost::static_pointer_cast< dcl::network::message::release_message< dcl::network::message::msgReleaseCommandQueue > >( message_sp ) ),
         manager_( manager ){}
+		
+	virtual void execute();
+};
+//-----------------------------------------------------------------------------
+template<>
+class release_command<dcl::network::message::msgReleaseMemObject, dcl::composite::composite_memory> :
+    public server_command< dcl::network::message::msgReleaseMemObject >
+{
+private:
+    typedef boost::shared_ptr< dcl::network::message::release_message< dcl::network::message::msgReleaseMemObject > > release_message_sp_t;
+
+    release_message_sp_t message_;
+
+public:
+	release_command( message_sp_t message_sp, dcl::info::object_manager< dcl::composite::composite_memory >& manager,
+                     dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgReleaseMemObject >( message_sp, session_context_ptr ),
+		message_( boost::static_pointer_cast< dcl::network::message::release_message< dcl::network::message::msgReleaseMemObject > >( message_sp ) )
+        {}
 		
 	virtual void execute();
 };

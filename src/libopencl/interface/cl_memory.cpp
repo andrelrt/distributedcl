@@ -244,13 +244,39 @@ clCreateImage2D( cl_context context, cl_mem_flags flags,
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clRetainMemObject( cl_mem memobj ) CL_API_SUFFIX__VERSION_1_0
 {
-    return retain_object< generic_memory_object >( memobj );
+    icd_object_manager& icd = icd_object_manager::get_instance();
+
+    if( icd.has_object< composite_memory >( memobj ) )
+    {
+        return retain_object< composite_memory >( memobj );
+    }
+    else if( icd.has_object< composite_image >( memobj ) )
+    {
+        return retain_object< composite_image >( memobj );
+    }
+    else
+    {
+        return CL_INVALID_MEM_OBJECT;
+    }
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseMemObject( cl_mem memobj ) CL_API_SUFFIX__VERSION_1_0
 {
-    return release_object< generic_memory_object >( memobj );
+    icd_object_manager& icd = icd_object_manager::get_instance();
+
+    if( icd.has_object< composite_memory >( memobj ) )
+    {
+        return release_object< composite_memory >( memobj );
+    }
+    else if( icd.has_object< composite_image >( memobj ) )
+    {
+        return release_object< composite_image >( memobj );
+    }
+    else
+    {
+        return CL_INVALID_MEM_OBJECT;
+    }
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL
@@ -270,66 +296,69 @@ clGetMemObjectInfo( cl_mem memobj, cl_mem_info param_name,
     {
         icd_object_manager& icd = icd_object_manager::get_instance();
 
-        composite_memory* memory_ptr = reinterpret_cast< composite_memory* >(
-            get_info_check_parameters< generic_memory_object >( memobj, param_value_size,
-                                                                param_value, param_value_size_ret ) );
-
-        size_t param_size = 0;
-
-        if( param_value != NULL )
+        if( icd.has_object< composite_memory >( memobj ) )
         {
-            switch( param_name )
+            composite_memory* memory_ptr = reinterpret_cast< composite_memory* >(
+                get_info_check_parameters< composite_memory >( memobj, param_value_size,
+                                                               param_value, param_value_size_ret ) );
+
+            size_t param_size = 0;
+
+            if( param_value != NULL )
             {
-                case CL_MEM_OFFSET:
-                    param_size = sizeof(size_t);
-
-                    if( param_value_size < param_size )
-                    {
-                        return CL_INVALID_VALUE;
-                    }
-
-                    *(reinterpret_cast<size_t*>( param_value )) = 0;
-                    break;
-
-                case CL_MEM_ASSOCIATED_MEMOBJECT:
-                    param_size = sizeof(cl_mem);
-
-                    if( param_value_size < param_size )
-                    {
-                        return CL_INVALID_VALUE;
-                    }
-
-                    *(reinterpret_cast<cl_mem*>( param_value )) = NULL;
-                    break;
-
-                case CL_MEM_CONTEXT:
+                switch( param_name )
                 {
-                    param_size = sizeof(cl_context);
+                    case CL_MEM_OFFSET:
+                        param_size = sizeof(size_t);
 
-                    if( param_value_size < param_size )
+                        if( param_value_size < param_size )
+                        {
+                            return CL_INVALID_VALUE;
+                        }
+
+                        *(reinterpret_cast<size_t*>( param_value )) = 0;
+                        break;
+
+                    case CL_MEM_ASSOCIATED_MEMOBJECT:
+                        param_size = sizeof(cl_mem);
+
+                        if( param_value_size < param_size )
+                        {
+                            return CL_INVALID_VALUE;
+                        }
+
+                        *(reinterpret_cast<cl_mem*>( param_value )) = NULL;
+                        break;
+
+                    case CL_MEM_CONTEXT:
                     {
-                        return CL_INVALID_VALUE;
+                        param_size = sizeof(cl_context);
+
+                        if( param_value_size < param_size )
+                        {
+                            return CL_INVALID_VALUE;
+                        }
+
+                        composite_context* context_ptr =
+                            const_cast<composite_context*>( &(memory_ptr->get_context()) );
+
+                        *(reinterpret_cast<cl_context*>( param_value )) =
+                            icd.get_cl_id< composite_context >( context_ptr );
+                        break;
                     }
 
-                    composite_context* context_ptr =
-                        const_cast<composite_context*>( &(memory_ptr->get_context()) );
+                    default:
+                        get_info< composite_memory >( memobj, param_name, param_value_size,
+                                                      param_value, param_value_size_ret );
 
-                    *(reinterpret_cast<cl_context*>( param_value )) =
-                        icd.get_cl_id< composite_context >( context_ptr );
-                    break;
+                        return CL_SUCCESS;
                 }
-
-                default:
-                    get_info< generic_memory_object >( memobj, param_name, param_value_size,
-                                                       param_value, param_value_size_ret );
-
-                    return CL_SUCCESS;
             }
-        }
 
-        if( param_value_size_ret != NULL )
-        {
-            *param_value_size_ret = param_size;
+            if( param_value_size_ret != NULL )
+            {
+                *param_value_size_ret = param_size;
+            }
         }
     }
     catch( dcl::library_exception& ex )

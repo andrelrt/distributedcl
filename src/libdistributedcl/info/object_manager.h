@@ -97,11 +97,11 @@ public:
         {
             if( it->second == object_ptr )
             {
+                remove( it->first );
+
                 break;
             }
         }
-
-        remove( it->first );
     }
 
     inline remote_id_t get( DCL_TYPE_T* object_ptr, bool create_new = false )

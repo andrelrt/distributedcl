@@ -101,7 +101,6 @@ struct memory_info
 //-----------------------------------------------------------------------------
 class generic_memory_object :
     public cl_object< cl_mem, cl_mem_info, CL_INVALID_MEM_OBJECT >,
-    public icd_object< cl_mem, dcl_memory_id >,
     public dcl_object< memory_info >
 {
 public:
@@ -147,8 +146,9 @@ private:
     uint32_t map_count_;
 };
 //-----------------------------------------------------------------------------
-class generic_memory
-    : public generic_memory_object
+class generic_memory :
+    public icd_object< cl_mem, dcl_memory_id >,
+    public generic_memory_object
 {
 public:
     virtual ~generic_memory(){}
@@ -173,8 +173,9 @@ protected:
     generic_memory(){}
 };
 //-----------------------------------------------------------------------------
-class generic_image
-    : public generic_memory_object
+class generic_image :
+    public icd_object< cl_mem, dcl_image_id >,
+    public generic_memory_object
 {
 public:
     virtual ~generic_image(){}

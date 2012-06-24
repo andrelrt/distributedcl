@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +22,10 @@
 //-----------------------------------------------------------------------------
 #include "server_command.h"
 #include "server_platform.h"
+using dcl::composite::composite_memory;
 using dcl::composite::composite_command_queue;
+using dcl::network::message::msgReleaseMemObject;
+using dcl::network::message::msgReleaseCommandQueue;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -48,7 +51,7 @@ namespace server {
 ////-----------------------------------------------------------------------------
 //void async_server::wait()
 //{
-//	flush();
+//  flush();
 //}
 ////-----------------------------------------------------------------------------
 //void async_server::flush()
@@ -133,12 +136,28 @@ void msg_attach_context_command::execute()
     session_context_ptr_->attach_server( message_->get_remote_id() );
 }
 //-----------------------------------------------------------------------------
-// release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue>
+// release_command<msgReleaseCommandQueue, composite_command_queue>
 //-----------------------------------------------------------------------------
-void release_command<dcl::network::message::msgReleaseCommandQueue, dcl::composite::composite_command_queue>::execute()
+void release_command<msgReleaseCommandQueue, composite_command_queue>::execute()
 {
     session_context_ptr_->get_server_platform().close_queue( manager_.get( this->message_->get_remote_id() ) );
     manager_.remove( this->message_->get_remote_id() );
+}
+//-----------------------------------------------------------------------------
+// release_command<msgReleaseMemObject, composite_memory>
+//-----------------------------------------------------------------------------
+void release_command<msgReleaseMemObject, composite_memory>::execute()
+{
+    server_platform& server = session_context_ptr_->get_server_platform();
+
+    if( server.get_memory_manager().has( message_->get_remote_id() ) )
+    {
+        server.get_memory_manager().remove( message_->get_remote_id() );
+    }
+    else if( server.get_image_manager().has( message_->get_remote_id() ) )
+    {
+        server.get_image_manager().remove( message_->get_remote_id() );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

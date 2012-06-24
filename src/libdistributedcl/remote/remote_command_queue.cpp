@@ -33,14 +33,14 @@ namespace remote {
 //-----------------------------------------------------------------------------
 void remote_command_queue::flush() const
 {
-    get_session().flush_queue();
+    get_queue_session().flush_queue();
 
     //dcl_message< msgFlush >* msg_ptr = new dcl_message< msgFlush >();
 
     //msg_ptr->set_remote_id( get_remote_id() );
 
     //message_sp_t message_sp( msg_ptr );
-    //session_ref_.send_message( message_sp );
+    //get_queue_session().send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_command_queue::finish() const
@@ -50,7 +50,7 @@ void remote_command_queue::finish() const
     msg_ptr->set_remote_id( get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
-    get_session().send_message( message_sp );
+    get_queue_session().send_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
