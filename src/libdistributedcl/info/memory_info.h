@@ -133,17 +133,104 @@ protected:
     {
         local_info_.type_ = CL_MEM_OBJECT_IMAGE2D;
         local_info_.host_ptr_ = host_ptr;
-        local_info_.size_ = row_pitch * height;
         local_info_.flags_ = flags;
         local_info_.map_count_ = 0;
         local_info_.format_ = *format;
         local_info_.width_ = width;
         local_info_.height_ = height;
+
+        local_info_.element_size_ = channel_element_size();
+
         local_info_.row_pitch_ = row_pitch;
+        if( local_info_.row_pitch_ == 0 )
+        {
+            local_info_.row_pitch_ = width * local_info_.element_size_;
+        }
+
+        local_info_.size_ = local_info_.row_pitch_ * height;
     }
     
+    size_t calc_image_size( size_t width, size_t height, size_t row_pitch )
+    {
+        size_t row = row_pitch;
+        if( row == 0 )
+        {
+            row = width * local_info_.element_size_;
+        }
+
+        return row * height;
+    }
+
 private:
     uint32_t map_count_;
+
+    inline size_t channel_element_size()
+    {
+        size_t type_size = 0;
+
+        switch( local_info_.format_.image_channel_data_type )
+        {
+            case CL_UNORM_SHORT_565:
+            case CL_UNORM_SHORT_555:
+                return 2;
+
+            case CL_UNORM_INT_101010:
+                return 4;
+
+            case CL_SNORM_INT8:
+            case CL_UNORM_INT8:
+            case CL_SIGNED_INT8:
+            case CL_UNSIGNED_INT8:
+                type_size = 1;
+                break;
+
+            case CL_SNORM_INT16:
+            case CL_UNORM_INT16:
+            case CL_SIGNED_INT16:
+            case CL_UNSIGNED_INT16:
+            case CL_HALF_FLOAT:
+                type_size = 2;
+                break;
+
+            case CL_SIGNED_INT32:
+            case CL_UNSIGNED_INT32:
+            case CL_FLOAT:
+                type_size = 4;
+                break;
+
+            default:
+                return 0;
+        }
+
+        switch( local_info_.format_.image_channel_order )
+        {
+            case CL_R:
+            case CL_A:
+                return type_size;
+
+            case CL_RG:
+            case CL_RA:
+            case CL_Rx:
+                return 2 * type_size;
+
+            case CL_RGB:
+            case CL_RGx:
+                return 3 * type_size;
+
+            case CL_RGBA:
+            case CL_BGRA:
+            case CL_ARGB:
+            case CL_RGBx:
+                return 4 * type_size;
+
+            case CL_INTENSITY:
+            case CL_LUMINANCE:
+                return 4 * type_size;
+
+            default:
+                return 0;
+        }
+    }
 };
 //-----------------------------------------------------------------------------
 class generic_memory :

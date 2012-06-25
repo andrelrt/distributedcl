@@ -127,11 +127,11 @@ void async_execute::flush()
 {
     semaphore_.post();
 }
-////-----------------------------------------------------------------------------
-//void async_execute::wait()
-//{
-//    execute_queue( false, true );
-//}
+//-----------------------------------------------------------------------------
+void async_execute::wait()
+{
+    execute_queue();
+}
 ////-----------------------------------------------------------------------------
 //void async_execute::wait_unblock()
 //{
@@ -252,15 +252,30 @@ void server_platform::flush( remote_id_t queue_id )
 //    queue_thread_[ queue_ptr ]->wait_unblock();
 //}
 ////-----------------------------------------------------------------------------
-//void server_platform::wait_all()
-//{
-//    if( queue_thread_.size() != 0 )
-//    {
-//        flush_all();
-//
-//        barrier_sp_->wait();
-//    }
-//}
+void server_platform::wait_all()
+{
+    if( queue_thread_.size() != 0 )
+    {
+        flush_all();
+
+        while( 1 )
+        {
+            bool finish = true;
+
+            for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+            {
+                if( !it->second->empty() )
+                {
+                    boost::this_thread::sleep( boost::posix_time::milliseconds( static_cast<int64_t>( 10 ) ) );
+                    finish = false;
+                }
+            }
+
+            if( finish )
+                break;
+        }
+    }
+}
 ////-----------------------------------------------------------------------------
 //void server_platform::wait_unblock_all()
 //{
@@ -279,6 +294,8 @@ void server_platform::flush_all()
 //-----------------------------------------------------------------------------
 void server_platform::close_queue( composite_command_queue* queue_ptr )
 {
+    queue_thread_[ queue_ptr ]->wait();
+
     delete queue_thread_[ queue_ptr ];
     queue_thread_.erase( queue_ptr );
 }

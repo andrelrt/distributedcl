@@ -225,5 +225,48 @@ void msgCreateImage2D_command::execute()
     message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
+void msgEnqueueWriteImage_command::execute()
+{
+    server_platform& server = session_context_ptr_->get_server_platform();
+
+    remote_id_t id = message_->get_remote_id();
+    remote_id_t command_queue_id = message_->get_command_queue_id();
+
+    composite_image* image_ptr = server.get_image_manager().get( id );
+    composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
+
+    dcl::events_t events;
+
+    if( !message_->get_events().empty() )
+    {
+        server.flush( command_queue_id );
+
+		uint32_t count = message_->get_events().size();
+
+        events.reserve( count );
+
+        for( uint32_t i = 0; i < count; i++ )
+        {
+			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
+
+            event_ptr->wait_execute();
+
+            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
+        }
+    }
+
+    // Always no blocking
+    image_ptr->write( queue_ptr, message_->get_buffer(), message_->get_origin(),
+                      message_->get_region(), message_->get_row_pitch(),
+                      message_->get_slice_pitch(), false, events,
+                      reinterpret_cast<generic_event**>( &event_ptr_ ) );
+}
+//-----------------------------------------------------------------------------
+bool msgEnqueueWriteImage_command::async_run() const
+{
+    //return !message_->get_blocking();
+    return true;
+}
+//-----------------------------------------------------------------------------
 }} // namespace dcl::server
 //-----------------------------------------------------------------------------

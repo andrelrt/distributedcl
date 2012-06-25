@@ -34,6 +34,7 @@ using dcl::network::message::msgEnqueueWriteBuffer;
 using dcl::network::message::msgEnqueueReadBuffer;
 using dcl::network::message::msgReleaseMemObject;
 using dcl::network::message::msgEnqueueCopyBuffer;
+using dcl::network::message::msgEnqueueWriteImage;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace remote {
@@ -214,33 +215,34 @@ void remote_image::write( generic_command_queue* queue_ptr, const void* data_ptr
                           size_t row_pitch, size_t slice_pitch, bool blocking,
                           events_t& wait_events, generic_event** ret_event_ptr )
 {
-    //dcl_message< msgEnqueueWriteImage >* msg_ptr = new dcl_message< msgEnqueueWriteImage >();
+    dcl_message< msgEnqueueWriteImage >* msg_ptr = new dcl_message< msgEnqueueWriteImage >();
 
-    //msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
-    //msg_ptr->set_remote_id( get_remote_id() );
-    //msg_ptr->set_buffer( data_ptr );
-    //msg_ptr->set_origin( origin );
-    //msg_ptr->set_region( region );
-    //msg_ptr->set_row_pitch( row_pitch );
-    //msg_ptr->set_slice_pitch( slice_pitch );
-    //msg_ptr->set_blocking( blocking );
+    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg_ptr->set_remote_id( get_remote_id() );
+    msg_ptr->set_buffer( static_cast<const uint8_t*> ( data_ptr ) );
+    msg_ptr->set_origin( origin );
+    msg_ptr->set_region( region );
+    msg_ptr->set_row_pitch( row_pitch );
+    msg_ptr->set_slice_pitch( slice_pitch );
+    msg_ptr->set_element_size( local_info_.element_size_ );
+    msg_ptr->set_blocking( blocking );
 
-    //for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
-    //{
-    //    msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
-    //}
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    {
+        msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
+    }
 
-    //message_sp_t message_sp( msg_ptr );
+    message_sp_t message_sp( msg_ptr );
 
-    //if( ret_event_ptr != NULL )
-    //{
-    //    remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
-    //    *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
+    if( ret_event_ptr != NULL )
+    {
+        remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
+        *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
 
-    //    ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
-    //}
+        ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
+    }
 
-    //reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
+    reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_image::unmap( generic_command_queue* queue_ptr, void* data_ptr,

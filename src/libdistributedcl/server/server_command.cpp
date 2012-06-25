@@ -150,6 +150,8 @@ void release_command<msgReleaseMemObject, composite_memory>::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();
 
+    server.wait_all();
+
     if( server.get_memory_manager().has( message_->get_remote_id() ) )
     {
         server.get_memory_manager().remove( message_->get_remote_id() );

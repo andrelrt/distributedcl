@@ -259,5 +259,53 @@ void dcl_message< msgCreateImage2D >::parse_response( const void* payload_ptr )
     remote_id_ = network_to_host( *response_ptr );
 }
 //-----------------------------------------------------------------------------
+// msgEnqueueWriteImage
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueWriteImage >::create_request( void* payload_ptr )
+{
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
+
+    msgEnqueueWriteImage_request* request_ptr =
+        reinterpret_cast< msgEnqueueWriteImage_request* >( enqueue_ptr );
+
+    request_ptr->remote_id_ = host_to_network( remote_id_ );
+    request_ptr->row_pitch_ = host_to_network( row_pitch_ );
+    request_ptr->slice_pitch_ = host_to_network( slice_pitch_ );
+
+    request_ptr->origin_[ 0 ] = host_to_network( static_cast<uint32_t>( origin_[ 0 ] ) );
+    request_ptr->origin_[ 1 ] = host_to_network( static_cast<uint32_t>( origin_[ 1 ] ) );
+    request_ptr->origin_[ 2 ] = host_to_network( static_cast<uint32_t>( origin_[ 2 ] ) );
+
+    request_ptr->region_[ 0 ] = host_to_network( static_cast<uint32_t>( region_[ 0 ] ) );
+    request_ptr->region_[ 1 ] = host_to_network( static_cast<uint32_t>( region_[ 1 ] ) );
+    request_ptr->region_[ 2 ] = host_to_network( static_cast<uint32_t>( region_[ 2 ] ) );
+
+    request_ptr->buffer_len_ = host_to_network( static_cast<uint32_t>( buffer_len_ ) );
+    memcpy( request_ptr->buffer_, buffer_ptr_, buffer_len_ );
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueWriteImage >::parse_request( const void* payload_ptr )
+{
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
+
+    const msgEnqueueWriteImage_request* request_ptr =
+        reinterpret_cast< const msgEnqueueWriteImage_request* >( enqueue_ptr );
+
+    remote_id_ = network_to_host( request_ptr->remote_id_ );
+    row_pitch_ = network_to_host( request_ptr->row_pitch_  );
+    slice_pitch_ = network_to_host( request_ptr->slice_pitch_ );
+
+    origin_[ 0 ] = network_to_host( request_ptr->origin_[ 0 ] );
+    origin_[ 1 ] = network_to_host( request_ptr->origin_[ 1 ] );
+    origin_[ 2 ] = network_to_host( request_ptr->origin_[ 2 ] );
+
+    region_[ 0 ] = network_to_host( request_ptr->region_[ 0 ] );
+    region_[ 1 ] = network_to_host( request_ptr->region_[ 1 ] );
+    region_[ 2 ] = network_to_host( request_ptr->region_[ 2 ] );
+
+    buffer_len_ = network_to_host( request_ptr->buffer_len_ );
+    buffer_ptr_ = request_ptr->buffer_;
+}
+//-----------------------------------------------------------------------------
 }}} // namespace dcl::network::message
 //-----------------------------------------------------------------------------

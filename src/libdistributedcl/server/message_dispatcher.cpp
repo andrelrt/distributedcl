@@ -165,7 +165,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
             MSG_ASYNC( msgEnqueueWriteBuffer ); // async
             MSG_ASYNC( msgEnqueueCopyBuffer ); // async
             MSG_NOT_IMPLEMENTED( msgEnqueueReadImage );
-            MSG_NOT_IMPLEMENTED( msgEnqueueWriteImage );
+            MSG_ASYNC( msgEnqueueWriteImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyImage );
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyImageToBuffer );
             MSG_NOT_IMPLEMENTED( msgEnqueueCopyBufferToImage );

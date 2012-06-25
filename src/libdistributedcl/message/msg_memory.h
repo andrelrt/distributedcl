@@ -516,7 +516,7 @@ public:
     dcl_message< msgEnqueueWriteImage >() :
         enqueue_message( msgEnqueueWriteImage, false, 0 ),
         remote_id_( 0xffff ), buffer_ptr_( NULL ), row_pitch_( 0 ),
-        slice_pitch_( 0 )
+        slice_pitch_( 0 ), element_size_( 0 ), buffer_len_( 0 )
     {
         origin_[ 0 ] = origin_[ 1 ] = origin_[ 2 ] = 0;
         region_[ 0 ] = region_[ 1 ] = region_[ 2 ] = 0;
@@ -551,18 +551,26 @@ public:
         update_request_size();
     }
 
-    void set_origin( size_t origin[ 3 ] )
+    void set_origin( const size_t origin[ 3 ] )
     {
         origin_[ 0 ] = origin[ 0 ];
         origin_[ 1 ] = origin[ 1 ];
         origin_[ 2 ] = origin[ 2 ];
     }
 
-    void set_region( size_t region[ 3 ] )
+    void set_region( const size_t region[ 3 ] )
     {
         region_[ 0 ] = region[ 0 ];
         region_[ 1 ] = region[ 1 ];
         region_[ 2 ] = region[ 2 ];
+
+        update_request_size();
+    }
+
+    void set_element_size( size_t element_size )
+    {
+        element_size_ = element_size;
+        update_request_size();
     }
 
 private:
@@ -572,6 +580,8 @@ private:
     size_t slice_pitch_;
     size_t origin_[ 3 ];
     size_t region_[ 3 ];
+    size_t element_size_;
+    size_t buffer_len_;
     buffer_t buffer_;
 
     virtual void create_request( void* payload_ptr );
@@ -579,17 +589,17 @@ private:
 
     inline virtual void update_request_size()
     {
-        //size_t row_pitch = row_pitch_;
-        //if( row_pitch == 0 )
-        //{
-        //    row_pitch = width_ * channel_element_size();
-        //}
+        size_t row_pitch = row_pitch_;
+        if( row_pitch == 0 )
+        {
+            row_pitch = region_[ 0 ] * element_size_;
+        }
 
-        //buffer_len_ = height_ * row_pitch;
+        buffer_len_ = region_[ 1 ] * row_pitch;
 
-        //set_size( get_enqueue_request_size() +
-        //          (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) +
-        //          sizeof(msgCreateImage2D_request) - 1 );
+        set_size( get_enqueue_request_size() +
+                  (( buffer_ptr_ == NULL ) ? 0 : buffer_len_) +
+                  sizeof(msgEnqueueWriteImage_request) - 1 );
     }
 
     #pragma pack( push, 1 )
@@ -599,6 +609,8 @@ private:
         dcl::remote_id_t remote_id_;
         uint32_t row_pitch_;
         uint32_t slice_pitch_;
+        uint32_t origin_[ 3 ];
+        uint32_t region_[ 3 ];
 
         uint32_t buffer_len_;
         uint8_t buffer_[1];

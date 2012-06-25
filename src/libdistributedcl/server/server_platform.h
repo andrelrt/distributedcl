@@ -74,13 +74,18 @@ public:
     void stop();
     void enqueue( boost::shared_ptr<command> command_sp );
     void flush();
-    //void wait();
+    void wait();
     //void wait_unblock();
     //bool has_blocking_command();
     //void setup_barrier( boost::shared_ptr<boost::interprocess::barrier> barrier_sp )
     //{
     //    barrier_sp_ = barrier_sp;
     //}
+
+    inline bool empty()
+    {
+        return server_queue_.empty();
+    }
 
 private:
     volatile bool running_;
@@ -129,7 +134,7 @@ public:
     void enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp );
 //    void wait( remote_id_t queue_id );
 //    void wait_unblock( remote_id_t queue_id );
-    //void wait_all();
+    void wait_all();
     //void wait_unblock_all();
     void close_queue( dcl::composite::composite_command_queue* queue_ptr );
     void flush_all();
