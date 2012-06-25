@@ -263,6 +263,9 @@
     <ClInclude Include="server\server_sampler.h">
       <Filter>server</Filter>
     </ClInclude>
+    <ClInclude Include="server\async_server_command.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="remote\remote_platform.cpp">

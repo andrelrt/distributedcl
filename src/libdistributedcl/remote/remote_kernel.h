@@ -59,7 +59,10 @@ public:
     virtual const dcl::info::kernel_group_info& get_group_info( const dcl::info::generic_device* device_ptr );
 
 private:
+    typedef std::map< uint32_t, message_sp_t > argument_map_t;
+
     const remote_context& context_ref_;
+    argument_map_t arguments_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

@@ -77,6 +77,7 @@
     <ClInclude Include="remote\remote_context.h" />
     <ClInclude Include="remote\remote_program.h" />
     <ClInclude Include="remote\remote_sampler.h" />
+    <ClInclude Include="server\async_server_command.h" />
     <ClInclude Include="server\message_dispatcher.h" />
     <ClInclude Include="server\server_command.h" />
     <ClInclude Include="server\server_command_queue.h" />

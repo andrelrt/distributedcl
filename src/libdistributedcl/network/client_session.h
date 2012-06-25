@@ -156,7 +156,14 @@ public:
             message_sp_t message_sp = message_queue_.front();
 
             packet_sp->add( message_sp );
-            pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+
+            // Saves the message object for response.
+            // All other messages will be released by shared_ptr after packet is created.
+            if( message_sp->waiting_response() )
+            {
+                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+            }
+
             message_queue_.pop();
         }
 

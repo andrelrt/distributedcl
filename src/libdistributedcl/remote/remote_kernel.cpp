@@ -51,6 +51,13 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
                              const ndrange& local, events_t& wait_events, 
                              generic_event** event_ptr )
 {
+    // Enqueue arguments
+    for( argument_map_t::iterator it = arguments_.begin(); it != arguments_.end(); it++ )
+    {
+        reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( it->second );
+    }
+
+    // Create message for execution
     dcl_message< msgEnqueueNDRangeKernel >* msg_ptr = new dcl_message< msgEnqueueNDRangeKernel >();
 
     msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
@@ -82,11 +89,14 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
         //session_ref_.send_message( message_sp );
         //session_ref_.enqueue_message( message_sp );
     }
+
+    // Enqueue
     reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( message_sp );
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memory_ptr )
 {
+    // Save the argument message for enqueue in execute method
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
     msg_ptr->set_index( arg_index );
@@ -94,11 +104,12 @@ void remote_kernel::set_argument( uint32_t arg_index, const generic_memory* memo
     msg_ptr->set_memory_id( reinterpret_cast<const remote_memory*>( memory_ptr )->get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
+    arguments_[ arg_index ] = message_sp;
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, const generic_image* image_ptr )
 {
+    // Save the argument message for enqueue in execute method
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
     msg_ptr->set_index( arg_index );
@@ -106,11 +117,12 @@ void remote_kernel::set_argument( uint32_t arg_index, const generic_image* image
     msg_ptr->set_image_id( reinterpret_cast<const remote_image*>( image_ptr )->get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
+    arguments_[ arg_index ] = message_sp;
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, const generic_sampler* sampler_ptr )
 {
+    // Save the argument message for enqueue in execute method
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
     msg_ptr->set_index( arg_index );
@@ -118,11 +130,12 @@ void remote_kernel::set_argument( uint32_t arg_index, const generic_sampler* sam
     msg_ptr->set_sampler_id( reinterpret_cast<const remote_sampler*>( sampler_ptr )->get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
+    arguments_[ arg_index ] = message_sp;
 }
 //-----------------------------------------------------------------------------
 void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
 {
+    // Save the argument message for enqueue in execute method
     dcl_message< msgSetKernelArg >* msg_ptr = new dcl_message< msgSetKernelArg >();
 
     msg_ptr->set_index( arg_index );
@@ -130,7 +143,7 @@ void remote_kernel::set_argument( uint32_t arg_index, size_t arg_size, const voi
     msg_ptr->set_kernel_id( get_remote_id() );
 
     message_sp_t message_sp( msg_ptr );
-    session_ref_.send_message( message_sp );
+    arguments_[ arg_index ] = message_sp;
 }
 //-----------------------------------------------------------------------------
 const kernel_group_info& remote_kernel::get_group_info( const generic_device* device_ptr )
