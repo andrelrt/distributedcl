@@ -129,7 +129,7 @@ public:
 		
 	virtual void execute()
 	{
-        session_context_ptr_->get_server_platform().wait_all();
+        this->session_context_ptr_->get_server_platform().wait_all();
         manager_.remove( this->message_->get_remote_id() );
 	}
 };
