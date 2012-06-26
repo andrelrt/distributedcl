@@ -146,6 +146,12 @@ void msgSetKernelArg_command::execute()
     }
 }
 //-----------------------------------------------------------------------------
+bool msgSetKernelArg_command::async_run() const
+{
+    return true;
+    //return message_->get_return_event();
+}
+//-----------------------------------------------------------------------------
 void msgGetKernelWorkGroupInfo_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();

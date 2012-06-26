@@ -132,7 +132,7 @@ public:
     void clear_all_data();
     void open_queue( dcl::composite::composite_command_queue* queue_ptr );
     void enqueue( remote_id_t queue_id, boost::shared_ptr<command> command_sp );
-//    void wait( remote_id_t queue_id );
+    void wait( remote_id_t queue_id );
 //    void wait_unblock( remote_id_t queue_id );
     void wait_all();
     //void wait_unblock_all();

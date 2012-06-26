@@ -75,6 +75,8 @@ void msgFinish_command::execute()
         server.get_command_queue_manager().get( message_->get_remote_id() );
 
     queue_ptr->finish();
+    
+    server.wait( message_->get_remote_id() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

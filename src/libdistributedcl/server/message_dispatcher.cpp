@@ -52,17 +52,17 @@ namespace server {
 //-----------------------------------------------------------------------------
 #define MSG_DEBUG
 #if defined MSG_DEBUG
-#define MSG( x ) case x: {x##_command command(*it,session_context_ptr);std::cout<<"dispatch message " #x "...";command.execute();std::cout<<"... Ok"<<std::endl;}break
+#define MSG( x ) case x: {x##_command command(*it,session_context_ptr);std::cerr<<"dispatch message " #x "...";command.execute();std::cerr<<"... Ok"<<std::endl;}break
 #define MSG_ASYNC( x )\
 case x:\
 {\
     boost::shared_ptr<x##_command> command_sp(new x##_command(*it,session_context_ptr));\
-    std::cout<<"async dispatch message " #x "..."<<std::endl;\
+    std::cerr<<"async dispatch message " #x "..."<<std::endl;\
     command_sp->async_execute(command_sp,boost::shared_static_cast<dcl::network::message::dcl_message<x> >(*it)->get_command_queue_id());\
 }\
 break
-#define MSG_RELEASE( x, y, d ) case x: {boost::shared_ptr<release_command<x,d> >command_sp(new release_command<x,d>(*it,y,session_context_ptr));std::cout<<"sync dispatch message " #x "..."<<std::endl;command_sp->execute();}break
-#define MSG_IGNORE( x ) case x: std::cout<<"ignoring message " #x "..."<<std::endl;break
+#define MSG_RELEASE( x, y, d ) case x: {boost::shared_ptr<release_command<x,d> >command_sp(new release_command<x,d>(*it,y,session_context_ptr));std::cerr<<"sync dispatch message " #x "...";command_sp->execute();std::cerr<<"... Ok"<<std::endl;}break
+#define MSG_IGNORE( x ) case x: std::cerr<<"ignoring message " #x "..."<<std::endl;break
 #else
 #define MSG( x ) case x: {x##_command command(*it,session_context_ptr);command.execute();}break
 #define MSG_ASYNC( x )\
@@ -147,7 +147,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
             MSG_NOT_IMPLEMENTED( msgCreateKernelsInProgram );
             MSG_NOT_IMPLEMENTED( msgRetainKernel );
             MSG_RELEASE( msgReleaseKernel, server.get_kernel_manager(), composite_kernel );
-            MSG( msgSetKernelArg );
+            MSG_ASYNC( msgSetKernelArg ); // async
             MSG_NOT_IMPLEMENTED( msgGetKernelInfo );
             MSG( msgGetKernelWorkGroupInfo );
 

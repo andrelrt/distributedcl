@@ -57,6 +57,9 @@ public:
     {
 		if( MSG_RELEASE_OBJECT != dcl::network::message::msg_dummy_message )
 		{
+            // Ensures that all send queues are empty
+            session_ref_.flush_childs();
+            
 			dcl::network::message::release_message< MSG_RELEASE_OBJECT >* msg_ptr =
 				new dcl::network::message::release_message< MSG_RELEASE_OBJECT >();
 

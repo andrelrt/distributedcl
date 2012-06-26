@@ -514,7 +514,7 @@ class dcl_message< msgEnqueueWriteImage > : public enqueue_message
 {
 public:
     dcl_message< msgEnqueueWriteImage >() :
-        enqueue_message( msgEnqueueWriteImage, false, 0 ),
+        enqueue_message( msgEnqueueWriteImage, false ),
         remote_id_( 0xffff ), buffer_ptr_( NULL ), row_pitch_( 0 ),
         slice_pitch_( 0 ), element_size_( 0 ), buffer_len_( 0 )
     {

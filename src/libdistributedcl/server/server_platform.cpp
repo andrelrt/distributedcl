@@ -125,11 +125,13 @@ void async_execute::enqueue( boost::shared_ptr<command> command_sp )
 //-----------------------------------------------------------------------------
 void async_execute::flush()
 {
+//    std::cerr << "Server Queue Flush - size: " << server_queue_.size();
     semaphore_.post();
 }
 //-----------------------------------------------------------------------------
 void async_execute::wait()
 {
+//    std::cerr << "Server Queue Wait - size: " << server_queue_.size();
     execute_queue();
 }
 ////-----------------------------------------------------------------------------
@@ -234,14 +236,12 @@ void server_platform::flush( remote_id_t queue_id )
     queue_thread_[ queue_ptr ]->flush();
 }
 //-----------------------------------------------------------------------------
-//void server_platform::wait( remote_id_t queue_id )
-//{
-//    flush( queue_id );
-//
-//    composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
-//
-//    queue_thread_[ queue_ptr ]->wait();
-//}
+void server_platform::wait( remote_id_t queue_id )
+{
+    composite_command_queue* queue_ptr = command_queue_manager_.get( queue_id );
+
+    queue_thread_[ queue_ptr ]->wait();
+}
 ////-----------------------------------------------------------------------------
 //void server_platform::wait_unblock( remote_id_t queue_id )
 //{

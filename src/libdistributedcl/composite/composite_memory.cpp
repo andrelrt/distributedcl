@@ -94,8 +94,24 @@ void* composite_memory::map( generic_command_queue* queue_ptr, cl_map_flags flag
     const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = reinterpret_cast<generic_memory*>( find( ctx ) );
 
-    return memory_ptr->map( queue_ptr, flags, size, offset,
-                            blocking, wait_events, ret_event_ptr );
+    void* ret_ptr = NULL;
+
+    if( (ret_event_ptr == NULL) || (*ret_event_ptr == NULL) )
+    {
+        ret_ptr = memory_ptr->map( queue_ptr, flags, size, offset,
+                                   blocking, wait_events, ret_event_ptr );
+    }
+    else
+    {
+        generic_event* event_ptr = NULL;
+
+        ret_ptr = memory_ptr->map( queue_ptr, flags, size, offset,
+                                   blocking, wait_events, &event_ptr );
+
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, event_ptr );
+    }
+    
+    return ret_ptr;
 }
 //-----------------------------------------------------------------------------
 void composite_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
@@ -104,7 +120,18 @@ void composite_memory::unmap( generic_command_queue* queue_ptr, void* data_ptr,
     const generic_context* ctx = queue_ptr->get_context();
     generic_memory* memory_ptr = reinterpret_cast<generic_memory*>( find( ctx ) );
 
-    memory_ptr->unmap( queue_ptr, data_ptr, wait_events, ret_event_ptr );
+    if( (ret_event_ptr == NULL) || (*ret_event_ptr == NULL) )
+    {
+        memory_ptr->unmap( queue_ptr, data_ptr, wait_events, ret_event_ptr );
+    }
+    else
+    {
+        generic_event* event_ptr = NULL;
+
+        memory_ptr->unmap( queue_ptr, data_ptr, wait_events, &event_ptr );
+
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, event_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 void composite_memory::copy( generic_command_queue* queue_ptr, generic_memory* src_ptr,
@@ -153,8 +180,20 @@ void composite_image::write( generic_command_queue* queue_ptr, const void* data_
     const generic_context* ctx = queue_ptr->get_context();
     generic_image* image_ptr = reinterpret_cast<generic_image*>( find( ctx ) );
 
-    image_ptr->write( queue_ptr, data_ptr, origin, region, row_pitch, 
-                      slice_pitch, blocking, wait_events, ret_event_ptr );
+    if( (ret_event_ptr == NULL) || (*ret_event_ptr == NULL) )
+    {
+        image_ptr->write( queue_ptr, data_ptr, origin, region, row_pitch, 
+                          slice_pitch, blocking, wait_events, ret_event_ptr );
+    }
+    else
+    {
+        generic_event* event_ptr = NULL;
+
+        image_ptr->write( queue_ptr, data_ptr, origin, region, row_pitch, 
+                          slice_pitch, blocking, wait_events, &event_ptr );
+
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, event_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 void composite_image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
@@ -163,7 +202,18 @@ void composite_image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
     const generic_context* ctx = queue_ptr->get_context();
     generic_image* image_ptr = reinterpret_cast<generic_image*>( find( ctx ) );
 
-    image_ptr->unmap( queue_ptr, data_ptr, wait_events, ret_event_ptr );
+    if( (ret_event_ptr == NULL) || (*ret_event_ptr == NULL) )
+    {
+        image_ptr->unmap( queue_ptr, data_ptr, wait_events, ret_event_ptr );
+    }
+    else
+    {
+        generic_event* event_ptr = NULL;
+
+        image_ptr->unmap( queue_ptr, data_ptr, wait_events, &event_ptr );
+
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, event_ptr );
+    }
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

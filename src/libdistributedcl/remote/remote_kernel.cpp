@@ -7,10 +7,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,27 +46,36 @@ using dcl::info::generic_event;
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-void remote_kernel::execute( const generic_command_queue* queue_ptr, 
-                             const ndrange& offset, const ndrange& global, 
-                             const ndrange& local, events_t& wait_events, 
+void remote_kernel::execute( const generic_command_queue* queue_ptr,
+                             const ndrange& offset, const ndrange& global,
+                             const ndrange& local, events_t& wait_events,
                              generic_event** event_ptr )
 {
+    dcl::remote_id_t command_queue_id =
+        reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id();
+
     // Enqueue arguments
     for( argument_map_t::iterator it = arguments_.begin(); it != arguments_.end(); it++ )
     {
+        boost::shared_ptr< dcl_message< msgSetKernelArg > > msg_sp(
+            boost::shared_static_cast< dcl_message< msgSetKernelArg > >(
+                it->second ) );
+
+        msg_sp->set_command_queue_id( command_queue_id );
+
         reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().enqueue_message( it->second );
     }
 
     // Create message for execution
     dcl_message< msgEnqueueNDRangeKernel >* msg_ptr = new dcl_message< msgEnqueueNDRangeKernel >();
 
-    msg_ptr->set_command_queue_id( reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id() );
+    msg_ptr->set_command_queue_id( command_queue_id );
     msg_ptr->set_kernel_id( get_remote_id() );
 
     msg_ptr->get_offset().copy( offset );
     msg_ptr->get_global().copy( global );
     msg_ptr->get_local().copy( local );
-    
+
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
@@ -85,7 +94,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     }
     else
     {
-		//msg_ptr->set_blocking( true )
+        //msg_ptr->set_blocking( true )
         //session_ref_.send_message( message_sp );
         //session_ref_.enqueue_message( message_sp );
     }

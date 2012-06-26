@@ -158,13 +158,15 @@ private:
 // msgSetKernelArg
 //-----------------------------------------------------------------------------
 template<>
-class dcl_message< msgSetKernelArg > : public base_message
+class dcl_message< msgSetKernelArg > : // public base_message
+    public enqueue_message
 {
 public:
     dcl_message< msgSetKernelArg >() :
-        base_message( msgSetKernelArg, false, 0, 0 ), kernel_id_( 0xffff ),
-        argument_id_( 0xffff ), index_( 0 ), argument_type_( unknow_type ),
-        size_( 0 ), is_null_( false ){}
+        //base_message( msgSetKernelArg, false ), 
+        enqueue_message( msgSetKernelArg, false ), 
+        kernel_id_( 0xffff ), argument_id_( 0xffff ), index_( 0 ),
+        argument_type_( unknow_type ), size_( 0 ), is_null_( false ){}
 
     enum argument_type_t
     {
@@ -193,7 +195,7 @@ public:
         argument_type_ = memory_type;
         argument_id_ = memory_id;
 
-        set_size( sizeof(msgSetKernelArg_memory_request) );
+        update_request_size();
     }
 
     inline void set_image_id( dcl::remote_id_t image_id )
@@ -201,7 +203,7 @@ public:
         argument_type_ = image_type;
         argument_id_ = image_id;
 
-        set_size( sizeof(msgSetKernelArg_memory_request) );
+        update_request_size();
     }
 
     inline void set_sampler_id( dcl::remote_id_t sampler_id )
@@ -209,7 +211,7 @@ public:
         argument_type_ = sampler_type;
         argument_id_ = sampler_id;
 
-        set_size( sizeof(msgSetKernelArg_memory_request) );
+        update_request_size();
     }
 
     inline void set_buffer( const uint8_t* arg_value, size_t arg_size )
@@ -221,13 +223,9 @@ public:
         if( !is_null_ )
         {
             buffer_.assign( arg_value, arg_value + arg_size );
+        }
 
-            set_size( arg_size + sizeof(msgSetKernelArg_buffer_request) - 1 );
-        }
-        else
-        {
-            set_size( sizeof(msgSetKernelArg_buffer_request) - 1 );
-        }
+        update_request_size();
     }
 
     inline bool is_object() const
@@ -246,6 +244,29 @@ private:
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
+
+    inline virtual void update_request_size()
+    {
+        if( argument_type_ != unknow_type )
+        {
+            set_size( get_enqueue_request_size() +
+                      sizeof(msgSetKernelArg_memory_request) );
+        }
+        else
+        {
+            if( !is_null_ )
+            {
+                set_size( get_enqueue_request_size() +
+                          buffer_.size() +
+                          sizeof(msgSetKernelArg_buffer_request) - 1 );
+            }
+            else
+            {
+                set_size( get_enqueue_request_size() +
+                          sizeof(msgSetKernelArg_buffer_request) - 1 );
+            }
+        }
+    }
 
     #pragma pack( push, 1 )
 

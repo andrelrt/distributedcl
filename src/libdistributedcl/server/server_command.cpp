@@ -142,6 +142,7 @@ void release_command<msgReleaseCommandQueue, composite_command_queue>::execute()
 {
     session_context_ptr_->get_server_platform().close_queue( manager_.get( this->message_->get_remote_id() ) );
     manager_.remove( this->message_->get_remote_id() );
+    std::cerr << this->message_->get_remote_id();
 }
 //-----------------------------------------------------------------------------
 // release_command<msgReleaseMemObject, composite_memory>
@@ -160,6 +161,7 @@ void release_command<msgReleaseMemObject, composite_memory>::execute()
     {
         server.get_image_manager().remove( message_->get_remote_id() );
     }
+    std::cerr << this->message_->get_remote_id();
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

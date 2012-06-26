@@ -131,6 +131,7 @@ public:
 	{
         this->session_context_ptr_->get_server_platform().wait_all();
         manager_.remove( this->message_->get_remote_id() );
+        std::cerr << this->message_->get_remote_id();
 	}
 };
 //-----------------------------------------------------------------------------

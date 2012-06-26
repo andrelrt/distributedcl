@@ -62,13 +62,22 @@ public:
 };
 //-----------------------------------------------------------------------------
 class msgSetKernelArg_command : 
-    public server_command< dcl::network::message::msgSetKernelArg >
+    public async_server_command< dcl::network::message::msgSetKernelArg >
 {
 public:
     msgSetKernelArg_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
-        server_command< dcl::network::message::msgSetKernelArg >( message_ptr, session_context_ptr ) {}
+        async_server_command< dcl::network::message::msgSetKernelArg >( message_ptr, session_context_ptr )
+    {
+        server_platform& server = session_context_ptr_->get_server_platform();
+
+        dcl::composite::composite_command_queue* queue_ptr = 
+            server.get_command_queue_manager().get( message_->get_command_queue_id() );
+
+        set_command_queue( queue_ptr );
+    }
 
     void execute();
+    virtual bool async_run() const;
 };
 //-----------------------------------------------------------------------------
 class msgGetKernelWorkGroupInfo_command :

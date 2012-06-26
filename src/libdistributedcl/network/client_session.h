@@ -109,6 +109,15 @@ public:
     //{
         //send_semaphore_.post();
     //}
+    
+    inline void flush_childs()
+    {
+        typename clients_t::iterator it;
+        for( it = childs_.begin(); it != childs_.end(); it++ )
+        {
+            (*it)->flush_queue();
+        }
+    }
 
     inline void flush_queue()
     {
