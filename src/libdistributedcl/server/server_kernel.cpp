@@ -73,6 +73,8 @@ void msgEnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
+    std::cerr << std::endl << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()" << std::endl;
+
     dcl::events_t events;
 
     if( !message_->get_events().empty() )
@@ -149,7 +151,6 @@ void msgSetKernelArg_command::execute()
 bool msgSetKernelArg_command::async_run() const
 {
     return true;
-    //return message_->get_return_event();
 }
 //-----------------------------------------------------------------------------
 void msgGetKernelWorkGroupInfo_command::execute()

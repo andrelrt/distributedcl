@@ -40,6 +40,7 @@ void load_events( dcl::events_t& events, cl_uint num_events_in_wait_list,
         for( uint32_t i = 0; i < num_events_in_wait_list; i++ )
         {
             events.push_back( icd.get_object_ptr< composite_event >( event_wait_list[ i ] ) );
+            //std::cerr << "\twait event: " << (void*) event_wait_list[ i ] << std::endl;
         }
     }
 }

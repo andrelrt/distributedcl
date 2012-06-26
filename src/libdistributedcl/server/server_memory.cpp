@@ -55,7 +55,7 @@ void msgCreateBuffer_command::execute()
 
     remote_id_t id = server.get_memory_manager().add( buffer_ptr );
 
-    std::cerr << id;
+    //std::cerr << id;
 
     message_->set_remote_id( id );
 }
@@ -110,10 +110,12 @@ bool msgEnqueueWriteBuffer_command::async_run() const
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
 {
+    //std::cerr << "executing msgEnqueueReadBuffer_command...";
     server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t id = message_->get_remote_id();
     remote_id_t command_queue_id = message_->get_command_queue_id();
+    //std::cerr << id;
 
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
@@ -145,12 +147,7 @@ void msgEnqueueReadBuffer_command::execute()
                       message_->get_buffer_size(), message_->get_offset(), false,
                       events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
 
-    //if( message_->get_return_event() )
-    //{
-    //    server.get_event_manager().add( ret_event, message_->get_event_id() );
-    //}
-
-    //queue_ptr->flush();
+    //std::cerr << "... Ok";
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const

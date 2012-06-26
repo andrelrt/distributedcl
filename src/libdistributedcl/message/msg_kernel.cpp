@@ -119,10 +119,12 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
 //-----------------------------------------------------------------------------
 void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
 {
+    void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );
+
     if( is_object() )
     {
         msgSetKernelArg_memory_request* request_ptr =
-            reinterpret_cast< msgSetKernelArg_memory_request* >( payload_ptr );
+            reinterpret_cast< msgSetKernelArg_memory_request* >( enqueue_ptr );
 
         request_ptr->argument_type_ = argument_type_;
         request_ptr->index_ = index_;
@@ -132,7 +134,7 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
     else
     {
         msgSetKernelArg_buffer_request* request_ptr =
-            reinterpret_cast< msgSetKernelArg_buffer_request* >( payload_ptr );
+            reinterpret_cast< msgSetKernelArg_buffer_request* >( enqueue_ptr );
 
         request_ptr->argument_type_ = unknow_type;
         request_ptr->is_null_ = is_null_? 1 : 0;
@@ -149,8 +151,10 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
 //-----------------------------------------------------------------------------
 void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
 {
+    const void* enqueue_ptr = enqueue_message::parse_enqueue_request( payload_ptr );
+
     const msgSetKernelArg_memory_request* request_ptr =
-        reinterpret_cast< const msgSetKernelArg_memory_request* >( payload_ptr );
+        reinterpret_cast< const msgSetKernelArg_memory_request* >( enqueue_ptr );
 
     argument_type_ = static_cast<argument_type_t>( request_ptr->argument_type_ );
 
@@ -163,7 +167,7 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
     else
     {
         const msgSetKernelArg_buffer_request* req_ptr =
-            reinterpret_cast< const msgSetKernelArg_buffer_request* >( payload_ptr );
+            reinterpret_cast< const msgSetKernelArg_buffer_request* >( enqueue_ptr );
 
         argument_type_ = unknow_type;
 

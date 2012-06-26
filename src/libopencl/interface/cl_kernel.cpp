@@ -280,6 +280,7 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
 
     try
     {
+        //std::cerr << std::endl << "Execute: " << std::endl;
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_kernel* kernel_ptr = icd.get_object_ptr< composite_kernel >( kernel );
@@ -301,6 +302,7 @@ clEnqueueNDRangeKernel( cl_command_queue command_queue, cl_kernel kernel, cl_uin
         if( event != NULL )
         {
             *event = icd.get_cl_id< composite_event >( event_ptr );
+            //std::cerr << "\treturn event: " << (void*) *event << std::endl;
         }
 
         return CL_SUCCESS;

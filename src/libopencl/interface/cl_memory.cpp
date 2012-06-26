@@ -406,6 +406,7 @@ clEnqueueReadBuffer( cl_command_queue command_queue, cl_mem buffer,
 
     try
     {
+        //std::cerr << std::endl << "Read Buffer: " << std::endl;
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
@@ -423,6 +424,7 @@ clEnqueueReadBuffer( cl_command_queue command_queue, cl_mem buffer,
         if( event != NULL )
         {
             *event = icd.get_cl_id< composite_event >( event_ptr );
+            //std::cerr << "\treturn event: " << (void*) *event << std::endl;
         }
 
         return CL_SUCCESS;
@@ -470,6 +472,7 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
 
     try
     {
+        //std::cerr << std::endl << "Write Buffer: " << std::endl;
         icd_object_manager& icd = icd_object_manager::get_instance();
 
         composite_command_queue* queue_ptr = icd.get_object_ptr< composite_command_queue >( command_queue );
@@ -487,6 +490,7 @@ clEnqueueWriteBuffer( cl_command_queue command_queue, cl_mem buffer,
         if( event != NULL )
         {
             *event = icd.get_cl_id< composite_event >( event_ptr );
+            //std::cerr << "\treturn event: " << (void*) *event << std::endl;
         }
 
         return CL_SUCCESS;

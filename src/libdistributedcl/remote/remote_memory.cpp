@@ -112,7 +112,6 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
         ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
     }
 
-
     if( blocking == CL_TRUE )
     {
         reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_queue_session().send_message( message_sp );

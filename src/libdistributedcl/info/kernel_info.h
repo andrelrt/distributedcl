@@ -159,7 +159,7 @@ public:
         local_info_.name_.assign( name );
     }
 
-    inline const std::string& get_name() const
+    inline const std::string& get_kernel_name() const
     {
         return local_info_.name_;
     }

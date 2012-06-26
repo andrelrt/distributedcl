@@ -45,6 +45,7 @@ namespace dcl {
 namespace composite {
 //-----------------------------------------------------------------------------
 class composite_context;
+class composite_event;
 //-----------------------------------------------------------------------------
 template< class DCL_TYPE_T >
 class composite_object
@@ -114,7 +115,6 @@ public:
 
         throw library_exception( CL_INVALID_CONTEXT );
     }
-
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::composite

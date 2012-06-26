@@ -46,6 +46,9 @@ public:
     ~composite_event(){}
 
     static void wait( events_t& events );
+    static void get_context_events( const dcl::info::generic_context* ctx,
+                                    const dcl::events_t& wait_events,
+                                    dcl::events_t& context_events );
 
     virtual void wait();
     virtual void load_info();

@@ -159,6 +159,7 @@ void async_execute::execute_queue()
 		}
 		catch( dcl::library_exception& ex )
 		{
+            std::cerr << "--- Exception in async_execute --- ";
 			server_queue_.front()->enqueue_error( ex.get_error() );
 			server_queue_.clear();
 		}

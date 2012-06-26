@@ -43,22 +43,31 @@ namespace composite {
 void composite_kernel::execute( const generic_command_queue* queue_ptr,
                                 const ndrange& offset, const ndrange& global, 
                                 const ndrange& local, events_t& wait_events,
-                                generic_event** event_ptr )
+                                generic_event** ret_event_ptr )
 {
     const generic_context* ctx = queue_ptr->get_context();
     generic_kernel* kernel_ptr = find( ctx );
 
-    if( (event_ptr == NULL) || (*event_ptr == NULL) )
+    events_t context_events;
+    composite_event::get_context_events( ctx, wait_events, context_events );
+
+    if( ret_event_ptr == NULL )
     {
-        kernel_ptr->execute( queue_ptr, offset, global, local, wait_events, event_ptr );
+        kernel_ptr->execute( queue_ptr, offset, global, local, context_events, NULL );
     }
     else
     {
+        if( *ret_event_ptr == NULL )
+        {
+            *ret_event_ptr = new composite_event( 
+                *(reinterpret_cast<const composite_context*>( ctx )), queue_ptr );
+        }
+
         generic_event* evnt_ptr = NULL;
 
-        kernel_ptr->execute( queue_ptr, offset, global, local, wait_events, &evnt_ptr );
+        kernel_ptr->execute( queue_ptr, offset, global, local, context_events, &evnt_ptr );
 
-        reinterpret_cast<composite_event*>(*event_ptr)->add_event( ctx, evnt_ptr );
+        reinterpret_cast<composite_event*>(*ret_event_ptr)->add_event( ctx, evnt_ptr );
     }
 }
 //-----------------------------------------------------------------------------

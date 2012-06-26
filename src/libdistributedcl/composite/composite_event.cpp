@@ -35,6 +35,22 @@ void composite_event::wait( events_t& events )
     }
 }
 //-----------------------------------------------------------------------------
+void composite_event::get_context_events( const generic_context* ctx,
+                                          const events_t& wait_events,
+                                          events_t& context_events )
+{
+    events_t::const_iterator it;
+    for( it = wait_events.begin(); it != wait_events.end(); it++ )
+    {
+        const composite_event* comp_event_ptr =
+            reinterpret_cast<const composite_event*>( *it );
+
+        generic_event* event_ptr = comp_event_ptr->find( ctx );
+
+        context_events.push_back( event_ptr );
+    }
+}
+//-----------------------------------------------------------------------------
 void composite_event::wait()
 {
     wait_execute();
