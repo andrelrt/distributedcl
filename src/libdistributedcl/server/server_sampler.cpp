@@ -46,7 +46,7 @@ void msgCreateSampler_command::execute()
 
     remote_id_t id = server.get_sampler_manager().add( sampler_ptr );
 
-    std::cerr << id;
+    //std::cerr << id;
 
     message_->set_remote_id( id );
 }

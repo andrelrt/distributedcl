@@ -77,7 +77,7 @@ void dcl_message< msgCreateBuffer >::parse_response( const void* payload_ptr )
 
     remote_id_ = network_to_host( *response_ptr );
     
-    std::cerr << "created message id: " << remote_id_ << std::endl;
+    //std::cerr << "created message id: " << remote_id_ << std::endl;
 }
 //-----------------------------------------------------------------------------
 // msgEnqueueWriteBuffer

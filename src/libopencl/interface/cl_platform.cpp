@@ -24,6 +24,7 @@
 #include "cl_utils.h"
 #include "composite/opencl_composite.h"
 #include "composite/composite_platform.h"
+using dcl::icd::icd_object_manager;
 using dcl::composite::opencl_composite;
 using dcl::composite::composite_platform;
 //-----------------------------------------------------------------------------
@@ -46,7 +47,8 @@ clGetPlatformIDs( cl_uint num_entries, cl_platform_id* platforms,
     {
         try
         {
-            *platforms = opencl_composite::get_instance().get_platform().get_icd_obj();
+            const composite_platform& plat = opencl_composite::get_instance().get_platform();
+            *platforms = icd_object_manager::get_instance().get_cl_id< composite_platform >( const_cast< composite_platform* >( &plat ) );
         }
         catch( dcl::library_exception& ex )
         {

@@ -131,7 +131,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
 
             if( icd.has_object< composite_memory >( memory ) )
             {
-                std::cerr << "set arg buffer" << std::endl;
+                //std::cerr << "set arg buffer" << std::endl;
                 composite_memory* memory_ptr = icd.get_object_ptr< composite_memory >( memory );
 
                 kernel_ptr->set_argument( arg_index, memory_ptr );
@@ -139,7 +139,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
             }
             else if( icd.has_object< composite_image >( memory ) )
             {
-                std::cerr << "set arg image" << std::endl;
+                //std::cerr << "set arg image" << std::endl;
                 composite_image* image_ptr = icd.get_object_ptr< composite_image >( memory );
 
                 kernel_ptr->set_argument( arg_index, image_ptr );
@@ -150,7 +150,7 @@ clSetKernelArg( cl_kernel kernel, cl_uint arg_index, size_t arg_size,
 
             if( icd.has_object< composite_sampler >( sampler ) )
             {
-                std::cerr << "set arg sampler" << std::endl;
+                //std::cerr << "set arg sampler" << std::endl;
                 composite_sampler* sampler_ptr = icd.get_object_ptr< composite_sampler >( sampler );
 
                 kernel_ptr->set_argument( arg_index, sampler_ptr );

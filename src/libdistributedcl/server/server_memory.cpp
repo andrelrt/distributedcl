@@ -55,7 +55,7 @@ void msgCreateBuffer_command::execute()
 
     remote_id_t id = server.get_memory_manager().add( buffer_ptr );
 
-    std::cerr << id;
+    //std::cerr << id;
 
     message_->set_remote_id( id );
 }
@@ -220,7 +220,7 @@ void msgCreateImage2D_command::execute()
 
     remote_id_t id = server.get_image_manager().add( image_ptr );
 
-    std::cerr << id;
+    //std::cerr << id;
 
     message_->set_remote_id( id );
 }

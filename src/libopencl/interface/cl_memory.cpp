@@ -112,9 +112,9 @@ clCreateBuffer( cl_context context, cl_mem_flags flags, size_t size,
 
     try
     {
-        std::cerr << "create buffer: " << host_ptr
-                  << " - size: " << size
-                  << std::endl;
+        //std::cerr << "create buffer: " << host_ptr
+                  //<< " - size: " << size
+                  //<< std::endl;
 
         icd_object_manager& icd = icd_object_manager::get_instance();
 
@@ -693,9 +693,9 @@ clEnqueueMapBuffer( cl_command_queue command_queue, cl_mem buffer,
         composite_memory* buffer_ptr =
             icd.get_object_ptr< composite_memory >( buffer );
 
-        std::cerr << "map buffer: " << (void*)buffer
-                  << " - size: " << cb
-                  << std::endl;
+        //std::cerr << "map buffer: " << (void*)buffer
+                  //<< " - size: " << cb
+                  //<< std::endl;
 
         dcl::events_t events;
         load_events( events, num_events_in_wait_list, event_wait_list );
@@ -774,9 +774,9 @@ clEnqueueUnmapMemObject( cl_command_queue command_queue, cl_mem memobj,
         composite_memory* buffer_ptr =
             icd.get_object_ptr< composite_memory >( memobj );
 
-        std::cerr << "unmap buffer: " << (void*)memobj
-                  << " - ptr: " << mapped_ptr
-                  << std::endl;
+        //std::cerr << "unmap buffer: " << (void*)memobj
+                  //<< " - ptr: " << mapped_ptr
+                  //<< std::endl;
 
         dcl::events_t events;
         load_events( events, num_events_in_wait_list, event_wait_list );
