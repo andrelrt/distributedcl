@@ -28,6 +28,7 @@
 
 #include "server_command.h"
 #include "server_platform.h"
+#include "composite/composite_event.h"
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -124,6 +125,28 @@ protected:
             if( server_event_ )
             {
                 this->message_->set_server_event( event_ptr_ );
+            }
+        }
+    }
+    
+    void load_message_events( const dcl::remote_ids_t& event_ids, dcl::events_t& events )
+    {
+        if( !event_ids.empty() )
+        {
+            server_platform& server = this->session_context_ptr_->get_server_platform();
+
+            uint32_t count = event_ids.size();
+            events.reserve( count );
+
+            for( uint32_t i = 0; i < count; i ++ )
+            {
+                remote_id_t event_id = event_ids[ i ];
+
+                dcl::composite::composite_event* event_ptr = server.get_event_manager().get( event_id );
+
+                event_ptr->wait_execute();
+
+                events.push_back( reinterpret_cast<dcl::info::generic_event*>( event_ptr ) );
             }
         }
     }

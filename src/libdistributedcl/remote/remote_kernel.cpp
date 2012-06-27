@@ -78,6 +78,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
 
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
+        //std::cerr << "Add event: " << reinterpret_cast<remote_event*>( *it )->get_remote_id() << std::endl;
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
 

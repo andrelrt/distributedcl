@@ -3,7 +3,7 @@ AC_PREREQ([2.57])
 AC_INIT([distributedcl],[0.1.0])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE([foreign dist-bzip2])
+AM_INIT_AUTOMAKE([0.1.0 foreign dist-bzip2 dist-xz])
 
 LT_INIT([dlopen])
 LT_PREREQ([1.0])

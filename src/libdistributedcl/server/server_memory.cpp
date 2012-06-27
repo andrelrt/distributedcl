@@ -73,25 +73,10 @@ void msgEnqueueWriteBuffer_command::execute()
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
+    server.flush( command_queue_id );
+
     dcl::events_t events;
-
-    if( !message_->get_events().empty() )
-    {
-        server.flush( command_queue_id );
-
-		uint32_t count = message_->get_events().size();
-
-        events.reserve( count );
-
-        for( uint32_t i = 0; i < count; i++ )
-        {
-			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
-
-            event_ptr->wait_execute();
-
-            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
-        }
-    }
+    load_message_events( message_->get_events(), events );
 
     // Always no blocking
     buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
@@ -122,25 +107,10 @@ void msgEnqueueReadBuffer_command::execute()
 
     message_->allocate_buffer();
 
+    server.flush( command_queue_id );
+
     dcl::events_t events;
-
-    if( !message_->get_events().empty() )
-    {
-        server.flush( command_queue_id );
-
-		uint32_t count = message_->get_events().size();
-
-        events.reserve( count );
-
-        for( uint32_t i = 0; i < count; i++ )
-        {
-			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
-
-            event_ptr->wait_execute();
-
-            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
-        }
-    }
+    load_message_events( message_->get_events(), events );
 
     // Always no blocking
     buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
@@ -165,29 +135,20 @@ void msgEnqueueCopyBuffer_command::execute()
     remote_id_t dst_id = message_->get_dst_remote_id();
     remote_id_t command_queue_id = message_->get_command_queue_id();
 
+    //std::cerr << std::endl << "copy memory " << message_->get_buffer_size() << " bytes: "
+                           //<< src_id << "(+" << message_->get_src_offset()
+                           //<< ") -> " << dst_id << "(+" << message_->get_dst_offset() << ")"
+                           //<< std::endl;
+
+
     composite_memory* src_buffer_ptr = server.get_memory_manager().get( src_id );
     composite_memory* dst_buffer_ptr = server.get_memory_manager().get( dst_id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
+    server.flush( command_queue_id );
+
     dcl::events_t events;
-
-    if( !message_->get_events().empty() )
-    {
-        server.flush( command_queue_id );
-
-		uint32_t count = message_->get_events().size();
-
-        events.reserve( count );
-
-        for( uint32_t i = 0; i < count; i++ )
-        {
-			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
-
-            event_ptr->wait_execute();
-
-            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
-        }
-    }
+    load_message_events( message_->get_events(), events );
 
     dst_buffer_ptr->copy( queue_ptr, src_buffer_ptr, message_->get_buffer_size(),
                           message_->get_src_offset(), message_->get_dst_offset(),
@@ -237,25 +198,10 @@ void msgEnqueueWriteImage_command::execute()
     composite_image* image_ptr = server.get_image_manager().get( id );
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
+    server.flush( command_queue_id );
+
     dcl::events_t events;
-
-    if( !message_->get_events().empty() )
-    {
-        server.flush( command_queue_id );
-
-		uint32_t count = message_->get_events().size();
-
-        events.reserve( count );
-
-        for( uint32_t i = 0; i < count; i++ )
-        {
-			composite_event* event_ptr = server.get_event_manager().get( message_->get_events()[ i ] );
-
-            event_ptr->wait_execute();
-
-            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
-        }
-    }
+    load_message_events( message_->get_events(), events );
 
     // Always no blocking
     image_ptr->write( queue_ptr, message_->get_buffer(), message_->get_origin(),

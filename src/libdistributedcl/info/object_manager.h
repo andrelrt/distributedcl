@@ -129,6 +129,7 @@ public:
 
     inline DCL_TYPE_T* get( remote_id_t object_id ) const
     {
+        //std::cerr << "get object: " << object_id << std::endl;
         typename object_map_t::const_iterator it = object_map_.find( object_id );
 
         if( it == object_map_.end() )

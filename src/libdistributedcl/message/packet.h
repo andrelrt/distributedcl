@@ -54,7 +54,7 @@ public:
     uint32_t parse_header();
     void parse( bool is_request );
 
-    inline uint8_t get_message_count() const
+    inline uint16_t get_message_count() const
     {
         return header_ptr_->message_count;
     }
@@ -132,7 +132,7 @@ private:
     struct packet_header
     {
         uint8_t version;
-        uint8_t message_count;
+        uint16_t message_count;
         dcl::network::platform::session_sequence_t sequence_number;
         dcl::network::platform::session_id_t session_id;
         uint32_t length;

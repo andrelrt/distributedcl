@@ -73,38 +73,16 @@ void msgEnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
-    std::cerr << std::endl << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()" << std::endl;
+    //std::cerr << std::endl << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()" << std::endl;
+
+    server.flush( message_->get_command_queue_id() );
 
     dcl::events_t events;
-
-    if( !message_->get_events().empty() )
-    {
-        server.flush( message_->get_command_queue_id() );
-
-        events.reserve( message_->get_events().size() );
-
-        dcl::remote_ids_t::const_iterator it;
-
-        for( it = message_->get_events().begin(); it != message_->get_events().end(); it ++ )
-        {
-            composite_event* event_ptr = server.get_event_manager().get( *it );
-
-            event_ptr->wait_execute();
-
-            events.push_back( reinterpret_cast<generic_event*>( event_ptr ) );
-        }
-    }
+    load_message_events( message_->get_events(), events );
 
     kernel_ptr->execute( queue_ptr, message_->get_offset(), 
                          message_->get_global(), message_->get_local(), events,
                          reinterpret_cast<generic_event**>( &event_ptr_ ) );
-
-    //if( message_->get_return_event() )
-    //{
-    //    server.get_event_manager().add( ret_event, message_->get_event_id() );
-    //}
-
-    ////queue_ptr->flush();
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueNDRangeKernel_command::async_run() const

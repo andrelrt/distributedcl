@@ -38,6 +38,14 @@ uint32_t packet::parse_header()
     THROW_IF( buffer_size_ < sizeof( packet_header ), "Invalid packet size" );
     THROW_IF( header_ptr->version != packet_v1_0, "Invalid packet version" );
 
+    if( (header_ptr->message_count == 0) &&
+        (packet_len != sizeof( packet_header )) )
+    {
+        std::cerr << "Message count invalid: " << header_ptr->message_count
+                  << " packet_len = " << packet_len
+                  << std::endl;
+    }
+
     THROW_IF( (header_ptr->message_count == 0) && 
               (packet_len != sizeof( packet_header )), "Message count invalid" );
 

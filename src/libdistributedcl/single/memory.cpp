@@ -70,6 +70,7 @@ void memory::write( generic_command_queue* queue_ptr, const void* data_ptr,
         command_queue* queue = reinterpret_cast<command_queue*>( queue_ptr );
         cl_event evnt;
 
+        //std::cerr << "write memory: " << (void*) get_id() << std::endl;
         if( wait_events.empty() )
         {
             error_code =
@@ -260,6 +261,9 @@ void memory::copy( generic_command_queue* queue_ptr, generic_memory* src_ptr,
         memory* src_buffer_ptr = reinterpret_cast<memory*>( src_ptr );
         cl_event evnt;
 
+        //std::cerr << "copy memory: " << (void*) src_buffer_ptr->get_id()
+        //          << " -> " << get_id() << std::endl;
+        
         if( wait_events.empty() )
         {
             error_code =

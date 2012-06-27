@@ -177,7 +177,7 @@ void remote_memory::copy( generic_command_queue* queue_ptr, generic_memory* src_
     msg_ptr->set_dst_remote_id( get_remote_id() );
     msg_ptr->set_buffer_size( size );
     msg_ptr->set_src_offset( src_offset );
-    msg_ptr->set_dst_offset( src_offset );
+    msg_ptr->set_dst_offset( dst_offset );
 
     for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
     {
