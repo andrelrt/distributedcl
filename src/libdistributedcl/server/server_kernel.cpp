@@ -73,7 +73,7 @@ void msgEnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
-    //std::cerr << std::endl << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()" << std::endl;
+    std::cerr << std::endl << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()...";
 
     server.flush( message_->get_command_queue_id() );
 
@@ -83,6 +83,8 @@ void msgEnqueueNDRangeKernel_command::execute()
     kernel_ptr->execute( queue_ptr, message_->get_offset(), 
                          message_->get_global(), message_->get_local(), events,
                          reinterpret_cast<generic_event**>( &event_ptr_ ) );
+
+    std::cerr << "... Ok" << std::endl;
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueNDRangeKernel_command::async_run() const

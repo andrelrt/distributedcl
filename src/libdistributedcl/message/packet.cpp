@@ -43,6 +43,7 @@ uint32_t packet::parse_header()
     {
         std::cerr << "Message count invalid: " << header_ptr->message_count
                   << " packet_len = " << packet_len
+                  << " sequence number = " << header_ptr->sequence_number
                   << std::endl;
     }
 
@@ -103,7 +104,7 @@ void packet::create_packet()
         }
 
         header_ptr_->length = host_to_network( static_cast< uint32_t >( length_ ) );
-        header_ptr_->message_count = static_cast<uint8_t>( messages_.size() );
+        header_ptr_->message_count = static_cast<uint16_t>( messages_.size() );
     }
 
     //{

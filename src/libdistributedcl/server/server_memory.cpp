@@ -62,7 +62,7 @@ void msgCreateBuffer_command::execute()
 //-----------------------------------------------------------------------------
 void msgEnqueueWriteBuffer_command::execute()
 {
-    //std::cerr << "executing msgEnqueueWriteBuffer_command...";
+    std::cerr << "executing msgEnqueueWriteBuffer_command...";
     server_platform& server = session_context_ptr_->get_server_platform();
 
     remote_id_t id = message_->get_remote_id();
@@ -83,7 +83,7 @@ void msgEnqueueWriteBuffer_command::execute()
                        message_->get_buffer_size(), message_->get_offset(), false,
                        events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
 
-    //std::cerr << "... Ok";
+    std::cerr << "... Ok" << std::endl;
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteBuffer_command::async_run() const
@@ -95,29 +95,37 @@ bool msgEnqueueWriteBuffer_command::async_run() const
 //-----------------------------------------------------------------------------
 void msgEnqueueReadBuffer_command::execute()
 {
-    //std::cerr << "executing msgEnqueueReadBuffer_command...";
+    std::cerr << "executing msgEnqueueReadBuffer_command...";
     server_platform& server = session_context_ptr_->get_server_platform();
 
+    std::cerr << "1";
     remote_id_t id = message_->get_remote_id();
+    std::cerr << "2";
     remote_id_t command_queue_id = message_->get_command_queue_id();
     //std::cerr << id;
 
+    std::cerr << "3";
     composite_memory* buffer_ptr = server.get_memory_manager().get( id );
+    std::cerr << "4";
     composite_command_queue* queue_ptr = server.get_command_queue_manager().get( command_queue_id );
 
+    std::cerr << "5";
     message_->allocate_buffer();
 
+    std::cerr << "6";
     server.flush( command_queue_id );
 
+    std::cerr << "7";
     dcl::events_t events;
     load_message_events( message_->get_events(), events );
 
+    std::cerr << "8";
     // Always no blocking
     buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
                       message_->get_buffer_size(), message_->get_offset(), false,
                       events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
 
-    //std::cerr << "... Ok";
+    std::cerr << "... Ok" << std::endl;
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueReadBuffer_command::async_run() const
