@@ -126,18 +126,7 @@ public:
         if( message_queue_.empty() )
             return;
 
-        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
-
-        while( !message_queue_.empty() )
-        {
-            message_sp_t message_sp = message_queue_.front();
-
-            packet_sp->add( message_sp );
-            pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
-            message_queue_.pop();
-        }
-
-        flush_packet( packet_sp );
+        flush_packet( create_packet() );
     }
 
     inline void wait()
@@ -158,25 +147,7 @@ public:
 
         message_queue_.push( message_sp );
 
-        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
-
-        while( !message_queue_.empty() )
-        {
-            message_sp_t message_sp = message_queue_.front();
-
-            packet_sp->add( message_sp );
-
-            // Saves the message object for response.
-            // All other messages will be released by shared_ptr after packet is created.
-            if( message_sp->waiting_response() )
-            {
-                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
-            }
-
-            message_queue_.pop();
-        }
-
-        flush_packet( packet_sp );
+        flush_packet( create_packet() );
     }
 
     inline dcl::message_vector_t& get_received_messages()
@@ -197,6 +168,29 @@ private:
     dcl::message_vector_t received_messages_;
     //boost::scoped_ptr<boost::thread> send_thread_sp_;
     //boost::interprocess::interprocess_semaphore send_semaphore_;
+
+    packet_sp_t create_packet()
+    {
+        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
+
+        while( !message_queue_.empty() )
+        {
+            message_sp_t message_sp = message_queue_.front();
+
+            packet_sp->add( message_sp );
+
+            // Saves the message object for response.
+            // All other messages will be released by shared_ptr.
+            if( message_sp->waiting_response() )
+            {
+                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+            }
+
+            message_queue_.pop();
+        }
+
+        return packet_sp;
+    }
 
     void flush_packet( packet_sp_t packet_sp )
     {
