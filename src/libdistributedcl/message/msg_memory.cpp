@@ -82,6 +82,9 @@ void dcl_message< msgCreateBuffer >::parse_response( const void* payload_ptr )
 //-----------------------------------------------------------------------------
 // msgEnqueueWriteBuffer
 //-----------------------------------------------------------------------------
+volatile uint32_t dcl_message< msgEnqueueWriteBuffer >::creates_ = 0;
+volatile uint32_t dcl_message< msgEnqueueWriteBuffer >::deletes_ = 0;
+//-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueWriteBuffer >::create_request( void* payload_ptr )
 {
     void* enqueue_ptr = enqueue_message::create_enqueue_request( payload_ptr );

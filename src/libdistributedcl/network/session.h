@@ -106,9 +106,9 @@ protected:
         {
             remote_sequence_number_--;
             
-            std::cerr << "Invalid sequence number " << packet_sp->get_sequence_number()
-                      << " != " << get_remote_sequence_number()
-                      << " ---- ";
+            //std::cerr << "Invalid sequence number " << packet_sp->get_sequence_number()
+                      //<< " != " << get_remote_sequence_number()
+                      //<< " ---- ";
             
             throw dcl::library_exception( "Invalid sequence number" );
         }

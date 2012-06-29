@@ -124,7 +124,23 @@ class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
         enqueue_message( msgEnqueueWriteBuffer, false ), offset_( 0 ),
-        remote_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ){}
+        remote_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
+        my_( creates_++ )
+    {
+        std::cerr << "ctor - my: " << my_
+                  << " - creates: " << creates_
+                  << " - deletes: " << deletes_
+                  << std::endl;
+    }
+    
+    virtual ~dcl_message< msgEnqueueWriteBuffer >()
+    {
+        deletes_++;
+        std::cerr << "ctor - my: " << my_
+                  << " - creates: " << creates_
+                  << " - deletes: " << deletes_
+                  << std::endl;
+    }
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -152,6 +168,10 @@ private:
     const uint8_t* buffer_ptr_;
     size_t buffer_len_;
     buffer_t buffer_;
+    
+    static volatile uint32_t creates_;
+    static volatile uint32_t deletes_;
+    uint32_t my_;
 
     virtual void create_request( void* payload_ptr );
     virtual void parse_request( const void* payload_ptr );
