@@ -56,18 +56,14 @@ public:
         set_remote_id( id );
     }
 
-    remote_event( const remote_context& context_ref, const dcl::info::generic_command_queue* queue_ptr, message_sp_t message_sp ) :
+    remote_event( const remote_context& context_ref, const dcl::info::generic_command_queue* queue_ptr ) :
         dcl::info::generic_event( queue_ptr ),
-        remote_object< remote_event, dcl::network::message::msgReleaseEvent >( context_ref.get_session() ),
-        message_sp_( message_sp ) {}
+        remote_object<remote_event,dcl::network::message::msgReleaseEvent>( context_ref.get_session() ){}
 
-    ~remote_event(){}
+    virtual ~remote_event(){}
 
     virtual void wait();
     virtual void load_info();
-
-private:
-    message_sp_t message_sp_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

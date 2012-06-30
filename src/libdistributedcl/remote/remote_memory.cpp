@@ -67,7 +67,7 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
 
     if( ret_event_ptr != NULL )
     {
-        remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
+        remote_event* ptr = new remote_event( context_, queue_ptr );
         *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
 
         ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
@@ -106,7 +106,7 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
 
     if( ret_event_ptr != NULL )
     {
-        remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
+        remote_event* ptr = new remote_event( context_, queue_ptr );
         *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
 
         ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
@@ -188,7 +188,7 @@ void remote_memory::copy( generic_command_queue* queue_ptr, generic_memory* src_
 
     if( ret_event_ptr != NULL )
     {
-        remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
+        remote_event* ptr = new remote_event( context_, queue_ptr );
         *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
 
         ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );
@@ -234,7 +234,7 @@ void remote_image::write( generic_command_queue* queue_ptr, const void* data_ptr
 
     if( ret_event_ptr != NULL )
     {
-        remote_event* ptr = new remote_event( context_, queue_ptr, message_sp );
+        remote_event* ptr = new remote_event( context_, queue_ptr );
         *ret_event_ptr = reinterpret_cast<generic_event*>( ptr );
 
         ptr->set_remote_id( msg_ptr->get_event_id( *ret_event_ptr ) );

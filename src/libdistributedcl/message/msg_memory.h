@@ -127,19 +127,19 @@ public:
         remote_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
         my_( creates_++ )
     {
-        std::cerr << "ctor - my: " << my_
-                  << " - creates: " << creates_
-                  << " - deletes: " << deletes_
-                  << std::endl;
+        //std::cerr << "ctor - my: " << my_
+                  //<< " - creates: " << creates_
+                  //<< " - deletes: " << deletes_
+                  //<< std::endl;
     }
     
     virtual ~dcl_message< msgEnqueueWriteBuffer >()
     {
-        deletes_++;
-        std::cerr << "ctor - my: " << my_
-                  << " - creates: " << creates_
-                  << " - deletes: " << deletes_
-                  << std::endl;
+        //deletes_++;
+        //std::cerr << "ctor - my: " << my_
+                  //<< " - creates: " << creates_
+                  //<< " - deletes: " << deletes_
+                  //<< std::endl;
     }
 
     typedef std::vector<uint8_t> buffer_t;

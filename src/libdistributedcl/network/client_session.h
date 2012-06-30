@@ -242,7 +242,7 @@ private:
         {
             message_sp_t message_sp = message_queue_.front();
 
-            std::cerr << "inicio: " << message_sp.use_count();
+            //std::cerr << "inicio: " << message_sp.use_count();
             packet_sp->add( message_sp );
 
             // Saves the message object for response.
@@ -252,11 +252,11 @@ private:
                 pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
             }
 
-            std::cerr << " - meio: " << message_sp.use_count();
+            //std::cerr << " - meio: " << message_sp.use_count();
 
             message_queue_.pop();
 
-            std::cerr << " - fim: " << message_sp.use_count() << std::endl;
+            //std::cerr << " - fim: " << message_sp.use_count() << std::endl;
         }
 
         // Send data
