@@ -126,7 +126,7 @@ public:
         if( message_queue_.empty() )
             return;
 
-        flush_packet( create_packet() );
+        flush();
     }
 
     inline void wait()
@@ -147,7 +147,7 @@ public:
 
         message_queue_.push( message_sp );
 
-        flush_packet( create_packet() );
+        flush();
     }
 
     inline dcl::message_vector_t& get_received_messages()
@@ -169,33 +169,19 @@ private:
     //boost::scoped_ptr<boost::thread> send_thread_sp_;
     //boost::interprocess::interprocess_semaphore send_semaphore_;
 
-    packet_sp_t create_packet()
+    void flush()
     {
-        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
-
-        while( !message_queue_.empty() )
+        try
         {
-            message_sp_t message_sp = message_queue_.front();
-
-            packet_sp->add( message_sp );
-
-            // Saves the message object for response.
-            // All other messages will be released by shared_ptr.
-            if( message_sp->waiting_response() )
-            {
-                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
-            }
-
-            message_queue_.pop();
+            send_request();
+        }
+        catch( dcl::library_exception& )
+        {
+            // Connection reset, reconnect
+            // TODO: Reconnect
+            return;
         }
 
-        return packet_sp;
-    }
-
-    void flush_packet( packet_sp_t packet_sp )
-    {
-        // Send data
-        dcl::network::platform::session< COMM >::send_packet( packet_sp, true );
         packet_sp_t recv_packet_sp;
 
         try
@@ -246,6 +232,35 @@ private:
                 }
             }
         }
+    }
+
+    inline void send_request()
+    {
+        packet_sp_t packet_sp( dcl::network::platform::session< COMM >::create_packet() );
+
+        while( !message_queue_.empty() )
+        {
+            message_sp_t message_sp = message_queue_.front();
+
+            std::cerr << "inicio: " << message_sp.use_count();
+            packet_sp->add( message_sp );
+
+            // Saves the message object for response.
+            // All other messages will be released by shared_ptr.
+            if( message_sp->waiting_response() )
+            {
+                pending_messages_.insert( message_map_t::value_type( message_sp->get_id(), message_sp ) );
+            }
+
+            std::cerr << " - meio: " << message_sp.use_count();
+
+            message_queue_.pop();
+
+            std::cerr << " - fim: " << message_sp.use_count() << std::endl;
+        }
+
+        // Send data
+        dcl::network::platform::session< COMM >::send_packet( packet_sp, true );
     }
 
     inline void clear_received_messages()
