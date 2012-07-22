@@ -20,16 +20,15 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef __OPENCL_MEMORY_TEST_H__
-#define __OPENCL_MEMORY_TEST_H__
+#ifndef __REMOTE_MEMORY_TEST_H__
+#define __REMOTE_MEMORY_TEST_H__
 
 #include "distributedcl_internal.h"
 #include "info/context_info.h"
 #include "info/command_queue_info.h"
-#include "single/opencl_library.h"
-#include "single/opencl_single.h"
+#include "remote/remote_opencl.h"
 //-----------------------------------------------------------------------------
-class opencl_memory_test
+class remote_memory_test
 {
 protected:
     void init();
@@ -39,8 +38,7 @@ protected:
                                    dcl::info::generic_command_queue** queue_pptr );
 
 private:
-    dcl::single::opencl_library* library_ptr_;
-    dcl::single::opencl_single* opencl_ptr_;
+    dcl::remote::remote_opencl* remote_ptr_;
 };
 //-----------------------------------------------------------------------------
-#endif //  __OPENCL_MEMORY_TEST_H__
+#endif //  __REMOTE_MEMORY_TEST_H__

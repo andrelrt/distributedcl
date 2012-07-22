@@ -20,18 +20,35 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#include <cppunit/ui/text/TestRunner.h>
-#include "distributedcl_internal.h"
+#include <gtest/gtest.h>
+
+#if defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <WinSock.h>
+#else
+#include <arpa/inet.h>
+#endif
 //-----------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
-  CPPUNIT_NS::TextUi::TestRunner runner;
+#if defined( WIN32 )
 
-  //runner.addTest( BoardGameTest<BoardGame>::suite() );
-  //runner.addTest( ChessTest<Chess>::suite() );
+    // Winsock startup
+    WSADATA wsaData;
+    WSAStartup( MAKEWORD(1, 1), &wsaData );
 
-  bool wasSuccessful = runner.run();
+#endif
 
-  return wasSuccessful ? 0 : 1;
+    ::testing::InitGoogleTest( &argc, argv );
+    int ret = RUN_ALL_TESTS();
+
+#if defined( WIN32 )
+
+    WSACleanup();
+
+#endif
+
+    return ret;
 }
 //-----------------------------------------------------------------------------

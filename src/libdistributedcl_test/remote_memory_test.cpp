@@ -20,36 +20,42 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef __GENERIC_MEMORY_TEST_H__
-#define __GENERIC_MEMORY_TEST_H__
-
 #include <gtest/gtest.h>
-#include "distributedcl_internal.h"
-#include "info/context_info.h"
-#include "info/command_queue_info.h"
+#include "remote_memory_test.h"
+#include "remote/remote_opencl.h"
+#include "network/session_manager.h"
+using dcl::platforms_t;
+using dcl::devices_t;
+using dcl::remote::remote_opencl;
+using dcl::network::client::session_manager;
+using dcl::info::generic_context;
+using dcl::info::generic_memory;
+using dcl::info::generic_command_queue;
+
+#define CONNECTION_STRING  "127.0.0.1:4791"
 //-----------------------------------------------------------------------------
-template<typename T>
-class generic_memory_test :
-    public testing::Test,
-    public T
+void remote_memory_test::init()
 {
-protected:
-    void SetUp()
-    {
-        T::init();
-        T::create_context_and_queue( &context_ptr_, &queue_ptr_ );
-    }
+    session_manager::session_t& session_ref = session_manager::create_session( CONNECTION_STRING );
 
-    void TearDown()
-    {
-        delete queue_ptr_;
-        delete context_ptr_;
-
-        T::finish();
-    }
-
-    dcl::info::generic_context* context_ptr_;
-    dcl::info::generic_command_queue* queue_ptr_;
-};
+    remote_ptr_ = new remote_opencl( session_ref );
+}
 //-----------------------------------------------------------------------------
-#endif //  __GENERIC_MEMORY_TEST_H__
+void remote_memory_test::finish()
+{
+    delete remote_ptr_;
+}
+//-----------------------------------------------------------------------------
+void remote_memory_test::create_context_and_queue( generic_context** context_pptr,
+                                                   generic_command_queue** queue_pptr )
+{
+    const platforms_t& platforms = remote_ptr_->get_platforms();
+    const devices_t& devices = platforms[ 0 ]->get_devices();
+
+    *context_pptr = platforms[ 0 ]->create_context();
+    *queue_pptr = (*context_pptr)->create_command_queue( devices[ 0 ], 0 );
+}
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+

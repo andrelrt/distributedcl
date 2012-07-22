@@ -1,13 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="generic_memory_test.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
     <ClCompile Include="opencl_memory_test.cpp">
       <Filter>memory</Filter>
     </ClCompile>
+    <ClCompile Include="generic_memory_test.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="remote_memory_test.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="memory">
@@ -15,10 +18,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="opencl_memory_test.h">
+      <Filter>memory</Filter>
+    </ClInclude>
     <ClInclude Include="generic_memory_test.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="opencl_memory_test.h">
+    <ClInclude Include="remote_memory_test.h">
       <Filter>memory</Filter>
     </ClInclude>
   </ItemGroup>
