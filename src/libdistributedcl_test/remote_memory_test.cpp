@@ -21,6 +21,7 @@
  */
 //-----------------------------------------------------------------------------
 #include <gtest/gtest.h>
+#include "info/device_info.h"
 #include "remote_memory_test.h"
 #include "remote/remote_opencl.h"
 #include "network/session_manager.h"
@@ -52,8 +53,8 @@ void remote_memory_test::create_context_and_queue( generic_context** context_ppt
     const platforms_t& platforms = remote_ptr_->get_platforms();
     const devices_t& devices = platforms[ 0 ]->get_devices();
 
-    *context_pptr = platforms[ 0 ]->create_context();
-    *queue_pptr = (*context_pptr)->create_command_queue( devices[ 0 ], 0 );
+    *context_pptr = platforms[ 0 ]->create_context( devices );
+    *queue_pptr = (*context_pptr)->create_command_queue( devices[ 1 ], 0 );
 }
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

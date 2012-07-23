@@ -49,6 +49,10 @@ public:
         {
             this->session_context_ptr_->get_server_platform().flush( queue_id );
         }
+        else
+        {
+            command_sp->async_prepare();
+        }
 
         //if( async_run() )
         //{

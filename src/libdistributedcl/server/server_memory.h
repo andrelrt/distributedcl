@@ -59,6 +59,7 @@ public:
 
     void execute();
     virtual bool async_run() const;
+    virtual void async_prepare();
 };
 //-----------------------------------------------------------------------------
 class msgEnqueueReadBuffer_command : 

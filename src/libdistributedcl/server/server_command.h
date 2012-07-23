@@ -48,6 +48,7 @@ class command
 {
 public:
     virtual void execute() = 0;
+    virtual void async_prepare(){}
     virtual void enqueue_response(){}
     virtual void enqueue_error( int32_t error_code ){}
     virtual dcl::composite::composite_command_queue* get_queue(){ return NULL; }

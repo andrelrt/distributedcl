@@ -60,6 +60,11 @@ void msgCreateBuffer_command::execute()
     message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
+void msgEnqueueWriteBuffer_command::async_prepare()
+{
+    message_->copy_buffer();
+}
+//-----------------------------------------------------------------------------
 void msgEnqueueWriteBuffer_command::execute()
 {
     //std::cerr << "executing msgEnqueueWriteBuffer_command...";
