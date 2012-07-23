@@ -115,6 +115,16 @@ void dcl_message< msgEnqueueWriteBuffer >::parse_request( const void* payload_pt
     buffer_ptr_ = request_ptr->buffer_;
 }
 //-----------------------------------------------------------------------------
+void dcl_message< msgEnqueueWriteBuffer >::copy_buffer()
+{
+    if( buffer_.size() == 0 )
+    {
+        std::cerr << "Copy buffer" << std::endl;
+        buffer_.assign( buffer_ptr_, buffer_ptr_ + buffer_len_ );
+        buffer_ptr_ = buffer_.data();
+    }
+}
+//-----------------------------------------------------------------------------
 // msgEnqueueReadBuffer
 //-----------------------------------------------------------------------------
 void dcl_message< msgEnqueueReadBuffer >::create_request( void* payload_ptr )

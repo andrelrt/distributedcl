@@ -162,14 +162,7 @@ public:
         update_request_size();
     }
 
-    inline void copy_buffer()
-    {
-        if( buffer_.size() == 0 )
-        {
-            buffer_.assign( buffer_ptr_, buffer_ptr_ + buffer_len_ );
-            buffer_ptr_ = buffer_.data();
-        }
-    }
+    void copy_buffer();
 
 private:
     size_t offset_;
