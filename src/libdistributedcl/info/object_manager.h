@@ -75,7 +75,13 @@ public:
 
         } while( object_map_.find( object_id ) != object_map_.end() );
 
-        object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
+        if( object_map_.size() > 64000 )
+            std::cerr << object_map_.size() << std::endl;
+            
+        {
+            dcl::scoped_lock_t lock(mutex_);
+            object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
+        }
 
         //object_ptr->set_remote_id( object_id );
 
@@ -173,6 +179,7 @@ public:
 private:
     typedef std::map< remote_id_t, DCL_TYPE_T* > object_map_t;
 
+    dcl::mutex_t mutex_;
     object_map_t object_map_;
     boost::mt19937 rand_;
     boost::uniform_int<> dist_;

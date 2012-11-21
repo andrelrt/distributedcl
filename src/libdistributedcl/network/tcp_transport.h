@@ -58,6 +58,7 @@ public:
     {
         endpoint_t bind_addr;
         connection_t connected_socket;
+        const std::string connection_string_;
 
         tcp_info( connection_t& connection, endpoint_t& endpoint ) :
             bind_addr( endpoint ), connected_socket( connection )
@@ -74,7 +75,7 @@ public:
             sin->sin_port = htons( 4791 );
         }
 
-        tcp_info( const std::string& connection_string )
+        tcp_info( const std::string& connection_string ) : connection_string_(connection_string)
         {
             connected_socket = -1;
 

@@ -63,6 +63,11 @@ public:
         dcl::network::platform::session< COMM >::get_communication().shutdown();
         clear_received_messages();
     }
+    
+    const std::string& get_connection_string()
+    {
+        return dcl::network::platform::session< COMM >::get_communication().get_config().connection_string_;
+    }
 
     client_session<COMM>* create_child()
     {
