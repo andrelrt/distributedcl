@@ -38,9 +38,9 @@ bool remote_device::load_device_info()
     session_ref_.send_message( message_sp );
 
     local_info_ = msg_ptr->get_info();
-    local_info_.name_.append( " (" );
-    local_info_.name_.append( session_ref_.get_connection_string() );
-    local_info_.name_.append( ")" );
+    //local_info_.name_.append( " (" );
+    //local_info_.name_.append( session_ref_.get_connection_string() );
+    //local_info_.name_.append( ")" );
 
     return true;
 }

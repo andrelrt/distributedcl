@@ -65,6 +65,11 @@ public:
 
     void add( generic_context* context_ptr, const devices_t& devices );
 
+    size_t size() const
+    {
+        return contexts_.size();
+    }
+
     void retain();
     void release();
 

@@ -99,20 +99,30 @@ generic_context* composite_platform::create_context( cl_device_type device_type 
     {
         for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); it++ )
         {
-            generic_context* ctx = (*it)->create_context( device_type );
-
-            ctx_ptr->add( ctx, ctx->get_devices() );
+            try
+            {
+                generic_context* ctx = (*it)->create_context( device_type );
+                ctx_ptr->add( ctx, ctx->get_devices() );
+            }
+            catch( library_exception& ex )
+            {
+                if( ex.get_error() != CL_DEVICE_NOT_FOUND )
+                    throw;
+            }
         }
     }
-    catch( library_exception& ex )
+    catch( library_exception& )
     {
         if( ctx_ptr != NULL )
         {
             delete ctx_ptr;
         }
 
-        throw ex;
+        throw;
     }
+
+    if( ctx_ptr->size() == 0 )
+        throw library_exception( CL_DEVICE_NOT_FOUND );
 
     return ctx_ptr;
 }
