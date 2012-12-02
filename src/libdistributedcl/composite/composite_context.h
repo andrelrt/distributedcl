@@ -83,6 +83,11 @@ public:
         return contexts_.end();
     }
 
+    inline bool has_device( const dcl::info::generic_device* device_ptr ) const
+    {
+        return (context_map_.find( device_ptr ) != context_map_.end());
+    }
+
     inline const dcl::info::generic_context* find( const dcl::info::generic_device* device_ptr ) const
     {
         context_map_t::const_iterator it = context_map_.find( device_ptr );
@@ -96,6 +101,9 @@ public:
 private:
     virtual void load_devices();
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+    virtual dcl::info::generic_program* do_create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                                           const unsigned char** binaries, cl_int* binary_status );
+
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );

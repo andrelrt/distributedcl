@@ -37,17 +37,25 @@ namespace info {
 //-----------------------------------------------------------------------------
 class generic_context;
 class generic_kernel;
+class generic_device;
 //-----------------------------------------------------------------------------
 struct program_info
 {
 public:
+    dcl::devices_t devices_;
+    const size_t* lengths_;
+    const unsigned char** binaries_;
     std::string source_code_;
     std::string build_options_;
 
-    inline program_info(){}
+    inline program_info() : lengths_( NULL ), binaries_( NULL ) {}
 
     inline program_info( const std::string& source_code ) :
-        source_code_( source_code ) {}
+        lengths_( NULL ), binaries_( NULL ), source_code_( source_code ) {}
+
+    inline program_info( const dcl::devices_t& devices,
+                         const size_t* lengths, const unsigned char** binaries ) :
+        devices_( devices ), lengths_( lengths ), binaries_( binaries ) {}
 
     inline program_info( const program_info& info ) :
         source_code_( info.source_code_ ),
@@ -56,8 +64,10 @@ public:
 
     inline size_t get_info_size( cl_program_info info ) const
     {
-        if( info == CL_PROGRAM_BUILD_OPTIONS )
-            return build_options_.length();
+        switch( info )
+        {
+            case CL_PROGRAM_BUILD_OPTIONS: return build_options_.length();
+        }
 
         throw library_exception( CL_INVALID_VALUE );
     }
@@ -83,6 +93,14 @@ public:
     generic_program( const std::string& source_code )
     {
         local_info_.source_code_.assign( source_code );
+    }
+
+    generic_program( const dcl::devices_t& devices, const size_t* lengths, 
+                     const unsigned char** binaries )
+    {
+        local_info_.devices_.assign( devices.begin(), devices.end() );
+        local_info_.lengths_ = lengths;
+        local_info_.binaries_ = binaries;
     }
 
     inline const std::string& get_source() const

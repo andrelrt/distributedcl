@@ -82,6 +82,16 @@ public:
         return program_ptr;
     }
 
+    inline generic_program* create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                            const unsigned char** binaries, cl_int* binary_status )
+    {
+        generic_program* program_ptr = do_create_program( devs, lengths, binaries, binary_status );
+
+        programs_.push_back( program_ptr );
+
+        return program_ptr;
+    }
+
     inline generic_command_queue* create_command_queue( const generic_device* device_ptr,
                                                         cl_command_queue_properties properties )
     {
@@ -149,6 +159,8 @@ protected:
 
     virtual void load_devices() = 0;
     virtual generic_program* do_create_program( const std::string& source_code ) = 0;
+    virtual generic_program* do_create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                                const unsigned char** binaries, cl_int* binary_status ) = 0;
 
     virtual generic_command_queue*
         do_create_command_queue( const generic_device* device_ptr, 

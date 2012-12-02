@@ -116,7 +116,82 @@ clCreateProgramWithBinary( cl_context context, cl_uint num_devices,
                            const unsigned char** binaries, cl_int* binary_status,
                            cl_int* errcode_ret ) CL_API_SUFFIX__VERSION_1_0
 {
-    // Not supported
+    if( (num_devices == 0) || (device_list == NULL) || 
+        (lengths == NULL)  || (binaries == NULL) )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
+    }
+
+    for( size_t i = 0; i < num_devices; ++i )
+    {
+        if( (lengths[ i ] == 0) || (binaries[ i ] == NULL) )
+        {
+            if( errcode_ret != NULL )
+            {
+                *errcode_ret = CL_INVALID_VALUE;
+            }
+            return NULL;
+        }
+    }
+
+    try
+    {
+        icd_object_manager& icd = icd_object_manager::get_instance();
+
+        composite_context* context_ptr =
+            icd.get_object_ptr< composite_context >( context );
+
+        dcl::devices_t program_devices;
+
+        for( size_t i = 0; i < num_devices; ++i )
+        {
+            composite_device* device_ptr =
+                icd.get_object_ptr< composite_device >( device_list[ i ] );
+
+            if( !context_ptr->has_device( device_ptr ) )
+            {
+                if( errcode_ret != NULL )
+                {
+                    *errcode_ret = CL_INVALID_DEVICE;
+                }
+                return NULL;
+            }
+
+            program_devices.push_back( device_ptr );
+        }
+
+        composite_program* program_ptr =
+            reinterpret_cast< composite_program* >( context_ptr->create_program( program_devices, lengths, binaries, binary_status ) );
+
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_SUCCESS;
+        }
+
+        return icd.get_cl_id< composite_program >( program_ptr );
+    }
+    catch( dcl::library_exception& ex )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = ex.get_error();
+        }
+        return NULL;
+    }
+    catch( ... )
+    {
+        if( errcode_ret != NULL )
+        {
+            *errcode_ret = CL_INVALID_VALUE;
+        }
+        return NULL;
+    }
+
+    // Dummy
     if( errcode_ret != NULL )
     {
         *errcode_ret = CL_INVALID_VALUE;

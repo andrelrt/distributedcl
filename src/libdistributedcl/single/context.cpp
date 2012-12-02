@@ -166,6 +166,12 @@ generic_program* context::do_create_program( const std::string& source_code )
     return new program( *this, source_code );
 }
 //-----------------------------------------------------------------------------
+generic_program* do_create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                    const unsigned char** binaries, cl_int* binary_status )
+{
+    return new program( *this, devs, lengths, binaries, binary_status );
+}
+//-----------------------------------------------------------------------------
 generic_command_queue*
     context::do_create_command_queue( const generic_device* device_ptr,
                                       cl_command_queue_properties properties )

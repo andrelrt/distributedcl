@@ -81,6 +81,8 @@ private:
     void load_image_formats( image_formats_t& image_formats, cl_mem_object_type image_type );
 
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+    virtual dcl::info::generic_program* do_create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                                           const unsigned char** binaries, cl_int* binary_status );
 
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,

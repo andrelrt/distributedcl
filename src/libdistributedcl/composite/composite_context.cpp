@@ -90,6 +90,68 @@ generic_program* composite_context::do_create_program( const std::string& source
     return reinterpret_cast< generic_program* >( programs );
 }
 //-----------------------------------------------------------------------------
+generic_program* composite_context::do_create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                                       const unsigned char** binaries, cl_int* binary_status )
+{
+    contexts_t::iterator it;
+
+    composite_program* programs = new composite_program( *this, devs, lengths, binaries, binary_status );
+
+    dcl::devices_t program_devices;
+    std::vector<uint32_t> indexes;
+    std::vector<size_t> context_lengths;
+    std::vector<const unsigned char*> context_binaries;
+    std::vector<cl_int> context_binary_status;
+
+    indexes.reserve( devs.size() );
+    program_devices.reserve( devs.size() );
+    context_lengths.reserve( devs.size() );
+    context_binaries.reserve( devs.size() );
+    context_binary_status.reserve( devs.size() );
+
+    for( it = contexts_.begin(); it != contexts_.end(); ++it )
+    {
+        const dcl::devices_t& context_devices = (*it)->get_devices();
+
+        indexes.clear();
+        program_devices.clear();
+        context_lengths.clear();
+        context_binaries.clear();
+        context_binary_status.clear();
+
+        for( uint32_t i = 0; i < devs.size(); ++i )
+        {
+            if( std::find( context_devices.begin(), context_devices.end(), devs[ i ] ) != context_devices.end() )
+            {
+                indexes.push_back( i );
+                program_devices.push_back( devs[ i ] );
+                context_lengths.push_back( lengths[ i ] );
+                context_binaries.push_back( binaries[ i ] );
+            }
+        }
+
+        if( indexes.empty() )
+            throw library_exception( CL_INVALID_DEVICE );
+
+        context_binary_status.resize( indexes.size(), CL_INVALID_VALUE );
+
+        generic_program* program_ptr = (*it)->create_program( program_devices, context_lengths.data(), 
+                                                              context_binaries.data(), context_binary_status.data() );
+
+        if( binary_status != NULL )
+        {
+            for( uint32_t i = 0; i < indexes.size(); ++i )
+            {
+                binary_status[ indexes[ i ] ] = context_binary_status[ i ];
+            }
+        }
+
+        programs->insert_context_object( *it, program_ptr );
+    }
+
+    return reinterpret_cast< generic_program* >( programs );
+}
+//-----------------------------------------------------------------------------
 generic_command_queue*
     composite_context::do_create_command_queue( const generic_device* device_ptr,
                                                 cl_command_queue_properties properties )

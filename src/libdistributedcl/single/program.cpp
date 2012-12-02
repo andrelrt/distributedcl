@@ -29,6 +29,7 @@
 using dcl::info::generic_program;
 using dcl::info::generic_kernel;
 using dcl::info::generic_device;
+using dcl::info::program_info;
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace single {
@@ -53,6 +54,36 @@ program::program( const context& context_ref, const std::string& source_code ) :
         prog = opencl_.clCreateProgramWithSource( context_ref.get_id(), 1,
                                                   &strings, &string_len,
                                                   &error_code );
+        if( error_code != CL_SUCCESS )
+        {
+            throw dcl::library_exception( error_code );
+        }
+
+        set_id( prog );
+    }
+}
+//-----------------------------------------------------------------------------
+program::program( const context& context_ref, const dcl::devices_t& devices,
+                  const size_t* lengths, const unsigned char** binaries,
+                  cl_int* binary_status ) :
+    generic_program( devices, lengths, binaries ),
+    opencl_object< cl_program >( context_ref.get_opencl() )
+{
+    if( opencl_.loaded() )
+    {
+        cl_int error_code;
+        cl_program prog;
+
+        boost::scoped_array<cl_device_id> devs( new cl_device_id[ devices.size() ] );
+
+        for( uint32_t i = 0; i < devices.size(); ++i )
+        {
+            devs[ i ] = static_cast<device*>(devices[ i ])->get_id();
+        }
+
+        prog = opencl_.clCreateProgramWithBinary( context_ref.get_id(), devices.size(),
+                                                  devs.get(), lengths, binaries,
+                                                  binary_status, &error_code );
         if( error_code != CL_SUCCESS )
         {
             throw dcl::library_exception( error_code );

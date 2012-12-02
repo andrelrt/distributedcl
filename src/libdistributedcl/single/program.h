@@ -40,6 +40,8 @@ class program :
 {
 public:
     program( const context& context_ref, const std::string& source_code );
+    program( const context& context_ref, const dcl::devices_t& devices,
+             const size_t* lengths, const unsigned char** binaries, cl_int* binary_status );
     ~program();
 
     // TODO: Create a version of build method using the pfn_notify callback
