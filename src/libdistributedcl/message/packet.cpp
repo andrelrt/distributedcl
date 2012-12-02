@@ -97,7 +97,7 @@ void packet::create_packet()
         uint32_t offset = sizeof( packet_header );
 
         message_vector_t::iterator it;
-        for( it = messages_.begin(); it != messages_.end(); it++ )
+        for( it = messages_.begin(); it != messages_.end(); ++it )
         {
             (*it)->get_buffer( buffer_ptr_ + offset );
             offset += static_cast< uint32_t >( (*it)->get_size() );

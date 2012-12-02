@@ -62,7 +62,7 @@ void msgBuildProgram_command::execute()
 
     devices.reserve( device_ids.size() );
 
-    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); it++ )
+    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); ++it )
     {
         devices.push_back( server.get_device_manager().get( *it ) );
     }

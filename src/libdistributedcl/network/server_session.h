@@ -195,7 +195,7 @@ private:
                 {
                     dcl::scoped_lock_t lock( waiting_messages_mutex_ );
 
-                    for( it = waiting_messages_.begin(); it != waiting_messages_.end(); it++ )
+                    for( it = waiting_messages_.begin(); it != waiting_messages_.end(); ++it )
                     {
                         if( (*it)->waiting_response() )
                         {
@@ -208,7 +208,7 @@ private:
                     waiting_messages_.clear();
                 }
 
-                for( it = messages_ref.begin(); it != messages_ref.end(); it++ )
+                for( it = messages_ref.begin(); it != messages_ref.end(); ++it )
                 {
                     if( (!(*it)->is_async()) &&
                         ((*it)->waiting_response()) )

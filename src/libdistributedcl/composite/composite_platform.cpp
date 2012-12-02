@@ -41,7 +41,7 @@ void composite_platform::get_devices( devices_t& devices, cl_device_type device_
     }
     else
     {
-        for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); it++ )
+        for( devices_t::const_iterator it = devices_.begin(); it != devices_.end(); ++it )
         {
             if( device_type & (*it)->get_type() )
             {
@@ -58,7 +58,7 @@ generic_context* composite_platform::create_context( const devices_t& devices ) 
     try
     {
         devices_t context_devices;
-        for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); it++ )
+        for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); ++it )
         {
             context_devices.clear();
     
@@ -97,7 +97,7 @@ generic_context* composite_platform::create_context( cl_device_type device_type 
 
     try
     {
-        for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); it++ )
+        for( platforms_t::const_iterator it = platforms_.begin(); it != platforms_.end(); ++it )
         {
             try
             {

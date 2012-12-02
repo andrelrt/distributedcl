@@ -40,6 +40,17 @@ class remote_device :
     public remote_object< remote_device, dcl::network::message::msg_dummy_message >
 {
 public:
+    ~remote_device()
+    {
+        loaded_devices_.erase( get_remote_id() );
+    }
+
+    static remote_device* get_remote_device( const remote_platform* platform_ptr, dcl::remote_id_t id );
+    static remote_device* get_remote_device( const remote_platform* platform_ptr, dcl::remote_id_t id, cl_device_type type );
+
+protected:
+    virtual bool load_device_info();
+
     remote_device( const remote_platform* platform_ptr, cl_device_type type ) : 
         dcl::info::generic_device( platform_ptr, type ),
         remote_object< remote_device, dcl::network::message::msg_dummy_message >( platform_ptr->get_session() ) {}
@@ -52,10 +63,7 @@ public:
         load_device_info();
     }
 
-    ~remote_device(){}
-
-protected:
-    virtual bool load_device_info();
+    static std::map<dcl::remote_id_t, remote_device*> loaded_devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote

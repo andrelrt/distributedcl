@@ -36,7 +36,7 @@ void dcl_message< msgCreateContext >::create_request( void* payload_ptr )
     request_ptr->device_count_ = host_to_network( static_cast<uint32_t>( devices_.size() ) );
     
     uint32_t i = 0;
-    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
+    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); ++it )
     {
         request_ptr->devices_[ i ] = host_to_network( *it );
 
@@ -128,7 +128,7 @@ void dcl_message< msgGetContextInfo >::create_response( void* payload_ptr )
     response_ptr->device_count_ = host_to_network( static_cast<uint32_t>( devices_.size() ) );
 
     uint32_t i = 0;
-    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
+    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); ++it )
     {
         response_ptr->devices_[ i ] = host_to_network( *it );
 

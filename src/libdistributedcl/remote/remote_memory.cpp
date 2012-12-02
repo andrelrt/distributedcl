@@ -58,7 +58,7 @@ void remote_memory::write( generic_command_queue* queue_ptr, const void* data_pt
     msg_ptr->set_buffer( reinterpret_cast<const uint8_t*>( data_ptr ), size, offset );
     msg_ptr->set_blocking( (blocking == CL_TRUE) );
 
-    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); ++it )
     {
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
@@ -97,7 +97,7 @@ void remote_memory::read( generic_command_queue* queue_ptr, void* data_ptr,
 
     msg_ptr->set_data_pointer( data_ptr );
 
-    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); ++it )
     {
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
@@ -179,7 +179,7 @@ void remote_memory::copy( generic_command_queue* queue_ptr, generic_memory* src_
     msg_ptr->set_src_offset( src_offset );
     msg_ptr->set_dst_offset( dst_offset );
 
-    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); ++it )
     {
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }
@@ -225,7 +225,7 @@ void remote_image::write( generic_command_queue* queue_ptr, const void* data_ptr
     msg_ptr->set_element_size( local_info_.element_size_ );
     msg_ptr->set_blocking( blocking );
 
-    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); ++it )
     {
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );
     }

@@ -58,6 +58,11 @@ public:
 
     virtual ~generic_context(){}
 
+    inline size_t get_device_count() const
+    {
+        return devices_.size();
+    }
+
     inline const devices_t& get_devices()
     {
         if( devices_.empty() )

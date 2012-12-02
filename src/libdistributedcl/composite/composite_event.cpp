@@ -29,7 +29,7 @@ namespace composite {
 //-----------------------------------------------------------------------------
 void composite_event::wait( events_t& events )
 {
-    for( events_t::iterator it = events.begin(); it != events.end(); it++ )
+    for( events_t::iterator it = events.begin(); it != events.end(); ++it )
     {
         (*it)->wait();
     }
@@ -40,7 +40,7 @@ void composite_event::get_context_events( const generic_context* ctx,
                                           events_t& context_events )
 {
     events_t::const_iterator it;
-    for( it = wait_events.begin(); it != wait_events.end(); it++ )
+    for( it = wait_events.begin(); it != wait_events.end(); ++it )
     {
         const composite_event* comp_event_ptr =
             reinterpret_cast<const composite_event*>( *it );
@@ -55,7 +55,7 @@ void composite_event::wait()
 {
     wait_execute();
 
-    for( iterator it = begin(); it != end(); it++ )
+    for( iterator it = begin(); it != end(); ++it )
     {
         it->second->wait();
     }

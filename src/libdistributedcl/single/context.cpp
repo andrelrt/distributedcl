@@ -58,7 +58,7 @@ context::context( const platform& platform_ref, const devices_t& devices_ref ) :
     boost::scoped_array<cl_device_id> deviceIDs( new cl_device_id[ devices_ref.size() ] );
 
     int i = 0;
-    for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); it++ )
+    for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); ++it )
     {
         deviceIDs[ i++ ] = reinterpret_cast<device*>( *it )->get_id();
     }
@@ -157,7 +157,7 @@ void context::load_devices()
     for( int i = 0; i < (int) ret_count; i++ )
     {
         const generic_platform* platform_ptr = get_platform();
-        devices_.push_back( new device( reinterpret_cast<const platform*>( platform_ptr ), device_ids[ i ] ) );
+        devices_.push_back( device::get_device( reinterpret_cast<const platform*>( platform_ptr ), device_ids[ i ] ) );
     }
 }
 //-----------------------------------------------------------------------------

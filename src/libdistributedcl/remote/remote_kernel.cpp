@@ -55,7 +55,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
         reinterpret_cast<const remote_command_queue*>( queue_ptr )->get_remote_id();
 
     // Enqueue arguments
-    for( argument_map_t::iterator it = arguments_.begin(); it != arguments_.end(); it++ )
+    for( argument_map_t::iterator it = arguments_.begin(); it != arguments_.end(); ++it )
     {
         boost::shared_ptr< dcl_message< msgSetKernelArg > > msg_sp(
             boost::shared_static_cast< dcl_message< msgSetKernelArg > >(
@@ -76,7 +76,7 @@ void remote_kernel::execute( const generic_command_queue* queue_ptr,
     msg_ptr->get_global().copy( global );
     msg_ptr->get_local().copy( local );
 
-    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); it++ )
+    for( events_t::iterator it = wait_events.begin(); it != wait_events.end(); ++it )
     {
         //std::cerr << "Add event: " << reinterpret_cast<remote_event*>( *it )->get_remote_id() << std::endl;
         msg_ptr->add_event( reinterpret_cast<remote_event*>( *it )->get_remote_id() );

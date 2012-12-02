@@ -204,27 +204,66 @@ clGetProgramInfo( cl_program program, cl_program_info param_name,
                   size_t* param_value_size_ret ) CL_API_SUFFIX__VERSION_1_0
 {
     // TODO: Not Implemented
-    return CL_OUT_OF_RESOURCES;
+    //return CL_OUT_OF_RESOURCES;
 
-    //try
-    //{
-    //    composite_program* program_ptr = 
-    //        get_info_check_parameters< composite_program >( program, param_value_size, 
-    //                                                        param_value, param_value_size_ret );
+    try
+    {
+        composite_program* program_ptr = 
+            get_info_check_parameters< composite_program >( program, param_value_size, 
+                                                            param_value, param_value_size_ret );
+        size_t info_size = 0;
 
-    //    return CL_SUCCESS;
-    //}
-    //catch( dcl::library_exception& ex )
-    //{
-    //    return ex.get_error();
-    //}
-    //catch( ... )
-    //{
-    //    return CL_INVALID_VALUE;
-    //}
+        if( param_name == CL_PROGRAM_NUM_DEVICES )
+        {
+            if( param_value != NULL )
+            {
+                *(reinterpret_cast< cl_uint* >( param_value )) =
+                    static_cast<cl_uint>( program_ptr->get_context().get_device_count() );
+            }
 
-    //// Dummy
-    //return CL_INVALID_VALUE;
+            info_size = sizeof( cl_uint );
+        }
+        else if( param_name == CL_PROGRAM_BINARY_SIZES )
+        {
+            //FIXME: Return the correct binary sizes
+            size_t count = program_ptr->get_context().get_device_count();
+            if( param_value != NULL )
+            {
+                for( size_t i = 0; i < count; ++i )
+                {
+                    (reinterpret_cast< cl_uint* >( param_value ))[i] = 1;
+                }
+            }
+            info_size = count * sizeof( cl_uint );
+        }
+        else if( param_name == CL_PROGRAM_BINARIES )
+        {
+            //FIXME: Return the correct binaries
+            info_size = program_ptr->get_context().get_device_count();
+        }
+        else
+        {
+            return CL_INVALID_VALUE;
+        }
+
+        if( param_value_size_ret != NULL )
+        {
+            *param_value_size_ret = info_size;
+        }
+
+        return CL_SUCCESS;
+    }
+    catch( dcl::library_exception& ex )
+    {
+        return ex.get_error();
+    }
+    catch( ... )
+    {
+        return CL_INVALID_VALUE;
+    }
+
+    // Dummy
+    return CL_INVALID_VALUE;
 }
 //-----------------------------------------------------------------------------
 extern "C" CL_API_ENTRY cl_int CL_API_CALL

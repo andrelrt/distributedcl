@@ -78,7 +78,7 @@ public:
 
     ~composite_object< DCL_TYPE_T >()
     {
-        for( iterator it = composite_map_.begin(); it != composite_map_.end(); it++ )
+        for( iterator it = composite_map_.begin(); it != composite_map_.end(); ++it )
         {
             delete it->second;
         }

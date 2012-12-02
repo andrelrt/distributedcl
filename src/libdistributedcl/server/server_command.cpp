@@ -93,7 +93,7 @@ namespace server {
 //
 //    std::set< composite_command_queue* >::iterator it;
 //
-//    for( it = queues_.begin(); it != queues_.end(); it++ )
+//    for( it = queues_.begin(); it != queues_.end(); ++it )
 //    {
 //        (*it)->flush();
 //    }

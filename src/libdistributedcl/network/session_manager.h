@@ -70,7 +70,7 @@ private:
     {
         std::set<session_t*>::iterator it;
 
-        for( it = sessions_.begin(); it != sessions_.end(); it++ )
+        for( it = sessions_.begin(); it != sessions_.end(); ++it )
         {
             delete *it;
         }

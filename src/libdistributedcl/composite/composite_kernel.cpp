@@ -88,7 +88,7 @@ void composite_kernel::set_argument( uint32_t arg_index, const generic_sampler* 
 //-----------------------------------------------------------------------------
 void composite_kernel::set_argument( uint32_t arg_index, size_t arg_size, const void* arg_value )
 {
-    for( iterator it = begin(); it != end(); it++ )
+    for( iterator it = begin(); it != end(); ++it )
     {
         it->second->set_argument( arg_index, arg_size, arg_value );
     }
@@ -99,7 +99,7 @@ const kernel_group_info& composite_kernel::get_group_info( const generic_device*
     const composite_device* dev_ptr =
         reinterpret_cast<const composite_device*>( device_ptr );
 
-    for( iterator it = begin(); it != end(); it++ )
+    for( iterator it = begin(); it != end(); ++it )
     {
         if( it->first->get_platform() == dev_ptr->get_platform() )
         {

@@ -66,7 +66,7 @@ const platforms_t& opencl_single::get_platforms()
 //
 //        platforms_t::iterator it;
 //
-//        for( it = platforms_.begin(); it != platforms_.end(); it++ )
+//        for( it = platforms_.begin(); it != platforms_.end(); ++it )
 //        {
 //            cl_uint num_devices = 0;
 //            cl_int ret = opencl_.clGetDeviceIDs( it->second->get_id(), CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices );
@@ -111,7 +111,7 @@ const platforms_t& opencl_single::get_platforms()
 //
 //	devices_iterator_t it;
 //
-//	for( it = devices_.begin(); it != devices_.end(); it++ )
+//	for( it = devices_.begin(); it != devices_.end(); ++it )
 //	{
 //		if( (device_type & (*it)->get_type()) &&
 //            ((platform_ref.get_id() == NULL) ||

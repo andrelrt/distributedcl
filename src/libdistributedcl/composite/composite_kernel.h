@@ -65,7 +65,7 @@ private:
         const DCL_COMPOSITE_T* comp_ptr =
             reinterpret_cast<const DCL_COMPOSITE_T*>( ptr );
 
-        for( iterator it = begin(); it != end(); it++ )
+        for( iterator it = begin(); it != end(); ++it )
         {
             it->second->set_argument( arg_index, comp_ptr->find( it->first ) );
         }

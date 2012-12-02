@@ -46,7 +46,7 @@ generic_context* remote_platform::create_context( const devices_t& devices ) con
 
     msg_ptr->set_device_count( static_cast<uint32_t>( devices.size() ) );
 
-    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); ++it )
     {
         msg_ptr->add_device( reinterpret_cast<remote_device*>( *it )->get_remote_id() );
     }
@@ -84,28 +84,22 @@ void remote_platform::load_devices()
 
     for( std::size_t i = 0; i < msg_ptr->get_cpu_count(); i++ )
     {
-        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_CPU ) );
+        remote_device* dev_ptr = remote_device::get_remote_device( this, msg_ptr->get_cpu_device( i ), static_cast< cl_device_type >( CL_DEVICE_TYPE_CPU ) );
 
-        //dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
-        dev_ptr->set_remote_id( msg_ptr->get_cpu_device( i ) );
         add_device( dev_ptr );
     }
 
     for( std::size_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
     {
-        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
+        remote_device* dev_ptr = remote_device::get_remote_device( this, msg_ptr->get_gpu_device( i ), static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
 
-        //dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
-        dev_ptr->set_remote_id( msg_ptr->get_gpu_device( i ) );
         add_device( dev_ptr );
     }
 
     for( std::size_t i = 0; i < msg_ptr->get_accelerator_count(); i++ )
     {
-        remote_device* dev_ptr = new remote_device( this, static_cast< cl_device_type >( CL_DEVICE_TYPE_ACCELERATOR ) );
+        remote_device* dev_ptr = remote_device::get_remote_device( this, msg_ptr->get_accelerator_device( i ), static_cast< cl_device_type >( CL_DEVICE_TYPE_ACCELERATOR ) );
 
-        //dev_ptr->set_remote_id( device_manager_.add( dev_ptr ) );
-        dev_ptr->set_remote_id( msg_ptr->get_accelerator_device( i ) );
         add_device( dev_ptr );
     }
 }

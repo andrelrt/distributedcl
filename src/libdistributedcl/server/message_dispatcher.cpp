@@ -82,7 +82,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
     message_vector_t::iterator it;
     server_platform& server = session_context_ptr->get_server_platform();
 
-    for( it = messages.begin(); it != messages.end(); it++ )
+    for( it = messages.begin(); it != messages.end(); ++it )
     {
         switch( (*it)->get_type() )
         {
@@ -200,7 +200,7 @@ void message_dispatcher::wait_messages( message_vector_t& messages, server_sessi
     //session_context_ptr->get_server_platform().wait_unblock_all();
     //session_context_ptr->get_server_platform().flush_all();
 
-    for( message_vector_t::iterator it = messages.begin(); it != messages.end(); it++ )
+    for( message_vector_t::iterator it = messages.begin(); it != messages.end(); ++it )
     {
         (*it)->server_wait( session_context_ptr );
     }

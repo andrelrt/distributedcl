@@ -225,7 +225,7 @@ clGetContextInfo( cl_context context, cl_context_info param_name, size_t param_v
             {
                 cl_device_id* cl_devices_ptr = reinterpret_cast< cl_device_id* >( param_value );
 
-                for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); it++ )
+                for( devices_t::const_iterator it = devices_ref.begin(); it != devices_ref.end(); ++it )
                 {
                     *cl_devices_ptr = icd_object_manager::get_instance().get_cl_id< composite_device >( *it );
 

@@ -93,7 +93,7 @@ int main( int argc, char* argv[] )
         const std::vector< std::string >& servers = config.get_servers();
         std::vector< std::string >::const_iterator it;
 
-        for( it = servers.begin(); it != servers.end(); it++ )
+        for( it = servers.begin(); it != servers.end(); ++it )
         {
 			std::cout << "Connecting remote DistributedCL server: " << *it << std::endl;
             opencl_composite::get_instance().add_remote( *it );

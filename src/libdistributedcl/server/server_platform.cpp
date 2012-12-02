@@ -51,7 +51,7 @@ void msgGetDeviceIDs_command::load_devices()
     const composite_platform& platform = opencl_composite::get_instance().get_platform();
     const devices_t& devs = platform.get_devices();
 
-    for( devices_t::const_iterator it = devs.begin(); it != devs.end(); it++ )
+    for( devices_t::const_iterator it = devs.begin(); it != devs.end(); ++it )
     {
         composite_device* device_ptr = reinterpret_cast< composite_device* >( *it );
         remote_id_t id = session_context_ptr_->get_server_platform().get_device_manager().add( device_ptr );
@@ -192,7 +192,7 @@ server_platform::~server_platform()
 //-----------------------------------------------------------------------------
 void server_platform::clear_all_data()
 {
-    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); ++it )
     {
         delete it->second;
     }
@@ -217,7 +217,7 @@ void server_platform::open_queue( composite_command_queue* queue_ptr )
     //barrier_sp_ = boost::shared_ptr<boost::interprocess::barrier>(
     //    new boost::interprocess::barrier( queue_thread_.size() + 1 ) );
 
-    //for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    //for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); ++it )
     //{
     //    it->second->setup_barrier( barrier_sp_ );
     //}
@@ -263,7 +263,7 @@ void server_platform::wait_all()
         {
             bool finish = true;
 
-            for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+            for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); ++it )
             {
                 if( !it->second->empty() )
                 {
@@ -285,7 +285,7 @@ void server_platform::wait_all()
 //-----------------------------------------------------------------------------
 void server_platform::flush_all()
 {
-    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); it++ )
+    for( queue_thread_map_t::iterator it = queue_thread_.begin(); it != queue_thread_.end(); ++it )
     {
         it->second->flush();
     }

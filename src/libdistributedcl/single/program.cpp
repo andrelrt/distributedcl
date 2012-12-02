@@ -95,7 +95,7 @@ void program::build( const devices_t& devices, const std::string& build_options,
             boost::scoped_array< cl_device_id > device_list( new cl_device_id[ device_count ] );
 
             int i = 0;
-            for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+            for( devices_t::const_iterator it = devices.begin(); it != devices.end(); ++it )
             {
                 device_list[ i++ ] = reinterpret_cast<const device*>( *it )->get_id();
             }

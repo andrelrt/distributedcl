@@ -66,7 +66,7 @@ void platform::load()
 
     for( cl_uint i = 0; i < num_entries; i++ )
     {
-        add_device( new device( this, deviceIds[ i ] ) );
+        add_device( device::get_device( this, deviceIds[ i ] ) );
     }
 }
 //-----------------------------------------------------------------------------

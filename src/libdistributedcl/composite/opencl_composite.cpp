@@ -39,13 +39,13 @@ opencl_composite* opencl_composite::instance_ptr_ = NULL;
 //-----------------------------------------------------------------------------
 void opencl_composite::free_all()
 {
-    for( opencl_set_t::iterator it = opencl_set_.begin(); it != opencl_set_.end(); it++ )
+    for( opencl_set_t::iterator it = opencl_set_.begin(); it != opencl_set_.end(); ++it )
     {
         delete( *it );
     }
     opencl_set_.clear();
 
-    for( library_set_t::iterator it = library_set_.begin(); it != library_set_.end(); it++ )
+    for( library_set_t::iterator it = library_set_.begin(); it != library_set_.end(); ++it )
     {
         delete( *it );
     }
@@ -62,7 +62,7 @@ void opencl_composite::add_library( const std::string& libpath )
 
     const platforms_t& platforms = opencl_ptr->get_platforms();
 
-    for( platforms_t::const_iterator it = platforms.begin(); it != platforms.end(); it++ )
+    for( platforms_t::const_iterator it = platforms.begin(); it != platforms.end(); ++it )
     {
         comp_platform_.add_platform( *it );
     }
@@ -76,7 +76,7 @@ void opencl_composite::add_remote( const std::string& connection_string )
 
     const platforms_t& platforms = remote_ptr->get_platforms();
 
-    for( platforms_t::const_iterator it = platforms.begin(); it != platforms.end(); it++ )
+    for( platforms_t::const_iterator it = platforms.begin(); it != platforms.end(); ++it )
     {
         comp_platform_.add_platform( *it );
     }
@@ -87,7 +87,7 @@ void opencl_composite::add_remote( const std::string& connection_string )
 //-----------------------------------------------------------------------------
 void opencl_composite::unload_compiler()
 {
-    for( opencl_set_t::iterator it = opencl_set_.begin(); it != opencl_set_.end(); it++ )
+    for( opencl_set_t::iterator it = opencl_set_.begin(); it != opencl_set_.end(); ++it )
     {
         (*it)->unload_compiler();
     }

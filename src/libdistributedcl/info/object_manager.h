@@ -99,7 +99,7 @@ public:
     {
         typename object_map_t::const_iterator it;
 
-        for( it = object_map_.begin; it != object_map_.end(); it++ )
+        for( it = object_map_.begin; it != object_map_.end(); ++it )
         {
             if( it->second == object_ptr )
             {
@@ -114,7 +114,7 @@ public:
     {
         typename object_map_t::const_iterator it;
 
-        for( it = object_map_.begin(); it != object_map_.end(); it++ )
+        for( it = object_map_.begin(); it != object_map_.end(); ++it )
         {
             if( it->second == object_ptr )
             {
@@ -162,7 +162,7 @@ public:
     {
         typename object_map_t::const_iterator it;
 
-        for( it = object_map_.begin(); it != object_map_.end(); it++ )
+        for( it = object_map_.begin(); it != object_map_.end(); ++it )
         {
             try
             {

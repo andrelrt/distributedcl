@@ -45,7 +45,7 @@ composite_context::composite_context() :
 //-----------------------------------------------------------------------------
 composite_context::~composite_context()
 {
-    for( contexts_t::iterator it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( contexts_t::iterator it = contexts_.begin(); it != contexts_.end(); ++it )
     {
         delete *it;
     }
@@ -58,7 +58,7 @@ void composite_context::add( generic_context* context_ptr, const devices_t& devi
     contexts_.push_back( context_ptr );
     devices_.insert( devices_.end(), devices.begin(), devices.end() );
 
-    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); it++ )
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); ++it )
     {
         context_map_.insert( context_map_t::value_type( *it, context_ptr ) );
     }
@@ -68,7 +68,7 @@ void composite_context::load_devices()
 {
     devices_.clear();
 
-    for( contexts_t::iterator it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( contexts_t::iterator it = contexts_.begin(); it != contexts_.end(); ++it )
     {
         add( *it, (*it)->get_devices() );
     }
@@ -80,7 +80,7 @@ generic_program* composite_context::do_create_program( const std::string& source
 
     composite_program* programs = new composite_program( *this, source_code );
 
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( it = contexts_.begin(); it != contexts_.end(); ++it )
     {
         generic_program* program_ptr = (*it)->create_program( source_code );
 
@@ -111,7 +111,7 @@ composite_context::do_create_buffer( const void* host_ptr, size_t size, cl_mem_f
 
     composite_memory* memories = new composite_memory( *this, host_ptr, size, flags );
 
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( it = contexts_.begin(); it != contexts_.end(); ++it )
     {
         generic_memory* memory_ptr = (*it)->create_buffer( host_ptr, size, flags );
 
@@ -131,7 +131,7 @@ composite_context::do_create_image( const void* host_ptr, cl_mem_flags flags,
     composite_image* images = new composite_image( *this, host_ptr, flags, format,
                                                    width, height, row_pitch );
 
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( it = contexts_.begin(); it != contexts_.end(); ++it )
     {
         generic_image* image_ptr = (*it)->create_image( host_ptr, flags, format,
                                                         width, height, row_pitch );
@@ -150,7 +150,7 @@ composite_context::do_create_sampler( cl_bool normalized_coords, cl_addressing_m
 
     composite_sampler* samplers = new composite_sampler( *this, normalized_coords, addressing_mode, filter_mode );
 
-    for( it = contexts_.begin(); it != contexts_.end(); it++ )
+    for( it = contexts_.begin(); it != contexts_.end(); ++it )
     {
         generic_sampler* sampler_ptr = (*it)->create_sampler( normalized_coords, addressing_mode, filter_mode );
 

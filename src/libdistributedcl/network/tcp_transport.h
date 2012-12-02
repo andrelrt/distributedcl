@@ -93,7 +93,7 @@ public:
             if( it != tokens.end() )
             {
                 sin->sin_addr.s_addr = inet_addr( it->c_str() );
-                it++;
+                ++it;
             }
 
             if( it != tokens.end() )

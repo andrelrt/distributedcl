@@ -51,7 +51,7 @@ void msgCreateContext_command::execute()
 
     devices.reserve( device_ids.size() );
 
-    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); it++ )
+    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); ++it )
     {
         devices.push_back( reinterpret_cast<generic_device*>( device_manager.get( *it ) ) );
     }
@@ -87,7 +87,7 @@ void msgGetContextInfo_command::execute()
 
     devices_t::const_iterator it;
 
-    for( it = devices_ref.begin(); it != devices_ref.end(); it++ )
+    for( it = devices_ref.begin(); it != devices_ref.end(); ++it )
     {
         message_->add_device( session_context_ptr_->get_server_platform().get_device_manager().get( *it, true ) );
     }

@@ -27,6 +27,17 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
+std::map<cl_device_id, device*> device::loaded_devices_;
+//-----------------------------------------------------------------------------
+device* device::get_device( const platform* platform_ptr, cl_device_id id )
+{
+    if( loaded_devices_.find( id ) == loaded_devices_.end() )
+    {
+        loaded_devices_[ id ] = new device( platform_ptr, id );
+    }
+    return loaded_devices_[ id ];
+}
+//-----------------------------------------------------------------------------
 device::device( const platform* platform_ptr, cl_device_id id ) :
 	generic_device( platform_ptr ),
     opencl_object< cl_device_id >( platform_ptr->get_opencl(), id ) 

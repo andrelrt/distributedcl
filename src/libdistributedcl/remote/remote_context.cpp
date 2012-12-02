@@ -66,7 +66,7 @@ void remote_context::load_devices()
 
     for( uint32_t i = 0; i < msg_ptr->get_device_count(); i++ )
     {
-        devices_.push_back( new remote_device( platform_ptr_, msg_ptr->get_devices()[ i ] ) );
+        devices_.push_back( remote_device::get_remote_device( platform_ptr_, msg_ptr->get_devices()[ i ] ) );
     }
 }
 //-----------------------------------------------------------------------------

@@ -80,7 +80,7 @@ void dcl_message< msgBuildProgram >::create_request( void* payload_ptr )
     
     remote_id_t* devices_ptr = reinterpret_cast<dcl::remote_id_t*>( request_ptr->buffer_ );
 
-    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); it++ )
+    for( remote_ids_t::iterator it = devices_.begin(); it != devices_.end(); ++it )
     {
         *devices_ptr++ = *it;
     }

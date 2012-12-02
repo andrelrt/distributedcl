@@ -59,7 +59,7 @@ public:
 
 		typename server_sessions_t::iterator it;
 
-        for( it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
+        for( it = open_sessions_.begin(); it != open_sessions_.end(); ++it )
         {
             (*it)->shutdown();
             delete *it;
@@ -111,7 +111,7 @@ private:
                 
             typename server_sessions_t::iterator it;
 
-            for( it = open_sessions_.begin(); it != open_sessions_.end(); it++ )
+            for( it = open_sessions_.begin(); it != open_sessions_.end(); ++it )
             {
                 if( !(*it)->running() )
                 {

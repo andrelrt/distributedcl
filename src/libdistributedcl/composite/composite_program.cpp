@@ -34,7 +34,7 @@ namespace composite {
 //-----------------------------------------------------------------------------
 void composite_program::build( const std::string& build_options, cl_bool blocking )
 {
-    for( iterator it = begin(); it != end(); it++ )
+    for( iterator it = begin(); it != end(); ++it )
     {
         it->second->build( build_options, blocking );
     }
@@ -44,7 +44,7 @@ void composite_program::build( const devices_t& devices, const std::string& buil
 {
     typedef std::set< generic_device* > device_set_t;
 
-    for( iterator it = begin(); it != end(); it++ )
+    for( iterator it = begin(); it != end(); ++it )
     {
         devices_t build_devices;
 
@@ -67,7 +67,7 @@ generic_kernel* composite_program::create_kernel( const std::string& kernel_name
 {
     composite_kernel* kernel_ptr = new composite_kernel( get_context(), kernel_name );
 
-    for( iterator it = begin(); it != end(); it++ )
+    for( iterator it = begin(); it != end(); ++it )
     {
         kernel_ptr->insert_context_object( it->first, it->second->create_kernel( kernel_name ) );
     }
