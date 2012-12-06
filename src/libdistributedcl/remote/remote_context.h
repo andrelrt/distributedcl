@@ -52,6 +52,8 @@ private:
 
     virtual void load_devices();
     virtual dcl::info::generic_program* do_create_program( const std::string& source_code );
+    virtual dcl::info::generic_program* do_create_program( const dcl::devices_t& devs, const size_t* lengths,
+                                                           const unsigned char** binaries, cl_int* binary_status );
     virtual dcl::info::generic_command_queue*
         do_create_command_queue( const dcl::info::generic_device* device_ptr,
                                  cl_command_queue_properties properties );

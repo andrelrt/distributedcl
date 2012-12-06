@@ -95,7 +95,7 @@ generic_program* composite_context::do_create_program( const dcl::devices_t& dev
 {
     contexts_t::iterator it;
 
-    composite_program* programs = new composite_program( *this, devs, lengths, binaries, binary_status );
+    composite_program* programs = new composite_program( *this, devs, lengths, binaries );
 
     dcl::devices_t program_devices;
     std::vector<uint32_t> indexes;

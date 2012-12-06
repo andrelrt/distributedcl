@@ -44,6 +44,7 @@ using dcl::network::message::base_message;
 using dcl::network::message::dcl_message;
 using dcl::network::message::msgGetContextInfo;
 using dcl::network::message::msgCreateProgramWithSource;
+using dcl::network::message::msgCreateProgramWithBinary;
 using dcl::network::message::msgCreateCommandQueue;
 using dcl::network::message::msgCreateBuffer;
 using dcl::network::message::msgCreateImage2D;
@@ -82,6 +83,34 @@ generic_program* remote_context::do_create_program( const std::string& source_co
 
     remote_program* program_ptr = new remote_program( *this, source_code );
     program_ptr->set_remote_id( msg_ptr->get_remote_id() );
+
+    return reinterpret_cast< generic_program* >( program_ptr );
+}
+//-----------------------------------------------------------------------------
+generic_program*
+    remote_context::do_create_program( const dcl::devices_t& devices, const size_t* lengths,
+                                       const unsigned char** binaries, cl_int* binary_status )
+{
+    dcl_message< msgCreateProgramWithBinary >* msg_ptr = new dcl_message< msgCreateProgramWithBinary >();
+
+    for( devices_t::const_iterator it = devices.begin(); it != devices.end(); ++it )
+    {
+        msg_ptr->add_device( reinterpret_cast<remote_device*>( *it )->get_remote_id() );
+    }
+
+    msg_ptr->set_lenghts( lengths );
+    msg_ptr->set_binaries( binaries );
+
+    message_sp_t message_sp( msg_ptr );
+    session_ref_.send_message( message_sp );
+
+    remote_program* program_ptr = new remote_program( *this, devices, lengths, binaries );
+    program_ptr->set_remote_id( msg_ptr->get_remote_id() );
+
+    if( binary_status != NULL )
+    {
+        memcpy( binary_status, msg_ptr->get_binary_status().data(), sizeof(cl_int) * devices.size() );
+    }
 
     return reinterpret_cast< generic_program* >( program_ptr );
 }

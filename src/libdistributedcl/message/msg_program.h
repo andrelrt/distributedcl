@@ -88,6 +88,56 @@ private:
     #pragma pack( pop )
 };
 //-----------------------------------------------------------------------------
+// msgCreateProgramWithBinary
+//-----------------------------------------------------------------------------
+template<>
+class dcl_message< msgCreateProgramWithBinary > : public base_message
+{
+public:
+    dcl_message< msgCreateProgramWithBinary >() : 
+        base_message( msgCreateProgramWithBinary, true, 0, sizeof( dcl::remote_id_t ) ),
+    context_id_( 0xffff ), remote_id_( 0xffff ){}
+
+    // Request
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
+    MSG_PARAMETER_GET( dcl::remote_ids_t&, devices_, devices )
+    MSG_PARAMETER_GET_SET( unsigned char**, binaries_, binaries )
+
+    void add_device( dcl::remote_id_t device_id )
+    {
+        devices_.push_back( device_id );
+    }
+
+    // Response
+    MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
+    MSG_PARAMETER_GET( std::vector<cl_int>&, binary_status_, binary_status )
+
+private:
+    dcl::remote_id_t context_id_;
+    dcl::remote_ids_t devices_;
+    std::vector<uint32_t> lengths_;
+    const unsigned char** binaries_;
+
+    dcl::remote_id_t remote_id_;
+    std::vector<cl_int> binary_status_;
+
+    virtual void create_request( void* payload_ptr );
+    virtual void create_response( void* payload_ptr );
+    virtual void parse_request( const void* payload_ptr );
+    virtual void parse_response( const void* payload_ptr );
+
+    #pragma pack( push, 1 )
+    // Better when aligned in 32 bits boundary
+    struct msgCreateProgramWithSource_request
+    {
+        dcl::remote_id_t context_id_;
+        uint16_t devices_count_;
+
+        uint8_t buffer_[1];
+    };
+    #pragma pack( pop )
+};
+//-----------------------------------------------------------------------------
 // msgBuildProgram
 //-----------------------------------------------------------------------------
 template<>

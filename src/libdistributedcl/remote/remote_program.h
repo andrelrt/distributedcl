@@ -44,6 +44,12 @@ public:
         remote_object< remote_program, dcl::network::message::msgReleaseProgram >( context_ref.get_session() ),
         context_( context_ref ){}
 
+    remote_program( const remote_context& context_ref, const dcl::devices_t& devices,
+                    const size_t* lengths, const unsigned char** binaries ) :
+        dcl::info::generic_program( devices, lengths, binaries ),
+        remote_object< remote_program, dcl::network::message::msgReleaseProgram >( context_ref.get_session() ),
+        context_( context_ref ){}
+
     ~remote_program(){}
 
     virtual void build( const std::string& build_options, cl_bool blocking = CL_TRUE );
