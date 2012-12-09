@@ -39,8 +39,6 @@ namespace server {
 //-----------------------------------------------------------------------------
 void msgGetDeviceIDs_command::execute()
 {
-    // Double the devices to hide the network latency
-    //load_devices();
     load_devices();
 
     message_->update_response_size();

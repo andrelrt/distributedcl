@@ -37,7 +37,7 @@ void dcl_message< msgCreateProgramWithSource >::create_request( void* payload_pt
 
     request_ptr->context_id_ = host_to_network( context_id_ );
     request_ptr->source_code_len_ = host_to_network( static_cast<uint32_t>( source_code_.length() ) );
-    
+
     memcpy( request_ptr->source_code_, source_code_.data(), source_code_.length() );
 }
 //-----------------------------------------------------------------------------
@@ -65,6 +65,113 @@ void dcl_message< msgCreateProgramWithSource >::parse_response( const void* payl
         reinterpret_cast< const dcl::remote_id_t* >( payload_ptr );
 
     remote_id_ = network_to_host( *response_ptr );
+}
+//-----------------------------------------------------------------------------
+// msgCreateProgramWithBinary
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateProgramWithBinary >::create_request( void* payload_ptr )
+{
+    msgCreateProgramWithBinary_request* request_ptr =
+        reinterpret_cast< msgCreateProgramWithBinary_request* >( payload_ptr );
+
+    request_ptr->context_id_ = host_to_network( context_id_ );
+    request_ptr->devices_count_ = host_to_network( static_cast<uint16_t>( devices_.size() ) );
+
+    dcl::remote_id_t* device_id = reinterpret_cast<dcl::remote_id_t*>( request_ptr->buffer_ );
+
+    for( uint16_t i = 0; i < devices_.size(); ++i )
+    {
+        *device_id = host_to_network( devices_[ i ] );
+        ++device_id;
+    }
+
+    uint32_t* lengths = reinterpret_cast<uint32_t*>( device_id );
+
+    for( uint16_t i = 0; i < devices_.size(); ++i )
+    {
+        *lengths = host_to_network( lengths_[ i ] );
+        ++lengths;
+    }
+
+    uint8_t* binaries = reinterpret_cast<uint8_t*>( lengths );
+
+    for( uint16_t i = 0; i < devices_.size(); ++i )
+    {
+        memcpy( binaries, binaries_[ i ], lengths_[ i ] );
+        binaries += lengths_[ i ];
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateProgramWithBinary >::parse_request( const void* payload_ptr )
+{
+    const msgCreateProgramWithBinary_request* request_ptr =
+        reinterpret_cast< const msgCreateProgramWithBinary_request* >( payload_ptr );
+
+    context_id_ = network_to_host( request_ptr->context_id_ );
+    size_t device_count = network_to_host( request_ptr->devices_count_ );
+
+    devices_.reserve( device_count );
+    lengths_.reserve( device_count );
+
+    const dcl::remote_id_t* device_id = reinterpret_cast<const dcl::remote_id_t*>( request_ptr->buffer_ );
+
+    for( uint16_t i = 0; i < device_count; ++i )
+    {
+        devices_.push_back( network_to_host( *device_id ) );
+        ++device_id;
+    }
+
+    const uint32_t* lengths = reinterpret_cast<const uint32_t*>( device_id );
+
+    for( uint16_t i = 0; i < device_count; ++i )
+    {
+        lengths_.push_back( network_to_host( *lengths ) );
+        ++lengths;
+    }
+
+    const uint8_t* binaries = reinterpret_cast<const uint8_t*>( lengths );
+
+    new_binaries_ = true;
+    binaries_ = new const unsigned char*[ device_count ];
+    for( uint16_t i = 0; i < devices_.size(); ++i )
+    {
+        binaries_[ i ] = binaries;
+        binaries += lengths_[ i ];
+    }
+
+    binary_status_.resize( device_count, CL_INVALID_BINARY );
+    set_res_size();
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateProgramWithBinary >::create_response( void* payload_ptr )
+{
+    msgCreateProgramWithBinary_response* response_ptr =
+        reinterpret_cast< msgCreateProgramWithBinary_response* >( payload_ptr );
+
+    response_ptr->program_id_ = host_to_network( remote_id_ );
+    response_ptr->status_count_ = host_to_network( static_cast<uint16_t>( binary_status_.size() ) );
+
+    for( uint16_t i = 0; i < binary_status_.size(); ++i )
+    {
+        response_ptr->binary_status_[ i ] = host_to_network( static_cast<uint16_t>(-binary_status_[i]) );
+    }
+}
+//-----------------------------------------------------------------------------
+void dcl_message< msgCreateProgramWithBinary >::parse_response( const void* payload_ptr )
+{
+    const msgCreateProgramWithBinary_response* response_ptr =
+        reinterpret_cast< const msgCreateProgramWithBinary_response* >( payload_ptr );
+
+    remote_id_ = network_to_host( response_ptr->program_id_ );
+    size_t status_count = network_to_host( response_ptr->status_count_ );
+
+    binary_status_.clear();
+    binary_status_.reserve( status_count );
+
+    for( uint16_t i = 0; i < status_count; ++i )
+    {
+        binary_status_.push_back( static_cast<cl_int>( -network_to_host( response_ptr->binary_status_[ i ] ) ) );
+    }
 }
 //-----------------------------------------------------------------------------
 // msgBuildProgram

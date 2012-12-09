@@ -40,6 +40,16 @@ public:
     void execute();
 };
 //-----------------------------------------------------------------------------
+class msgCreateProgramWithBinary_command : 
+    public server_command< dcl::network::message::msgCreateProgramWithBinary >
+{
+public:
+    msgCreateProgramWithBinary_command( message_sp_t message_ptr, dcl::network::server::server_session_context* session_context_ptr ) :
+        server_command< dcl::network::message::msgCreateProgramWithBinary >( message_ptr, session_context_ptr ) {}
+
+    void execute();
+};
+//-----------------------------------------------------------------------------
 class msgBuildProgram_command : 
     public server_command< dcl::network::message::msgBuildProgram >
 {

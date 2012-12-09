@@ -94,9 +94,15 @@ template<>
 class dcl_message< msgCreateProgramWithBinary > : public base_message
 {
 public:
-    dcl_message< msgCreateProgramWithBinary >() : 
+    dcl_message< msgCreateProgramWithBinary >() :
         base_message( msgCreateProgramWithBinary, true, 0, sizeof( dcl::remote_id_t ) ),
-    context_id_( 0xffff ), remote_id_( 0xffff ){}
+    new_binaries_(false), context_id_( 0xffff ), binaries_( NULL ), remote_id_( 0xffff ){}
+
+    ~dcl_message< msgCreateProgramWithBinary >()
+    {
+        if( new_binaries_ )
+            delete binaries_;
+    }
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
@@ -106,6 +112,23 @@ public:
     void add_device( dcl::remote_id_t device_id )
     {
         devices_.push_back( device_id );
+        set_req_size();
+    }
+
+    void set_lengths( const size_t* lengths, size_t size )
+    {
+        lengths_.reserve( size );
+
+        for( uint32_t i = 0; i < size; ++i )
+        {
+            lengths_.push_back( static_cast<uint32_t>( lengths[ i ] ) );
+        }
+        set_req_size();
+    }
+
+    const std::vector<size_t>& get_lengths() const
+    {
+        return lengths_;
     }
 
     // Response
@@ -113,9 +136,10 @@ public:
     MSG_PARAMETER_GET( std::vector<cl_int>&, binary_status_, binary_status )
 
 private:
+    bool new_binaries_;
     dcl::remote_id_t context_id_;
     dcl::remote_ids_t devices_;
-    std::vector<uint32_t> lengths_;
+    std::vector<size_t> lengths_;
     const unsigned char** binaries_;
 
     dcl::remote_id_t remote_id_;
@@ -126,14 +150,45 @@ private:
     virtual void parse_request( const void* payload_ptr );
     virtual void parse_response( const void* payload_ptr );
 
+    void set_req_size()
+    {
+        size_t size = sizeof( msgCreateProgramWithBinary_request ) - 1;
+
+        size += devices_.size() * (sizeof( dcl::remote_id_t ) + sizeof(uint32_t));
+
+        for( uint16_t i = 0; i < lengths_.size(); ++i )
+        {
+            size += lengths_[ i ];
+        }
+
+        set_size( size );
+    }
+
+    void set_res_size()
+    {
+        size_t size = sizeof( msgCreateProgramWithBinary_response ) - sizeof(int16_t);
+
+        size += binary_status_.size() * sizeof(int16_t);
+
+        set_response_size( size );
+    }
+
     #pragma pack( push, 1 )
     // Better when aligned in 32 bits boundary
-    struct msgCreateProgramWithSource_request
+    struct msgCreateProgramWithBinary_request
     {
         dcl::remote_id_t context_id_;
         uint16_t devices_count_;
 
         uint8_t buffer_[1];
+    };
+
+    struct msgCreateProgramWithBinary_response
+    {
+        dcl::remote_id_t program_id_;
+        uint16_t status_count_;
+
+        uint16_t binary_status_[1];
     };
     #pragma pack( pop )
 };

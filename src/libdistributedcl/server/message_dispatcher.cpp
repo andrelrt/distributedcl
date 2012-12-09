@@ -134,7 +134,7 @@ void message_dispatcher::dispatch_messages( message_vector_t& messages, server_s
 
             // Program
             MSG( msgCreateProgramWithSource );
-            MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
+            MSG( msgCreateProgramWithBinary );
             MSG_NOT_IMPLEMENTED( msgRetainProgram );
             MSG_RELEASE( msgReleaseProgram, server.get_program_manager(), composite_program );
             MSG( msgBuildProgram );

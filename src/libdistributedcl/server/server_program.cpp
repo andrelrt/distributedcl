@@ -49,6 +49,33 @@ void msgCreateProgramWithSource_command::execute()
     message_->set_remote_id( id );
 }
 //-----------------------------------------------------------------------------
+void msgCreateProgramWithBinary_command::execute()
+{
+    server_platform& server = session_context_ptr_->get_server_platform();
+
+    remote_id_t context_id = message_->get_context_id();
+
+    composite_context* context_ptr = server.get_context_manager().get( context_id );
+
+    devices_t devices;
+    const remote_ids_t& device_ids = message_->get_devices();
+
+    devices.reserve( device_ids.size() );
+
+    for( remote_ids_t::const_iterator it = device_ids.begin(); it != device_ids.end(); ++it )
+    {
+        devices.push_back( server.get_device_manager().get( *it ) );
+    }
+
+    composite_program* program_ptr = 
+        reinterpret_cast<composite_program*>( context_ptr->create_program( devices, message_->get_lengths().data(), message_->get_binaries(),
+                                                                           const_cast<cl_int*>( message_->get_binary_status().data() ) ) );
+
+    remote_id_t id = server.get_program_manager().add( program_ptr );
+
+    message_->set_remote_id( id );
+}
+//-----------------------------------------------------------------------------
 void msgBuildProgram_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();

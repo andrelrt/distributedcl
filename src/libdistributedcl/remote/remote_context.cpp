@@ -93,12 +93,14 @@ generic_program*
 {
     dcl_message< msgCreateProgramWithBinary >* msg_ptr = new dcl_message< msgCreateProgramWithBinary >();
 
+    msg_ptr->set_context_id( get_remote_id() );
+
     for( devices_t::const_iterator it = devices.begin(); it != devices.end(); ++it )
     {
         msg_ptr->add_device( reinterpret_cast<remote_device*>( *it )->get_remote_id() );
     }
 
-    msg_ptr->set_lenghts( lengths );
+    msg_ptr->set_lengths( lengths, devices.size() );
     msg_ptr->set_binaries( binaries );
 
     message_sp_t message_sp( msg_ptr );

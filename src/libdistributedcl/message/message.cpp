@@ -132,7 +132,7 @@ base_message* base_message::parse_message( uint8_t* msg_buffer_ptr, std::size_t 
 
         // Program
         MSG( msgCreateProgramWithSource );
-        MSG_NOT_IMPLEMENTED( msgCreateProgramWithBinary );
+        MSG( msgCreateProgramWithBinary );
         MSG_NOT_IMPLEMENTED( msgRetainProgram );
         MSG_RELEASE( msgReleaseProgram );
         MSG( msgBuildProgram );

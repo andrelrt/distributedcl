@@ -46,6 +46,11 @@ public:
         dcl::info::generic_program( source_code ), 
         composite_object< dcl::info::generic_program >( context_ref ){}
 
+    composite_program( const composite_context& context_ref, const dcl::devices_t& devices,
+             const size_t* lengths, const unsigned char** binaries ) :
+        dcl::info::generic_program( devices, lengths, binaries ), 
+        composite_object< dcl::info::generic_program >( context_ref ){}
+
     ~composite_program(){}
 
     void load_info(){}
