@@ -73,16 +73,25 @@ void msgEnqueueNDRangeKernel_command::execute()
     composite_kernel* kernel_ptr = 
         server.get_kernel_manager().get( message_->get_kernel_id() );
 
-    //std::cerr << std::endl << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()...";
+    //std::cerr << "Executing kernel: " << kernel_ptr->get_kernel_name() << "()...";
 
     server.flush( message_->get_command_queue_id() );
 
     dcl::events_t events;
     load_message_events( message_->get_events(), events );
 
-    kernel_ptr->execute( queue_ptr, message_->get_offset(), 
-                         message_->get_global(), message_->get_local(), events,
-                         reinterpret_cast<generic_event**>( &event_ptr_ ) );
+    if( message_->get_return_event() )
+    {
+        kernel_ptr->execute( queue_ptr, message_->get_offset(), 
+                             message_->get_global(), message_->get_local(), events,
+                             reinterpret_cast<generic_event**>( &event_ptr_ ) );
+    }
+    else
+    {
+        kernel_ptr->execute( queue_ptr, message_->get_offset(),
+                             message_->get_global(), message_->get_local(),
+                             events, NULL );
+    }
 
     //std::cerr << "... Ok" << std::endl;
 }
@@ -103,24 +112,28 @@ void msgSetKernelArg_command::execute()
     switch( message_->get_argument_type() )
     {
         case dcl_message< msgSetKernelArg >::unknow_type:
+            //std::cerr << "(" << message_->get_index() << ") set arg value: (int) " << std::hex << *((const uint32_t*) message_->get_buffer_pointer()) << std::endl;
             kernel_ptr->set_argument( message_->get_index(),
                                       message_->get_buffer_size(),
                                       message_->get_buffer_pointer() );
             break;
 
         case dcl_message< msgSetKernelArg >::memory_type:
+            //std::cerr << "(" << message_->get_index() << ") set arg buffer" << std::endl;
             kernel_ptr->set_argument( message_->get_index(),
                 server.get_memory_manager().get( message_->get_memory_id() ));
 
             break;
 
         case dcl_message< msgSetKernelArg >::image_type:
+            //std::cerr << "(" << message_->get_index() << ") set arg image" << std::endl;
             kernel_ptr->set_argument( message_->get_index(),
                 server.get_image_manager().get( message_->get_image_id() ));
 
             break;
 
         case dcl_message< msgSetKernelArg >::sampler_type:
+            //std::cerr << "(" << message_->get_index() << ") set arg sampler" << std::endl;
             kernel_ptr->set_argument( message_->get_index(),
                 server.get_sampler_manager().get( message_->get_sampler_id() ));
 

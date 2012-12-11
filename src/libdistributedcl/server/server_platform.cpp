@@ -123,13 +123,13 @@ void async_execute::enqueue( boost::shared_ptr<command> command_sp )
 //-----------------------------------------------------------------------------
 void async_execute::flush()
 {
-//    std::cerr << "Server Queue Flush - size: " << server_queue_.size();
+    //std::cerr << "Server Queue Flush - size: " << server_queue_.size() << std::endl;
     semaphore_.post();
 }
 //-----------------------------------------------------------------------------
 void async_execute::wait()
 {
-//    std::cerr << "Server Queue Wait - size: " << server_queue_.size();
+    //std::cerr << "Server Queue Wait - size: " << server_queue_.size() << std::endl;
     execute_queue();
 }
 ////-----------------------------------------------------------------------------
@@ -149,10 +149,15 @@ void async_execute::execute_queue()
 
     while( !server_queue_.empty() )
     {
+        //std::cerr << "Server Queue Execute Queue - size: " << server_queue_.size() << std::endl;
 		try
 		{
 			server_queue_.front()->execute();
 			server_queue_.front()->enqueue_response();
+
+            if( !server_queue_.front().unique() )
+                std::cerr << "Command nao e o ultimo: count = " << server_queue_.front().use_count() << std::endl;
+
 			server_queue_.pop_front();
 		}
 		catch( dcl::library_exception& ex )
@@ -162,6 +167,7 @@ void async_execute::execute_queue()
 			server_queue_.clear();
 		}
     }
+    //std::cerr << "Server Queue Execute Queue - size: " << server_queue_.size() << std::endl;
 }
 //-----------------------------------------------------------------------------
 void async_execute::work_thread()

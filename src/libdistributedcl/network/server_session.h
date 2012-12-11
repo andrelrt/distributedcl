@@ -234,6 +234,7 @@ private:
                     ret_msg_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_error_message >( ex.get_error() ) );
 
                 ret_packet_sp->add( ret_msg_sp );
+                waiting_messages_.clear();
             }
 
             if( boost::this_thread::interruption_requested() )
