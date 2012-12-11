@@ -109,6 +109,16 @@ protected:
         queue_ptr_( NULL ), server_event_( false ), event_ptr_( NULL ){}
 
     virtual bool async_run() const = 0;
+    
+    dcl::info::generic_event** get_event_ptr()
+    {
+        if( server_event_ ||
+            this->message_->get_return_event() )
+        {
+            return reinterpret_cast<dcl::info::generic_event**>( &event_ptr_ );
+        }
+        return NULL;
+    }
 
     inline void set_command_queue( dcl::composite::composite_command_queue* queue_ptr )
     {

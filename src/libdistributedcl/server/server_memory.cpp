@@ -85,8 +85,8 @@ void msgEnqueueWriteBuffer_command::execute()
 
     // Always no blocking
     buffer_ptr->write( queue_ptr, message_->get_buffer_pointer(),
-                       message_->get_buffer_size(), message_->get_offset(), false,
-                       events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
+                       message_->get_buffer_size(), message_->get_offset(),
+                       false, events, get_event_ptr() );
 
     //std::cerr << "... Ok" << std::endl;
 }
@@ -127,8 +127,8 @@ void msgEnqueueReadBuffer_command::execute()
     //std::cerr << "8";
     // Always no blocking
     buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),
-                      message_->get_buffer_size(), message_->get_offset(), false,
-                      events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
+                      message_->get_buffer_size(), message_->get_offset(),
+                      false, events, get_event_ptr() );
 
     //std::cerr << "... Ok" << std::endl;
 }
@@ -165,7 +165,7 @@ void msgEnqueueCopyBuffer_command::execute()
 
     dst_buffer_ptr->copy( queue_ptr, src_buffer_ptr, message_->get_buffer_size(),
                           message_->get_src_offset(), message_->get_dst_offset(),
-                          events, reinterpret_cast<generic_event**>( &event_ptr_ ) );
+                          events, get_event_ptr() );
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueCopyBuffer_command::async_run() const
@@ -219,8 +219,7 @@ void msgEnqueueWriteImage_command::execute()
     // Always no blocking
     image_ptr->write( queue_ptr, message_->get_buffer(), message_->get_origin(),
                       message_->get_region(), message_->get_row_pitch(),
-                      message_->get_slice_pitch(), false, events,
-                      reinterpret_cast<generic_event**>( &event_ptr_ ) );
+                      message_->get_slice_pitch(), false, events, get_event_ptr() );
 }
 //-----------------------------------------------------------------------------
 bool msgEnqueueWriteImage_command::async_run() const

@@ -101,7 +101,7 @@ public:
     ~dcl_message< msgCreateProgramWithBinary >()
     {
         if( new_binaries_ )
-            delete binaries_;
+            delete[] binaries_;
     }
 
     // Request

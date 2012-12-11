@@ -80,18 +80,9 @@ void msgEnqueueNDRangeKernel_command::execute()
     dcl::events_t events;
     load_message_events( message_->get_events(), events );
 
-    if( message_->get_return_event() )
-    {
-        kernel_ptr->execute( queue_ptr, message_->get_offset(), 
-                             message_->get_global(), message_->get_local(), events,
-                             reinterpret_cast<generic_event**>( &event_ptr_ ) );
-    }
-    else
-    {
-        kernel_ptr->execute( queue_ptr, message_->get_offset(),
-                             message_->get_global(), message_->get_local(),
-                             events, NULL );
-    }
+    kernel_ptr->execute( queue_ptr, message_->get_offset(), 
+                         message_->get_global(), message_->get_local(),
+                         events, get_event_ptr() );
 
     //std::cerr << "... Ok" << std::endl;
 }
