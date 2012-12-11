@@ -30,25 +30,31 @@ using dcl::network::message::msgGetDeviceInfo;
 namespace dcl {
 namespace remote {
 //-----------------------------------------------------------------------------
-std::map<dcl::remote_id_t, remote_device*> remote_device::loaded_devices_;
+std::map<dcl::remote_id_t, remote_device*>* remote_device::loaded_devices_ = NULL;
 //-----------------------------------------------------------------------------
 remote_device* remote_device::get_remote_device( const remote_platform* platform_ptr, dcl::remote_id_t id )
 {
-    if( loaded_devices_.find( id ) == loaded_devices_.end() )
+    if( loaded_devices_ == NULL )
+        loaded_devices_ = new std::map<dcl::remote_id_t, remote_device*>();
+
+    if( loaded_devices_->find( id ) == loaded_devices_->end() )
     {
-        loaded_devices_[ id ] = new remote_device( platform_ptr, id );
+        (*loaded_devices_)[ id ] = new remote_device( platform_ptr, id );
     }
-    return loaded_devices_[ id ];
+    return (*loaded_devices_)[ id ];
 }
 //-----------------------------------------------------------------------------
 remote_device* remote_device::get_remote_device( const remote_platform* platform_ptr, dcl::remote_id_t id, cl_device_type type )
 {
-    if( loaded_devices_.find( id ) == loaded_devices_.end() )
+    if( loaded_devices_ == NULL )
+        loaded_devices_ = new std::map<dcl::remote_id_t, remote_device*>();
+
+    if( loaded_devices_->find( id ) == loaded_devices_->end() )
     {
-        loaded_devices_[ id ] = new remote_device( platform_ptr, type );
-        loaded_devices_[ id ]->set_remote_id( id );
+        (*loaded_devices_)[ id ] = new remote_device( platform_ptr, type );
+        (*loaded_devices_)[ id ]->set_remote_id( id );
     }
-    return loaded_devices_[ id ];
+    return (*loaded_devices_)[ id ];
 }
 //-----------------------------------------------------------------------------
 bool remote_device::load_device_info()

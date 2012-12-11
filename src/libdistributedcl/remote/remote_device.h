@@ -42,7 +42,7 @@ class remote_device :
 public:
     ~remote_device()
     {
-        loaded_devices_.erase( get_remote_id() );
+        loaded_devices_->erase( get_remote_id() );
     }
 
     static remote_device* get_remote_device( const remote_platform* platform_ptr, dcl::remote_id_t id );
@@ -63,7 +63,7 @@ protected:
         load_device_info();
     }
 
-    static std::map<dcl::remote_id_t, remote_device*> loaded_devices_;
+    static std::map<dcl::remote_id_t, remote_device*>* loaded_devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::remote
