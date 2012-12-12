@@ -156,7 +156,9 @@ void async_execute::execute_queue()
 			server_queue_.front()->enqueue_response();
 
             if( !server_queue_.front().unique() )
-                std::cerr << "Command nao e o ultimo: count = " << server_queue_.front().use_count() << std::endl;
+                std::cerr << "Command<" << server_queue_.front()->get_message_type()
+                          << "> nao e o ultimo: count = " << server_queue_.front().use_count()
+                          << std::endl;
 
 			server_queue_.pop_front();
 		}

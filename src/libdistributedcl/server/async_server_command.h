@@ -110,7 +110,7 @@ protected:
 
     virtual bool async_run() const = 0;
     
-    dcl::info::generic_event** get_event_ptr()
+    inline dcl::info::generic_event** get_event_ptr()
     {
         if( server_event_ ||
             this->message_->get_return_event() )

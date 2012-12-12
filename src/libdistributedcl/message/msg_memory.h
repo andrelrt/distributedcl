@@ -236,6 +236,7 @@ public:
 
     inline void allocate_buffer()
     {
+        buffer_.reserve( size_ + 64 ); // 64 more bytes, just in case
         buffer_.resize( size_ );
     }
 

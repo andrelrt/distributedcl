@@ -53,6 +53,7 @@ public:
     virtual void enqueue_error( int32_t error_code ){}
     virtual dcl::composite::composite_command_queue* get_queue(){ return NULL; }
     virtual bool get_blocking() const { return false; }
+    virtual dcl::network::message::message_type get_message_type(){ return dcl::network::message::msg_invalid_message; }
 };
 //-----------------------------------------------------------------------------
 //class async_server
@@ -105,6 +106,11 @@ protected:
     server_command( message_sp_t message_sp, dcl::network::server::server_session_context* session_context_ptr ) :
         message_( boost::static_pointer_cast< dcl::network::message::dcl_message< TYPE > >( message_sp ) ),
         session_context_ptr_( session_context_ptr ){}
+
+    virtual dcl::network::message::message_type get_message_type()
+    {
+        return TYPE;
+    }
 
     dcl_message_sp_t message_;
     dcl::network::server::server_session_context* session_context_ptr_;
