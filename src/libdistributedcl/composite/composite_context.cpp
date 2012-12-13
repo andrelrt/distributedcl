@@ -130,24 +130,27 @@ generic_program* composite_context::do_create_program( const dcl::devices_t& dev
             }
         }
 
-        if( indexes.empty() )
-            throw library_exception( CL_INVALID_DEVICE );
-
-        context_binary_status.resize( indexes.size(), CL_INVALID_VALUE );
-
-        generic_program* program_ptr = (*it)->create_program( program_devices, context_lengths.data(), 
-                                                              context_binaries.data(), context_binary_status.data() );
-
-        if( binary_status != NULL )
+        if( !indexes.empty() )
         {
-            for( uint32_t i = 0; i < indexes.size(); ++i )
-            {
-                binary_status[ indexes[ i ] ] = context_binary_status[ i ];
-            }
-        }
+            context_binary_status.resize( indexes.size(), CL_INVALID_VALUE );
 
-        programs->insert_context_object( *it, program_ptr );
+            generic_program* program_ptr = (*it)->create_program( program_devices, context_lengths.data(), 
+                                                                  context_binaries.data(), context_binary_status.data() );
+
+            if( binary_status != NULL )
+            {
+                for( uint32_t i = 0; i < indexes.size(); ++i )
+                {
+                    binary_status[ indexes[ i ] ] = context_binary_status[ i ];
+                }
+            }
+
+            programs->insert_context_object( *it, program_ptr );
+        }
     }
+    
+    if( programs->empty() )
+            throw library_exception( CL_INVALID_DEVICE );
 
     return reinterpret_cast< generic_program* >( programs );
 }

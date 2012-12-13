@@ -115,7 +115,7 @@ void msgEnqueueReadBuffer_command::execute()
     dcl::events_t events;
     load_message_events( message_->get_events(), events );
 
-    std::cerr << "read memory " << message_->get_buffer_size() << " bytes" << std::endl;
+    //std::cerr << "read memory " << message_->get_buffer_size() << " bytes" << std::endl;
 
     // Always blocking
     buffer_ptr->read( queue_ptr, message_->get_buffer_pointer(),

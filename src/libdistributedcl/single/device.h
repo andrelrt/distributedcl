@@ -38,7 +38,8 @@ class device :
 public:
     virtual ~device()
     {
-        loaded_devices_.erase( get_id() );
+        if( loaded_devices_ )
+            loaded_devices_->erase( get_id() );
     }
 
     static device* get_device( const platform* platform_ptr, cl_device_id id );
@@ -50,7 +51,7 @@ private:
     void load_info_data( cl_device_info info );
     void load_info_string( cl_device_info info, std::string& str );
 
-    static std::map<cl_device_id, device*> loaded_devices_;
+    static std::map<cl_device_id, device*>* loaded_devices_;
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::single

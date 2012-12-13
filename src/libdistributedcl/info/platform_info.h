@@ -50,7 +50,7 @@ public:
     platform_info()
     {
         profile_.assign( "FULL_PROFILE" );
-        version_.assign( "OpenCL 1.1 DistributedCL 0.1" );
+        version_.assign( "OpenCL 1.0 DistributedCL 0.1" );
 	    name_.assign( "DistributedCL" );
         vendor_.assign( "DistributedCL Project" );
         extensions_.assign( "cl_khr_icd" );

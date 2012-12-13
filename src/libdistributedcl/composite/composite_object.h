@@ -69,7 +69,7 @@ protected:
     {
         return composite_map_.end();
     }
-
+    
 public:
     composite_object< DCL_TYPE_T >( const composite_context& context_ref ) :
         context_ref_( context_ref )
@@ -114,6 +114,11 @@ public:
         }
 
         throw library_exception( CL_INVALID_CONTEXT );
+    }
+
+    inline bool empty() const
+    {
+        return composite_map_.empty();
     }
 };
 //-----------------------------------------------------------------------------

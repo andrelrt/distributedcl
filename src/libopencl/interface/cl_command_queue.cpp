@@ -243,3 +243,12 @@ clFinish( cl_command_queue command_queue ) CL_API_SUFFIX__VERSION_1_0
     return CL_INVALID_COMMAND_QUEUE;
 }
 //-----------------------------------------------------------------------------
+extern "C" CL_API_ENTRY cl_int CL_API_CALL
+clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
+                          cl_command_queue_properties   /* properties */, 
+                          cl_bool                        /* enable */,
+                          cl_command_queue_properties * /* old_properties */) CL_EXT_SUFFIX__VERSION_1_0_DEPRECATED
+{
+    return CL_INVALID_VALUE;
+}
+//-----------------------------------------------------------------------------

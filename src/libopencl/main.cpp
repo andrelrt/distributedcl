@@ -36,7 +36,7 @@ using dcl::config::client_config;
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
 #else
-#define OPENCL_LIBRARY  "libOpenCL.so"
+#define OPENCL_LIBRARY  "/usr/lib/libOpenCL.so"
 #endif
 //-----------------------------------------------------------------------------
 void setup_library()

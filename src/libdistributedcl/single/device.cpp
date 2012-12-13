@@ -27,15 +27,18 @@
 namespace dcl {
 namespace single {
 //-----------------------------------------------------------------------------
-std::map<cl_device_id, device*> device::loaded_devices_;
+std::map<cl_device_id, device*>* device::loaded_devices_ = NULL;
 //-----------------------------------------------------------------------------
 device* device::get_device( const platform* platform_ptr, cl_device_id id )
 {
-    if( loaded_devices_.find( id ) == loaded_devices_.end() )
+    if( loaded_devices_ == NULL )
+        loaded_devices_ = new std::map<cl_device_id, device*>;
+        
+    if( loaded_devices_->find( id ) == loaded_devices_->end() )
     {
-        loaded_devices_[ id ] = new device( platform_ptr, id );
+        (*loaded_devices_)[ id ] = new device( platform_ptr, id );
     }
-    return loaded_devices_[ id ];
+    return (*loaded_devices_)[ id ];
 }
 //-----------------------------------------------------------------------------
 device::device( const platform* platform_ptr, cl_device_id id ) :
