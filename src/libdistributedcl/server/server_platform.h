@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,6 @@
 #include "composite/composite_memory.h"
 #include "composite/composite_event.h"
 #include "composite/composite_sampler.h"
-#include <boost/interprocess/sync/interprocess_barrier.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace server {
@@ -75,12 +74,6 @@ public:
     void enqueue( boost::shared_ptr<command> command_sp );
     void flush();
     void wait();
-    //void wait_unblock();
-    //bool has_blocking_command();
-    //void setup_barrier( boost::shared_ptr<boost::interprocess::barrier> barrier_sp )
-    //{
-    //    barrier_sp_ = barrier_sp;
-    //}
 
     inline bool empty()
     {
@@ -97,7 +90,6 @@ private:
     boost::interprocess::interprocess_mutex mutex_;
     boost::interprocess::interprocess_mutex condition_mutex_;
     boost::interprocess::interprocess_semaphore semaphore_;
-    //boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
 
     void execute_queue();
     void work_thread();
@@ -154,8 +146,6 @@ private:
     typedef std::map< dcl::composite::composite_command_queue*, async_execute* > queue_thread_map_t;
 
     queue_thread_map_t queue_thread_;
-    boost::shared_ptr<boost::interprocess::barrier> barrier_sp_;
-
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

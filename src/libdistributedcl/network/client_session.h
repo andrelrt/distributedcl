@@ -29,7 +29,6 @@
 #include <queue>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
-#include <boost/interprocess/sync/interprocess_barrier.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
