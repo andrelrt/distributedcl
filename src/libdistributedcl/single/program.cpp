@@ -81,7 +81,8 @@ program::program( const context& context_ref, const dcl::devices_t& devices,
             devs[ i ] = static_cast<device*>(devices[ i ])->get_id();
         }
 
-        prog = opencl_.clCreateProgramWithBinary( context_ref.get_id(), devices.size(),
+        prog = opencl_.clCreateProgramWithBinary( context_ref.get_id(),
+                                                  static_cast<cl_uint>( devices.size() ),
                                                   devs.get(), lengths, binaries,
                                                   binary_status, &error_code );
         if( error_code != CL_SUCCESS )

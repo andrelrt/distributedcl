@@ -282,8 +282,8 @@ void dcl_message< msgEnqueueWriteImage >::create_request( void* payload_ptr )
         reinterpret_cast< msgEnqueueWriteImage_request* >( enqueue_ptr );
 
     request_ptr->remote_id_ = host_to_network( remote_id_ );
-    request_ptr->row_pitch_ = host_to_network( row_pitch_ );
-    request_ptr->slice_pitch_ = host_to_network( slice_pitch_ );
+    request_ptr->row_pitch_ = host_to_network( static_cast<uint32_t>( row_pitch_ ) );
+    request_ptr->slice_pitch_ = host_to_network( static_cast<uint32_t>( slice_pitch_ ) );
 
     request_ptr->origin_[ 0 ] = host_to_network( static_cast<uint32_t>( origin_[ 0 ] ) );
     request_ptr->origin_[ 1 ] = host_to_network( static_cast<uint32_t>( origin_[ 1 ] ) );

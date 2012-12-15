@@ -25,9 +25,54 @@
 namespace dcl {
 namespace benchmark {
 //-----------------------------------------------------------------------------
-std::string source_generator< cl_double >::source_;
-std::string source_generator< cl_float >::source_;
-std::string source_generator< cl_int >::source_;
+std::string source_generator< cl_double >::source_(
+"__kernel void bench( __global double* matrixA,"
+"                     __global double* matrixB,"
+"                     __global double* resultMatrix,"
+"                     uint size )"
+"{"
+"    int x = get_global_id(0);"
+"    int y = get_global_id(1);"
+"    double sum = 0;"
+"    for(int i = 0; i < size; ++i)"
+"    {"
+"        sum = matrixA[size*y+i] * matrixB[size*i+x];"
+"    }"
+"    resultMatrix[size*y+x] = sum;"
+"}"
+);
+std::string source_generator< cl_float >::source_(
+"__kernel void bench( __global float* matrixA,"
+"                     __global float* matrixB,"
+"                     __global float* resultMatrix,"
+"                     uint size )"
+"{"
+"    int x = get_global_id(0);"
+"    int y = get_global_id(1);"
+"    float sum = 0;"
+"    for(int i = 0; i < size; ++i)"
+"    {"
+"        sum = matrixA[size*y+i] * matrixB[size*i+x];"
+"    }"
+"    resultMatrix[size*y+x] = sum;"
+"}"
+);
+std::string source_generator< cl_int >::source_(
+"__kernel void bench( __global int* matrixA,"
+"                     __global int* matrixB,"
+"                     __global int* resultMatrix,"
+"                     uint size )"
+"{"
+"    int x = get_global_id(0);"
+"    int y = get_global_id(1);"
+"    int sum = 0;"
+"    for(int i = 0; i < size; ++i)"
+"    {"
+"        sum = matrixA[size*y+i] * matrixB[size*i+x];"
+"    }"
+"    resultMatrix[size*y+x] = sum;"
+"}"
+);
 //-----------------------------------------------------------------------------
 }} // namespace dcl::benchmark
 //-----------------------------------------------------------------------------
