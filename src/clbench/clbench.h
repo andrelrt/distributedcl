@@ -33,6 +33,8 @@
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/timer/timer.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace benchmark {
@@ -84,54 +86,66 @@ protected:
 
     void* get_matrixA_data( uint32_t size )
     {
-        if( matrixA_.empty() )
-            setupMatrixes( size );
+        if( matrixA_.size() != size*size )
+            setup_matrices( size );
 
         return matrixA_.data();
     }
 
     void* get_matrixB_data( uint32_t size )
     {
-        if( matrixB_.empty() )
-            setupMatrixes( size );
+        if( matrixB_.size() != size*size )
+            setup_matrices( size );
 
         return matrixB_.data();
     }
 
     void* get_result_buffer( uint32_t size )
     {
-        if( resultMatrix_.empty() )
-            setupMatrixes( size );
+        if( resultMatrix_.size() != size*size )
+            setup_matrices( size );
 
         return resultMatrix_.data();
+    }
+
+    void setup_matrices( uint32_t size )
+    {
+        boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock( mutex_ );
+
+        matrixA_.resize( size * size );
+        matrixB_.resize( size * size );
+        resultMatrix_.resize( size * size, 0 );
+
+        for( uint32_t y = 0; y < size; ++y )
+        {
+            for( uint32_t x = 0; x < size; ++x )
+            {
+                //matrixA_[y*size+x] = static_cast<T>( rand() );
+                //matrixB_[y*size+x] = static_cast<T>( rand() );
+                matrixA_[y*size+x] = static_cast<T>( x==y? 1 : 0 );
+                matrixB_[y*size+x] = static_cast<T>( x==y? 1 : 0 );
+            }
+        }
     }
 
 private:
     std::vector<T> matrixA_;
     std::vector<T> matrixB_;
     std::vector<T> resultMatrix_;
-
-    void setupMatrixes( uint32_t size )
-    {
-        if( matrixA_.empty() )
-        {
-            matrixA_.resize( size * size );
-            matrixB_.resize( size * size );
-            resultMatrix_.resize( size * size, 0 );
-
-            for( uint32_t i = 0; i < size; ++i )
-            {
-                matrixA_[i] = static_cast<T>( rand() );
-                matrixB_[i] = static_cast<T>( rand() );
-            }
-        }
-    }
+    boost::interprocess::interprocess_mutex mutex_;
 };
+//-----------------------------------------------------------------------------
+template< typename T >
+struct double_check{ bool is_double(){ return false; } };
+//-----------------------------------------------------------------------------
+template<>
+struct double_check<double>{ bool is_double(){ return true; } };
 //-----------------------------------------------------------------------------
 template< typename T >
 class clbench :
     public source_generator<T>,
-    public data_generator<T>
+    public data_generator<T>,
+    public double_check<T>
 {
 public:
     clbench( uint32_t begin, uint32_t end, uint32_t iterations ) :
@@ -139,16 +153,16 @@ public:
 
     void run()
     {
-        if( !setupCL() ) return;
-        if( !loadKernel() ) return;
+        if( !setup_cl() ) return;
+        if( !load_kernel() ) return;
 
         for( uint32_t i = begin_; i <= end_; ++i )
         {
-            if( !loadData( i ) ) return;
-            if( !executeKernels( i ) ) return;
+            if( !load_data( i ) ) return;
+            if( !execute_kernels( i ) ) return;
         }
 
-        cleanUp();
+        cleanup();
     }
 
 private:
@@ -161,7 +175,7 @@ private:
 
     typedef T t_value_type;
 
-    bool setupCL()
+    bool setup_cl()
     {
         cl_int err;
 
@@ -185,8 +199,24 @@ private:
             return false;
         }
 
-        devices_ = context_->getInfo<CL_CONTEXT_DEVICES>();
-        if (devices_.size() == 0) {
+        std::vector<cl::Device> devs;
+        devs = context_->getInfo<CL_CONTEXT_DEVICES>();
+        if (devs.size() == 0) {
+            std::cerr << "No device in context\n";
+            return false;
+        }
+
+        for( uint32_t i = 0; i < devs.size(); ++i )
+        {
+            if( !double_check<T>::is_double() || 
+                devs[i].getInfo<CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE>() != 0 )
+            {
+                devices_.push_back( devs[i] );
+            }
+        }
+
+        if( devices_.size() == 0 )
+        {
             std::cerr << "No device available\n";
             return false;
         }
@@ -194,7 +224,7 @@ private:
         return true;
     }
 
-    bool loadKernel()
+    bool load_kernel()
     {
         cl_int err;
 
@@ -218,7 +248,7 @@ private:
         return true;
     }
 
-    bool loadData( uint32_t size )
+    bool load_data( uint32_t size )
     {
         cl_int err;
 
@@ -240,10 +270,12 @@ private:
         if (err != CL_SUCCESS)
             return false;
 
+        data_generator<T>::setup_matrices( size );
+
         return true;
     }
 
-    bool executeKernels( uint32_t size )
+    bool execute_kernels( uint32_t size )
     {
         boost::thread_group threads;
 
@@ -284,34 +316,47 @@ private:
             t.start();
 
             kernel_->setArg( 0, *matrixA_ );
-            kernel_->setArg( 1, *matrixA_ );
+            kernel_->setArg( 1, *matrixB_ );
             kernel_->setArg( 2, *resultMatrix_ );
             kernel_->setArg( 3, size );
 
             cl::Event execEvent;
-            queue->enqueueNDRangeKernel( *kernel_, cl::NullRange,    // offset
-                                          cl::NDRange( size, size ), // global
-                                          cl::NDRange( size, size ), // local
-                                          0, &execEvent );
+            err = queue->enqueueNDRangeKernel( *kernel_, cl::NullRange,   // offset
+                                               cl::NDRange( size, size ), // global
+                                               cl::NullRange,             // local
+                                               0, &execEvent );
 
             std::vector<cl::Event> waitEvents;
             waitEvents.push_back( execEvent );
 
+            t_value_type* buffer = static_cast<t_value_type*>(data_generator<T>::get_result_buffer( size ));
+
             cl::Event readEvent;
-            queue->enqueueReadBuffer( *resultMatrix_, CL_FALSE, 0,
-                                       sizeof(t_value_type) * size * size,
-                                       data_generator<T>::get_result_buffer( size ),
-                                       &waitEvents, &readEvent );
+            err = queue->enqueueReadBuffer( *resultMatrix_, CL_FALSE, 0,
+                                            sizeof(t_value_type) * size * size,
+                                            buffer, &waitEvents, &readEvent );
             queue->finish();
 
             readEvent.wait();
 
             t.stop();
             std::cout << t.format();
+
+            for( uint32_t y = 0; y < size; ++y )
+            {
+                for( uint32_t x = 0; x < size; ++x )
+                {
+                    if( buffer[y*size+x] != ((x==y)?1:0) )
+                    {
+                        std::cerr << "Matriz resultado errado" << std::endl;
+                        exit(1);
+                    }
+                }
+            }
         }
     }
 
-    void cleanUp(){}
+    void cleanup(){}
 };
 //-----------------------------------------------------------------------------
 }} // namespace dcl::benchmark
