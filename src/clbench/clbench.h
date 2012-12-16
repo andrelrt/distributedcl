@@ -141,6 +141,29 @@ struct double_check{ bool is_double(){ return false; } };
 template<>
 struct double_check<double>{ bool is_double(){ return true; } };
 //-----------------------------------------------------------------------------
+class result
+{
+public:
+    result(){}
+    void add_result( boost::timer::cpu_times times )
+    {
+        results_.push_back( static_cast<uint64_t>( times.wall ) );
+    }
+
+    size_t get_result_count() const
+    {
+        return results_.size();
+    }
+
+    uint64_t operator[]( size_t index ) const
+    {
+        return results_[ index ];
+    }
+
+private:
+    std::vector<uint64_t> results_;
+};
+//-----------------------------------------------------------------------------
 template< typename T >
 class clbench :
     public source_generator<T>,
@@ -148,30 +171,37 @@ class clbench :
     public double_check<T>
 {
 public:
-    clbench( uint32_t begin, uint32_t end, uint32_t iterations ) :
-        begin_(begin), end_(end), iterations_(iterations){}
+    clbench( const std::vector<uint32_t>& sizes, uint32_t iterations ) :
+        sizes_( sizes ), iterations_(iterations)
+    {
+    }
 
     void run()
     {
         if( !setup_cl() ) return;
         if( !load_kernel() ) return;
 
-        for( uint32_t i = begin_; i <= end_; ++i )
+        for( uint32_t i = 0; i < sizes_.size(); ++i )
         {
-            if( !load_data( i ) ) return;
-            if( !execute_kernels( i ) ) return;
+            results_[ sizes_[ i ] ];
+            if( !load_data( sizes_[ i ] ) ) return;
+            if( !execute_kernels( sizes_[ i ] ) ) return;
         }
+
+        print_results();
 
         cleanup();
     }
 
 private:
-    uint32_t begin_, end_, iterations_;
+    uint32_t iterations_;
+    std::vector<uint32_t> sizes_;
     boost::scoped_ptr<cl::Context> context_;
     boost::scoped_ptr<cl::Program> program_;
     boost::scoped_ptr<cl::Kernel> kernel_;
     boost::scoped_ptr<cl::Buffer> matrixA_, matrixB_, resultMatrix_;
     std::vector<cl::Device> devices_;
+    std::map<uint32_t, std::vector<result> > results_;
 
     typedef T t_value_type;
 
@@ -279,6 +309,8 @@ private:
     {
         boost::thread_group threads;
 
+        results_[ size ].resize( devices_.size() );
+
         for( uint32_t i = 0; i < devices_.size(); ++i )
             threads.create_thread( boost::bind( &dcl::benchmark::clbench<T>::bench, this, size, i ) );
 
@@ -340,20 +372,96 @@ private:
             readEvent.wait();
 
             t.stop();
-            std::cout << t.format();
+            results_[ size ][ index ].add_result( t.elapsed() );
+        }
+    }
 
-            for( uint32_t y = 0; y < size; ++y )
+    void print_results()
+    {
+        typedef std::map< uint32_t, std::pair< uint64_t, uint64_t> > t_size_data;
+        typedef std::map<uint32_t, t_size_data > t_all_times;
+        t_all_times all_times;
+
+        for( uint32_t index = 0; index < devices_.size(); ++index )
+        {
+            std::cout << "------------------------------" << std::endl 
+                      << "Device " << devices_[ index ].getInfo<CL_DEVICE_NAME>() << std::endl << std::endl;
+
+            for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
             {
-                for( uint32_t x = 0; x < size; ++x )
+                uint32_t size = sizes_[ sizeIndex ];
+
+                std::cout << "Size " << size * size * sizeof(t_value_type) <<"(" << size << ")" << std::endl; 
+
+                uint32_t second = 1;
+                uint32_t count = 1;
+                uint64_t total_time = 0;
+                for( uint32_t i = 0; i < results_[ size ][ index ].get_result_count(); ++i )
                 {
-                    if( buffer[y*size+x] != ((x==y)?1:0) )
+                    total_time += results_[ size ][ index ][ i ];
+                    all_times[ second ][ size ].second += results_[ size ][ index ][ i ];
+
+                    if( total_time >= 1000000000LL ) // 1 sec
                     {
-                        std::cerr << "Matriz resultado errado" << std::endl;
-                        exit(1);
+                        std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
+
+                        count = 0;
+                        total_time -= 1000000000LL;
+                        ++second;
+                        all_times[ second ][ size ].second += total_time;
                     }
+
+                    ++count;
+                    ++(all_times[ second ][ size ].first);
                 }
+
+                if( total_time != 0 )
+                    std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
+
+                std::cout << std::endl;
             }
         }
+
+
+        std::cout << "------------------------------" << std::endl 
+                  << "Totals" << std::endl << std::endl;
+
+        // CSV of the totals
+        std::cout << "\"Seconds\"";
+        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+        {
+            uint32_t size = sizes_[ sizeIndex ];
+            std::cout << ",\"" << size * size * sizeof(t_value_type) << " (" << size << ")\"";
+        }
+
+        std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(8) << std::endl;
+
+        for( t_all_times::iterator it = all_times.begin(); it != all_times.end(); ++it )
+        {
+            std::cout << "\"" << it->first << "\"";
+            for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+            {
+                uint32_t size = sizes_[ sizeIndex ];
+
+                if( it->second[ size ].second != 0 )
+                {
+                    double mul_per_sec = static_cast<double>(devices_.size()) *
+                                         static_cast<double>(it->second[ size ].first) *
+                                         1000000000. /
+                                         static_cast<double>(it->second[ size ].second);
+
+                    std::cout << ",\"" << mul_per_sec << "\"";
+                }
+                else
+                {
+                    std::cout << ",";
+                }
+
+            }
+            std::cout << std::endl;
+        }
+
+        std::cout << std::endl;
     }
 
     void cleanup(){}
