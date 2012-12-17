@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ class object_manager
 {
 public:
     object_manager() :
-        rand_(), dist_( 1, 0xFFFF ), random_( rand_, dist_ )
+        rand_(), dist_( 1, 0x7FFFFFFF ), random_( rand_, dist_ )
     {
 #if defined WIN32
         rand_.seed( static_cast<uint32_t>( __rdtsc() ) );
@@ -75,9 +75,6 @@ public:
 
         } while( object_map_.find( object_id ) != object_map_.end() );
 
-        if( object_map_.size() > 64000 )
-            std::cerr << object_map_.size() << std::endl;
-            
         {
             dcl::scoped_lock_t lock(mutex_);
             object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );

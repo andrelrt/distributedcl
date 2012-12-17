@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,7 +78,9 @@ void dcl_message< msgEnqueueNDRangeKernel >::create_request( void* payload_ptr )
         reinterpret_cast< msgEnqueueNDRangeKernel_request* >( enqueue_ptr );
 
     request_ptr->kernel_id_ = host_to_network( kernel_id_ );
-    request_ptr->dimensions_ = host_to_network( static_cast<uint16_t>( global_.get_dimensions() ) );
+    request_ptr->offset_dimensions_ = offset_.get_dimensions();
+    request_ptr->global_dimensions_ = global_.get_dimensions();
+    request_ptr->local_dimensions_ = local_.get_dimensions();
 
     for( size_t i = 0; i < global_.get_dimensions(); i++ )
     {
@@ -96,23 +98,25 @@ void dcl_message< msgEnqueueNDRangeKernel >::parse_request( const void* payload_
         reinterpret_cast< const msgEnqueueNDRangeKernel_request* >( enqueue_ptr );
 
     kernel_id_ = network_to_host( request_ptr->kernel_id_ );
-    uint16_t dimensions = network_to_host( request_ptr->dimensions_ );
+    uint32_t offset_dimensions = request_ptr->offset_dimensions_;
+    uint32_t global_dimensions = request_ptr->global_dimensions_;
+    uint32_t local_dimensions = request_ptr->local_dimensions_;
     size_t value[ 3 ];
 
     value[ 0 ] = network_to_host( request_ptr->offset_[ 0 ] );
     value[ 1 ] = network_to_host( request_ptr->offset_[ 1 ] );
     value[ 2 ] = network_to_host( request_ptr->offset_[ 2 ] );
-    offset_.copy( ndrange( dimensions, value ) );
+    offset_.copy( ndrange( offset_dimensions, value ) );
 
     value[ 0 ] = network_to_host( request_ptr->global_[ 0 ] );
     value[ 1 ] = network_to_host( request_ptr->global_[ 1 ] );
     value[ 2 ] = network_to_host( request_ptr->global_[ 2 ] );
-    global_.copy( ndrange( dimensions, value ) );
+    global_.copy( ndrange( global_dimensions, value ) );
 
     value[ 0 ] = network_to_host( request_ptr->local_[ 0 ] );
     value[ 1 ] = network_to_host( request_ptr->local_[ 1 ] );
     value[ 2 ] = network_to_host( request_ptr->local_[ 2 ] );
-    local_.copy( ndrange( dimensions, value ) );
+    local_.copy( ndrange( local_dimensions, value ) );
 }
 //-----------------------------------------------------------------------------
 // msgSetKernelArg

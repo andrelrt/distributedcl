@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,6 +78,9 @@ public:
 
                 case 1:
                     range_[ 0 ] = range[ 0 ];
+                    break;
+
+                case 0:
                     break;
 
                 default:

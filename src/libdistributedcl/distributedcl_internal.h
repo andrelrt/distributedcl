@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 AndrÈ Tupinamb· (andrelrt@gmail.com)
+ * Copyright (c) 2009-2012 Andr√© Tupinamb√° (andrelrt@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ class packet;
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------
-typedef uint16_t remote_id_t;
+typedef uint32_t remote_id_t;
 typedef std::vector< remote_id_t > remote_ids_t;
 typedef std::vector< cl_image_format > image_formats_t;
 typedef std::vector< dcl::info::generic_platform* > platforms_t;
