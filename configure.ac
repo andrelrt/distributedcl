@@ -53,4 +53,5 @@ AC_OUTPUT([Makefile
            src/libdistributedcl/Makefile
            src/distributedcld/Makefile
            src/libopencl/Makefile
+           src/clbench/Makefile
            src/CLInfo/Makefile])

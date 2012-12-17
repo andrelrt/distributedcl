@@ -172,7 +172,7 @@ class clbench :
 {
 public:
     clbench( const std::vector<uint32_t>& sizes, uint32_t iterations ) :
-        sizes_( sizes ), iterations_(iterations)
+        iterations_(iterations), sizes_( sizes )
     {
     }
 

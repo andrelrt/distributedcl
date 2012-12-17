@@ -1,7 +1,7 @@
 bin_PROGRAMS = clbench
 clbench_CPPFLAGS = $(BOOST_CPPFLAGS) -I$(top_srcdir)/inc
-clbench_LDFLAGS = @LIBS@ $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB)
-clbench_LDADD =  -lOpenCL
+clbench_LDFLAGS = @LIBS@ $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB) $(BOOST_THREAD_LIB) $(BOOST_SYSTEM_LIB)
+clbench_LDADD =  -lOpenCL -lboost_timer-mt
 clbench_SOURCES = \
 main.cpp \
 clbench.cpp
