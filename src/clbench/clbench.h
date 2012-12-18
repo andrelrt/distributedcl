@@ -35,6 +35,8 @@
 #include <boost/timer/timer.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
+
+#define MULTS_PER_ITERATION     50
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace benchmark {
@@ -359,7 +361,7 @@ private:
                                          cl::NullRange, 0,          // local
                                          NULL );
 
-            for( uint32_t j = 0; j < 10; ++j )
+            for( uint32_t j = 0; j < MULTS_PER_ITERATION; ++j )
             {
                 queue->enqueueReadBuffer( *result_vector_, CL_FALSE, 0,
                                           sizeof(t_value_type) * size,
@@ -385,7 +387,8 @@ private:
             data[ i ].read_event.wait();
 
             data[ i ].timer.stop();
-            std::cerr << ".";
+            if( !(i & 0xf) )
+                std::cerr << ".";
             results_[ size ][ index ].add_result( data[ i ].timer.elapsed() );
         }
         std::cerr << std::endl;
@@ -399,14 +402,14 @@ private:
 
         for( uint32_t index = 0; index < devices_.size(); ++index )
         {
-            std::cout << "------------------------------" << std::endl 
-                      << "Device " << devices_[ index ].getInfo<CL_DEVICE_NAME>() << std::endl << std::endl;
+//            std::cout << "------------------------------" << std::endl 
+//                      << "Device " << devices_[ index ].getInfo<CL_DEVICE_NAME>() << std::endl << std::endl;
 
             for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
             {
                 uint32_t size = sizes_[ sizeIndex ];
 
-                std::cout << "Size " << size * sizeof(t_value_type) <<"(" << size << ")" << std::endl; 
+//                std::cout << "Size " << size * sizeof(t_value_type) <<"(" << size << ")" << std::endl; 
 
                 uint32_t second = 1;
                 uint32_t count = 1;
@@ -418,7 +421,7 @@ private:
 
                     if( total_time >= 1000000000LL ) // 1 sec
                     {
-                        std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
+//                        std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
 
                         count = 0;
                         total_time -= 1000000000LL;
@@ -430,10 +433,10 @@ private:
                     ++(all_times[ second ][ size ].first);
                 }
 
-                if( total_time != 0 )
-                    std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
+//                if( total_time != 0 )
+//                    std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
 
-                std::cout << std::endl;
+//                std::cout << std::endl;
             }
         }
 
@@ -460,7 +463,8 @@ private:
 
                 if( it->second[ size ].second != 0 )
                 {
-                    double mul_per_sec = static_cast<double>(devices_.size()) *
+                    double mul_per_sec = MULTS_PER_ITERATION *
+                                         static_cast<double>(devices_.size()) *
                                          static_cast<double>(it->second[ size ].first) *
                                          1000000000. /
                                          static_cast<double>(it->second[ size ].second);
