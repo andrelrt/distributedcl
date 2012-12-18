@@ -37,7 +37,7 @@ using dcl::config::server_config;
 #if defined( WIN32 )
 #define OPENCL_LIBRARY  "C:\\WINDOWS\\System32\\OpenCL.dll"
 #else
-#define OPENCL_LIBRARY  "/usr/lib/libOpenCL.so.1"
+#define OPENCL_LIBRARY  "/usr/lib/libOpenCL.so"
 #endif
 //-----------------------------------------------------------------------------
 int main( int argc, char* argv[] )

@@ -47,17 +47,18 @@ class client_session : public dcl::network::platform::session< COMM >
 {
 public:
     client_session( const typename dcl::network::platform::session< COMM >::config_info_t& config ) :
-        dcl::network::platform::session< COMM >( config )//, running_( true ), send_semaphore_( 0 )
+        dcl::network::platform::session< COMM >( config ), running_( true ), async_flush_queue_semaphore_( 0 )
     {
         dcl::network::platform::session< COMM >::get_communication().startup( this );
-        //send_thread_sp_.reset( new boost::thread( &dcl::network::client::client_session<COMM>::send_thread, this ) );
+        async_flush_queue_thread_sp_.reset( 
+            new boost::thread( &dcl::network::client::client_session<COMM>::async_flush_queue_thread, this ) );
     }
 
     ~client_session()
     {
-        //running_ = false;
-        //send_semaphore_.post();
-        //send_thread_sp_->join();
+        running_ = false;
+        async_flush_queue_semaphore_.post();
+        async_flush_queue_thread_sp_->join();
 
         dcl::network::platform::session< COMM >::get_communication().shutdown();
         clear_received_messages();
@@ -109,10 +110,10 @@ public:
         //send_semaphore_.post();
     //}
 
-    //inline void async_flush_queue()
-    //{
-        //send_semaphore_.post();
-    //}
+    inline void async_flush_queue()
+    {
+        async_flush_queue_semaphore_.post();
+    }
     
     inline void flush_childs()
     {
@@ -164,14 +165,14 @@ private:
     typedef std::map< uint16_t, message_sp_t > message_map_t;
     typedef std::vector< client_session<COMM>* > clients_t;
 
-    //bool running_;
+    bool running_;
     clients_t childs_;
     dcl::mutex_t queue_mutex_;
     message_queue_t message_queue_;
     message_map_t pending_messages_;
     dcl::message_vector_t received_messages_;
-    //boost::scoped_ptr<boost::thread> send_thread_sp_;
-    //boost::interprocess::interprocess_semaphore send_semaphore_;
+    boost::scoped_ptr<boost::thread> async_flush_queue_thread_sp_;
+    boost::interprocess::interprocess_semaphore async_flush_queue_semaphore_;
 
     void flush()
     {
@@ -272,21 +273,18 @@ private:
         received_messages_.clear();
     }
 
-    //void send_thread()
-    //{
-        //while( 1 )
-        //{
-            //send_semaphore_.wait();
-            //boost::this_thread::yield();
-            ////boost::this_thread::sleep( boost::posix_time::milliseconds( 10 ) );
+    void async_flush_queue_thread()
+    {
+        while( 1 )
+        {
+            async_flush_queue_semaphore_.wait();
 
-            //if( !running_ )
-                //return;
-
-            //message_sp_t message_sp( new dcl::network::message::dcl_message< dcl::network::message::msg_flush_server >() );
-            //send_message( message_sp );
-        //}
-    //}
+            if( !running_ )
+                return;
+            
+            flush_queue();
+        }
+    }
 };
 //-----------------------------------------------------------------------------
 }}} // namespace dcl::network::client

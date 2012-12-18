@@ -33,7 +33,7 @@ namespace remote {
 //-----------------------------------------------------------------------------
 void remote_command_queue::flush() const
 {
-    get_queue_session().flush_queue();
+    get_queue_session().async_flush_queue();
 
     //dcl_message< msgFlush >* msg_ptr = new dcl_message< msgFlush >();
 

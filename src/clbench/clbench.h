@@ -81,57 +81,45 @@ class data_generator
 protected:
     data_generator()
     {
-        srand( 5154 );
     }
 
-    void* get_matrixA_data( uint32_t size )
+    void* get_vectorA_data( uint32_t size )
     {
-        if( matrixA_.size() != size*size )
-            setup_matrices( size );
+        if( vectorA_.size() != size )
+            setup_vectors( size );
 
-        return matrixA_.data();
+        return vectorA_.data();
     }
 
-    void* get_matrixB_data( uint32_t size )
+    void* get_vectorB_data( uint32_t size )
     {
-        if( matrixB_.size() != size*size )
-            setup_matrices( size );
+        if( vectorB_.size() != size )
+            setup_vectors( size );
 
-        return matrixB_.data();
+        return vectorB_.data();
     }
 
     void* get_result_buffer( uint32_t size )
     {
-        if( resultMatrix_.size() != size*size )
-            setup_matrices( size );
+        if( result_vector_.size() != size )
+            setup_vectors( size );
 
-        return resultMatrix_.data();
+        return result_vector_.data();
     }
 
-    void setup_matrices( uint32_t size )
+    void setup_vectors( uint32_t size )
     {
         boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock( mutex_ );
 
-        matrixA_.resize( size * size );
-        matrixB_.resize( size * size );
-        resultMatrix_.resize( size * size, 0 );
-
-        for( uint32_t y = 0; y < size; ++y )
-        {
-            for( uint32_t x = 0; x < size; ++x )
-            {
-                //matrixA_[y*size+x] = static_cast<T>( rand() );
-                //matrixB_[y*size+x] = static_cast<T>( rand() );
-                matrixA_[y*size+x] = static_cast<T>( x==y? 1 : 0 );
-                matrixB_[y*size+x] = static_cast<T>( x==y? 1 : 0 );
-            }
-        }
+        vectorA_.resize( size, static_cast<T>( 1 ) );
+        vectorB_.resize( size, static_cast<T>( 1 ) );
+        result_vector_.resize( size, 0 );
     }
 
 private:
-    std::vector<T> matrixA_;
-    std::vector<T> matrixB_;
-    std::vector<T> resultMatrix_;
+    std::vector<T> vectorA_;
+    std::vector<T> vectorB_;
+    std::vector<T> result_vector_;
     boost::interprocess::interprocess_mutex mutex_;
 };
 //-----------------------------------------------------------------------------
@@ -162,6 +150,16 @@ public:
 
 private:
     std::vector<uint64_t> results_;
+};
+//-----------------------------------------------------------------------------
+struct iteration_data
+{
+    uint32_t number;
+    cl::Event read_event;
+    std::vector<cl::Event> execute_event;
+    boost::timer::cpu_timer timer;
+
+    iteration_data() : execute_event(1){}
 };
 //-----------------------------------------------------------------------------
 template< typename T >
@@ -199,7 +197,7 @@ private:
     boost::scoped_ptr<cl::Context> context_;
     boost::scoped_ptr<cl::Program> program_;
     boost::scoped_ptr<cl::Kernel> kernel_;
-    boost::scoped_ptr<cl::Buffer> matrixA_, matrixB_, resultMatrix_;
+    boost::scoped_ptr<cl::Buffer> vectorA_, vectorB_, result_vector_;
     std::vector<cl::Device> devices_;
     std::map<uint32_t, std::vector<result> > results_;
 
@@ -282,25 +280,25 @@ private:
     {
         cl_int err;
 
-        matrixA_.reset( new cl::Buffer( *context_, CL_MEM_READ_ONLY,
-                                        sizeof(t_value_type) * size * size,
+        vectorA_.reset( new cl::Buffer( *context_, CL_MEM_READ_ONLY,
+                                        sizeof(t_value_type) * size,
                                         NULL, &err) );
         if (err != CL_SUCCESS)
             return false;
 
-        matrixB_.reset( new cl::Buffer( *context_, CL_MEM_READ_ONLY,
-                                        sizeof(t_value_type) * size * size,
+        vectorB_.reset( new cl::Buffer( *context_, CL_MEM_READ_ONLY,
+                                        sizeof(t_value_type) * size,
                                         NULL, &err) );
         if (err != CL_SUCCESS)
             return false;
 
-        resultMatrix_.reset( new cl::Buffer( *context_, CL_MEM_WRITE_ONLY,
-                                             sizeof(t_value_type) * size * size,
+        result_vector_.reset( new cl::Buffer( *context_, CL_MEM_WRITE_ONLY,
+                                             sizeof(t_value_type) * size,
                                              NULL, &err) );
         if (err != CL_SUCCESS)
             return false;
 
-        data_generator<T>::setup_matrices( size );
+        data_generator<T>::setup_vectors( size );
 
         return true;
     }
@@ -323,68 +321,74 @@ private:
     {
         cl_int err;
 
+        std::cerr << "Size " << size;
         boost::scoped_ptr<cl::CommandQueue> queue(
             new cl::CommandQueue(*context_, devices_[index], 0, &err) );
 
-        err = queue->enqueueWriteBuffer( *matrixA_, CL_FALSE, 0,
-                                         sizeof(t_value_type) * size * size,
-                                         data_generator<T>::get_matrixA_data( size ),
+        err = queue->enqueueWriteBuffer( *vectorA_, CL_FALSE, 0,
+                                         sizeof(t_value_type) * size,
+                                         data_generator<T>::get_vectorA_data( size ),
                                          NULL, NULL );
         if (err != CL_SUCCESS)
             return;
 
-        err = queue->enqueueWriteBuffer( *matrixB_, CL_FALSE, 0,
-                                         sizeof(t_value_type) * size * size,
-                                         data_generator<T>::get_matrixB_data( size ),
+        err = queue->enqueueWriteBuffer( *vectorB_, CL_FALSE, 0,
+                                         sizeof(t_value_type) * size,
+                                         data_generator<T>::get_vectorB_data( size ),
                                          NULL, NULL );
         if (err != CL_SUCCESS)
             return;
 
         queue->flush();
 
-
-        struct iteration_data
-        {
-            uint32_t number;
-            cl::Event read_event;
-            std::vector<cl::Event> execute_event;
-            boost::timer::cpu_timer timer;
-
-            iteration_data() : execute_event(1){}
-        };
-
         t_value_type* buffer = static_cast<t_value_type*>(data_generator<T>::get_result_buffer( size ));
         std::vector<iteration_data> data(iterations_);
 
-        for( uint32_t i = 0; i < iterations_; ++ i )
+        for( uint32_t i = 0; i < iterations_; ++i )
         {
             data[ i ].number = i;
             data[ i ].timer.start();
 
-            kernel_->setArg( 0, *matrixA_ );
-            kernel_->setArg( 1, *matrixB_ );
-            kernel_->setArg( 2, *resultMatrix_ );
+            kernel_->setArg( 0, *vectorA_ );
+            kernel_->setArg( 1, *vectorB_ );
+            kernel_->setArg( 2, *result_vector_ );
             kernel_->setArg( 3, size );
 
             queue->enqueueNDRangeKernel( *kernel_, cl::NullRange,   // offset
-                                         cl::NDRange( size, size ), // global
+                                         cl::NDRange( size ),       // global
                                          cl::NullRange, 0,          // local
-                                         &(data[i].execute_event[0]) );
+                                         NULL );
 
-            queue->enqueueReadBuffer( *resultMatrix_, CL_FALSE, 0,
-                                      sizeof(t_value_type) * size * size,
-                                      buffer, &(data[i].execute_event),
-                                      &(data[i].read_event) );
+            for( uint32_t j = 0; j < 10; ++j )
+            {
+                queue->enqueueReadBuffer( *result_vector_, CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, &data[ i ].read_event );
 
-            data[ i ].timer.stop();
-        }
+                kernel_->setArg( 0, *vectorA_ );
+                kernel_->setArg( 1, *vectorB_ );
+                kernel_->setArg( 2, *result_vector_ );
+                kernel_->setArg( 3, size );
 
-        for( uint32_t i = 0; i < iterations_; ++ i )
-        {
+                queue->enqueueNDRangeKernel( *kernel_, cl::NullRange,   // offset
+                                             cl::NDRange( size ),       // global
+                                             cl::NullRange, 0,          // local
+                                             NULL );
+
+                data[ i ].read_event.wait();
+            }
+
+            queue->enqueueReadBuffer( *result_vector_, CL_FALSE, 0,
+                                      sizeof(t_value_type) * size,
+                                      buffer, NULL, &data[ i ].read_event );
+
             data[ i ].read_event.wait();
 
+            data[ i ].timer.stop();
+            std::cerr << ".";
             results_[ size ][ index ].add_result( data[ i ].timer.elapsed() );
         }
+        std::cerr << std::endl;
     }
 
     void print_results()
@@ -402,7 +406,7 @@ private:
             {
                 uint32_t size = sizes_[ sizeIndex ];
 
-                std::cout << "Size " << size * size * sizeof(t_value_type) <<"(" << size << ")" << std::endl; 
+                std::cout << "Size " << size * sizeof(t_value_type) <<"(" << size << ")" << std::endl; 
 
                 uint32_t second = 1;
                 uint32_t count = 1;
@@ -442,7 +446,7 @@ private:
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
             uint32_t size = sizes_[ sizeIndex ];
-            std::cout << ",\"" << size * size * sizeof(t_value_type) << " (" << size << ")\"";
+            std::cout << ",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
         }
 
         std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(8) << std::endl;
