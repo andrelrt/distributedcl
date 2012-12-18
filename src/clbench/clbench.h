@@ -342,37 +342,48 @@ private:
 
         queue->flush();
 
-        boost::timer::cpu_timer t;
+
+        struct iteration_data
+        {
+            uint32_t number;
+            cl::Event read_event;
+            std::vector<cl::Event> execute_event;
+            boost::timer::cpu_timer timer;
+
+            iteration_data() : execute_event(1){}
+        };
+
+        t_value_type* buffer = static_cast<t_value_type*>(data_generator<T>::get_result_buffer( size ));
+        std::vector<iteration_data> data(iterations_);
+
         for( uint32_t i = 0; i < iterations_; ++ i )
         {
-            t.start();
+            data[ i ].number = i;
+            data[ i ].timer.start();
 
             kernel_->setArg( 0, *matrixA_ );
             kernel_->setArg( 1, *matrixB_ );
             kernel_->setArg( 2, *resultMatrix_ );
             kernel_->setArg( 3, size );
 
-            cl::Event execEvent;
-            err = queue->enqueueNDRangeKernel( *kernel_, cl::NullRange,   // offset
-                                               cl::NDRange( size, size ), // global
-                                               cl::NullRange,             // local
-                                               0, &execEvent );
+            queue->enqueueNDRangeKernel( *kernel_, cl::NullRange,   // offset
+                                         cl::NDRange( size, size ), // global
+                                         cl::NullRange, 0,          // local
+                                         &(data[i].execute_event[0]) );
 
-            std::vector<cl::Event> waitEvents;
-            waitEvents.push_back( execEvent );
+            queue->enqueueReadBuffer( *resultMatrix_, CL_FALSE, 0,
+                                      sizeof(t_value_type) * size * size,
+                                      buffer, &(data[i].execute_event),
+                                      &(data[i].read_event) );
 
-            t_value_type* buffer = static_cast<t_value_type*>(data_generator<T>::get_result_buffer( size ));
+            data[ i ].timer.stop();
+        }
 
-            cl::Event readEvent;
-            err = queue->enqueueReadBuffer( *resultMatrix_, CL_FALSE, 0,
-                                            sizeof(t_value_type) * size * size,
-                                            buffer, &waitEvents, &readEvent );
-            queue->finish();
+        for( uint32_t i = 0; i < iterations_; ++ i )
+        {
+            data[ i ].read_event.wait();
 
-            readEvent.wait();
-
-            t.stop();
-            results_[ size ][ index ].add_result( t.elapsed() );
+            results_[ size ][ index ].add_result( data[ i ].timer.elapsed() );
         }
     }
 
