@@ -377,7 +377,8 @@ private:
                                              cl::NullRange, 0,          // local
                                              NULL );
 
-                data[ i ].read_event.wait();
+                queue->flush();
+                //data[ i ].read_event.wait();
             }
 
             queue->enqueueReadBuffer( *result_vector_, CL_FALSE, 0,

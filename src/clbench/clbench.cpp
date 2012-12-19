@@ -87,8 +87,7 @@ std::string source_generator< cl_float >::source_(
 
 "    for( int i = 0; i < 0xfff; ++i )"
 "    {"
-"        c *= b; b *= a;"
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
+"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
 //"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2
 //"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 3
 //"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 4
