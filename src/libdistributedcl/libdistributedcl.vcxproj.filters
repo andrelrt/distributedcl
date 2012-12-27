@@ -406,9 +406,6 @@
     <ClCompile Include="server\message_dispatcher.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="network\server_session.cpp">
-      <Filter>network</Filter>
-    </ClCompile>
     <ClCompile Include="single\sampler.cpp">
       <Filter>single</Filter>
     </ClCompile>
@@ -416,6 +413,9 @@
       <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="server\server_sampler.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="network\server_session.cpp">
       <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
