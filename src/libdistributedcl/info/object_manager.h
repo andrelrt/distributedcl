@@ -62,11 +62,13 @@ public:
 
     inline void add( DCL_TYPE_T* object_ptr, remote_id_t object_id )
     {
+        dcl::scoped_lock_t lock(mutex_);
         object_map_[ object_id ] = object_ptr;
     }
 
     inline remote_id_t add( DCL_TYPE_T* object_ptr )
     {
+        dcl::scoped_lock_t lock(mutex_);
         remote_id_t object_id;
 
         do
@@ -76,8 +78,8 @@ public:
         } while( object_map_.find( object_id ) != object_map_.end() );
 
         {
-            dcl::scoped_lock_t lock(mutex_);
             object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
+            //std::cerr << "id: " << std::hex << object_id << std::endl;
         }
 
         //object_ptr->set_remote_id( object_id );
@@ -87,20 +89,28 @@ public:
 
     inline void remove( remote_id_t object_id )
     {
-        DCL_TYPE_T* ptr = get( object_id );
-        object_map_.erase( object_id );
-        delete ptr;
+        dcl::scoped_lock_t lock(mutex_);
+        typename object_map_t::iterator it = object_map_.find( object_id );
+        
+        if( it != object_map_.end() )
+        {
+            DCL_TYPE_T* ptr = it->second;
+            object_map_.erase( it );
+            delete ptr;
+        }
     }
 
     inline void remove( const DCL_TYPE_T* object_ptr )
     {
+        dcl::scoped_lock_t lock(mutex_);
         typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin; it != object_map_.end(); ++it )
         {
             if( it->second == object_ptr )
             {
-                remove( it->first );
+                object_map_.erase( it );
+                delete object_ptr;
 
                 break;
             }
@@ -109,19 +119,17 @@ public:
 
     inline remote_id_t get( DCL_TYPE_T* object_ptr, bool create_new = false )
     {
-        typename object_map_t::const_iterator it;
-
-        for( it = object_map_.begin(); it != object_map_.end(); ++it )
         {
-            if( it->second == object_ptr )
+            dcl::scoped_lock_t lock(mutex_);
+            typename object_map_t::const_iterator it;
+
+            for( it = object_map_.begin(); it != object_map_.end(); ++it )
             {
-                break;
+                if( it->second == object_ptr )
+                {
+                    return it->first;
+                }
             }
-        }
-
-        if( it != object_map_.end() )
-        {
-            return it->first;
         }
 
         if( !create_new )
@@ -132,7 +140,7 @@ public:
 
     inline DCL_TYPE_T* get( remote_id_t object_id ) const
     {
-        //std::cerr << "get object: " << object_id << std::endl;
+        dcl::scoped_lock_t lock(mutex_);
         typename object_map_t::const_iterator it = object_map_.find( object_id );
 
         if( it == object_map_.end() )
@@ -157,6 +165,7 @@ public:
 
     inline void clear()
     {
+        dcl::scoped_lock_t lock(mutex_);
         typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin(); it != object_map_.end(); ++it )
@@ -176,7 +185,7 @@ public:
 private:
     typedef std::map< remote_id_t, DCL_TYPE_T* > object_map_t;
 
-    dcl::mutex_t mutex_;
+    mutable dcl::mutex_t mutex_;
     object_map_t object_map_;
     boost::mt19937 rand_;
     boost::uniform_int<> dist_;

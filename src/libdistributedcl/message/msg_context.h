@@ -116,7 +116,7 @@ class dcl_message< msgGetContextInfo > : public base_message
 public:
     dcl_message< msgGetContextInfo >() : 
         base_message( msgGetContextInfo, true, sizeof( remote_id_t ), 0 ),
-        remote_id_( 0xffff ){}
+        remote_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )

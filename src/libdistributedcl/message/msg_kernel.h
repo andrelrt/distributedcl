@@ -51,7 +51,7 @@ class dcl_message< msgCreateKernel > : public base_message
 public:
     dcl_message< msgCreateKernel >() :
         base_message( msgCreateKernel, true, 0, sizeof(dcl::remote_id_t) ),
-        remote_id_( 0xffff ), program_id_( 0xffff ){}
+        remote_id_( INVALID_REMOTE_ID ), program_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, program_id_, program_id )
@@ -105,7 +105,7 @@ public:
     dcl_message< msgEnqueueNDRangeKernel >() :
         enqueue_message( msgEnqueueNDRangeKernel, false,
                          sizeof( msgEnqueueNDRangeKernel_request ) ),
-        kernel_id_( 0xffff )
+        kernel_id_( INVALID_REMOTE_ID )
     {
     }
 
@@ -167,7 +167,7 @@ public:
     dcl_message< msgSetKernelArg >() :
         //base_message( msgSetKernelArg, false ), 
         enqueue_message( msgSetKernelArg, false ), 
-        kernel_id_( 0xffff ), argument_id_( 0xffff ), index_( 0 ),
+        kernel_id_( INVALID_REMOTE_ID ), argument_id_( INVALID_REMOTE_ID ), index_( 0 ),
         argument_type_( unknow_type ), size_( 0 ), is_null_( false ){}
 
     enum argument_type_t
@@ -303,7 +303,7 @@ public:
     dcl_message< msgGetKernelWorkGroupInfo >() :
         base_message( msgGetKernelWorkGroupInfo, true, 2*sizeof(dcl::remote_id_t), 
                       sizeof(msgGetKernelWorkGroupInfo_response) ),
-        kernel_id_( 0xffff ), device_id_( 0xffff ){}
+        kernel_id_( INVALID_REMOTE_ID ), device_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, kernel_id_, kernel_id )

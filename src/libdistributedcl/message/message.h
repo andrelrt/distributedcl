@@ -360,8 +360,8 @@ protected:
         base_message( type, wait_response,
                       request_size + sizeof(enqueue_message_request),
                       response_size ),
-        blocking_( false ), return_event_( false ), command_queue_id_( 0xffff ),
-        event_id_( 0xffff ), event_ptr_( NULL ){}
+        blocking_( false ), return_event_( false ), command_queue_id_( INVALID_REMOTE_ID ),
+        event_id_( INVALID_REMOTE_ID ), event_ptr_( NULL ){}
 
     inline std::size_t get_enqueue_request_size()
     {

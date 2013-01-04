@@ -60,8 +60,8 @@ class dcl_message< msgCreateBuffer > : public base_message
 public:
     dcl_message< msgCreateBuffer >() :
         base_message( msgCreateBuffer, true, 0, sizeof( dcl::remote_id_t ) ),
-        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
-        flags_( 0 ), remote_id_( 0xffff ){}
+        context_id_( INVALID_REMOTE_ID ), buffer_ptr_( NULL ), buffer_len_( 0 ),
+        flags_( 0 ), remote_id_( INVALID_REMOTE_ID ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -124,7 +124,7 @@ class dcl_message< msgEnqueueWriteBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueWriteBuffer >() :
         enqueue_message( msgEnqueueWriteBuffer, false ), offset_( 0 ),
-        remote_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
+        remote_id_( INVALID_REMOTE_ID ), buffer_ptr_( NULL ), buffer_len_( 0 ),
         my_( creates_++ )
     {
         //std::cerr << "ctor - my: " << my_
@@ -206,7 +206,7 @@ class dcl_message< msgEnqueueReadBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueReadBuffer >() :
         enqueue_message( msgEnqueueReadBuffer, true, sizeof( msgEnqueueReadBuffer_request ) ),
-        remote_id_( 0xffff ), size_( 0 ), offset_( 0 ), data_ptr_( NULL ){}
+        remote_id_( INVALID_REMOTE_ID ), size_( 0 ), offset_( 0 ), data_ptr_( NULL ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -283,7 +283,7 @@ class dcl_message< msgEnqueueCopyBuffer > : public enqueue_message
 public:
     dcl_message< msgEnqueueCopyBuffer >() :
         enqueue_message( msgEnqueueCopyBuffer, false, sizeof( msgEnqueueCopyBuffer_request ) ),
-        src_remote_id_( 0xffff ), dst_remote_id_( 0xffff ), size_( 0 ), src_offset_( 0 ), dst_offset_( 0 ){}
+        src_remote_id_( INVALID_REMOTE_ID ), dst_remote_id_( INVALID_REMOTE_ID ), size_( 0 ), src_offset_( 0 ), dst_offset_( 0 ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, src_remote_id_, src_remote_id )
@@ -328,9 +328,9 @@ class dcl_message< msgCreateImage2D > : public base_message
 public:
     dcl_message< msgCreateImage2D >() :
         base_message( msgCreateImage2D, true, 0, sizeof( dcl::remote_id_t ) ),
-        context_id_( 0xffff ), buffer_ptr_( NULL ), buffer_len_( 0 ),
+        context_id_( INVALID_REMOTE_ID ), buffer_ptr_( NULL ), buffer_len_( 0 ),
         flags_( 0 ), channel_order_( 0 ), channel_type_( 0 ),
-        width_( 0 ), height_( 0 ), row_pitch_( 0 ), remote_id_( 0xffff ){}
+        width_( 0 ), height_( 0 ), row_pitch_( 0 ), remote_id_( INVALID_REMOTE_ID ){}
 
     typedef std::vector<uint8_t> buffer_t;
 
@@ -538,7 +538,7 @@ class dcl_message< msgEnqueueWriteImage > : public enqueue_message
 public:
     dcl_message< msgEnqueueWriteImage >() :
         enqueue_message( msgEnqueueWriteImage, false ),
-        remote_id_( 0xffff ), buffer_ptr_( NULL ), row_pitch_( 0 ),
+        remote_id_( INVALID_REMOTE_ID ), buffer_ptr_( NULL ), row_pitch_( 0 ),
         slice_pitch_( 0 ), element_size_( 0 ), buffer_len_( 0 )
     {
         origin_[ 0 ] = origin_[ 1 ] = origin_[ 2 ] = 0;

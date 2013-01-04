@@ -45,7 +45,7 @@ class dcl_message< msgCreateSampler > : public base_message
 public:
     dcl_message< msgCreateSampler >() : 
         base_message( msgCreateSampler, true, sizeof(msgCreateSampler_request), sizeof( dcl::remote_id_t ) ),
-    context_id_( 0xffff ), normalized_coords_( CL_FALSE ), addressing_mode_( 0 ), filter_mode_( 0 ), remote_id_( 0xffff ){}
+    context_id_( INVALID_REMOTE_ID ), normalized_coords_( CL_FALSE ), addressing_mode_( 0 ), filter_mode_( 0 ), remote_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )

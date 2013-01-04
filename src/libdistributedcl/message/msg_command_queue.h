@@ -47,7 +47,7 @@ public:
     dcl_message< msgCreateCommandQueue >() : 
         base_message( msgCreateCommandQueue, true, 
                       sizeof(msgCreateCommandQueue_request), sizeof(dcl::remote_id_t) ),
-    device_id_( 0xffff ), context_id_( 0xffff ), properties_( 0 ), remote_id_( 0xffff ){}
+    device_id_( INVALID_REMOTE_ID ), context_id_( INVALID_REMOTE_ID ), properties_( 0 ), remote_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, device_id_, device_id )
@@ -86,7 +86,7 @@ class dcl_message< msgFlush > : public base_message
 public:
     dcl_message< msgFlush >() :
         base_message( msgFlush, false, sizeof(dcl::remote_id_t), 0 ),
-    remote_id_( 0xffff ){}
+    remote_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
@@ -104,7 +104,7 @@ class dcl_message< msgFinish > : public base_message
 public:
     dcl_message< msgFinish >() :
         base_message( msgFinish, false, sizeof(dcl::remote_id_t), 0 ),
-    remote_id_( 0xffff ){}
+    remote_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )

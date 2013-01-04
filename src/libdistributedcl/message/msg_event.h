@@ -46,7 +46,7 @@ class dcl_message< msgWaitForEvents > : public base_message
 public:
     dcl_message< msgWaitForEvents >() :
         base_message( msgWaitForEvents, true, 2*sizeof( dcl::remote_id_t ), 0 ),
-        remote_id_( 0xffff ), command_queue_id_( 0xffff ){}
+        remote_id_( INVALID_REMOTE_ID ), command_queue_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )
@@ -69,7 +69,7 @@ public:
     dcl_message< msgGetEventProfilingInfo >() : 
         base_message( msgGetEventProfilingInfo, true, 2*sizeof( dcl::remote_id_t ),
                       sizeof(msgGetEventProfilingInfo_response) ),
-        remote_id_( 0xffff ), command_queue_id_( 0xffff ){}
+        remote_id_( INVALID_REMOTE_ID ), command_queue_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, remote_id_, remote_id )

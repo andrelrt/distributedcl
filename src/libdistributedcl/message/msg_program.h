@@ -49,7 +49,7 @@ class dcl_message< msgCreateProgramWithSource > : public base_message
 public:
     dcl_message< msgCreateProgramWithSource >() : 
         base_message( msgCreateProgramWithSource, true, 0, sizeof( dcl::remote_id_t ) ),
-    context_id_( 0xffff ), remote_id_( 0xffff ){}
+    context_id_( INVALID_REMOTE_ID ), remote_id_( INVALID_REMOTE_ID ){}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, context_id_, context_id )
@@ -96,7 +96,7 @@ class dcl_message< msgCreateProgramWithBinary > : public base_message
 public:
     dcl_message< msgCreateProgramWithBinary >() :
         base_message( msgCreateProgramWithBinary, true, 0, sizeof( dcl::remote_id_t ) ),
-    new_binaries_(false), context_id_( 0xffff ), binaries_( NULL ), remote_id_( 0xffff ){}
+    new_binaries_(false), context_id_( INVALID_REMOTE_ID ), binaries_( NULL ), remote_id_( INVALID_REMOTE_ID ){}
 
     ~dcl_message< msgCreateProgramWithBinary >()
     {
@@ -200,7 +200,7 @@ class dcl_message< msgBuildProgram > : public base_message
 {
 public:
     dcl_message< msgBuildProgram >() : 
-        base_message( msgBuildProgram, false, 0, 0 ), program_id_( 0xffff ) {}
+        base_message( msgBuildProgram, false, 0, 0 ), program_id_( INVALID_REMOTE_ID ) {}
 
     // Request
     MSG_PARAMETER_GET_SET( dcl::remote_id_t, program_id_, program_id )

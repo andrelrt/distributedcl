@@ -142,7 +142,7 @@ class dcl_message< msgGetDeviceInfo > : public base_message
 {
 public:
     dcl_message< msgGetDeviceInfo >() : 
-        base_message( msgGetDeviceInfo, true, sizeof(dcl::remote_id_t) ), remote_id_( 0xffff )
+        base_message( msgGetDeviceInfo, true, sizeof(dcl::remote_id_t) ), remote_id_( INVALID_REMOTE_ID )
     {}
 
     dcl_message< msgGetDeviceInfo >( remote_id_t id ) : 

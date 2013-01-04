@@ -134,6 +134,7 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
         request_ptr->index_ = index_;
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->argmuent_id_ = host_to_network( argument_id_ );
+        //std::cerr << "set_kernel_arg - ids: " << std::hex << kernel_id_ << "," << argument_id_ << std::endl;
     }
     else
     {
@@ -145,6 +146,7 @@ void dcl_message< msgSetKernelArg >::create_request( void* payload_ptr )
         request_ptr->index_ = index_;
         request_ptr->kernel_id_ = host_to_network( kernel_id_ );
         request_ptr->size_ = host_to_network( size_ );
+        //std::cerr << "set_kernel_arg - id: " << std::hex << kernel_id_ << std::endl;
 
         if( !is_null_ )
         {
@@ -167,6 +169,7 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
         index_ = request_ptr->index_;
         kernel_id_ = network_to_host( request_ptr->kernel_id_ );
         argument_id_ = network_to_host( request_ptr->argmuent_id_ );
+        //std::cerr << "set_kernel_arg - ids: " << std::hex << kernel_id_ << "," << argument_id_ << std::endl;
     }
     else
     {
@@ -184,6 +187,7 @@ void dcl_message< msgSetKernelArg >::parse_request( const void* payload_ptr )
         {
             buffer_.assign( req_ptr->buffer_, req_ptr->buffer_ + network_to_host( req_ptr->size_ ) );
         }
+        //std::cerr << "set_kernel_arg - id: " << std::hex << kernel_id_ << std::endl;
     }
 }
 //-----------------------------------------------------------------------------

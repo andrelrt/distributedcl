@@ -59,6 +59,7 @@ class packet;
 //-----------------------------------------------------------------------------
 namespace dcl {
 //-----------------------------------------------------------------------------
+#define INVALID_REMOTE_ID (0xffffffff)
 typedef uint32_t remote_id_t;
 typedef std::vector< remote_id_t > remote_ids_t;
 typedef std::vector< cl_image_format > image_formats_t;
