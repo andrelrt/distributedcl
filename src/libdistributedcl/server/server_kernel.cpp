@@ -110,7 +110,7 @@ void msgSetKernelArg_command::execute()
             break;
 
         case dcl_message< msgSetKernelArg >::memory_type:
-            std::cerr << "(" << message_->get_index() << ", " << message_->get_memory_id() << ") set arg buffer" << std::endl;
+            //std::cerr << "(" << message_->get_index() << ", " << message_->get_memory_id() << ") set arg buffer" << std::endl;
             kernel_ptr->set_argument( message_->get_index(),
                 server.get_memory_manager().get( message_->get_memory_id() ));
 
