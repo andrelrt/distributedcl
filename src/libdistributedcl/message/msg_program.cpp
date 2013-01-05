@@ -89,7 +89,7 @@ void dcl_message< msgCreateProgramWithBinary >::create_request( void* payload_pt
 
     for( uint16_t i = 0; i < devices_.size(); ++i )
     {
-        *lengths = host_to_network( lengths_[ i ] );
+        *lengths = host_to_network( static_cast<uint32_t>( lengths_[ i ] ) );
         ++lengths;
     }
 

@@ -20,11 +20,11 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_INFO_OBJECT_MANAGER_H_
-#define _DCL_INFO_OBJECT_MANAGER_H_
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #pragma once
 #endif
+#ifndef _DCL_INFO_OBJECT_MANAGER_H_
+#define _DCL_INFO_OBJECT_MANAGER_H_
 
 #include <time.h>
 #include <map>
@@ -33,6 +33,9 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
 #include <boost/thread.hpp>
+#include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
+#include <boost/interprocess/sync/sharable_lock.hpp>
+#include <boost/interprocess/sync/upgradable_lock.hpp>
 #if defined WIN32
 #pragma intrinsic(__rdtsc)
 #endif
@@ -43,6 +46,10 @@ namespace info {
 template< typename DCL_TYPE_T >
 class object_manager
 {
+    typedef boost::interprocess::sharable_lock< boost::interprocess::interprocess_upgradable_mutex > t_read_lock;
+    typedef boost::interprocess::upgradable_lock< boost::interprocess::interprocess_upgradable_mutex > t_read_to_write_lock;
+    typedef boost::interprocess::scoped_lock< boost::interprocess::interprocess_upgradable_mutex > t_write_lock;
+
 public:
     object_manager() :
         rand_(), dist_( 1, 0x7FFFFFFF ), random_( rand_, dist_ )
@@ -62,13 +69,13 @@ public:
 
     inline void add( DCL_TYPE_T* object_ptr, remote_id_t object_id )
     {
-        dcl::scoped_lock_t lock(mutex_);
+        t_write_lock lock(mutex_);
         object_map_[ object_id ] = object_ptr;
     }
 
     inline remote_id_t add( DCL_TYPE_T* object_ptr )
     {
-        dcl::scoped_lock_t lock(mutex_);
+        t_read_to_write_lock lock(mutex_);
         remote_id_t object_id;
 
         do
@@ -78,6 +85,7 @@ public:
         } while( object_map_.find( object_id ) != object_map_.end() );
 
         {
+            t_write_lock wlock(boost::move(lock));
             object_map_.insert( typename object_map_t::value_type( object_id, object_ptr ) );
             //std::cerr << "id: " << std::hex << object_id << std::endl;
         }
@@ -89,11 +97,13 @@ public:
 
     inline void remove( remote_id_t object_id )
     {
-        dcl::scoped_lock_t lock(mutex_);
+        t_read_to_write_lock lock(mutex_);
         typename object_map_t::iterator it = object_map_.find( object_id );
         
         if( it != object_map_.end() )
         {
+            t_write_lock wlock(boost::move(lock));
+
             DCL_TYPE_T* ptr = it->second;
             object_map_.erase( it );
             delete ptr;
@@ -102,13 +112,14 @@ public:
 
     inline void remove( const DCL_TYPE_T* object_ptr )
     {
-        dcl::scoped_lock_t lock(mutex_);
+        t_read_to_write_lock lock(mutex_);
         typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin; it != object_map_.end(); ++it )
         {
             if( it->second == object_ptr )
             {
+                t_write_lock wlock(boost::move(lock));
                 object_map_.erase( it );
                 delete object_ptr;
 
@@ -120,7 +131,7 @@ public:
     inline remote_id_t get( DCL_TYPE_T* object_ptr, bool create_new = false )
     {
         {
-            dcl::scoped_lock_t lock(mutex_);
+            t_read_lock lock(mutex_);
             typename object_map_t::const_iterator it;
 
             for( it = object_map_.begin(); it != object_map_.end(); ++it )
@@ -140,7 +151,7 @@ public:
 
     inline DCL_TYPE_T* get( remote_id_t object_id ) const
     {
-        dcl::scoped_lock_t lock(mutex_);
+        t_read_lock lock(mutex_);
         typename object_map_t::const_iterator it = object_map_.find( object_id );
 
         if( it == object_map_.end() )
@@ -153,6 +164,7 @@ public:
 
     inline bool has( remote_id_t object_id ) const
     {
+        t_read_lock lock(mutex_);
         typename object_map_t::const_iterator it = object_map_.find( object_id );
 
         return( it != object_map_.end() );
@@ -160,12 +172,13 @@ public:
 
     inline bool empty() const
     {
+        t_read_lock lock(mutex_);
         return object_map_.empty();
     }
 
     inline void clear()
     {
-        dcl::scoped_lock_t lock(mutex_);
+        t_write_lock lock(mutex_);
         typename object_map_t::const_iterator it;
 
         for( it = object_map_.begin(); it != object_map_.end(); ++it )
@@ -185,7 +198,7 @@ public:
 private:
     typedef std::map< remote_id_t, DCL_TYPE_T* > object_map_t;
 
-    mutable dcl::mutex_t mutex_;
+    mutable boost::interprocess::interprocess_upgradable_mutex mutex_;
     object_map_t object_map_;
     boost::mt19937 rand_;
     boost::uniform_int<> dist_;

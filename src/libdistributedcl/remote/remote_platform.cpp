@@ -82,21 +82,21 @@ void remote_platform::load_devices()
     message_sp_t message_sp( msg_ptr );
     session_ref_.send_message( message_sp );
 
-    for( std::size_t i = 0; i < msg_ptr->get_cpu_count(); i++ )
+    for( uint32_t i = 0; i < msg_ptr->get_cpu_count(); i++ )
     {
         remote_device* dev_ptr = remote_device::get_remote_device( this, msg_ptr->get_cpu_device( i ), static_cast< cl_device_type >( CL_DEVICE_TYPE_CPU ) );
 
         add_device( dev_ptr );
     }
 
-    for( std::size_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
+    for( uint32_t i = 0; i < msg_ptr->get_gpu_count(); i++ )
     {
         remote_device* dev_ptr = remote_device::get_remote_device( this, msg_ptr->get_gpu_device( i ), static_cast< cl_device_type >( CL_DEVICE_TYPE_GPU ) );
 
         add_device( dev_ptr );
     }
 
-    for( std::size_t i = 0; i < msg_ptr->get_accelerator_count(); i++ )
+    for( uint32_t i = 0; i < msg_ptr->get_accelerator_count(); i++ )
     {
         remote_device* dev_ptr = remote_device::get_remote_device( this, msg_ptr->get_accelerator_device( i ), static_cast< cl_device_type >( CL_DEVICE_TYPE_ACCELERATOR ) );
 

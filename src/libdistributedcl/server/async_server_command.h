@@ -149,7 +149,7 @@ protected:
         {
             server_platform& server = this->session_context_ptr_->get_server_platform();
 
-            uint32_t count = event_ids.size();
+            uint32_t count = static_cast<uint32_t>( event_ids.size() );
             events.reserve( count );
 
             for( uint32_t i = 0; i < count; i ++ )

@@ -20,14 +20,13 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_REMOTE_OBJECT_H_
-#define _DCL_REMOTE_OBJECT_H_
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #pragma once
 #endif
+#ifndef _DCL_REMOTE_OBJECT_H_
+#define _DCL_REMOTE_OBJECT_H_
 
 #include "distributedcl_internal.h"
-#include "info/object_manager.h"
 #include "network/session_manager.h"
 #include "message/msg_internal.h"
 //-----------------------------------------------------------------------------

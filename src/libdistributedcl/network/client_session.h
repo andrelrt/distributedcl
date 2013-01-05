@@ -64,7 +64,7 @@ public:
         clear_received_messages();
     }
     
-    const std::string& get_connection_string()
+    std::string get_connection_string()
     {
         return dcl::network::platform::session< COMM >::get_communication().get_config().connection_string_;
     }
