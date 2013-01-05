@@ -146,10 +146,10 @@ private:
     struct msgEnqueueNDRangeKernel_request
     {
         dcl::remote_id_t kernel_id_;
-        dcl::remote_id_t command_queue_id_;
         uint32_t offset_dimensions_:2;
         uint32_t global_dimensions_:2;
         uint32_t local_dimensions_:2;
+        uint32_t dummy_:26;
         uint32_t offset_[ 3 ];
         uint32_t global_[ 3 ];
         uint32_t local_[ 3 ];
