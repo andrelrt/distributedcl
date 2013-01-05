@@ -36,7 +36,7 @@
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 
-#define MULTS_PER_ITERATION     50
+#define MULTS_PER_ITERATION     10
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace benchmark {
@@ -280,6 +280,8 @@ private:
     {
         boost::thread_group threads;
 
+        std::cerr << "Size " << size;
+
         results_[ size ].resize( devices_.size() );
 
         for( uint32_t i = 0; i < devices_.size(); ++i )
@@ -287,21 +289,15 @@ private:
 
         threads.join_all();
 
+        std::cerr << std::endl;
         return true;
     }
 
     void bench( uint32_t size, uint32_t index )
     {
         cl_int err;
-        boost::scoped_ptr<cl::Buffer> vectorA, vectorB, result_vector;
-        boost::scoped_ptr<cl::Kernel> kernel( new cl::Kernel( *program_, "bench", &err) );
-        
-        if (err != CL_SUCCESS) {
-            std::cerr << "Kernel::Kernel() failed (" << err << ")\n";
-            return;
-        }
-
-        std::cerr << "Size " << size;
+        boost::scoped_ptr<cl::Buffer> vectorA, vectorB, result_vector[4];
+        boost::scoped_ptr<cl::Kernel> kernel[4];
 
         vectorA.reset( new cl::Buffer( *context_, CL_MEM_READ_ONLY,
                                         sizeof(t_value_type) * size,
@@ -315,9 +311,15 @@ private:
         if (err != CL_SUCCESS)
             return;
 
-        result_vector.reset( new cl::Buffer( *context_, CL_MEM_WRITE_ONLY,
-                                             sizeof(t_value_type) * size,
-                                             NULL, &err) );
+        for( int i = 0; i < 4; ++i )
+        {
+            result_vector[i].reset( new cl::Buffer( *context_, CL_MEM_WRITE_ONLY,
+                                                     sizeof(t_value_type) * size,
+                                                     NULL, &err) );
+
+            kernel[i].reset( new cl::Kernel( *program_, "bench", &err) );
+        }
+
         if (err != CL_SUCCESS)
             return;
 
@@ -355,43 +357,89 @@ private:
         {
             iteration_data this_data;
             this_data.number = i;
-            this_data.timer.start();
 
-            kernel->setArg( 0, *vectorA );
-            kernel->setArg( 1, *vectorB );
-            kernel->setArg( 2, *result_vector );
-            kernel->setArg( 3, size );
+            // warm up
+            kernel[0]->setArg( 0, *vectorA );
+            kernel[0]->setArg( 1, *vectorB );
+            kernel[0]->setArg( 2, *result_vector[0] );
+            kernel[0]->setArg( 3, size );
 
-            queue->enqueueNDRangeKernel( *kernel, cl::NullRange,   // offset
+            queue->enqueueNDRangeKernel( *kernel[0], cl::NullRange,   // offset
                                          cl::NDRange( size ),       // global
                                          cl::NullRange, 0,          // local
                                          NULL );
 
+            queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
+                                        sizeof(t_value_type) * size,
+                                        buffer, NULL, NULL );
+
+            this_data.timer.start();
+
             for( uint32_t j = 0; j < MULTS_PER_ITERATION; ++j )
             {
-                queue->enqueueReadBuffer( *result_vector, CL_FALSE, 0,
-                                          sizeof(t_value_type) * size,
-                                          buffer, NULL, &this_data.read_event );
+                // 1 -------------------------
+                kernel[1]->setArg( 0, *vectorA );
+                kernel[1]->setArg( 1, *vectorB );
+                kernel[1]->setArg( 2, *(result_vector[1]) );
+                kernel[1]->setArg( 3, size );
 
-                kernel->setArg( 0, *vectorA );
-                kernel->setArg( 1, *vectorB );
-                kernel->setArg( 2, *result_vector );
-                kernel->setArg( 3, size );
-
-                queue->enqueueNDRangeKernel( *kernel, cl::NullRange,   // offset
+                queue->enqueueNDRangeKernel( *kernel[1], cl::NullRange,   // offset
                                              cl::NDRange( size ),       // global
                                              cl::NullRange, 0,          // local
                                              NULL );
 
-                queue->flush();
-                //this_data.read_event.wait();
+                // 2 -------------------------
+                kernel[2]->setArg( 0, *vectorA );
+                kernel[2]->setArg( 1, *vectorB );
+                kernel[2]->setArg( 2, *(result_vector[2]) );
+                kernel[2]->setArg( 3, size );
+
+                queue->enqueueNDRangeKernel( *kernel[2], cl::NullRange,   // offset
+                                             cl::NDRange( size ),       // global
+                                             cl::NullRange, 0,          // local
+                                             NULL );
+
+                // 3 -------------------------
+                kernel[3]->setArg( 0, *vectorA );
+                kernel[3]->setArg( 1, *vectorB );
+                kernel[3]->setArg( 2, *(result_vector[3]) );
+                kernel[3]->setArg( 3, size );
+
+                queue->enqueueNDRangeKernel( *kernel[3], cl::NullRange,   // offset
+                                             cl::NDRange( size ),       // global
+                                             cl::NullRange, 0,          // local
+                                             NULL );
+
+                // 0 -------------------------
+                kernel[0]->setArg( 0, *vectorA );
+                kernel[0]->setArg( 1, *vectorB );
+                kernel[0]->setArg( 2, *(result_vector[0]) );
+                kernel[0]->setArg( 3, size );
+
+                queue->enqueueNDRangeKernel( *kernel[0], cl::NullRange,   // offset
+                                             cl::NDRange( size ),       // global
+                                             cl::NullRange, 0,          // local
+                                             NULL );
+
+                // reads ---------------------
+                queue->enqueueReadBuffer( *result_vector[1], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
+
+                queue->enqueueReadBuffer( *result_vector[2], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
+
+                queue->enqueueReadBuffer( *result_vector[3], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
+
+                queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
             }
 
-            queue->enqueueReadBuffer( *result_vector, CL_FALSE, 0,
-                                      sizeof(t_value_type) * size,
-                                      buffer, NULL, &this_data.read_event );
-
-            this_data.read_event.wait();
+            queue->finish();
 
             this_data.timer.stop();
             if( !(i & 0xf) )
@@ -402,7 +450,6 @@ private:
             
             ++i;
         }
-        std::cerr << std::endl;
     }
 
     void print_results()
@@ -474,7 +521,7 @@ private:
 
                 if( it->second[ size ].second != 0 )
                 {
-                    double mul_per_sec = MULTS_PER_ITERATION *
+                    double mul_per_sec = MULTS_PER_ITERATION * 4 *
                                          static_cast<double>(devices_.size()) *
                                          static_cast<double>(it->second[ size ].first) *
                                          1000000000. /

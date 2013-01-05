@@ -36,7 +36,7 @@ std::string source_generator< cl_double >::source_(
 "    double b = vectorB[i];"
 "    double c = a + b;"
 
-"    for( int i = 0; i < 0xffff; ++i )"
+"    for( int i = 0; i < 0x1fff; ++i )"
 "    {"
 "        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
 //"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2
@@ -85,7 +85,7 @@ std::string source_generator< cl_float >::source_(
 "    float b = vectorB[i];"
 "    float c = a + b;"
 
-"    for( int i = 0; i < 0xfff; ++i )"
+"    for( int i = 0; i < 0x1fff; ++i )"
 "    {"
 "        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
 //"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2
@@ -134,7 +134,7 @@ std::string source_generator< cl_int >::source_(
 "    int b = vectorB[i];"
 "    int c = a + b;"
 
-"    for( int i = 0; i < 0xffff; ++i )"
+"    for( int i = 0; i < 0x1fff; ++i )"
 "    {"
 "        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
 //"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2

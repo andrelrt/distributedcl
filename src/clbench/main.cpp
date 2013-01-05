@@ -31,7 +31,7 @@ int main( int argc, char* argv[])
     param.add_options()
         ( "help,h", "Show this message" )
         ( "begin,b",
-          boost::program_options::value< unsigned >( &begin )->default_value( 10 ),
+          boost::program_options::value< unsigned >( &begin )->default_value( 2 ),
           "Matrix begin size" )
         ( "end,e",
           boost::program_options::value< unsigned >( &end ),
@@ -78,7 +78,8 @@ int main( int argc, char* argv[])
 
         do
         {
-            sizes.push_back( size );
+            if( size >= begin )
+                sizes.push_back( size );
 
             size <<= 1;
 
