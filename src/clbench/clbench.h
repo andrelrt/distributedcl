@@ -375,6 +375,17 @@ private:
 
             this_data.timer.start();
 
+            // Start outside
+            kernel[0]->setArg( 0, *vectorA );
+            kernel[0]->setArg( 1, *vectorB );
+            kernel[0]->setArg( 2, *result_vector[0] );
+            kernel[0]->setArg( 3, size );
+
+            queue->enqueueNDRangeKernel( *kernel[0], cl::NullRange,   // offset
+                                         cl::NDRange( size ),       // global
+                                         cl::NullRange, 0,          // local
+                                         NULL );
+
             for( uint32_t j = 0; j < MULTS_PER_ITERATION; ++j )
             {
                 // 1 -------------------------
@@ -387,6 +398,12 @@ private:
                                              cl::NDRange( size ),       // global
                                              cl::NullRange, 0,          // local
                                              NULL );
+                queue->flush();
+
+                // read 0 --------------------
+                queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
 
                 // 2 -------------------------
                 kernel[2]->setArg( 0, *vectorA );
@@ -398,6 +415,12 @@ private:
                                              cl::NDRange( size ),       // global
                                              cl::NullRange, 0,          // local
                                              NULL );
+                queue->flush();
+
+                // read 1 --------------------
+                queue->enqueueReadBuffer( *result_vector[1], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
 
                 // 3 -------------------------
                 kernel[3]->setArg( 0, *vectorA );
@@ -409,6 +432,12 @@ private:
                                              cl::NDRange( size ),       // global
                                              cl::NullRange, 0,          // local
                                              NULL );
+                queue->flush();
+
+                // read 2 --------------------
+                queue->enqueueReadBuffer( *result_vector[2], CL_FALSE, 0,
+                                          sizeof(t_value_type) * size,
+                                          buffer, NULL, NULL );
 
                 // 0 -------------------------
                 kernel[0]->setArg( 0, *vectorA );
@@ -420,25 +449,18 @@ private:
                                              cl::NDRange( size ),       // global
                                              cl::NullRange, 0,          // local
                                              NULL );
+                queue->flush();
 
-                // reads ---------------------
-                queue->enqueueReadBuffer( *result_vector[1], CL_FALSE, 0,
-                                          sizeof(t_value_type) * size,
-                                          buffer, NULL, NULL );
-
-                queue->enqueueReadBuffer( *result_vector[2], CL_FALSE, 0,
-                                          sizeof(t_value_type) * size,
-                                          buffer, NULL, NULL );
-
+                // read 3 --------------------
                 queue->enqueueReadBuffer( *result_vector[3], CL_FALSE, 0,
-                                          sizeof(t_value_type) * size,
-                                          buffer, NULL, NULL );
-
-                queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
             }
 
+            // read 0 --------------------
+            queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
+                                      sizeof(t_value_type) * size,
+                                      buffer, NULL, NULL );
             queue->finish();
 
             this_data.timer.stop();
@@ -454,9 +476,10 @@ private:
 
     void print_results()
     {
-        typedef std::map< uint32_t, std::pair< uint64_t, uint64_t> > t_size_data;
+        typedef std::map< uint32_t, std::pair< uint64_t, uint64_t > > t_size_data;
         typedef std::map<uint32_t, t_size_data > t_all_times;
         t_all_times all_times;
+        t_size_data size_average;
 
         for( uint32_t index = 0; index < devices_.size(); ++index )
         {
@@ -472,9 +495,12 @@ private:
                 uint32_t second = 1;
                 uint32_t count = 1;
                 uint64_t total_time = 0;
+                ++size_average[ size ].second;
+
                 for( uint32_t i = 0; i < results_[ size ][ index ].get_result_count(); ++i )
                 {
                     total_time += results_[ size ][ index ][ i ];
+                    size_average[ size ].first += results_[ size ][ index ][ i ];
                     all_times[ second ][ size ].second += results_[ size ][ index ][ i ];
 
                     if( total_time >= 1000000000LL ) // 1 sec
@@ -488,6 +514,7 @@ private:
                     }
 
                     ++count;
+                    size_average[ size ].second += MULTS_PER_ITERATION * 4;
                     ++(all_times[ second ][ size ].first);
                 }
 
@@ -503,30 +530,57 @@ private:
                   << "Totals" << std::endl << std::endl;
 
         // CSV of the totals
-        std::cout << "\"Seconds\"";
+        std::cout << ",\"Seconds\"";
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
             uint32_t size = sizes_[ sizeIndex ];
             std::cout << ",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
         }
-
         std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(8) << std::endl;
+
+        std::cout << "\"Total time (s)\",";
+        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+        {
+            std::cout << ",\"" << static_cast<double>(size_average[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
+        }
+        std::cout << std::endl;
+
+        std::cout << "\"Operation count\",";
+        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+        {
+            uint32_t size = sizes_[ sizeIndex ];
+            std::cout << ",\"" << size_average[ sizes_[ sizeIndex ] ].second << "\"";
+        }
+        std::cout << std::endl;
+
+        std::cout << "\"Global average (op/s)\",";
+        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+        {
+            uint32_t size = sizes_[ sizeIndex ];
+            std::cout << ",\"=" << size_average[ sizes_[ sizeIndex ] ].second
+                      << "/" << static_cast<double>(size_average[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
+        }
+        std::cout << std::endl;
 
         for( t_all_times::iterator it = all_times.begin(); it != all_times.end(); ++it )
         {
-            std::cout << "\"" << it->first << "\"";
+            std::cout << ",\"" << it->first << "\"";
             for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
             {
                 uint32_t size = sizes_[ sizeIndex ];
+                double mul_per_sec = 0;
 
                 if( it->second[ size ].second != 0 )
                 {
-                    double mul_per_sec = MULTS_PER_ITERATION * 4 *
-                                         static_cast<double>(devices_.size()) *
-                                         static_cast<double>(it->second[ size ].first) *
-                                         1000000000. /
-                                         static_cast<double>(it->second[ size ].second);
+                    mul_per_sec = MULTS_PER_ITERATION * 4 *
+                                  static_cast<double>(devices_.size()) *
+                                  static_cast<double>(it->second[ size ].first) *
+                                  1000000000. /
+                                  static_cast<double>(it->second[ size ].second);
+                }
 
+                if( mul_per_sec > 0 )
+                {
                     std::cout << ",\"" << mul_per_sec << "\"";
                 }
                 else
