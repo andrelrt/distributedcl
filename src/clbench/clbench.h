@@ -20,11 +20,11 @@
  * THE SOFTWARE.
  */
 //-----------------------------------------------------------------------------
-#ifndef _DCL_CLBENCH_H_
-#define _DCL_CLBENCH_H_
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #pragma once
 #endif
+#ifndef _DCL_CLBENCH_H_
+#define _DCL_CLBENCH_H_
 
 #include <stdint.h>
 #include <string>
@@ -171,8 +171,8 @@ class clbench :
     public double_check<T>
 {
 public:
-    clbench( const std::vector<uint32_t>& sizes, uint32_t iterations ) :
-        iterations_(iterations), sizes_( sizes )
+    clbench( const std::vector<uint32_t>& sizes, uint32_t timeout, bool divide ) :
+        divide_( divide ), timeout_(timeout), sizes_( sizes )
     {
     }
 
@@ -194,8 +194,10 @@ public:
     }
 
 private:
-    uint32_t iterations_;
+    bool divide_;
+    uint32_t timeout_;
     std::vector<uint32_t> sizes_;
+
     boost::scoped_ptr<cl::Context> context_;
     boost::scoped_ptr<cl::Program> program_;
     std::vector<cl::Device> devices_;
@@ -272,9 +274,11 @@ private:
 
     bool load_data( uint32_t size )
     {
-
         return true;
     }
+
+    typedef std::map< uint32_t, std::pair< uint64_t, uint64_t > > t_size_data;
+    t_size_data size_average_;
 
     bool execute_kernels( uint32_t size )
     {
@@ -284,10 +288,31 @@ private:
 
         results_[ size ].resize( devices_.size() );
 
+        boost::timer::cpu_timer global_timer;
+        
+        uint32_t vector_size = size;
+
+        if( divide_ )
+        {
+            vector_size /= static_cast<uint32_t>( devices_.size() );
+
+            if( (vector_size == 0) ||
+                ((size % static_cast<uint32_t>( devices_.size() )) != 0) )
+            {
+                ++vector_size;
+            }
+        }
+
+        global_timer.start();
+
         for( uint32_t i = 0; i < devices_.size(); ++i )
-            threads.create_thread( boost::bind( &dcl::benchmark::clbench<T>::bench, this, size, i ) );
+            threads.create_thread( boost::bind( &dcl::benchmark::clbench<T>::bench, this, vector_size, i ) );
 
         threads.join_all();
+        global_timer.stop();
+
+        size_average_[ size ].first = static_cast<uint64_t>( global_timer.elapsed().wall );
+        size_average_[ size ].second = 0;
 
         std::cerr << std::endl;
         return true;
@@ -350,11 +375,17 @@ private:
         boost::timer::cpu_timer global_timer;
         global_timer.start();
         
-        uint64_t max_elapsed = iterations_ * 1000000000LL; // 1 sec
+        uint64_t max_elapsed = timeout_ * 1000000000LL; // 1 sec
         uint32_t i = 0;
 
-        while( max_elapsed > static_cast<uint64_t>( global_timer.elapsed().wall ) )
+        for(;;)
         {
+            if( (divide_ && (i > 1000)) ||
+                (!divide_ && (max_elapsed < static_cast<uint64_t>( global_timer.elapsed().wall ))) )
+            {
+                break;
+            }
+
             iteration_data this_data;
             this_data.number = i;
 
@@ -474,12 +505,11 @@ private:
         }
     }
 
+
     void print_results()
     {
-        typedef std::map< uint32_t, std::pair< uint64_t, uint64_t > > t_size_data;
         typedef std::map<uint32_t, t_size_data > t_all_times;
         t_all_times all_times;
-        t_size_data size_average;
 
         for( uint32_t index = 0; index < devices_.size(); ++index )
         {
@@ -490,32 +520,25 @@ private:
             {
                 uint32_t size = sizes_[ sizeIndex ];
 
-//                std::cout << "Size " << size * sizeof(t_value_type) <<"(" << size << ")" << std::endl; 
-
                 uint32_t second = 1;
-                uint32_t count = 1;
                 uint64_t total_time = 0;
-                ++size_average[ size ].second;
+                ++size_average_[ size ].second;
 
                 for( uint32_t i = 0; i < results_[ size ][ index ].get_result_count(); ++i )
                 {
                     total_time += results_[ size ][ index ][ i ];
-                    size_average[ size ].first += results_[ size ][ index ][ i ];
                     all_times[ second ][ size ].second += results_[ size ][ index ][ i ];
 
                     if( total_time >= 1000000000LL ) // 1 sec
                     {
-//                        std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
-
-                        count = 0;
-                        total_time -= 1000000000LL;
                         ++second;
                         all_times[ second ][ size ].second += total_time;
+
+                        total_time = 0;
                     }
 
-                    ++count;
-                    size_average[ size ].second += MULTS_PER_ITERATION * 4;
-                    ++(all_times[ second ][ size ].first);
+                    size_average_[ size ].second += MULTS_PER_ITERATION * 4;
+                    all_times[ second ][ size ].first += MULTS_PER_ITERATION * 4;
                 }
 
 //                if( total_time != 0 )
@@ -541,7 +564,7 @@ private:
         std::cout << "\"Total time (s)\",";
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
-            std::cout << ",\"" << static_cast<double>(size_average[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
+            std::cout << ",\"" << static_cast<double>(size_average_[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
         }
         std::cout << std::endl;
 
@@ -549,7 +572,7 @@ private:
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
             uint32_t size = sizes_[ sizeIndex ];
-            std::cout << ",\"" << size_average[ sizes_[ sizeIndex ] ].second << "\"";
+            std::cout << ",\"" << size_average_[ sizes_[ sizeIndex ] ].second << "\"";
         }
         std::cout << std::endl;
 
@@ -557,8 +580,8 @@ private:
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
             uint32_t size = sizes_[ sizeIndex ];
-            std::cout << ",\"=" << size_average[ sizes_[ sizeIndex ] ].second
-                      << "/" << static_cast<double>(size_average[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
+            std::cout << ",\"=" << size_average_[ sizes_[ sizeIndex ] ].second
+                      << "/" << static_cast<double>(size_average_[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
         }
         std::cout << std::endl;
 
@@ -572,8 +595,7 @@ private:
 
                 if( it->second[ size ].second != 0 )
                 {
-                    mul_per_sec = MULTS_PER_ITERATION * 4 *
-                                  static_cast<double>(devices_.size()) *
+                    mul_per_sec = static_cast<double>(devices_.size()) *
                                   static_cast<double>(it->second[ size ].first) *
                                   1000000000. /
                                   static_cast<double>(it->second[ size ].second);
