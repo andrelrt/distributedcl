@@ -516,34 +516,33 @@ private:
         typedef std::map<uint32_t, t_size_data > t_all_times;
         t_all_times all_times;
 
-        for( uint32_t index = 0; index < devices_.size(); ++index )
+        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
-//            std::cout << "------------------------------" << std::endl 
-//                      << "Device " << devices_[ index ].getInfo<CL_DEVICE_NAME>() << std::endl << std::endl;
+            uint32_t size = sizes_[ sizeIndex ];
 
-            for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+            for( uint32_t index = 0; index < devices_.size(); ++index )
             {
-                uint32_t size = sizes_[ sizeIndex ];
-
                 uint32_t second = 1;
                 uint64_t total_time = 0;
+                uint64_t total_ops = 0;
                 ++size_average_[ size ].second;
 
                 for( uint32_t i = 0; i < results_[ size ][ index ].get_result_count(); ++i )
                 {
                     total_time += results_[ size ][ index ][ i ];
-                    all_times[ second ][ size ].second += results_[ size ][ index ][ i ];
+                    size_average_[ size ].second += MULTS_PER_ITERATION * 4;
+
+                    total_ops += MULTS_PER_ITERATION * 4;
 
                     if( total_time >= 1000000000LL ) // 1 sec
                     {
+                        all_times[ second ][ size ].first += total_ops * 1000000000LL / total_time;
+                        all_times[ second ][ size ].second += 1000000000LL;
+
                         ++second;
-                        all_times[ second ][ size ].second += total_time;
-
                         total_time = 0;
+                        total_ops = 0;
                     }
-
-                    size_average_[ size ].second += MULTS_PER_ITERATION * 4;
-                    all_times[ second ][ size ].first += MULTS_PER_ITERATION * 4;
                 }
 
 //                if( total_time != 0 )
