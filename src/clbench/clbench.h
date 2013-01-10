@@ -304,9 +304,12 @@ private:
         }
 
         global_timer.start();
-
+        
         for( uint32_t i = 0; i < devices_.size(); ++i )
-            threads.create_thread( boost::bind( &dcl::benchmark::clbench<T>::bench, this, vector_size, i ) );
+        {
+            results_[ size ][ i ];
+            threads.create_thread( boost::bind( &dcl::benchmark::clbench<T>::bench, this, size, vector_size, i ) );
+        }
 
         threads.join_all();
         global_timer.stop();
@@ -314,11 +317,13 @@ private:
         size_average_[ size ].first = static_cast<uint64_t>( global_timer.elapsed().wall );
         size_average_[ size ].second = 0;
 
-        std::cerr << std::endl;
+        std::cerr << std::setiosflags(std::ios::fixed) << std::setprecision(2) 
+                  << " " << size_average_[ size ].first / 1000000000. << "s" << std::endl;
+
         return true;
     }
 
-    void bench( uint32_t size, uint32_t index )
+    void bench( uint32_t full_size, uint32_t size, uint32_t index )
     {
         cl_int err;
         boost::scoped_ptr<cl::Buffer> vectorA, vectorB, result_vector[4];
@@ -497,7 +502,7 @@ private:
             this_data.timer.stop();
             if( !(i & 0xf) )
                 std::cerr << ".";
-            results_[ size ][ index ].add_result( this_data.timer.elapsed() );
+            results_[ full_size ][ index ].add_result( this_data.timer.elapsed() );
             
             data.push_back( this_data );
             
