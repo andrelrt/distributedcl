@@ -34,12 +34,16 @@
 #include <boost/thread.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_condition.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/detail/atomic.hpp>
 
 #define MULTS_PER_ITERATION     10
 //-----------------------------------------------------------------------------
 namespace dcl {
 namespace benchmark {
+//-----------------------------------------------------------------------------
+typedef boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> t_scoped_lock;
 //-----------------------------------------------------------------------------
 template< typename T >
 class source_generator{};
@@ -111,7 +115,7 @@ protected:
 
     void setup_vectors( uint32_t size )
     {
-        boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock( mutex_ );
+        t_scoped_lock lock( mutex_ );
 
         vectorA_.resize( size, static_cast<T>( 1 ) );
         vectorB_.resize( size, static_cast<T>( 1 ) );
@@ -134,10 +138,21 @@ struct double_check<double>{ bool is_double(){ return true; } };
 class result
 {
 public:
-    result(){}
+    result() : count_(0) {}
+
+    void increament_count()
+    {
+        ++count_;
+    }
+
     void add_result( boost::timer::cpu_times times )
     {
         results_.push_back( static_cast<uint64_t>( times.wall ) );
+    }
+
+    uint32_t get_count() const
+    {
+        return count_;
     }
 
     size_t get_result_count() const
@@ -152,6 +167,7 @@ public:
 
 private:
     std::vector<uint64_t> results_;
+    volatile uint32_t count_;
 };
 //-----------------------------------------------------------------------------
 struct iteration_data
@@ -197,11 +213,16 @@ private:
     bool divide_;
     uint32_t timeout_;
     std::vector<uint32_t> sizes_;
+    std::map<uint32_t, std::vector<uint32_t> > counts_;
 
+    volatile uint32_t threads_running_;
     boost::scoped_ptr<cl::Context> context_;
     boost::scoped_ptr<cl::Program> program_;
     std::vector<cl::Device> devices_;
     std::map<uint32_t, std::vector<result> > results_;
+
+    boost::interprocess::interprocess_mutex start_threads_mutex_;
+    boost::interprocess::interprocess_condition start_threads_condition_;
 
     typedef T t_value_type;
 
@@ -303,12 +324,37 @@ private:
             }
         }
 
-        global_timer.start();
-        
+        threads_running_ = 0;
+
         for( uint32_t i = 0; i < devices_.size(); ++i )
         {
             results_[ size ][ i ];
             threads.create_thread( boost::bind( &dcl::benchmark::clbench<T>::bench, this, size, vector_size, i ) );
+        }
+
+        while( threads_running_ != devices_.size() )
+            boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
+
+        {
+            t_scoped_lock lock( start_threads_mutex_ );
+            start_threads_condition_.notify_all();
+        }
+
+        global_timer.start();
+
+        uint32_t last_count = 0;
+        while( threads_running_ != 0 )
+        {
+            boost::this_thread::sleep( boost::posix_time::seconds(1) );
+            uint32_t total_count = 0;
+
+            for( uint32_t i = 0; i < devices_.size(); ++i )
+            {
+                total_count += results_[ size ][ i ].get_count();
+            }
+
+            counts_[ size ].push_back( total_count - last_count );
+            last_count = total_count;
         }
 
         threads.join_all();
@@ -372,8 +418,6 @@ private:
         if (err != CL_SUCCESS)
             return;
 
-        queue->flush();
-
         t_value_type* buffer = static_cast<t_value_type*>(data_generator<T>::get_result_buffer( size ));
         std::vector<iteration_data> data;
 
@@ -382,6 +426,30 @@ private:
         
         uint64_t max_elapsed = timeout_ * 1000000000LL; // 1 sec
         uint32_t i = 0;
+
+        // warm up
+        kernel[0]->setArg( 0, *vectorA );
+        kernel[0]->setArg( 1, *vectorB );
+        kernel[0]->setArg( 2, *result_vector[0] );
+        kernel[0]->setArg( 3, size );
+
+        queue->enqueueNDRangeKernel( *kernel[0], cl::NullRange,   // offset
+                                     cl::NDRange( size ),       // global
+                                     cl::NullRange, 0,          // local
+                                     NULL );
+
+        queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
+                                  sizeof(t_value_type) * size,
+                                  buffer, NULL, NULL );
+
+        queue->finish();
+
+        boost::interprocess::ipcdetail::atomic_inc32( &threads_running_ );
+
+        {
+            t_scoped_lock lock( start_threads_mutex_ );
+            start_threads_condition_.wait( lock );
+        }
 
         for(;;)
         {
@@ -393,22 +461,6 @@ private:
 
             iteration_data this_data;
             this_data.number = i;
-
-            // warm up
-            kernel[0]->setArg( 0, *vectorA );
-            kernel[0]->setArg( 1, *vectorB );
-            kernel[0]->setArg( 2, *result_vector[0] );
-            kernel[0]->setArg( 3, size );
-
-            queue->enqueueNDRangeKernel( *kernel[0], cl::NullRange,   // offset
-                                         cl::NDRange( size ),       // global
-                                         cl::NullRange, 0,          // local
-                                         NULL );
-
-            queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
-                                        sizeof(t_value_type) * size,
-                                        buffer, NULL, NULL );
-
             this_data.timer.start();
 
             // Start outside
@@ -441,6 +493,8 @@ private:
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
 
+                results_[ full_size ][ index ].increament_count();
+
                 // 2 -------------------------
                 kernel[2]->setArg( 0, *vectorA );
                 kernel[2]->setArg( 1, *vectorB );
@@ -457,6 +511,8 @@ private:
                 queue->enqueueReadBuffer( *result_vector[1], CL_FALSE, 0,
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
+
+                results_[ full_size ][ index ].increament_count();
 
                 // 3 -------------------------
                 kernel[3]->setArg( 0, *vectorA );
@@ -475,6 +531,8 @@ private:
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
 
+                results_[ full_size ][ index ].increament_count();
+
                 // 0 -------------------------
                 kernel[0]->setArg( 0, *vectorA );
                 kernel[0]->setArg( 1, *vectorB );
@@ -491,6 +549,8 @@ private:
                 queue->enqueueReadBuffer( *result_vector[3], CL_FALSE, 0,
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
+
+                results_[ full_size ][ index ].increament_count();
             }
 
             // read 0 --------------------
@@ -498,6 +558,8 @@ private:
                                       sizeof(t_value_type) * size,
                                       buffer, NULL, NULL );
             queue->finish();
+
+            results_[ full_size ][ index ].increament_count();
 
             this_data.timer.stop();
             if( !(i & 0xf) )
@@ -508,6 +570,8 @@ private:
             
             ++i;
         }
+
+        boost::interprocess::ipcdetail::atomic_dec32( &threads_running_ );
     }
 
 
@@ -520,36 +584,44 @@ private:
         {
             uint32_t size = sizes_[ sizeIndex ];
 
-            for( uint32_t index = 0; index < devices_.size(); ++index )
+            for( uint32_t i = 0; i < counts_[ size ].size(); ++i )
             {
-                uint32_t second = 1;
-                uint64_t total_time = 0;
-                uint64_t total_ops = 0;
-                ++size_average_[ size ].second;
-
-                for( uint32_t i = 0; i < results_[ size ][ index ].get_result_count(); ++i )
-                {
-                    total_time += results_[ size ][ index ][ i ];
-                    size_average_[ size ].second += MULTS_PER_ITERATION * 4;
-
-                    total_ops += MULTS_PER_ITERATION * 4;
-
-                    if( total_time >= 1000000000LL ) // 1 sec
-                    {
-                        all_times[ second ][ size ].first += total_ops * 1000000000LL / total_time;
-                        all_times[ second ][ size ].second += 1000000000LL;
-
-                        ++second;
-                        total_time = 0;
-                        total_ops = 0;
-                    }
-                }
-
-//                if( total_time != 0 )
-//                    std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
-
-//                std::cout << std::endl;
+                all_times[ i + 1 ][ size ].first = counts_[ size ][ i ];
+                all_times[ i + 1 ][ size ].second = 1000000000LL;
+                size_average_[ size ].second += counts_[ size ][ i ];
             }
+
+
+//            for( uint32_t index = 0; index < devices_.size(); ++index )
+//            {
+//                uint32_t second = 1;
+//                uint64_t total_time = 0;
+//                uint64_t total_ops = 0;
+//                ++size_average_[ size ].second;
+//
+//                for( uint32_t i = 0; i < results_[ size ][ index ].get_result_count(); ++i )
+//                {
+//                    total_time += results_[ size ][ index ][ i ];
+//                    size_average_[ size ].second += MULTS_PER_ITERATION * 4;
+//
+//                    total_ops += MULTS_PER_ITERATION * 4;
+//
+//                    if( total_time >= 1000000000LL ) // 1 sec
+//                    {
+//                        all_times[ second ][ size ].first += total_ops * 1000000000LL / total_time;
+//                        all_times[ second ][ size ].second += 1000000000LL;
+//
+//                        ++second;
+//                        total_time = 0;
+//                        total_ops = 0;
+//                    }
+//                }
+//
+////                if( total_time != 0 )
+////                    std::cout << second << "s: " << static_cast<double>(count)*1000000000./static_cast<double>(total_time) << "mult/s" << std::endl;
+//
+////                std::cout << std::endl;
+//            }
         }
 
 
@@ -587,7 +659,7 @@ private:
             std::cout << ",\"=" << size_average_[ sizes_[ sizeIndex ] ].second
                       << "/" << static_cast<double>(size_average_[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
         }
-        std::cout << std::endl;
+        std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(0) << std::endl;
 
         for( t_all_times::iterator it = all_times.begin(); it != all_times.end(); ++it )
         {
@@ -599,16 +671,17 @@ private:
 
                 if( it->second[ size ].second != 0 )
                 {
-                    mul_per_sec = static_cast<double>(devices_.size()) *
-                                  static_cast<double>(it->second[ size ].first) *
-                                  1000000000. /
-                                  static_cast<double>(it->second[ size ].second);
+                    std::cout << ",\"" << it->second[ size ].first << "\"";
+                    //mul_per_sec = static_cast<double>(devices_.size()) *
+                    //              static_cast<double>(it->second[ size ].first) *
+                    //              1000000000. /
+                    //              static_cast<double>(it->second[ size ].second);
                 }
 
-                if( mul_per_sec > 0 )
-                {
-                    std::cout << ",\"" << mul_per_sec << "\"";
-                }
+                //if( mul_per_sec > 0 )
+                //{
+                //    std::cout << ",\"" << mul_per_sec << "\"";
+                //}
                 else
                 {
                     std::cout << ",";
