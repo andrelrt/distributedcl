@@ -219,7 +219,9 @@ private:
     boost::scoped_ptr<cl::Context> context_;
     boost::scoped_ptr<cl::Program> program_;
     std::vector<cl::Device> devices_;
-    std::map<uint32_t, std::vector<result> > results_;
+
+    typedef std::map<uint32_t, std::vector<result> > t_results;
+    t_results results_;
 
     boost::interprocess::interprocess_mutex start_threads_mutex_;
     boost::interprocess::interprocess_condition start_threads_condition_;
@@ -626,7 +628,7 @@ private:
 
 
         std::cout << "------------------------------" << std::endl 
-                  << "Totals" << std::endl << std::endl;
+                  << "Operations per second" << std::endl << std::endl;
 
         // CSV of the totals
         std::cout << ",\"Seconds\"";
@@ -691,7 +693,30 @@ private:
             std::cout << std::endl;
         }
 
-        std::cout << std::endl;
+        std::cout << std::endl << std::endl;
+
+        std::cout << "------------------------------" << std::endl 
+                  << "Miliseconds per operation" << std::endl 
+                  << std::setiosflags(std::ios::fixed) << std::setprecision(4) << std::endl;
+
+        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+        {
+            uint32_t size = sizes_[ sizeIndex ];
+
+            for( uint32_t index = 0; index < devices_.size(); ++index )
+            {
+                std::cout << "\"Device " << index << "\",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
+
+                size_t result_count = results_[ size ][ index ].get_result_count();
+                for( size_t i = 0; i < result_count ; ++i )
+                {
+                    std::cout << ",\"" << static_cast<double>(results_[ size ][ index ][ i ])/1000.0 << "\"";
+                }
+                std::cout << std::endl;
+            }
+        }
+
+        std::cout << std::endl << std::endl;
     }
 
     void cleanup(){}
