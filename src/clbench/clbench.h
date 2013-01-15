@@ -455,7 +455,7 @@ private:
 
         for(;;)
         {
-            if( (divide_ && (i > 1000)) ||
+            if( (divide_ && (i > 30)) ||
                 (!divide_ && (max_elapsed < static_cast<uint64_t>( global_timer.elapsed().wall ))) )
             {
                 break;
@@ -705,7 +705,7 @@ private:
 
             for( uint32_t index = 0; index < devices_.size(); ++index )
             {
-                std::cout << "\"Device " << index << "\",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
+                std::cout << "\"" << devices_[ index ].getInfo<CL_DEVICE_NAME>() << "\",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
 
                 size_t result_count = results_[ size ][ index ].get_result_count();
                 for( size_t i = 0; i < result_count ; ++i )
