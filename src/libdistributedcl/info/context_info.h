@@ -77,6 +77,7 @@ public:
     {
         generic_program* program_ptr = do_create_program( source_code );
 
+        scoped_lock_t lock( programs_mutex_ );
         programs_.push_back( program_ptr );
 
         return program_ptr;
@@ -87,6 +88,7 @@ public:
     {
         generic_program* program_ptr = do_create_program( devs, lengths, binaries, binary_status );
 
+        scoped_lock_t lock( programs_mutex_ );
         programs_.push_back( program_ptr );
 
         return program_ptr;
@@ -97,6 +99,7 @@ public:
     {
         generic_command_queue* queue_ptr = do_create_command_queue( device_ptr, properties );
 
+        scoped_lock_t lock( queues_mutex_ );
         queues_.push_back( queue_ptr );
 
         return queue_ptr;
@@ -106,6 +109,7 @@ public:
     {
         generic_memory* buffer_ptr = do_create_buffer( host_ptr, size, flags );
 
+        scoped_lock_t lock( memory_objects_mutex_ );
         memory_objects_.push_back( reinterpret_cast<generic_memory_object*>( buffer_ptr ) );
 
         return buffer_ptr;
@@ -119,6 +123,7 @@ public:
         generic_image* image_ptr =
             do_create_image( host_ptr, flags, format, width, height, row_pitch );
 
+        scoped_lock_t lock( memory_objects_mutex_ );
         memory_objects_.push_back(  reinterpret_cast<generic_memory_object*>( image_ptr ) );
 
         return image_ptr;
@@ -134,6 +139,7 @@ public:
         generic_sampler* sampler_ptr =
             do_create_sampler( normalized_coords, addressing_mode, filter_mode );
 
+        scoped_lock_t lock( samplers_mutex_ );
         samplers_.push_back( sampler_ptr );
 
         return sampler_ptr;
@@ -149,13 +155,18 @@ protected:
     typedef std::vector< generic_command_queue* > queues_t;
     typedef std::vector< generic_memory_object* > memory_objects_t;
     typedef std::vector< generic_sampler* > samplers_t;
-
+    
     queues_t queues_;
     devices_t devices_;
     samplers_t samplers_;
     programs_t programs_;
     memory_objects_t memory_objects_;
     const generic_platform& platform_;
+    
+    dcl::mutex_t programs_mutex_;
+    dcl::mutex_t queues_mutex_;
+    dcl::mutex_t memory_objects_mutex_;
+    dcl::mutex_t samplers_mutex_;
 
     virtual void load_devices() = 0;
     virtual generic_program* do_create_program( const std::string& source_code ) = 0;
