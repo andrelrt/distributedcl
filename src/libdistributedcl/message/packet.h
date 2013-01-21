@@ -40,7 +40,7 @@ class packet
 {
 public:
     inline packet( uint8_t* buffer_ptr, std::size_t buffer_size ) :
-        buffer_size_( buffer_size ), buffer_ptr_( buffer_ptr )
+        length_( 0 ), buffer_size_( buffer_size ), buffer_ptr_( buffer_ptr )
     {
         header_ptr_ = reinterpret_cast< packet_header* >( buffer_ptr );
     }
@@ -51,7 +51,7 @@ public:
 
     ~packet(){}
 
-    uint32_t parse_header();
+    uint32_t parse_header() const;
     void parse( bool is_request );
 
     inline uint16_t get_message_count() const
@@ -89,7 +89,7 @@ public:
         return buffer_ptr_;
     }
 
-    inline std::size_t get_buffer_size()
+    inline std::size_t get_buffer_size() const
     {
         return buffer_size_;
     }

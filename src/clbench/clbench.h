@@ -132,15 +132,15 @@ private:
 };
 //-----------------------------------------------------------------------------
 template< typename T >
-struct double_check{ bool is_double(){ return false; } };
+struct double_check{ static bool is_double(){ return false; } };
 //-----------------------------------------------------------------------------
 template<>
-struct double_check<double>{ bool is_double(){ return true; } };
+struct double_check<double>{ static bool is_double(){ return true; } };
 //-----------------------------------------------------------------------------
 class result
 {
 public:
-    result() : count_(0), last_( 0 ){}
+    result() : last_( 0 ), count_(0){}
 
     void add_result( boost::timer::cpu_times times )
     {
@@ -266,7 +266,8 @@ private:
 
         std::vector<cl::Device> devs;
         devs = context_->getInfo<CL_CONTEXT_DEVICES>();
-        if (devs.size() == 0) {
+        if( devs.empty() ) 
+        {
             std::cerr << "No device in context\n";
             return false;
         }
@@ -280,7 +281,9 @@ private:
             }
         }
 
-        if( devices_.size() == 0 )
+        std::cerr << devices_[0].getInfo<CL_DEVICE_NAME>() << std::endl;
+
+        if( devices_.empty() )
         {
             std::cerr << "No device available\n";
             return false;
@@ -653,7 +656,7 @@ private:
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
             uint32_t size = sizes_[ sizeIndex ];
-            std::cout << ",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
+            std::cout << ",\"" << size << "\"";
         }
         std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(8) << std::endl;
 
@@ -687,7 +690,7 @@ private:
             for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
             {
                 uint32_t size = sizes_[ sizeIndex ];
-                double mul_per_sec = 0;
+                //double mul_per_sec = 0;
 
                 if( it->second[ size ].second != 0 )
                 {
@@ -713,28 +716,28 @@ private:
 
         std::cout << std::endl << std::endl;
 
-        std::cout << "------------------------------" << std::endl 
-                  << "Miliseconds per operation" << std::endl 
-                  << std::setiosflags(std::ios::fixed) << std::setprecision(4) << std::endl;
+        //std::cout << "------------------------------" << std::endl 
+        //          << "Miliseconds per operation" << std::endl 
+        //          << std::setiosflags(std::ios::fixed) << std::setprecision(4) << std::endl;
 
-        for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
-        {
-            uint32_t size = sizes_[ sizeIndex ];
+        //for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
+        //{
+        //    uint32_t size = sizes_[ sizeIndex ];
 
-            for( uint32_t index = 0; index < devices_.size(); ++index )
-            {
-                std::cout << "\"" << devices_[ index ].getInfo<CL_DEVICE_NAME>() << "\",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
+        //    for( uint32_t index = 0; index < devices_.size(); ++index )
+        //    {
+        //        std::cout << "\"" << devices_[ index ].getInfo<CL_DEVICE_NAME>() << "\",\"" << size * sizeof(t_value_type) << " (" << size << ")\"";
 
-                size_t result_count = results_[ size ][ index ].get_result_count();
-                for( size_t i = 0; i < result_count ; ++i )
-                {
-                    std::cout << ",\"" << static_cast<double>(results_[ size ][ index ][ i ])/1000000.0 << "\"";
-                }
-                std::cout << std::endl;
-            }
-        }
+        //        size_t result_count = results_[ size ][ index ].get_result_count();
+        //        for( size_t i = 0; i < result_count ; ++i )
+        //        {
+        //            std::cout << ",\"" << static_cast<double>(results_[ size ][ index ][ i ])/1000000.0 << "\"";
+        //        }
+        //        std::cout << std::endl;
+        //    }
+        //}
 
-        std::cout << std::endl << std::endl;
+        //std::cout << std::endl << std::endl;
     }
 
     void cleanup(){}

@@ -62,7 +62,7 @@ generic_context* composite_platform::create_context( const devices_t& devices ) 
         {
             context_devices.clear();
     
-            for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
+            for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); ++dev_it )
             {
                 if( (*dev_it)->get_platform() == *it )
                 {
@@ -85,7 +85,7 @@ generic_context* composite_platform::create_context( const devices_t& devices ) 
             delete composite_context_ptr;
         }
 
-        throw ex;
+        throw;
     }
 
     return composite_context_ptr;

@@ -209,7 +209,7 @@ private:
         dcl::message_vector_t::iterator recv_message_it;
         dcl::message_vector_t& recv_messages = recv_packet_sp->get_messages();
 
-        for( recv_message_it = recv_messages.begin(); recv_message_it != recv_messages.end(); recv_message_it++ )
+        for( recv_message_it = recv_messages.begin(); recv_message_it != recv_messages.end(); ++recv_message_it )
         {
             if( (*recv_message_it)->get_type() == dcl::network::message::msg_error_message )
             {

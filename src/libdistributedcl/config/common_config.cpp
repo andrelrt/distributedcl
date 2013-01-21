@@ -38,7 +38,7 @@ namespace dcl {
 namespace config {
 //-----------------------------------------------------------------------------
 common_config::common_config( const std::string& parameters_name ) :
-    cpu_only_( false ), gpu_only_( false ), parameters_( parameters_name )
+    local_( false ), cpu_only_( false ), gpu_only_( false ), parameters_( parameters_name )
 {
     parameters_.add_options()
         ( "help,h", "Show this message" )

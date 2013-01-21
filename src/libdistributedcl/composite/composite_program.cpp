@@ -51,7 +51,7 @@ void composite_program::build( const devices_t& devices, const std::string& buil
         const devices_t& context_devices = it->first->get_devices();
         device_set_t device_set( context_devices.begin(), context_devices.end() );
 
-        for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); dev_it++ )
+        for( devices_t::const_iterator dev_it = devices.begin(); dev_it != devices.end(); ++dev_it )
         {
             if( device_set.find( *dev_it ) != device_set.end() )
             {

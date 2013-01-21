@@ -75,7 +75,7 @@ public:
     void flush();
     void wait();
 
-    inline bool empty()
+    inline bool empty() const
     {
         return server_queue_.empty();
     }

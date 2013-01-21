@@ -36,40 +36,9 @@ std::string source_generator< cl_double >::source_(
 "    double b = vectorB[i];"
 "    double c = a + b;"
 
-"    for( int i = 0; i < 0x1fff; ++i )"
+"    for( int i = 0; i < 0x7ff; ++i )"
 "    {"
 "        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 3
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 4
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 5
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 6
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 7
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 8
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 9
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 10
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 11
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 12
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 13
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 14
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 15
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 16
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 17
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 18
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 19
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 20
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 21
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 22
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 23
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 24
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 25
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 26
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 27
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 28
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 29
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 30
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 31
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 32
 "    }"
 "    result_vector[i] = c;"
 "}"
@@ -88,37 +57,6 @@ std::string source_generator< cl_float >::source_(
 "    for( int i = 0; i < 0x7ff; ++i )"
 "    {"
 "        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 3
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 4
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 5
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 6
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 7
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 8
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 9
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 10
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 11
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 12
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 13
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 14
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 15
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 16
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 17
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 18
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 19
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 20
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 21
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 22
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 23
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 24
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 25
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 26
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 27
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 28
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 29
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 30
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 31
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 32
 "    }"
 "    result_vector[i] = c;"
 "}"
@@ -134,40 +72,9 @@ std::string source_generator< cl_int >::source_(
 "    int b = vectorB[i];"
 "    int c = a + b;"
 
-"    for( int i = 0; i < 0x1fff; ++i )"
+"    for( int i = 0; i < 0x7ff; ++i )"
 "    {"
 "        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 1
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 2
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 3
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 4
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 5
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 6
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 7
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 8
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 9
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 10
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 11
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 12
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 13
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 14
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 15
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 16
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 17
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 18
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 19
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 20
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 21
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 22
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 23
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 24
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 25
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 26
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 27
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 28
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 29
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 30
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 31
-//"        c *= b; b *= a; c /= a+b; c*= a-b;c += a/b;c -= a*b;" // 32
 "    }"
 "    result_vector[i] = c;"
 "}"

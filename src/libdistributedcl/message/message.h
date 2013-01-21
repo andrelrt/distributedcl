@@ -195,7 +195,7 @@ public:
         return size_;
     }
 
-    inline bool waiting_response()
+    inline bool waiting_response() const
     {
         return wait_response_;
     }

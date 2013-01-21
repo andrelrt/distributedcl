@@ -261,7 +261,7 @@ void server_platform::wait( remote_id_t queue_id )
 ////-----------------------------------------------------------------------------
 void server_platform::wait_all()
 {
-    if( queue_thread_.size() != 0 )
+    if( !queue_thread_.empty() )
     {
         flush_all();
 

@@ -29,7 +29,7 @@ namespace message {
 //-----------------------------------------------------------------------------
 #define THROW_IF(b,ex) if(b) throw dcl::library_exception(ex)
 
-uint32_t packet::parse_header()
+uint32_t packet::parse_header() const
 {
     packet_header* header_ptr = reinterpret_cast< packet_header* >( buffer_ptr_ );
 
