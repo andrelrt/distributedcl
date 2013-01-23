@@ -145,7 +145,9 @@ public:
     void add_result( boost::timer::cpu_times times )
     {
         ++count_;
-        ++count_per_second_[ static_cast<uint32_t>(times.wall/1000000000LL) ];
+        uint32_t second = static_cast<uint32_t>(times.wall/1000000000LL);
+        //std::cerr << "second: " << second << std::endl;
+        ++count_per_second_[ second ];
         results_.push_back( static_cast<uint64_t>( times.wall ) - last_ );
         last_ = static_cast<uint64_t>( times.wall );
     }
@@ -318,6 +320,8 @@ private:
     typedef std::map< uint32_t, std::pair< uint64_t, uint64_t > > t_size_data;
     t_size_data size_average_;
 
+    #define DIVIDE_CHUNCK 64
+
     bool execute_kernels( uint32_t size )
     {
         boost::thread_group threads;
@@ -332,13 +336,25 @@ private:
 
         if( divide_ )
         {
-            vector_size /= static_cast<uint32_t>( devices_.size() );
-
-            if( (vector_size == 0) ||
-                ((size % static_cast<uint32_t>( devices_.size() )) != 0) )
+            float min_size = static_cast<float>(size) / static_cast<float>( devices_.size() );
+            if( min_size <= DIVIDE_CHUNCK )
             {
-                ++vector_size;
+                vector_size = 1;
+
+                while( vector_size < min_size )
+                {
+                    vector_size <<= 1;
+                }
             }
+            else
+            {
+                vector_size = DIVIDE_CHUNCK * static_cast<uint32_t>(min_size/DIVIDE_CHUNCK);
+                
+                if( (size % devices_.size()) != 0 )
+                    vector_size += DIVIDE_CHUNCK;
+            }
+
+            std::cerr << " (vector size " << vector_size << ")";
         }
 
         threads_running_ = 0;
@@ -358,22 +374,6 @@ private:
         }
 
         global_timer.start();
-
-        //uint32_t last_count = 0;
-        //while( threads_running_ != 0 )
-        //{
-        //    boost::this_thread::sleep( boost::posix_time::seconds(1) );
-        //    uint32_t total_count = 0;
-
-        //    for( uint32_t i = 0; i < devices_.size(); ++i )
-        //    {
-        //        total_count += results_[ size ][ i ].get_count();
-        //    }
-
-        //    counts_[ size ].push_back( total_count - last_count );
-        //    last_count = total_count;
-        //}
-
         threads.join_all();
         global_timer.stop();
 
@@ -468,7 +468,6 @@ private:
         boost::timer::cpu_timer global_timer;
         global_timer.start();
 
-        uint64_t second = 0;
         for(;;)
         {
             if( (divide_ && (i > 30)) ||
@@ -491,7 +490,6 @@ private:
                                          cl::NDRange( size ),       // global
                                          cl::NullRange, 0,          // local
                                          NULL );
-
             queue->flush();
 
             for( uint32_t j = 0; j < MULTS_PER_ITERATION; ++j )
@@ -501,6 +499,7 @@ private:
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
 
+        //queue->finish();
                 results_[ full_size ][ index ].add_result( global_timer.elapsed() );
 
                 // 1 -------------------------
@@ -520,6 +519,7 @@ private:
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
 
+        //queue->finish();
                 results_[ full_size ][ index ].add_result( global_timer.elapsed() );
 
                 // 2 -------------------------
@@ -539,6 +539,7 @@ private:
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
 
+        //queue->finish();
                 results_[ full_size ][ index ].add_result( global_timer.elapsed() );
 
                 // 3 -------------------------
@@ -558,6 +559,7 @@ private:
                                           sizeof(t_value_type) * size,
                                           buffer, NULL, NULL );
 
+        //queue->finish();
                 results_[ full_size ][ index ].add_result( global_timer.elapsed() );
 
                 // 0 -------------------------
@@ -571,14 +573,14 @@ private:
                                              cl::NullRange, 0,          // local
                                              NULL );
                 queue->flush();
-
             }
 
             // read 0 --------------------
             queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
                                       sizeof(t_value_type) * size,
                                       buffer, NULL, NULL );
-            queue->finish();
+            queue->flush();
+        //queue->finish();
 
             results_[ full_size ][ index ].add_result( global_timer.elapsed() );
 
@@ -591,6 +593,7 @@ private:
             ++i;
         }
 
+        queue->finish();
         //std::cerr << index;
         boost::interprocess::ipcdetail::atomic_dec32( &threads_running_ );
     }
@@ -670,7 +673,6 @@ private:
         std::cout << "\"Operation count\",";
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
-            uint32_t size = sizes_[ sizeIndex ];
             std::cout << ",\"" << size_average_[ sizes_[ sizeIndex ] ].second << "\"";
         }
         std::cout << std::endl;
@@ -678,7 +680,6 @@ private:
         std::cout << "\"Global average (op/s)\",";
         for( uint32_t sizeIndex = 0; sizeIndex < sizes_.size(); ++sizeIndex )
         {
-            uint32_t size = sizes_[ sizeIndex ];
             std::cout << ",\"=" << size_average_[ sizes_[ sizeIndex ] ].second
                       << "/" << static_cast<double>(size_average_[ sizes_[ sizeIndex ] ].first)/1000000000. << "\"";
         }
