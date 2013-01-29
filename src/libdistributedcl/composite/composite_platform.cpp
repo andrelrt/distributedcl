@@ -80,11 +80,7 @@ generic_context* composite_platform::create_context( const devices_t& devices ) 
     }
     catch( library_exception& ex )
     {
-        if( composite_context_ptr != NULL )
-        {
-            delete composite_context_ptr;
-        }
-
+        delete composite_context_ptr;
         throw;
     }
 
@@ -113,11 +109,7 @@ generic_context* composite_platform::create_context( cl_device_type device_type 
     }
     catch( library_exception& )
     {
-        if( ctx_ptr != NULL )
-        {
-            delete ctx_ptr;
-        }
-
+        delete ctx_ptr;
         throw;
     }
 

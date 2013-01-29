@@ -57,7 +57,7 @@ void packet::parse( bool is_request )
 {
     uint32_t packet_len = parse_header();
 
-    uint32_t length = packet_len - sizeof( packet_header );
+    int32_t length = packet_len - sizeof( packet_header );
     uint8_t* it = buffer_ptr_ + sizeof( packet_header );
 
     messages_.clear();

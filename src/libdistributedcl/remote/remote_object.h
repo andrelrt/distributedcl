@@ -59,13 +59,20 @@ public:
             // Ensures that all send queues are empty
             session_ref_.flush_childs();
             
-			dcl::network::message::release_message< MSG_RELEASE_OBJECT >* msg_ptr =
-				new dcl::network::message::release_message< MSG_RELEASE_OBJECT >();
+            try
+            {
+			    dcl::network::message::release_message< MSG_RELEASE_OBJECT >* msg_ptr =
+				    new dcl::network::message::release_message< MSG_RELEASE_OBJECT >();
 
-			msg_ptr->set_remote_id( remote_id_ );
+			    msg_ptr->set_remote_id( remote_id_ );
 
-			message_sp_t message_sp( msg_ptr );
-			session_ref_.send_message( message_sp ); //enqueue
+			    message_sp_t message_sp( msg_ptr );
+			    session_ref_.send_message( message_sp ); //enqueue
+            }
+            catch(...)
+            {
+                // hidding exception
+            }
 		}
 	}
 

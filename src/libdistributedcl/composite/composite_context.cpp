@@ -119,7 +119,7 @@ generic_program* composite_context::do_create_program( const dcl::devices_t& dev
         context_binaries.clear();
         context_binary_status.clear();
 
-        for( uint32_t i = 0; i < devs.size(); ++i )
+        for( size_t i = 0; i < devs.size(); ++i )
         {
             if( std::find( context_devices.begin(), context_devices.end(), devs[ i ] ) != context_devices.end() )
             {
@@ -139,7 +139,7 @@ generic_program* composite_context::do_create_program( const dcl::devices_t& dev
 
             if( binary_status != NULL )
             {
-                for( uint32_t i = 0; i < indexes.size(); ++i )
+                for( size_t i = 0; i < indexes.size(); ++i )
                 {
                     binary_status[ indexes[ i ] ] = context_binary_status[ i ];
                 }

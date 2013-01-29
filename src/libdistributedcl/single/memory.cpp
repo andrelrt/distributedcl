@@ -397,7 +397,7 @@ void image::unmap( generic_command_queue* queue_ptr, void* data_ptr,
         {
             boost::scoped_array<cl_event> events( new cl_event[wait_events.size()] );
 
-            for( uint32_t i = 0; i < wait_events.size(); i++ )
+            for( size_t i = 0; i < wait_events.size(); i++ )
             {
                 events[ i ] = (reinterpret_cast<const event*>( wait_events[ i ] ))->get_id();
             }

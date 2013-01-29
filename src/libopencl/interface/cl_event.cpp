@@ -82,7 +82,7 @@ clRetainEvent( cl_event event ) CL_API_SUFFIX__VERSION_1_0
 extern "C" CL_API_ENTRY cl_int CL_API_CALL
 clReleaseEvent( cl_event event ) CL_API_SUFFIX__VERSION_1_0
 {
-    return retain_object< composite_event >( event );
+    return release_object< composite_event >( event );
 }
 //-----------------------------------------------------------------------------
 //extern "C" CL_API_ENTRY cl_int CL_API_CALL

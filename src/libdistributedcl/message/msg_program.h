@@ -119,9 +119,9 @@ public:
     {
         lengths_.reserve( size );
 
-        for( uint32_t i = 0; i < size; ++i )
+        for( size_t i = 0; i < size; ++i )
         {
-            lengths_.push_back( static_cast<uint32_t>( lengths[ i ] ) );
+            lengths_.push_back( lengths[ i ] );
         }
         set_req_size();
     }

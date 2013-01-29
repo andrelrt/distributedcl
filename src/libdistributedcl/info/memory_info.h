@@ -39,11 +39,7 @@ class generic_event;
 //-----------------------------------------------------------------------------
 struct memory_info
 {
-    cl_mem_object_type type_;
-    cl_mem_flags flags_;
-    size_t size_;
     const void* host_ptr_;
-    cl_uint map_count_;
     cl_image_format format_;
     size_t element_size_;
     size_t row_pitch_;
@@ -51,6 +47,10 @@ struct memory_info
     size_t width_;
     size_t height_;
     size_t depth_;
+    size_t size_;
+    cl_mem_object_type type_;
+    cl_mem_flags flags_;
+    cl_uint map_count_;
 
     inline size_t get_info_size( cl_device_info info ) const
     {
