@@ -26,6 +26,7 @@
 #pragma once
 #endif
 
+#include <iostream>
 #include "distributedcl_internal.h"
 #include "library_exception.h"
 #include <boost/program_options.hpp>
@@ -54,6 +55,11 @@ public:
         return servers_;
     }
 
+    inline bool help() const
+    {
+        return (config_.count("help") != 0);
+    }
+
     static void get_config_path( std::string& filepath, const std::string& filename, bool user = false );
 
 protected:
@@ -70,10 +76,14 @@ protected:
         return parameters_;
     }
 
+    friend std::ostream& operator<<( std::ostream& out, const common_config& config );
+
 private:
     boost::program_options::variables_map config_;
     boost::program_options::options_description parameters_;
 };
+//-----------------------------------------------------------------------------
+std::ostream& operator<<( std::ostream& out, const common_config& config );
 //-----------------------------------------------------------------------------
 }} // namespace dcl::info
 //-----------------------------------------------------------------------------

@@ -82,6 +82,12 @@ int main( int argc, char* argv[] )
             std::cerr << "Error parsing config file." << std::endl << "Running with default parameters." << std::endl;
         }
 
+        if( config.help() )
+        {
+            std::cout << config << std::endl;
+            return 0;
+        }
+
 		// Load OpenCL Libraries --------------------------------------------------
         if( config.load_local() )
         {

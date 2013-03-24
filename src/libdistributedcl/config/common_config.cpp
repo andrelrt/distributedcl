@@ -37,6 +37,12 @@ using boost::program_options::basic_parsed_options;
 namespace dcl {
 namespace config {
 //-----------------------------------------------------------------------------
+std::ostream& operator<<( std::ostream& out, const common_config& config )
+{
+    out << config.parameters_;
+    return out;
+}
+//-----------------------------------------------------------------------------
 common_config::common_config( const std::string& parameters_name ) :
     local_( false ), cpu_only_( false ), gpu_only_( false ), parameters_( parameters_name )
 {
