@@ -579,8 +579,8 @@ private:
             queue->enqueueReadBuffer( *result_vector[0], CL_FALSE, 0,
                                       sizeof(t_value_type) * size,
                                       buffer, NULL, NULL );
-            queue->flush();
-        //queue->finish();
+            //queue->flush();
+            queue->finish();
 
             results_[ full_size ][ index ].add_result( global_timer.elapsed() );
 
