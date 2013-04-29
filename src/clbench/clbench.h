@@ -256,23 +256,17 @@ private:
             return false;
         }
 
-        std::vector<cl::Platform>::iterator i = platforms.begin();
-        cl_context_properties cps[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)(*i)(), 0 };
-
-        context_.reset( new cl::Context(CL_DEVICE_TYPE_GPU, cps, NULL, NULL, &err) );
-        if (err != CL_SUCCESS)
-        {
-            std::cerr << "Context::Context() failed (" << err << ")\n";
-            return false;
-        }
-
+        cl::Platform platform = *platforms.begin();
         std::vector<cl::Device> devs;
-        devs = context_->getInfo<CL_CONTEXT_DEVICES>();
+        
+        platform.getDevices( CL_DEVICE_TYPE_ALL, &devs );
         if( devs.empty() ) 
         {
             std::cerr << "No device in context\n";
             return false;
         }
+        
+        std::cerr << devs.size() << " device(s)" << std::endl;
 
         for( uint32_t i = 0; i < devs.size(); ++i )
         {
@@ -288,6 +282,14 @@ private:
         if( devices_.empty() )
         {
             std::cerr << "No device available\n";
+            return false;
+        }
+
+        cl_context_properties cps[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)platform(), 0 };
+        context_.reset( new cl::Context(devices_, cps, NULL, NULL, &err) );
+        if (err != CL_SUCCESS)
+        {
+            std::cerr << "Context::Context() failed (" << err << ")\n";
             return false;
         }
 
@@ -396,13 +398,19 @@ private:
                                         sizeof(t_value_type) * size,
                                         NULL, &err) );
         if (err != CL_SUCCESS)
+        {
+            std::cerr << "Index " << index << " Fail 1" << std::endl;
             return;
+        }
 
         vectorB.reset( new cl::Buffer( *context_, CL_MEM_READ_ONLY,
                                         sizeof(t_value_type) * size,
                                         NULL, &err) );
         if (err != CL_SUCCESS)
+        {
+            std::cerr << "Index " << index << " Fail 2" << std::endl;
             return;
+        }
 
         for( int i = 0; i < 4; ++i )
         {
@@ -414,7 +422,10 @@ private:
         }
 
         if (err != CL_SUCCESS)
+        {
+            std::cerr << "Index " << index << " Fail 3" << std::endl;
             return;
+        }
 
         data_generator<T>::setup_vectors( size );
 
@@ -426,14 +437,20 @@ private:
                                          data_generator<T>::get_vectorA_data( size ),
                                          NULL, NULL );
         if (err != CL_SUCCESS)
+        {
+            std::cerr << "Index " << index << " Fail 4" << std::endl;
             return;
+        }
 
         err = queue->enqueueWriteBuffer( *vectorB, CL_FALSE, 0,
                                          sizeof(t_value_type) * size,
                                          data_generator<T>::get_vectorB_data( size ),
                                          NULL, NULL );
         if (err != CL_SUCCESS)
+        {
+            std::cerr << "Index " << index << " Fail 5" << std::endl;
             return;
+        }
 
         t_value_type* buffer = static_cast<t_value_type*>(data_generator<T>::get_result_buffer( size ));
         std::vector<iteration_data> data;

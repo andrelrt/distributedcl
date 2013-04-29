@@ -69,14 +69,12 @@ void msgFinish_command::execute()
 {
     server_platform& server = session_context_ptr_->get_server_platform();
 
-    server.flush( message_->get_remote_id() );
+    server.wait( message_->get_remote_id() );
 
     composite_command_queue* queue_ptr = 
         server.get_command_queue_manager().get( message_->get_remote_id() );
 
     queue_ptr->finish();
-    
-    server.wait( message_->get_remote_id() );
 }
 //-----------------------------------------------------------------------------
 }} // namespace dcl::server

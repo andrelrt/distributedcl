@@ -147,9 +147,9 @@ void async_execute::execute_queue()
 {
     dcl::scoped_lock_t lock( mutex_ );
 
+    //std::cerr << "Server Queue Execute Queue - size: " << server_queue_.size() << std::endl;
     while( !server_queue_.empty() )
     {
-        //std::cerr << "Server Queue Execute Queue - size: " << server_queue_.size() << std::endl;
 		try
 		{
 			server_queue_.front()->execute();
