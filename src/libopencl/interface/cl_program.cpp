@@ -281,6 +281,14 @@ clGetProgramInfo( cl_program program, cl_program_info param_name,
     // TODO: Not Implemented
     //return CL_OUT_OF_RESOURCES;
 
+//#define CL_PROGRAM_REFERENCE_COUNT 
+//#define CL_PROGRAM_CONTEXT         
+//#define CL_PROGRAM_NUM_DEVICES     
+//#define CL_PROGRAM_DEVICES         
+//#define CL_PROGRAM_SOURCE          
+//#define CL_PROGRAM_BINARY_SIZES    
+//#define CL_PROGRAM_BINARIES        
+
     try
     {
         composite_program* program_ptr = 
@@ -288,37 +296,70 @@ clGetProgramInfo( cl_program program, cl_program_info param_name,
                                                             param_value, param_value_size_ret );
         size_t info_size = 0;
 
-        if( param_name == CL_PROGRAM_NUM_DEVICES )
+        switch( param_name )
         {
-            if( param_value != NULL )
+            case CL_PROGRAM_REFERENCE_COUNT:
+                get_reference_count< composite_program >( program, param_value_size, 
+                                                          param_value, param_value_size_ret );
+                break;
+
+            case CL_PROGRAM_CONTEXT:
+                if( param_value != NULL )
+                {
+                    *(reinterpret_cast< cl_context* >( param_value )) = program_ptr->get_context().get_icd_obj();
+                }
+
+                info_size = sizeof( cl_context );
+                break;
+
+            case CL_PROGRAM_NUM_DEVICES:
+                if( param_value != NULL )
+                {
+                    *(reinterpret_cast< cl_uint* >( param_value )) =
+                        static_cast<cl_uint>( program_ptr->get_context().get_device_count() );
+                }
+
+                info_size = sizeof( cl_uint );
+                break;
+
+            case CL_PROGRAM_DEVICES:
             {
-                *(reinterpret_cast< cl_uint* >( param_value )) =
-                    static_cast<cl_uint>( program_ptr->get_context().get_device_count() );
+                size_t count = program_ptr->get_context().get_device_count();
+                if( param_value != NULL )
+                {
+                    for( size_t i = 0; i < count; ++i )
+                    {
+                        (reinterpret_cast< cl_device_id* >( param_value ))[i] =
+                                             (program_ptr->get_context().get_devices()[i])->get_icd_obj();
+                    }
+                }
+                info_size = count * sizeof( cl_device_id );
+                break;
             }
 
-            info_size = sizeof( cl_uint );
-        }
-        else if( param_name == CL_PROGRAM_BINARY_SIZES )
-        {
-            //FIXME: Return the correct binary sizes
-            size_t count = program_ptr->get_context().get_device_count();
-            if( param_value != NULL )
+            case CL_PROGRAM_BINARY_SIZES:
             {
-                for( size_t i = 0; i < count; ++i )
+                //FIXME: Return the correct binary sizes
+                size_t count = program_ptr->get_context().get_device_count();
+                if( param_value != NULL )
                 {
-                    (reinterpret_cast< cl_uint* >( param_value ))[i] = 1;
+                    for( size_t i = 0; i < count; ++i )
+                    {
+                        (reinterpret_cast< cl_uint* >( param_value ))[i] = 1;
+                    }
                 }
+                info_size = count * sizeof( cl_uint );
+                break;
             }
-            info_size = count * sizeof( cl_uint );
-        }
-        else if( param_name == CL_PROGRAM_BINARIES )
-        {
-            //FIXME: Return the correct binaries
-            info_size = program_ptr->get_context().get_device_count();
-        }
-        else
-        {
-            return CL_INVALID_VALUE;
+
+            case CL_PROGRAM_BINARIES:
+                //FIXME: Return the correct binaries
+                info_size = program_ptr->get_context().get_device_count();
+                break;
+
+            default:
+                return CL_INVALID_VALUE;
+
         }
 
         if( param_value_size_ret != NULL )

@@ -123,4 +123,26 @@ void get_info( typename DCL_TYPE_T::cl_type_t cl_obj, typename DCL_TYPE_T::cl_ty
     }
 }
 //-----------------------------------------------------------------------------
+template< typename DCL_TYPE_T >
+void get_reference_count( typename DCL_TYPE_T::cl_type_t cl_obj, size_t param_value_size,
+                          void *param_value, size_t *param_value_size_ret )
+{
+    uint32_t reference_count = dcl::icd::icd_object_manager::get_instance().get_reference_count< DCL_TYPE_T >( cl_obj );
+
+    if( param_value_size_ret != NULL )
+    {
+        *param_value_size_ret = sizeof(cl_uint);
+    }
+
+    if( param_value != NULL )
+    {
+        if( param_value_size < sizeof(cl_uint) )
+        {
+            throw dcl::library_exception( CL_INVALID_VALUE );
+        }
+
+        *(static_cast<cl_uint*>( param_value )) = static_cast<cl_uint>( reference_count );
+    }
+}
+//-----------------------------------------------------------------------------
 #endif // _DCL_CL_UTILS_H_

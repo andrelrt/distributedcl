@@ -63,11 +63,17 @@ public:
         return devices_.size();
     }
 
-    inline const devices_t& get_devices()
+    inline const devices_t& get_devices() const
     {
         if( devices_.empty() )
         {
-            load_devices();
+            dcl::scoped_lock_t lock( device_load_mutex_ );
+
+            // Double check
+            if( devices_.empty() )
+            {
+                const_cast<generic_context*>( this )->load_devices();
+            }
         }
 
         return( devices_ );
@@ -167,6 +173,7 @@ protected:
     dcl::mutex_t queues_mutex_;
     dcl::mutex_t memory_objects_mutex_;
     dcl::mutex_t samplers_mutex_;
+    mutable dcl::mutex_t device_load_mutex_;
 
     virtual void load_devices() = 0;
     virtual generic_program* do_create_program( const std::string& source_code ) = 0;
