@@ -1,0 +1,83 @@
+DistributedCL
+
+DistributedCL is a middleware to distributed GPGPU computing with OpenCL interface.
+
+
+
+INSTALL:
+
+./configure
+make
+make install
+
+export LD_LIBRARY_PATH=/usr/local/lib
+(maybe you also need to create the symlinks /usr/local/lib/libOpenCL.so and /usr/local/lib/libOpenCL.so.1 to /usr/local/lib/libOpenCL.so.1.0.0)
+
+
+
+CONFIG:
+
+sudo mkdir /etc/dcl
+sudo cp src/libdistributedcl/config/*.conf /etc/dcl
+
+there are two files, dcld.conf to server and libdcl.conf to client.
+
+# config file format
+local=1                 # client and server: Use the local devices - 0:no, 1:yes (ie load intalled /usr/lib/libOpenCL.so)
+port=4791               # server only: TCP port to bind
+server=127.0.0.1:4791   # client and server: Remote server to connect (IP:Port only, do not use domain names)
+
+
+
+Changelog:
+
+0.1.0 alpha:
+
+* First alpha version
+* The following OpenCL functions are working
+    clBuildProgram
+    clCreateBuffer
+    clCreateCommandQueue
+    clCreateContext
+    clCreateContextFromType
+    clCreateImage2D
+    clCreateKernel
+    clCreateProgramWithBinary
+    clCreateProgramWithSource
+    clEnqueueMapBuffer
+    clEnqueueNDRangeKernel
+    clEnqueueReadBuffer
+    clEnqueueUnmapMemObject
+    clEnqueueWriteBuffer
+    clFinish
+    clFlush
+    clGetCommandQueueInfo
+    clGetContextInfo
+    clGetDeviceIDs
+    clGetDeviceInfo
+    clGetEventProfilingInfo
+    clGetKernelWorkGroupInfo
+    clGetMemObjectInfo
+    clGetPlatformIDs
+    clGetPlatformInfo
+    clGetProgramBuildInfo
+    clGetProgramInfo       # only CL_PROGRAM_NUM_DEVICES info
+    clReleaseCommandQueue
+    clReleaseContext
+    clReleaseEvent
+    clReleaseKernel
+    clReleaseMemObject
+    clReleaseProgram
+    clRetainCommandQueue
+    clRetainContext
+    clRetainEvent
+    clRetainKernel
+    clRetainMemObject
+    clRetainProgram
+    clSetKernelArg
+    clUnloadCompiler
+    clWaitForEvents
+    clIcdGetPlatformIDsKHR
+    clGetExtensionFunctionAddress
+
+
